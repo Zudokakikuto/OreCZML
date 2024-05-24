@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="d636adb8-ceea-4d1b-886f-a5eba9ec35ca" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/CZMLPrimaryObjects/CZMLPrimaryObject.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/CZMLPrimaryObjects/Header.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/CZMLPrimaryObjects/Satellite.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/CZMLSecondaryObects/CZMLSecondaryObject.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/CZMLSecondaryObects/HeaderObjects/Clock.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/CZMLSecondaryObects/SatelliteObjects/Billboard.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/CZMLSecondaryObects/SatelliteObjects/Path.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/CZMLSecondaryObects/SatelliteObjects/Position.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/Inputs/InputFiles/InputFileBuilder.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/Inputs/InputFiles/OEMFile.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/Inputs/InputObjet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/Inputs/OrbitInput/OrbitInput.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/Inputs/SpacecraftStateInput/SpacecraftStateListInput.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/OreCZML.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/Outputs/OutputFileBuilder.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/Outputs/OutputFiles/CZMLFile.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/cesiumlanguagewriter-3.0.0.jar" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Interface" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 4
+}</component>
+  <component name="ProjectId" id="2gXp9sxZTk9lPmy5xWNy5etBQWq" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.OrbitGenerator.executor": "Run",
+    "Application.OreCZML.executor": "Run",
+    "Application.org.example.OLDOrbitGenerator.OrbitGenerator.executor": "Run",
+    "Application.org.example.OrbitGenerator.executor": "Run",
+    "Maven. [org.apache.maven.plugins:maven-archetype-plugin:RELEASE:generate].executor": "Run",
+    "Maven.OreCZML [install].executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "master",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/jleblond/Documents/git/Benchmark/src/main/java/org/example/Benchmark.java",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "reference.projectsettings.compiler.javacompiler"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\jleblond\Documents\git\OreCZML\src\main\resources" />
+    </key>
+  </component>
+  <component name="RunAnythingCache">
+    <option name="myCommands">
+      <command value="mvn install" />
+    </option>
+  </component>
+  <component name="RunManager" selected="Application.OreCZML">
+    <configuration name="OrbitGenerator" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="OrbitGenerator" />
+      <module name="OreCZML" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="OreCZML" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="org.example.OreCZML" />
+      <module name="OreCZML" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="org.example.CZMLObjects.CZMLPrimaryObjects.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="org.example.OLDOrbitGenerator.OrbitGenerator" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="org.example.OLDOrbitGenerator.OrbitGenerator" />
+      <module name="OreCZML" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="org.example.OLDOrbitGenerator.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.OreCZML" />
+        <item itemvalue="Application.org.example.OLDOrbitGenerator.OrbitGenerator" />
+        <item itemvalue="Application.OrbitGenerator" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="d636adb8-ceea-4d1b-886f-a5eba9ec35ca" name="Changes" comment="" />
+      <created>1715853630921</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1715853630921</updated>
+    </task>
+    <servers />
+  </component>
+</project>
