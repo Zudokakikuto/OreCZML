@@ -30,10 +30,10 @@ public class Billboard implements CZMLSecondaryObject {
         this.alpha = color.getAlpha();
     }
 
-    public Billboard(){
+    public Billboard(String imageStr){
         this.scale = 1.5;
         this.show = true;
-        this.imageStr = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADJSURBVDhPnZHRDcMgEEMZjVEYpaNklIzSEfLfD4qNnXAJSFWfhO7w2Zc0Tf9QG2rXrEzSUeZLOGm47WoH95x3Hl3jEgilvDgsOQUTqsNl68ezEwn1vae6lceSEEYvvWNT/Rxc4CXQNGadho1NXoJ+9iaqc2xi2xbt23PJCDIB6TQjOC6Bho/sDy3fBQT8PrVhibU7yBFcEPaRxOoeTwbwByCOYf9VGp1BYI1BA+EeHhmfzKbBoJEQwn1yzUZtyspIQUha85MpkNIXB7GizqDEECsAAAAASUVORK5CYII=";
+        this.imageStr = imageStr;
         this.cesiumHorizontalOrigin = CesiumHorizontalOrigin.CENTER;
         this.cesiumResourceBehavior = CesiumResourceBehavior.LINK_TO;
         this.red = 0;

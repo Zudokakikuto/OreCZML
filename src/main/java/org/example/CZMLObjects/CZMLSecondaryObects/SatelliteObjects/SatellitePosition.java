@@ -35,11 +35,6 @@ public class Position implements CZMLSecondaryObject {
     public void write(PacketCesiumWriter packetWriter, CesiumOutputStream output) {
     }
 
-    @Override
-    public void endFile(CesiumOutputStream output) {
-
-    }
-
     public ArrayList<Cartesian> getPositions() {
         return positions;
     }
