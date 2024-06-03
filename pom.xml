@@ -37,8 +37,6 @@
       <groupId>com.custom</groupId>
       <artifactId>cesium</artifactId>
       <version>1.0</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/src/main/resources/cesiumlanguagewriter-3.0.0.jar</systemPath>
     </dependency>
   </dependencies>
   <build>

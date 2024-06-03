@@ -7,6 +7,7 @@ import org.example.Inputs.InputObjet;
 import org.orekit.data.DataSource;
 import org.orekit.files.ccsds.ndm.ParserBuilder;
 import org.orekit.files.ccsds.ndm.odm.oem.Oem;
+import org.orekit.files.ccsds.ndm.odm.oem.OemSegment;
 import org.orekit.files.ccsds.ndm.odm.oem.OemParser;
 import org.orekit.frames.Frame;
 import org.orekit.time.*;
@@ -57,10 +58,10 @@ public class OEMFile implements InputObjet,InputFileBuilder {
         this.numberOfSatellites = set.size();
         this.ID = oem.getHeader().getMessageId();
         this.version = oem.getHeader().getFormatVersion();
-        this.frame = oem.getSegments().getFirst().getFrame();
-        this.startTime = oem.getSegments().getFirst().getStart();
-        this.stopTime = oem.getSegments().getFirst().getStop();
-        this.Ephemeris = oem.getSegments().getFirst().getData().getEphemeridesDataLines();
+        this.frame = oem.getSegments().get(0).getFrame();
+        this.startTime = oem.getSegments().get(0).getStart();
+        this.stopTime = oem.getSegments().get(0).getStop();
+        this.Ephemeris = oem.getSegments().get(0).getData().getEphemeridesDataLines();
         this.timeScale = oem.getDataContext().getTimeScales().getUTC();
     }
 

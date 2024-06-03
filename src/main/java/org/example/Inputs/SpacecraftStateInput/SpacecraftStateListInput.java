@@ -38,10 +38,10 @@ public class SpacecraftStateListInput implements InputObjet {
         timeList = new ArrayList<Double>();
         orbits = new ArrayList<Orbit>();
 
-        startTime = list.getFirst().getDate();
-        stopTime = list.getLast().getDate();
-        frame = list.getFirst().getFrame();
-        period = list.getFirst().getKeplerianPeriod();
+        startTime = list.get(0).getDate();
+        stopTime = list.get(list.size()-1).getDate();
+        frame = list.get(0).getFrame();
+        period = list.get(0).getKeplerianPeriod();
         timeScale = TimeScalesFactory.getUTC();
         this.timeInterval = new TimeInterval(getJulianDate(startTime,timeScale),getJulianDate(stopTime,timeScale));
 

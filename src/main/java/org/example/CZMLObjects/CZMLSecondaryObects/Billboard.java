@@ -1,7 +1,6 @@
-package org.example.CZMLObjects.CZMLSecondaryObects.SatelliteObjects;
+package org.example.CZMLObjects.CZMLSecondaryObects;
 
 import cesiumlanguagewriter.*;
-import org.example.CZMLObjects.CZMLSecondaryObects.CZMLSecondaryObject;
 
 import java.awt.*;
 
@@ -44,11 +43,6 @@ public class Billboard implements CZMLSecondaryObject {
 
     @Override
     public void write(PacketCesiumWriter packetWriter, CesiumOutputStream output) {
-    }
-
-    @Override
-    public void endFile(CesiumOutputStream output) {
-
     }
 
     public double getScale() {

@@ -1,9 +1,11 @@
-package org.example.CZMLObjects.CZMLSecondaryObects;
+package org.example.CZMLObjects;
 
 import cesiumlanguagewriter.*;
+import org.example.CZMLObjects.CZMLSecondaryObects.PositionType;
+import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.hipparchus.util.FastMath;
 
-public class Position implements CZMLSecondaryObject{
+public class Position {
 
     // Cartographic :
 
@@ -55,11 +57,6 @@ public class Position implements CZMLSecondaryObject{
 
         this.positionType = positionType;
         this.ReferenceFrame = "INERTIAL";
-    }
-
-    @Override
-    public void write(PacketCesiumWriter packetWriter, CesiumOutputStream output) {
-        throw new RuntimeException("This method is depreciated, use write(PacketCesiumWriter packetWriter, CesiumOutputStream output, TimeInterval availability)");
     }
 
     public void write(PacketCesiumWriter packetWriter, CesiumOutputStream output, TimeInterval availability) {
@@ -196,6 +193,39 @@ public class Position implements CZMLSecondaryObject{
         }
         else {
             throw new RuntimeException("vz is not defined");
+        }
+    }
+
+    public PositionType getPositionType() {
+        return positionType;
+    }
+
+    public Vector3D toVector3D() {
+        if (positionType == PositionType.CARTESIAN_POSITION) {
+            double Station_x = this.getX();
+            double Station_y = this.getY();
+            double Station_z = this.getZ();
+            return new Vector3D(Station_x, Station_y, Station_z);
+
+        } else if (positionType == PositionType.CARTESIAN_VELOCITY) {
+            double Station_vx = this.getVx();
+            double Station_vy = this.getVy();
+            double Station_vz = this.getVz();
+            return new Vector3D(Station_vx, Station_vy, Station_vz);
+
+        } else if (positionType == PositionType.CARTOGRAPHIC_DEGREES) {
+            double Station_longitude = this.getLongitude();
+            double Station_latitude = this.getLatitude();
+            double Station_height = this.getHeight();
+            return new Vector3D(Station_longitude, Station_latitude, Station_height);
+
+        } else if (positionType == PositionType.CARTOGRAPHIC_RADIANS) {
+            double Station_longitudeDegree = this.getLongitudeDeg();
+            double Station_latitudeDegree = this.getLatitudeDeg();
+            double Station_height = this.getHeight();
+            return new Vector3D(Station_longitudeDegree, Station_latitudeDegree, Station_height);
+        } else {
+            throw new RuntimeException("PositionType is not defined");
         }
     }
 }

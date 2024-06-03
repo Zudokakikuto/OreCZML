@@ -1,6 +1,6 @@
-package org.example.CZMLObjects.CZMLSecondaryObects;
+package org.example.CZMLObjects;
 
-import cesiumlanguagewriter.TimeInterval;
+import cesiumlanguagewriter.*;
 
 public class Show {
 
@@ -26,5 +26,13 @@ public class Show {
 
     public void setShow(boolean toShow) {
         this.toShow = toShow;
+    }
+
+    public void write(PolylineCesiumWriter polylineWriter, CesiumOutputStream output){
+        try(BooleanCesiumWriter showWriter =  polylineWriter.getShowWriter()){
+            showWriter.open(output);
+            showWriter.writeInterval(availability);
+            showWriter.writeBoolean(toShow);
+        }
     }
 }

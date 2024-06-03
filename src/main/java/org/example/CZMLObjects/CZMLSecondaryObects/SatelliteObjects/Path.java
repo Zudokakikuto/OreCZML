@@ -29,11 +29,6 @@ public class Path implements CZMLSecondaryObject {
         }
     }
 
-    @Override
-    public void endFile(CesiumOutputStream output) {
-
-    }
-
     public static boolean getShow(){
         return show;
     }

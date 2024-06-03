@@ -1,10 +1,12 @@
-package org.example.CZMLObjects.CZMLSecondaryObects;
+package org.example.CZMLObjects;
 
-import cesiumlanguagewriter.ArcTypeCesiumWriter;
+import cesiumlanguagewriter.CesiumArcType;
+import cesiumlanguagewriter.CesiumOutputStream;
+import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.TimeInterval;
-import org.example.CZMLObjects.CZMLPrimaryObjects.LineOfVisibility;
 
 import java.awt.*;
+import java.util.List;
 
 public class Polyline {
 
@@ -12,7 +14,7 @@ public class Polyline {
     private boolean show;
     private double width;
     private Color color;
-    private String arcType;
+    private CesiumArcType arcType;
 
     public Polyline(TimeInterval availability, double width, Color color, boolean show){
         this.availability = availability;
@@ -21,7 +23,36 @@ public class Polyline {
         this.show = show;
     }
 
-    public Polyline(LineOfVisibility lineOfVisibility){
+    public Polyline(){
+        Color color = new Color(0,255,255,255);
 
+        this.width = 1;
+        this.arcType = CesiumArcType.NONE;
+        this.color = color;
+    }
+
+
+    public void write(PacketCesiumWriter packetWriter, CesiumOutputStream output, List<Show> showList) {
+
+    }
+
+    public TimeInterval getAvailability() {
+        return availability;
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
+    public boolean getShow() {
+        return show;
+    }
+
+    public double getWidth() {
+        return width;
+    }
+
+    public CesiumArcType getArcType() {
+        return arcType;
     }
 }

@@ -6,15 +6,15 @@ import org.example.CZMLObjects.CZMLSecondaryObects.CZMLSecondaryObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Position implements CZMLSecondaryObject {
+public class SatellitePosition implements CZMLSecondaryObject {
 
-    private ArrayList<JulianDate> dates;
-    private ArrayList<Cartesian> positions;
+    private List<JulianDate> dates;
+    private List<Cartesian> positions;
     private CesiumInterpolationAlgorithm cesiumInterpolationAlgorithm;
     private int interpolationDegree;
     private String ReferenceFrame;
 
-    public Position(List<Cartesian> cartesians, List<Double> timeList){
+    public SatellitePosition(List<Cartesian> cartesians, List<Double> timeList){
         int cpt = 0;
         this.dates = new ArrayList<JulianDate>();
         this.positions = new ArrayList<Cartesian>();
@@ -35,11 +35,11 @@ public class Position implements CZMLSecondaryObject {
     public void write(PacketCesiumWriter packetWriter, CesiumOutputStream output) {
     }
 
-    public ArrayList<Cartesian> getPositions() {
+    public List<Cartesian> getPositions() {
         return positions;
     }
 
-    public ArrayList<JulianDate> getDates() {
+    public List<JulianDate> getDates() {
         return dates;
     }
 

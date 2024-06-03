@@ -94,8 +94,4 @@ public class Clock implements CZMLSecondaryObject {
         writer.writeStep(step);
     }
 
-    @Override
-    public void endFile(CesiumOutputStream output) {
-        output.writeEndObject();
-    }
 }
