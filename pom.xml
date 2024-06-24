@@ -29,11 +29,6 @@
       <version>12.1-SNAPSHOT</version>
     </dependency>
     <dependency>
-      <groupId>org.example</groupId>
-      <artifactId>Convertisseur_JSON</artifactId>
-      <version>1.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
       <groupId>com.custom</groupId>
       <artifactId>cesium</artifactId>
       <version>1.0</version>

@@ -5,49 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d636adb8-ceea-4d1b-886f-a5eba9ec35ca" name="Changes" comment="Commit with JavaScript">
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/CZMLSecondaryObects/GroundTrack.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/CZMLSecondaryObects/SatelliteObjects/SatelliteReferenceSystem.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/Inputs/InputFiles/TLEFile.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Readme.md" beforeDir="false" afterPath="$PROJECT_DIR$/Readme.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/JavaScript/public/Cesium_Air.glb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/JavaScript/public/Output.czml" beforeDir="false" afterPath="$PROJECT_DIR$/JavaScript/public/Output.czml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/JavaScript/public/output.czml.bak" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/czml_test.czml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/CZMLAbstract/JavaScriptRun.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/CZMLAbstract/JavaScriptRun.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/CZMLAbstract/Model3D.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/CZMLAbstract/Model3D.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/CZMLPrimaryObjects/CZMLGroundStation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/CZMLPrimaryObjects/CZMLGroundStation.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/CZMLPrimaryObjects/CZMLPrimaryObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/CZMLPrimaryObjects/CZMLPrimaryObject.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/CZMLPrimaryObjects/Constellation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/CZMLPrimaryObjects/Constellation.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/CZMLPrimaryObjects/CovarianceDisplay.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/CZMLPrimaryObjects/CovarianceDisplay.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/CZMLPrimaryObjects/Header.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/CZMLPrimaryObjects/Header.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/CZMLPrimaryObjects/LineOfVisibility.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/CZMLPrimaryObjects/LineOfVisibility.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/CZMLPrimaryObjects/Satellite.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/CZMLPrimaryObjects/Satellite.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/CZMLPrimaryObjects/VisibilityCone.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/CZMLPrimaryObjects/VisibilityCone.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/CZMLSecondaryObects/Billboard.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/CZMLSecondaryObects/Billboard.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/CZMLSecondaryObects/CZMLEllipsoid.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/CZMLSecondaryObects/CZMLEllipsoid.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/CZMLSecondaryObects/CZMLSecondaryObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/CZMLSecondaryObects/CZMLSecondaryObject.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/CZMLSecondaryObects/Cylinder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/CZMLSecondaryObects/Cylinder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/CZMLSecondaryObects/HeaderObjects/Clock.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/CZMLSecondaryObects/HeaderObjects/Clock.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/CZMLSecondaryObects/Label.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/CZMLSecondaryObects/Label.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/CZMLSecondaryObects/SatelliteObjects/Path.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/CZMLSecondaryObects/SatelliteObjects/Path.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/CZMLSecondaryObects/SatelliteObjects/SatelliteAttitude.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/CZMLSecondaryObects/SatelliteObjects/SatelliteAttitude.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/CZMLSecondaryObects/SatelliteObjects/SatellitePosition.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/CZMLSecondaryObects/SatelliteObjects/SatellitePosition.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/CZMLShow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/CZMLShow.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/Polyline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/Polyline.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/Position.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/Position.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/PositionType.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/PositionType.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/TerrestrialReferenceSystem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/TerrestrialReferenceSystem.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/VectorPositionType.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/VectorPositionType.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Inputs/InputFiles/InputFileBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/Inputs/InputFiles/InputFileBuilder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Inputs/InputFiles/OEMFile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/Inputs/InputFiles/OEMFile.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Inputs/InputObjet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/Inputs/InputObjet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Inputs/OrbitInput/OrbitInput.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/Inputs/OrbitInput/OrbitInput.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Inputs/SpacecraftStateInput/SpacecraftStateListInput.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/Inputs/SpacecraftStateInput/SpacecraftStateListInput.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/OLDOrbitGenerator/OrbitGenerator.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/example/OreCZML.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/OreCZML.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Outputs/OutputFiles/CZMLFile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/Outputs/OutputFiles/CZMLFile.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/AcrimSat_FINAL.fbx" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/AcrimSat_FINAL.glb" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/CesiumMilkTruck.glb" beforeDir="false" />
@@ -55,19 +21,7 @@
       <change beforePath="$PROJECT_DIR$/src/main/resources/Ingenuity/GLB/Ingenuity.glb" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/Ingenuity/Ingenuity.blend" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/Ingenuity/Ingenuity.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/Ingenuity/ingenuity_thumb.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/Ingenuity/textures/CarbonFiber_albedo2.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/Ingenuity/textures/CarbonFiber_normal.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/Ingenuity/textures/CarbonFiber_roughness2.jpg" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/Ingenuity/textures/Thumbs.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/Ingenuity/textures/blade.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/Ingenuity/textures/boiler_room_2k.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/Ingenuity/textures/cameras_diff.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/Ingenuity/textures/cameras_metal.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/Ingenuity/textures/cameras_rough.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/Ingenuity/textures/chopper_sp_n2.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/Ingenuity/textures/chopper_sp_r2.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/Ingenuity/textures/foil_n.jpg" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/oemChaser.kvn" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/oemMission.kvn" beforeDir="false" />
     </list>
@@ -102,28 +56,32 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.OrbitGenerator.executor&quot;: &quot;Run&quot;,
-    &quot;Application.OreCZML.executor&quot;: &quot;Run&quot;,
-    &quot;Application.org.example.OLDOrbitGenerator.OrbitGenerator.executor&quot;: &quot;Run&quot;,
-    &quot;Application.org.example.OrbitGenerator.executor&quot;: &quot;Run&quot;,
-    &quot;Maven. [org.apache.maven.plugins:maven-archetype-plugin:RELEASE:generate].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.OreCZML [dependency:get...].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.OreCZML [install:install-file...].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.OreCZML [install].executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/jleblond/Documents/git/Orekit/orekit&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.3761062&quot;,
-    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;reference.projectsettings.compiler.javacompiler&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.OrbitGenerator.executor": "Run",
+    "Application.OreCZML.executor": "Run",
+    "Application.org.example.OLDOrbitGenerator.OrbitGenerator.executor": "Run",
+    "Application.org.example.OrbitGenerator.executor": "Run",
+    "Downloaded.Files.Path.Enabled": "true",
+    "Maven. [org.apache.maven.plugins:maven-archetype-plugin:RELEASE:generate].executor": "Run",
+    "Maven.OreCZML [dependency:get...].executor": "Run",
+    "Maven.OreCZML [install:install-file...].executor": "Run",
+    "Maven.OreCZML [install].executor": "Run",
+    "Repository.Attach.Annotations": "false",
+    "Repository.Attach.JavaDocs": "false",
+    "Repository.Attach.Sources": "false",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "master",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/jleblond/Documents/git/OreCZML/src/main/resources/cesiumlanguagewriter-3.0.0.jar",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.3761062",
+    "run.code.analysis.last.selected.profile": "pProject Default",
+    "settings.editor.selected.configurable": "reference.projectsettings.compiler.javacompiler"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\jleblond\Documents\git\OreCZML\src\main\resources" />
@@ -131,11 +89,11 @@
   </component>
   <component name="RunAnythingCache">
     <option name="myCommands">
-      <command value="mvn install:install-file -Dfile=C:\Users\jleblond\Documents\git\OreCZML\src\main\resources\cesiumlanguagewriter-3.0.0.jar -DgroupId=com.custom -DartifactId=cesium -Dversion=1.0 -Dpackaging=jar -DgeneratePom=true" />
       <command value="mvn dependency:get -Dartifact=org.orekit:orekit:12.1" />
       <command value="mvn dependency:get -DrepoUrl=C:\Users\jleblond\Documents\git\Orekit\orekit" />
-      <command value="mvn dependency:get -DrepoUrl=C:\Users\jleblond\Documents\git\Orekit\orekit -Dartifact=org.orekit:orekit:12.1" />
       <command value="mvn install" />
+      <command value="mvn dependency:get -DrepoUrl=C:\Users\jleblond\Documents\git\Orekit\orekit -Dartifact=org.orekit:orekit:12.1" />
+      <command value="mvn install:install-file -Dfile=C:\Users\jleblond\Documents\git\OreCZML\src\main\resources\cesiumlanguagewriter-3.0.0.jar -DgroupId=com.custom -DartifactId=cesium -Dversion=1.0 -Dpackaging=jar -DgeneratePom=true" />
     </option>
   </component>
   <component name="RunManager" selected="Application.OreCZML">
@@ -197,7 +155,15 @@
       <option name="project" value="LOCAL" />
       <updated>1719235692843</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Commit with JavaScript">
+      <option name="closed" value="true" />
+      <created>1719236322280</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1719236322280</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">

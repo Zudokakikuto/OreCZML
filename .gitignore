@@ -36,3 +36,6 @@ build/
 
 ### Mac OS ###
 .DS_Store
+/JavaScript/node_modules/
+/Output/
+/.idea/
