@@ -4,27 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d636adb8-ceea-4d1b-886f-a5eba9ec35ca" name="Changes" comment="Commit with JavaScript">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/public/Cesium_Air.glb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/public/Output.czml" beforeDir="false" afterPath="$PROJECT_DIR$/JavaScript/public/Output.czml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/public/output.czml.bak" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/czml_test.czml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/CZMLSecondaryObects/Billboard.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/CZMLObjects/CZMLSecondaryObects/Billboard.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/OreCZML.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/OreCZML.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/AcrimSat_FINAL.fbx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/AcrimSat_FINAL.glb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/CesiumMilkTruck.glb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/CesiumMilkTruck.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/Ingenuity/GLB/Ingenuity.glb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/Ingenuity/Ingenuity.blend" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/Ingenuity/Ingenuity.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/Ingenuity/textures/Thumbs.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/oemChaser.kvn" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/oemMission.kvn" beforeDir="false" />
-    </list>
+    <list default="true" id="d636adb8-ceea-4d1b-886f-a5eba9ec35ca" name="Changes" comment="Deletes some useless files and removed the node modules" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -163,11 +143,20 @@
       <option name="project" value="LOCAL" />
       <updated>1719236322280</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Deletes some useless files and removed the node modules">
+      <option name="closed" value="true" />
+      <created>1719242608989</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1719242608989</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Commit with JavaScript" />
-    <option name="LAST_COMMIT_MESSAGE" value="Commit with JavaScript" />
+    <MESSAGE value="Deletes some useless files and removed the node modules" />
+    <option name="LAST_COMMIT_MESSAGE" value="Deletes some useless files and removed the node modules" />
   </component>
 </project>
