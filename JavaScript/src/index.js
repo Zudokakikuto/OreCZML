@@ -1,0 +1,49 @@
+import * as Cesium from "cesium";
+import {
+  Ion,
+  Transforms,
+  SceneMode,
+  Viewer,
+  Terrain,
+  createOsmBuildingsAsync,
+  Cartesian3,
+  Math,
+  Cesium3DTilesInspector,
+  CzmlDataSource,
+  DataSource,
+  Window,
+  Document,
+} from "cesium";
+import "cesium/Widgets/widgets.css";
+import "../src/css/main.css";
+
+// Your access token can be found at: https://cesium.com/ion/tokens.
+Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIxYzVmYzgyNy1mYTAyLTRlYTktOTk0Ni1kNmEwNmNkOGY0MDQiLCJpZCI6MjIwNTk2LCJpYXQiOjE3MTc2NzgwNzR9.OxDy9eWiX8vyBXdOcgjSyfMGYfll2sa-DBSBhH-uais";
+
+// Initialize the Cesium Viewer in the HTML element with the `cesiumContainer` ID.
+const viewer = new Viewer("cesiumContainer");//
+// const clock = viewer.clock;
+// const scene = viewer.scene;
+
+// function icrf(scene, time) {
+//   if (scene.mode !== Cesium.SceneMode.SCENE3D) {
+//     return;
+//   }
+
+//   const icrfToFixed = Cesium.Transforms.computeIcrfToFixedMatrix(time);
+//   if (Cesium.defined(icrfToFixed)) {
+//     const camera = viewer.camera;
+//     const offset = Cesium.Cartesian3.clone(camera.position);
+//     const transform = Cesium.Matrix4.fromRotationTranslation(
+//       icrfToFixed
+//     );
+//     camera.lookAtTransform(transform, offset);
+//   }
+// }
+
+
+const czmlDataSource = Cesium.CzmlDataSource.load("./Output.czml");
+viewer.dataSources.add(czmlDataSource);
+viewer.scene.globe.enableLighting = true;
+
+//scene.postUpdate.addEventListener(icrf);
