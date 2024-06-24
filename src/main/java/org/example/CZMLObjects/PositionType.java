@@ -1,6 +1,6 @@
 /** .*/
 
-package org.example.CZMLObjects.CZMLSecondaryObects;
+package org.example.CZMLObjects;
 
 public enum PositionType {
 

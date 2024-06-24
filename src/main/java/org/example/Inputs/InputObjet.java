@@ -7,27 +7,27 @@ import org.orekit.time.*;
 
 public interface InputObjet {
     Header getHeader();
-    public default JulianDate getJulianDate(AbsoluteDate AbsDate, TimeScale timeScale){
-        DateTimeComponents components = AbsDate.getComponents(timeScale);
-        DateComponents dateComponents = components.getDate();
-        TimeComponents timeComponents = components.getTime();
-        int year = dateComponents.getYear();
-        int month = dateComponents.getMonth();
-        int day = dateComponents.getDay();
-        int hours = timeComponents.getHour();
-        int mins = timeComponents.getMinute();
-        double seconds = timeComponents.getSecond();
-        GregorianDate gregorianDate =  new GregorianDate(year,month,day,hours,mins,seconds);
+
+    default JulianDate getJulianDate(AbsoluteDate AbsDate, TimeScale timeScale) {
+        final DateTimeComponents components = AbsDate.getComponents(timeScale);
+        final DateComponents dateComponents = components.getDate();
+        final TimeComponents timeComponents = components.getTime();
+        final int year = dateComponents.getYear();
+        final int month = dateComponents.getMonth();
+        final int day = dateComponents.getDay();
+        final int hours = timeComponents.getHour();
+        final int mins = timeComponents.getMinute();
+        final double seconds = timeComponents.getSecond();
+        final GregorianDate gregorianDate =  new GregorianDate(year, month, day, hours, mins, seconds);
         return new JulianDate(gregorianDate);
     }
 
-    public default double dateToDouble(AbsoluteDate date) {
-        DateTimeComponents dtc = date.getComponents(TimeScalesFactory.getUTC());
-        DateComponents dc = dtc.getDate();
-        TimeComponents tc = dtc.getTime();
-        double jd = dc.getMJD();
-        double fracDay = tc.getSecondsInUTCDay();
-        double finalDay = jd + fracDay / 86400 + 2400000.5;
-        return finalDay;
+    default double dateToDouble(AbsoluteDate date) {
+        final DateTimeComponents dtc = date.getComponents(TimeScalesFactory.getUTC());
+        final DateComponents dc = dtc.getDate();
+        final TimeComponents tc = dtc.getTime();
+        final double jd = dc.getMJD();
+        final double fracDay = tc.getSecondsInUTCDay();
+        return jd + fracDay / 86400 + 2400000.5;
     }
 }

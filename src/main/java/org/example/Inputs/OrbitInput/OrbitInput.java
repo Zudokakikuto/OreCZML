@@ -17,39 +17,64 @@ import org.orekit.time.TimeScale;
 public class OrbitInput implements InputObjet {
 
     // Keplerian parameters
+    /** .*/
     private double semiMajorAxis;
+    /** .*/
     private double eccentricity;
+    /** .*/
     private double inclination;
+    /** .*/
     private double perigeeArgument;
+    /** .*/
     private double rightAscensionOfAscendingNode;
+    /** .*/
     private double meanAnomaly;
 
     // Equinoctial parameters
+    /** .*/
     private double ex;
+    /** .*/
     private double ey;
+    /** .*/
     private double hx;
+    /** .*/
     private double hy;
+    /** .*/
     private double lv;
 
     // Cartesian parameters
+    /** .*/
     private double posX;
+    /** .*/
     private double posY;
+    /** .*/
     private double posZ;
+    /** .*/
     private double velX;
+    /** .*/
     private double velY;
+    /** .*/
     private double velZ;
 
+    /** .*/
     private OrbitType orbitType;
+    /** .*/
     private Orbit orbit;
+    /** .*/
     private TimeScale timeScale;
+    /** .*/
     private TimeInterval timeInterval;
+    /** .*/
     private AbsoluteDate startTime;
+    /** .*/
     private AbsoluteDate stopTime;
+    /** .*/
     private double period;
+    /** .*/
     private Frame frame;
 
-    public OrbitInput(Orbit orbit, OrbitType orbitType, TimeScale timeScale){
-        if(orbitType == OrbitType.KEPLERIAN) {
+    public OrbitInput(final Orbit orbit, final OrbitType orbitType, final TimeScale timeScale) {
+        if (orbitType == OrbitType.KEPLERIAN) {
             this.semiMajorAxis = orbit.getA();
             this.eccentricity = orbit.getE();
             this.inclination = orbit.getI();
@@ -58,7 +83,7 @@ public class OrbitInput implements InputObjet {
             this.meanAnomaly = ((KeplerianOrbit) orbit).getMeanAnomaly();
         }
 
-        if(orbitType == OrbitType.EQUINOCTIAL){
+        if (orbitType == OrbitType.EQUINOCTIAL) {
             this.semiMajorAxis = orbit.getA();
             this.ex = orbit.getEquinoctialEx();
             this.ey = orbit.getEquinoctialEy();
@@ -67,7 +92,7 @@ public class OrbitInput implements InputObjet {
             this.lv = orbit.getLv();
         }
 
-        if(orbitType == OrbitType.CARTESIAN){
+        if (orbitType == OrbitType.CARTESIAN) {
             this.posX = orbit.getPosition().getX();
             this.posY = orbit.getPosition().getY();
             this.posZ = orbit.getPosition().getZ();
@@ -83,21 +108,23 @@ public class OrbitInput implements InputObjet {
         this.orbit = orbit;
         this.timeScale = timeScale;
         this.frame = orbit.getFrame();
-        this.timeInterval = new TimeInterval(getJulianDate(startTime,timeScale),getJulianDate(stopTime,timeScale));
+        this.timeInterval = new TimeInterval(getJulianDate(startTime, timeScale), getJulianDate(stopTime, timeScale));
     }
 
-
+    /** This method sets the step of the simulation at 60.0 and gets the header with default parameters.*/
     @Override
     public Header getHeader() {
-        JulianDate startJD = this.getJulianDate(startTime,this.timeScale);
-        JulianDate stopJD = this.getJulianDate(stopTime,this.timeScale);
-        TimeInterval interval = new TimeInterval(startJD,stopJD);
+        return this.getheader(60.0);
+    }
 
-        double multiplier = 60.0;
-        ClockRange range = ClockRange.LOOP_STOP;
-        ClockStep step = ClockStep.SYSTEM_CLOCK_MULTIPLIER;
-        Clock clock = new Clock(interval,startJD,multiplier,range,step);
-        return new Header("document", "No_title",1.0,clock);
+    public Header getheader(final double step) {
+        final JulianDate startJD = this.getJulianDate(startTime, this.timeScale);
+        final JulianDate stopJD = this.getJulianDate(stopTime, this.timeScale);
+        final TimeInterval interval = new TimeInterval(startJD, stopJD);
+        final ClockRange range = ClockRange.LOOP_STOP;
+        final ClockStep multiplier = ClockStep.SYSTEM_CLOCK_MULTIPLIER;
+        final Clock clock = new Clock(interval, startJD, step, range, multiplier);
+        return new Header("document", "No_title", "1.0", clock);
     }
 
     // GETS

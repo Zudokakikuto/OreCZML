@@ -5,7 +5,7 @@ import org.example.Inputs.InputObjet;
 import java.io.IOException;
 
 public interface InputFileBuilder<T> extends InputObjet {
-    T read() throws IOException;
+    T read(String path) throws IOException;
     void close() throws IOException;
     String getPath();
 }

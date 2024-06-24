@@ -4,14 +4,14 @@ package org.example.CZMLObjects;
 
 import cesiumlanguagewriter.*;
 
-public class Show {
+public class CZMLShow {
 
     /** .*/
     private boolean toShow;
     /** .*/
     private TimeInterval availability;
 
-    public Show(final boolean toShow, final TimeInterval availability) {
+    public CZMLShow(final boolean toShow, final TimeInterval availability) {
         this.toShow = toShow;
         this.availability = availability;
     }

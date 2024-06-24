@@ -6,18 +6,28 @@ import java.awt.*;
 
 public class Billboard implements CZMLSecondaryObject {
 
+    /** .*/
     private final double scale;
+    /** .*/
     private final boolean show;
+    /** .*/
     private final String imageStr;
+    /** .*/
     private final CesiumHorizontalOrigin cesiumHorizontalOrigin;
+    /** .*/
     private final CesiumResourceBehavior cesiumResourceBehavior;
+    /** .*/
     private final int red;
+    /** .*/
     private final int blue;
+    /** .*/
     private final int green;
+    /** .*/
     private final int alpha;
+    /** .*/
     private BillboardCesiumWriter writer;
 
-    public Billboard(CesiumResourceBehavior cesiumResourceBehavior, CesiumHorizontalOrigin cesiumHorizontalOrigin, String imageStr, boolean show, double scale, Color color){
+    public Billboard(final CesiumResourceBehavior cesiumResourceBehavior, final CesiumHorizontalOrigin cesiumHorizontalOrigin, final String imageStr, final boolean show, final double scale, final Color color) {
         this.scale = scale;
         this.show = show;
         this.cesiumHorizontalOrigin = cesiumHorizontalOrigin;
@@ -29,7 +39,7 @@ public class Billboard implements CZMLSecondaryObject {
         this.alpha = color.getAlpha();
     }
 
-    public Billboard(String imageStr){
+    public Billboard(final String imageStr) {
         this.scale = 1.5;
         this.show = true;
         this.imageStr = imageStr;
@@ -42,7 +52,16 @@ public class Billboard implements CZMLSecondaryObject {
     }
 
     @Override
-    public void write(PacketCesiumWriter packetWriter, CesiumOutputStream output) {
+    public void write(final PacketCesiumWriter packetWriter, final CesiumOutputStream output) {
+        try (BillboardCesiumWriter billboardWriter = packetWriter.getBillboardWriter()) {
+            billboardWriter.open(output);
+            billboardWriter.writeHorizontalOriginProperty(cesiumHorizontalOrigin);
+            billboardWriter.writeColorProperty(red, green, blue, alpha);
+            billboardWriter.writeScaleProperty(scale);
+            billboardWriter.writeShowProperty(show);
+            writeImage(billboardWriter, output);
+        }
+
     }
 
     public double getScale() {
@@ -79,5 +98,14 @@ public class Billboard implements CZMLSecondaryObject {
 
     public int getAlpha() {
         return alpha;
+    }
+
+    // Functions
+
+    private void writeImage(final BillboardCesiumWriter billboardWriter, final CesiumOutputStream output) {
+        try (UriCesiumWriter imageBillBoard = billboardWriter.openImageProperty()) {
+            imageBillBoard.open(output);
+            imageBillBoard.writeUri(imageStr, cesiumResourceBehavior);
+        }
     }
 }

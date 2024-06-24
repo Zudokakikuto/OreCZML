@@ -8,13 +8,18 @@ import java.util.List;
 
 public class SatellitePosition implements CZMLSecondaryObject {
 
+    /** .*/
     private List<JulianDate> dates;
+    /** .*/
     private List<Cartesian> positions;
+    /** .*/
     private CesiumInterpolationAlgorithm cesiumInterpolationAlgorithm;
+    /** .*/
     private int interpolationDegree;
+    /** .*/
     private String ReferenceFrame;
 
-    public SatellitePosition(List<Cartesian> cartesians, List<Double> timeList){
+    public SatellitePosition(final List<Cartesian> cartesians, final List<Double> timeList) {
         int cpt = 0;
         this.dates = new ArrayList<JulianDate>();
         this.positions = new ArrayList<Cartesian>();
@@ -32,7 +37,7 @@ public class SatellitePosition implements CZMLSecondaryObject {
     }
 
     @Override
-    public void write(PacketCesiumWriter packetWriter, CesiumOutputStream output) {
+    public void write(final PacketCesiumWriter packetWriter, final CesiumOutputStream output) {
     }
 
     public List<Cartesian> getPositions() {

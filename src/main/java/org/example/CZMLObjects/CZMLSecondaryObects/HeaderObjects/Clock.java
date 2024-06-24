@@ -1,3 +1,5 @@
+/** .*/
+
 package org.example.CZMLObjects.CZMLSecondaryObects.HeaderObjects;
 
 import cesiumlanguagewriter.*;
@@ -11,53 +13,61 @@ import java.util.List;
 
 public class Clock implements CZMLSecondaryObject {
 
-    private TimeInterval interval;
+    /** .*/
+    private TimeInterval availability;
+    /** .*/
     private JulianDate currentTime;
+    /** .*/
     private double multiplier;
+    /** .*/
     private ClockRange range;
+    /** .*/
     private ClockStep step;
 
-    public Clock(TimeInterval interval, JulianDate currentTime, double multiplier, ClockRange range, ClockStep step){
-        this.interval=interval;
+    public Clock(final TimeInterval interval, final JulianDate currentTime, final double multiplier, final ClockRange range, final ClockStep step) {
+        this.availability = interval;
         this.currentTime = currentTime;
         this.multiplier = multiplier;
         this.range = range;
         this.step = step;
     }
 
-    public Clock(OEMFile oemFile) {
+    public Clock(final OEMFile oemFile) {
+        this(oemFile, 60.0);
+    }
 
-        List<TimeStampedPVCoordinates> Ephemeris = oemFile.getEphemeris();
-        int length = Ephemeris.size();
-        AbsoluteDate startTime = oemFile.getStartTime();
-        AbsoluteDate stopTime = oemFile.getStopTime();
-        int step = (int) FastMath.round(stopTime.durationFrom(startTime) / length);
+    public Clock(final OEMFile file, final double step) {
+        final List<TimeStampedPVCoordinates> Ephemeris = file.getEphemeris();
+        final int length = Ephemeris.size();
+        final AbsoluteDate startTime = file.getStartTime();
+        final AbsoluteDate stopTime = file.getStopTime();
+        final int step_rounded = (int) FastMath.round(stopTime.durationFrom(startTime) / length);
 
-        TimeScale timeScale = oemFile.getTimeScale();
-        JulianDate startJulianDate = this.getJulianDate(startTime, timeScale);
-        JulianDate stopJulianDate = this.getJulianDate(stopTime, timeScale);
+        final TimeScale timeScale = file.getTimeScale();
+        final JulianDate startJulianDate = this.getJulianDate(startTime, timeScale);
+        final JulianDate stopJulianDate = this.getJulianDate(stopTime, timeScale);
 
-        ClockStep clockStep = ClockStep.getFromValue(step);
-        double multiplier = 60.0;
+        final ClockStep clockStep = ClockStep.getFromValue(step_rounded);
+        final double multiplier_temp = step;
 
         this.step = clockStep;
-        this.interval = new TimeInterval(startJulianDate, stopJulianDate);
+        this.availability = new TimeInterval(startJulianDate, stopJulianDate);
         this.range = ClockRange.LOOP_STOP;
-        this.multiplier = multiplier;
+        this.multiplier = multiplier_temp;
         this.currentTime = startJulianDate;
     }
 
-    private JulianDate getJulianDate(AbsoluteDate AbsDate, TimeScale timeScale){
-        DateTimeComponents components = AbsDate.getComponents(timeScale);
-        DateComponents dateComponents = components.getDate();
-        TimeComponents timeComponents = components.getTime();
-        int year = dateComponents.getYear();
-        int month = dateComponents.getMonth();
-        int day = dateComponents.getDay();
-        int hours = timeComponents.getHour();
-        int mins = timeComponents.getMinute();
-        double seconds = timeComponents.getSecond();
-        GregorianDate gregorianDate =  new GregorianDate(year,month,day,hours,mins,seconds);
+    private JulianDate getJulianDate(final AbsoluteDate AbsDate, final TimeScale timeScale) {
+        final DateTimeComponents components = AbsDate.getComponents(timeScale);
+        final DateComponents dateComponents = components.getDate();
+        final TimeComponents timeComponents = components.getTime();
+        final int year = dateComponents.getYear();
+        final int month = dateComponents.getMonth();
+        final int day = dateComponents.getDay();
+        final int hours = timeComponents.getHour();
+        final int mins = timeComponents.getMinute();
+        final double seconds = timeComponents.getSecond();
+        final GregorianDate gregorianDate =  new GregorianDate(year, month, day, hours, mins, seconds);
         return new JulianDate(gregorianDate);
     }
 
@@ -65,8 +75,8 @@ public class Clock implements CZMLSecondaryObject {
         return currentTime;
     }
 
-    public TimeInterval getInterval() {
-        return interval;
+    public TimeInterval getAvailability() {
+        return availability;
     }
 
     public double getMultiplier() {
@@ -83,12 +93,12 @@ public class Clock implements CZMLSecondaryObject {
 
 
     @Override
-    public void write(PacketCesiumWriter packetWriter, CesiumOutputStream output) {
+    public void write(final PacketCesiumWriter packetWriter, final CesiumOutputStream output) {
 
-        ClockCesiumWriter writer = packetWriter.getClockWriter();
+        final ClockCesiumWriter writer = packetWriter.getClockWriter();
         writer.open(output);
-        writer.writeInterval(interval);
-        writer.writeCurrentTime(interval.getStart());
+        writer.writeInterval(availability);
+        writer.writeCurrentTime(availability.getStart());
         writer.writeMultiplier(multiplier);
         writer.writeRange(range);
         writer.writeStep(step);

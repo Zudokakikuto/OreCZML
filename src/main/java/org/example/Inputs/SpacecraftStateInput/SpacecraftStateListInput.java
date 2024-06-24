@@ -20,30 +20,39 @@ import java.util.List;
 
 public class SpacecraftStateListInput implements InputObjet {
 
+    /** .*/
     private double period;
+    /** .*/
     private Frame frame;
+    /** .*/
     private TimeInterval timeInterval;
 
     // Intrinsic parameters
+    /** .*/
     private AbsoluteDate startTime;
+    /** .*/
     private AbsoluteDate stopTime;
+    /** .*/
     private TimeScale timeScale;
+    /** .*/
     private List<Vector3D> positions;
+    /** .*/
     private List<Double> timeList;
+    /** .*/
     private List<Orbit> orbits;
 
-    public SpacecraftStateListInput(List<SpacecraftState> list){
+    public SpacecraftStateListInput(final List<SpacecraftState> list) {
 
         positions = new ArrayList<Vector3D>();
         timeList = new ArrayList<Double>();
         orbits = new ArrayList<Orbit>();
 
         startTime = list.get(0).getDate();
-        stopTime = list.get(list.size()-1).getDate();
+        stopTime = list.get(list.size() - 1).getDate();
         frame = list.get(0).getFrame();
         period = list.get(0).getKeplerianPeriod();
         timeScale = TimeScalesFactory.getUTC();
-        this.timeInterval = new TimeInterval(getJulianDate(startTime,timeScale),getJulianDate(stopTime,timeScale));
+        this.timeInterval = new TimeInterval(getJulianDate(startTime, timeScale), getJulianDate(stopTime, timeScale));
 
         for (int i = 0; i < list.size(); i++) {
             positions.add(list.get(i).getPosition());
@@ -52,17 +61,22 @@ public class SpacecraftStateListInput implements InputObjet {
         }
     }
 
+    /** This method sets the step of the simulation at 60.0 and gets the header with default parameters.*/
     @Override
     public Header getHeader() {
-        JulianDate startJD = this.getJulianDate(startTime,this.timeScale);
-        JulianDate stopJD = this.getJulianDate(stopTime,this.timeScale);
-        TimeInterval interval = new TimeInterval(startJD,stopJD);
+        return this.getHeader(60.0);
+    }
 
-        double multiplier = 60.0;
-        ClockRange range = ClockRange.LOOP_STOP;
-        ClockStep step = ClockStep.SYSTEM_CLOCK_MULTIPLIER;
-        Clock clock = new Clock(interval,startJD,multiplier,range,step);
-        return new Header("document", "No_title",1.0,clock);
+    /**@param step : The step in time used in the simulation
+     * @return : A header with a given step for simulation and default parameters*/
+    public Header getHeader(final double step) {
+        final JulianDate startJD = this.getJulianDate(startTime, this.timeScale);
+        final JulianDate stopJD = this.getJulianDate(stopTime, this.timeScale);
+        final TimeInterval interval = new TimeInterval(startJD, stopJD);
+        final ClockRange range = ClockRange.LOOP_STOP;
+        final ClockStep multiplier = ClockStep.SYSTEM_CLOCK_MULTIPLIER;
+        final Clock clock = new Clock(interval, startJD, step, range, multiplier);
+        return new Header("document", "No_title", "1.0", clock);
     }
 
     public AbsoluteDate getStopTime() {

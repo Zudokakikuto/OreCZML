@@ -3,11 +3,12 @@ package org.example.CZMLObjects.CZMLPrimaryObjects;
 import cesiumlanguagewriter.*;
 import org.example.CZMLObjects.CZMLSecondaryObects.Billboard;
 import org.example.CZMLObjects.CZMLSecondaryObects.Label;
-import org.example.CZMLObjects.CZMLSecondaryObects.PositionType;
+import org.example.CZMLObjects.PositionType;
 import org.example.CZMLObjects.Position;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.bodies.OneAxisEllipsoid;
+import org.orekit.estimation.measurements.GroundStation;
 import org.orekit.frames.Frame;
 import org.orekit.frames.FramesFactory;
 import org.orekit.frames.TopocentricFrame;
@@ -15,8 +16,10 @@ import org.orekit.utils.Constants;
 import org.orekit.utils.IERSConventions;
 
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
 
-public class GroundStation implements CZMLPrimaryObject {
+public class CZMLGroundStation implements CZMLPrimaryObject {
 
     /** .*/
     public static final String DEFAULT_NAME = "Nameless ground station";
@@ -26,23 +29,39 @@ public class GroundStation implements CZMLPrimaryObject {
     /** .*/
     private String name;
     /** .*/
+    private List<String> multipleName = new ArrayList<>();
+    /** .*/
     private String id;
+    /** .*/
+    private List<String> multipleId = new ArrayList<>();
     /** .*/
     private TimeInterval availability;
     /** .*/
+    private List<TimeInterval> multipleAvailability = new ArrayList<>();
+    /** .*/
     private String description;
+    /** .*/
+    private List<String> multipleDescription = new ArrayList<>();
     /** .*/
     private Vector3D positionsList;
     /** .*/
+    private List<Vector3D> multiplePositionsList = new ArrayList<>();
+    /** .*/
     private Billboard billboard;
     /** .*/
-    private org.orekit.estimation.measurements.GroundStation groundStation;
+    private List<Billboard> multipltBillboard = new ArrayList<>();
+    /** .*/
+    private GroundStation groundStation;
+    /** .*/
+    private List<GroundStation> multipleGroundStations = new ArrayList<>();
 
     // Intrinsic parameters
     /** .*/
     private Position positionObject;
+    /** .*/
+    private List<Position> multiplePositionObject = new ArrayList<>();
 
-    public GroundStation(final String name, final String id, final TimeInterval availability, final String description, final Position positionObject, final Billboard billboard) {
+    public CZMLGroundStation(final String name, final String id, final TimeInterval availability, final String description, final Position positionObject, final Billboard billboard) {
         this.id = id;
         this.availability = availability;
         this.description = description;
@@ -59,10 +78,10 @@ public class GroundStation implements CZMLPrimaryObject {
         this.positionObject = positionObject;
     }
 
-    public GroundStation(final org.orekit.estimation.measurements.GroundStation groundStation, final Header header) {
+    public CZMLGroundStation(final org.orekit.estimation.measurements.GroundStation groundStation, final Header header) {
         this.positionsList = groundStation.getBaseFrame().getCartesianPoint();
         this.id = groundStation.getBaseFrame().getName();
-        this.availability = header.getClock().getInterval();
+        this.availability = header.getClock().getAvailability();
         this.name = groundStation.getBaseFrame().getName();
         this.groundStation = groundStation;
         this.billboard = new Billboard(DEFAULT_IMAGE);
@@ -73,10 +92,10 @@ public class GroundStation implements CZMLPrimaryObject {
         this.positionObject = new Position(longitude, latitude, altitude, positionType);
     }
 
-    public GroundStation(final TopocentricFrame topocentricFrame, final Header header) {
+    public CZMLGroundStation(final TopocentricFrame topocentricFrame, final Header header) {
         this.positionsList = topocentricFrame.getCartesianPoint();
         this.id = topocentricFrame.getName();
-        this.availability = header.getClock().getInterval();
+        this.availability = header.getClock().getAvailability();
         this.name = topocentricFrame.getName();
         this.groundStation = new org.orekit.estimation.measurements.GroundStation(topocentricFrame);
         this.billboard = new Billboard(DEFAULT_IMAGE);
@@ -87,21 +106,62 @@ public class GroundStation implements CZMLPrimaryObject {
         this.positionObject = new Position(longitude, latitude, altitude, positionType);
     }
 
+    public CZMLGroundStation(final List<TopocentricFrame> topocentricFrames, final Header header) {
+        for (int i = 0; i < topocentricFrames.size(); i++) {
+            final TopocentricFrame currentTopocentricFrame = topocentricFrames.get(i);
+            final CZMLGroundStation currentGroundStation = new CZMLGroundStation(currentTopocentricFrame, header);
+            multipleAvailability.add(currentGroundStation.availability);
+            multipleGroundStations.add(currentGroundStation.groundStation);
+            multipleId.add(currentGroundStation.id);
+            multipltBillboard.add(currentGroundStation.billboard);
+            multipleName.add(currentGroundStation.name);
+            multipleDescription.add(currentGroundStation.description);
+            multiplePositionsList.add(currentGroundStation.positionsList);
+            multiplePositionObject.add(currentGroundStation.positionObject);
+        }
+    }
+
     @Override
     public void generateCZML() {
-        OUTPUT.setPrettyFormatting(true);
-        try (PacketCesiumWriter packet = STREAM.openPacket(OUTPUT)) {
-            packet.writeId(id);
-            packet.writeName(name);
-            packet.writeAvailability(availability);
+        if (multipleId.isEmpty()) {
+            OUTPUT.setPrettyFormatting(true);
+            try (PacketCesiumWriter packet = STREAM.openPacket(OUTPUT)) {
+                packet.writeId(id);
+                packet.writeName(name);
+                packet.writeAvailability(availability);
 
-            writeBillBoard(packet);
+                writeBillBoard(packet);
 
-            writeLabel(packet);
+                writeLabel(packet);
 
-            writePosition(packet);
+                writePosition(packet);
+            }
+            cleanObject();
         }
-        cleanObject();
+        else {
+            for (int i = 0; i < multipleId.size(); i++) {
+                this.id = multipleId.get(i);
+                this.positionsList = multiplePositionsList.get(i);
+                this.availability = multipleAvailability.get(i);
+                this.name = multipleName.get(i);
+                this.groundStation = multipleGroundStations.get(i);
+                this.billboard = multipltBillboard.get(i);
+                this.positionObject = multiplePositionObject.get(i);
+
+                OUTPUT.setPrettyFormatting(true);
+                try (PacketCesiumWriter packet = STREAM.openPacket(OUTPUT)) {
+                    packet.writeId(id);
+                    packet.writeName(name);
+                    packet.writeAvailability(availability);
+
+                    writeBillBoard(packet);
+
+                    writeLabel(packet);
+
+                    writePosition(packet);
+                }
+            }
+        }
     }
 
 

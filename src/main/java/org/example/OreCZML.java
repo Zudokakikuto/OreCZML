@@ -1,10 +1,12 @@
+/** .*/
+
 package org.example;
 
 import org.example.CZMLObjects.CZMLPrimaryObjects.*;
-import org.example.Inputs.InputFiles.OEMFile;
-import org.example.Inputs.OrbitInput.OrbitInput;
+import org.example.CZMLObjects.TerrestrialReferenceSystem;
 import org.example.Outputs.OutputFiles.CZMLFile;
-import org.hipparchus.analysis.function.Abs;
+import org.hipparchus.linear.MatrixUtils;
+import org.hipparchus.linear.RealMatrix;
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
@@ -12,7 +14,7 @@ import org.orekit.bodies.GeodeticPoint;
 import org.orekit.bodies.OneAxisEllipsoid;
 import org.orekit.data.DataContext;
 import org.orekit.data.DataProvider;
-import org.orekit.data.ZipJarCrawler;
+import org.orekit.data.DirectoryCrawler;
 import org.orekit.errors.OrekitException;
 import org.orekit.forces.ForceModel;
 import org.orekit.forces.gravity.HolmesFeatherstoneAttractionModel;
@@ -20,12 +22,13 @@ import org.orekit.forces.gravity.potential.GravityFieldFactory;
 import org.orekit.forces.gravity.potential.NormalizedSphericalHarmonicsProvider;
 import org.orekit.frames.Frame;
 import org.orekit.frames.FramesFactory;
+import org.orekit.frames.LOFType;
 import org.orekit.frames.TopocentricFrame;
 import org.orekit.orbits.KeplerianOrbit;
 import org.orekit.orbits.OrbitType;
 import org.orekit.orbits.PositionAngleType;
-import org.orekit.propagation.PropagationType;
 import org.orekit.propagation.SpacecraftState;
+import org.orekit.propagation.StateCovariance;
 import org.orekit.propagation.numerical.NumericalPropagator;
 import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScale;
@@ -33,49 +36,64 @@ import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.Constants;
 import org.orekit.utils.IERSConventions;
 
-import java.io.*;
-import java.net.URISyntaxException;
+import java.awt.*;
+import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class OreCZML
 {
-    public static void main( String[] args ) throws IOException, URISyntaxException {
+    public static void main(final String[] args ) throws Exception {
 
         try {
             final File home = new File(System.getProperty("user.home"));
-            final File orekitDir = new File(home, "orekit-data.zip");
-            final DataProvider provider = new ZipJarCrawler(orekitDir);
+            final File orekitDir = new File(home, "orekit-data");
+            final DataProvider provider = new DirectoryCrawler(orekitDir);
             DataContext.getDefault().getDataProvidersManager().addProvider(provider);
         } catch (OrekitException oe) {
             System.err.println(oe.getLocalizedMessage());
         }
 
-        //OEM FILE TEST :
-        String root = System.getProperty("user.dir").replace("\\","/");
-        String resources = root + "/" + "src/main/resources";
-        String outputPath = root + "/" + "Output";
+        final long t0 = System.currentTimeMillis();
 
-        String inputOemMission = "oemMission.kvn";
-        String inputOemChaser = "oemChaser.kvn";
-        String inputOemMissionPath = resources + "/" + inputOemMission;
-        String inputOemChaserPath = resources + "/" +inputOemChaser;
+        //// PATHS
+        // Global
+        final String root = System.getProperty("user.dir").replace("\\", "/");
+        final String Javascript = root + "/JavaScript";
+        final String JavaScriptOutput = Javascript + "/public";
+        final String resources = root + "/src/main/resources";
+        final String outputPath = root + "/Output";
+        // OEM
+        final String inputOemMission = "oemMission.kvn";
+        final String inputOemChaser = "oemChaser.kvn";
+        final String inputOemMissionPath = resources + "/" + inputOemMission;
+        final String inputOemChaserPath = resources + "/" + inputOemChaser;
+        // Output
+        final String outputName = "Output.czml";
+        final String output = outputPath + "/" + outputName;
+        final String outputPathFileJavaScript = JavaScriptOutput + "/" + outputName;
+        // xml / opm
+        final String opm = "estimated.xml";
+        final String opmPath = resources + "/" + opm;
 
-        String outputName = "Output_CZML.txt";
-        String output = outputPath + "/" + outputName;
+        // JavaScript
+        final String npm = Javascript + "/npm";
 
-        OEMFile oemFileMission = new OEMFile(inputOemMissionPath);
-        OEMFile oemFileChaser = new OEMFile(inputOemChaserPath);
+        // MODEL 3D
+        final String ISSModel = "./ISSModel.glb";
+        final String ISSModelAbsolute = "C:\\Users\\jleblond\\Pictures\\ISSModel.glb";
 
         // Propagator
-        Frame EME2000 = FramesFactory.getEME2000();
-        TimeScale UTC = TimeScalesFactory.getUTC();
-        AbsoluteDate startDate = new AbsoluteDate(2022,1,17,12,0,0.0,UTC);
-        AbsoluteDate finalDate = new AbsoluteDate(2022,1,18,12,0,0.0,UTC);
-        KeplerianOrbit initialOrbit = new KeplerianOrbit(7378000,0,FastMath.toRadians(60),0,FastMath.toRadians(90),FastMath.toRadians(90),PositionAngleType.MEAN,EME2000,startDate,Constants.WGS84_EARTH_MU);
-        //KeplerianOrbit initialOrbit = new KeplerianOrbit(42164000,0,0,0,FastMath.toRadians(90),FastMath.toRadians(0), PositionAngleType.MEAN,EME2000,startDate, Constants.WGS84_EARTH_MU);
+        final Frame EME2000 = FramesFactory.getEME2000();
+        final TimeScale UTC = TimeScalesFactory.getUTC();
+        final AbsoluteDate startDate = new AbsoluteDate(2022, 1, 17, 12, 0, 0.0, UTC);
+        final AbsoluteDate finalDate = new AbsoluteDate(2022, 1, 18, 12, 0, 0.0, UTC);
+        final KeplerianOrbit initialOrbit = new KeplerianOrbit(7878000, 0, FastMath.toRadians(0), 0, FastMath.toRadians(0), FastMath.toRadians(0), PositionAngleType.MEAN, EME2000, startDate, Constants.WGS84_EARTH_MU);
+
         final SpacecraftState initialState = new SpacecraftState(initialOrbit);
 
+        final double step = 60.0;
         final double positionTolerance = 10.0;
         final double minStep = 0.001;
         final double maxStep = 1000.0;
@@ -88,153 +106,110 @@ public class OreCZML
         final NormalizedSphericalHarmonicsProvider provider = GravityFieldFactory.getNormalizedProvider(10, 10);
         final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(EME2000, provider);
 
+        final long timeVariablesDeclared = System.currentTimeMillis();
+        final double dtTimeVariablesDeclared = (timeVariablesDeclared - t0) * 1.e-3;
+        System.out.println("Temps variableDeclared " + dtTimeVariablesDeclared + " s");
+
         propagator.setOrbitType(OrbitType.CARTESIAN);
         propagator.addForceModel(holmesFeatherstone);
         propagator.setInitialState(initialState);
 
+        //// Covariance
+        // File
+//        final File opmFile = new File(opmPath);
+//        final ParserBuilder parserBuilder = new ParserBuilder();
+//        final OpmParser opmParser = parserBuilder.buildOpmParser();
+//        final DataSource opmSource = new DataSource(opmFile);
+//        final Opm opmFinalParsed = opmParser.parseMessage(opmSource);
+//        final CartesianCovariance initialCovariance = opmFinalParsed.getData().getCovarianceBlock();
+        final RealMatrix realMatrix = MatrixUtils.createRealDiagonalMatrix(new double[] {100, 100, 100, 1e-4, 1e-4, 1e-4});
+        final StateCovariance stateCovariance = new StateCovariance(realMatrix, startDate, LOFType.TNW);
+        final StateCovariance finalCovariance = stateCovariance.changeCovarianceFrame(initialOrbit, initialOrbit.getFrame());
+
         // Topocentric frame
-        IERSConventions IERS = IERSConventions.IERS_2010;
-        Frame ITRF = FramesFactory.getITRF(IERS,true);
-        OneAxisEllipsoid earth = new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS,Constants.WGS84_EARTH_FLATTENING,ITRF);
+        final IERSConventions IERS = IERSConventions.IERS_2010;
+        final Frame ITRF = FramesFactory.getITRF(IERS, true);
+        final OneAxisEllipsoid earth = new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS, Constants.WGS84_EARTH_FLATTENING, ITRF);
+
+        final long timeEarthCreated = System.currentTimeMillis();
+        final double dtTimeTopocentricFramesDeclared = (timeEarthCreated - timeVariablesDeclared) * 1.e-3;
+        System.out.println("Temps TopocentricFramesDeclared " + dtTimeTopocentricFramesDeclared + " s");
+
         //Position of Toulouse
-        GeodeticPoint geodeticPoint = new GeodeticPoint(FastMath.toRadians(43.6047),FastMath.toRadians(1.4442),118);
-        TopocentricFrame topocentricFrame = new TopocentricFrame(earth,geodeticPoint,"Toulouse Frame");
+        final GeodeticPoint toulouseFrame = new GeodeticPoint(FastMath.toRadians(43.6047), FastMath.toRadians(1.4442), 10);
+        final TopocentricFrame topocentricToulouse = new TopocentricFrame(earth, toulouseFrame, "Toulouse Frame");
+        final GeodeticPoint lasVegasFrame = new GeodeticPoint(FastMath.toRadians(36.1716), FastMath.toRadians(-115.1391), 10);
+        final TopocentricFrame topocentricLasVegas = new TopocentricFrame(earth, lasVegasFrame, "Las Vegas Frame");
+
+        final List<TopocentricFrame> topocentricFrameList = new ArrayList<>();
+        topocentricFrameList.add(topocentricToulouse);
+        topocentricFrameList.add(topocentricLasVegas);
+
+        final long timeSetup = System.currentTimeMillis();
+        final double dtSetup = (timeSetup - timeEarthCreated) * 1.e-3;
+        System.out.println("Temps setup " + dtSetup + " s");
 
         // Header
-        Header headerPropagator = new Header(propagator,finalDate);
+        final Header headerPropagator = new Header(propagator, finalDate, step);
         headerPropagator.generateCZML();
 
+        final TerrestrialReferenceSystem system = new TerrestrialReferenceSystem(headerPropagator);
+        system.generateCZML();
+
+        final long timeHeader = System.currentTimeMillis();
+        final double dtHeader = (timeHeader - timeSetup) * 1.e-3;
+        System.out.println("Temps Header " + dtHeader + " s");
+
         // Satellite
-        Satellite satellitePropagator = new Satellite(propagator,finalDate,headerPropagator);
-        satellitePropagator.generateCZML();
+        final Satellite satellite = new Satellite(propagator, finalDate, headerPropagator, ISSModelAbsolute);
+        satellite.displayOnlyOnePeriod();
+        satellite.displaySatelliteReferenceSystem();
+        satellite.generateCZML();
+
+        // Covariance display
+//      final Color color = new Color(155, 20, 150, 255);
+//      final CovarianceDisplay covarianceDisplay = new CovarianceDisplay(satellite, finalCovariance, headerPropagator, color);
+//      covarianceDisplay.generateCZML();
+
+        final long timeSatellite = System.currentTimeMillis();
+        final double dtSatellite = (timeSatellite - timeHeader) * 1.e-3;
+        System.out.println("Temps satellite " + dtSatellite + " s");
 
         //Ground Station
-        GroundStation groundStation = new GroundStation(topocentricFrame,headerPropagator);
-        groundStation.generateCZML();
+        final CZMLGroundStation toulouseStation = new CZMLGroundStation(topocentricToulouse, headerPropagator);
+        toulouseStation.generateCZML();
+
+        final long timeGroundStation = System.currentTimeMillis();
+        final double dtGroundStation = (timeGroundStation - timeSatellite) * 1.e-3;
+        System.out.println("Temps allStations " + dtGroundStation + " s");
 
         // Line of visibility
-        LineOfVisibility lineOfVisibility = new LineOfVisibility(topocentricFrame,satellitePropagator,headerPropagator,85);
+        final LineOfVisibility lineOfVisibility = new LineOfVisibility(topocentricToulouse, satellite, headerPropagator);
         lineOfVisibility.generateCZML();
         lineOfVisibility.endFile();
 
-        CZMLFile CZMLfile = new CZMLFile(outputPath,output);
-        CZMLFile.write(headerPropagator);
-        CZMLFile.write(satellitePropagator);
-        CZMLFile.write(lineOfVisibility);
+        final long timeLineOfVisibility = System.currentTimeMillis();
+        final double dtLineOfVisibility = (timeLineOfVisibility - timeGroundStation) * 1.e-3;
+        System.out.println("Temps LineOfVisibility " + dtLineOfVisibility + " s");
 
-        /*
-        //KEPLERIAN ORBIT TEST
+        final CZMLFile CZMLfile = new CZMLFile(outputPath, output);
+        CZMLfile.write(headerPropagator);
+        CZMLfile.write(satellite);
+        CZMLfile.write(toulouseStation);
+        CZMLfile.write(lineOfVisibility);
+        CZMLfile.clear();
 
-        String pathName = System.getProperty("user.dir").replace("\\","/");
-        String pathNameOutput = pathName + "/Output";
-        String outputName = "Output_CZML.txt";
-        String outputPath = pathNameOutput + "/" + outputName;
-        String ressourcesPath = pathName + "/src/main/resources";
-        String modele3D = "CesiumMilkTruck.glb";
-        String Ingenuity3D = "Ingenuity/GLB/Ingenuity.glb";
-        String modele3DPath = ressourcesPath + "/" + modele3D;
-        String IngenuityPath = ressourcesPath + "/" + Ingenuity3D;
+        final CZMLFile CZMLFileJavascript = new CZMLFile(JavaScriptOutput, outputPathFileJavaScript);
+        CZMLFileJavascript.write(headerPropagator);
+        CZMLFileJavascript.write(satellite);
+        CZMLFileJavascript.write(toulouseStation);
+        CZMLFileJavascript.write(lineOfVisibility);
+        CZMLFileJavascript.clear();
 
-        // Orbit
-        Frame EME2000 = FramesFactory.getEME2000();
-        TimeScale UTC = TimeScalesFactory.getUTC();
-        AbsoluteDate date = new AbsoluteDate(2022,1,17,12,0,0.0,UTC);
-        KeplerianOrbit orbit1 = new KeplerianOrbit(42378000,0,0,0,FastMath.toRadians(90),FastMath.toRadians(180), PositionAngleType.MEAN,EME2000,date, Constants.WGS84_EARTH_MU);
-        KeplerianOrbit orbit2 = new KeplerianOrbit(7378000,0,FastMath.toRadians(60),0,FastMath.toRadians(90),FastMath.toRadians(90),PositionAngleType.MEAN,EME2000,date,Constants.WGS84_EARTH_MU);
-        OrbitInput orbitInput1 = new OrbitInput(orbit1, OrbitType.KEPLERIAN,UTC);
-        OrbitInput orbitInput2 = new OrbitInput(orbit2, OrbitType.KEPLERIAN,UTC);
+//      final JavaScriptRun run = new JavaScriptRun(Javascript);
 
-        // Topocentric Frame
-        IERSConventions IERS = IERSConventions.IERS_2010;
-        Frame ITRF = FramesFactory.getITRF(IERS,true);
-        OneAxisEllipsoid earth = new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS,Constants.WGS84_EARTH_FLATTENING,ITRF);
-        //Position of Toulouse
-        GeodeticPoint geodeticPoint = new GeodeticPoint(FastMath.toRadians(43.6047),FastMath.toRadians(1.4442),118);
-        TopocentricFrame topocentricFrame = new TopocentricFrame(earth,geodeticPoint,"Toulouse Frame");
-
-        // Header
-        Header header = orbitInput1.getHeader();
-        header.generateCZML();
-
-        // Ground station
-       GroundStation OrekitGroundStation = new org.orekit.estimation.measurements.GroundStation(topocentricFrame);
-       org.example.CZMLObjects.CZMLPrimaryObjects.GroundStation groundStation =
-               new org.example.CZMLObjects.CZMLPrimaryObjects.GroundStation(OrekitGroundStation,header);
-       groundStation.generateCZML();
-
-        // Satellites
-        Satellite satelliteOrbit1 = new Satellite(orbitInput1,header);
-        Satellite satelliteOrbit2 = new Satellite(orbitInput2,header,IngenuityPath);
-        satelliteOrbit1.generateCZML();
-        satelliteOrbit2.generateCZML();
-
-        //Visibility cone
-        VisibilityCone visibilityCone = new VisibilityCone(groundStation,satelliteOrbit2,header);
-        visibilityCone.noDisplay();
-        visibilityCone.generateCZML();
-
-        //Line of visibility (the visibility cone needs to be builds with a satellite and written for the line of visibility to works)
-        LineOfVisibility lineOfVisibility = new LineOfVisibility(visibilityCone);
-        lineOfVisibility.generateCZML();
-        lineOfVisibility.endFile();
-
-        // Output File
-        CZMLFile CZMLfile = new CZMLFile(pathNameOutput,outputPath);
-        CZMLFile.write(header);
-        CZMLFile.write(satelliteOrbit1);
-        CZMLFile.write(satelliteOrbit2);
-        CZMLFile.write(groundStation);
-        CZMLFile.write(visibilityCone);
-        CZMLFile.write(lineOfVisibility);
-
-        */
-
-
-        /*
-        // SpaceCraftStateList
-        String pathName = "C:/Users/jleblond/Documents/git/Benchmark/Outputs";
-        String outputName = "Output_CZML.txt";
-        String outputPath = pathName + "/" + outputName;
-
-        // Build of a SpacecraftStateList
-        TLE tle = new TLE( "1 25544U 98067A   24145.18425404  .00021821  00000+0  36530-3 0  9997"
-                ,"2 25544  51.6393  74.2911 0003297 199.8507 300.9902 15.51793224454828");
-
-        TLEPropagator propagator = TLEPropagator.selectExtrapolator(tle);
-
-        List<SpacecraftState> spacecraftStateList = new ArrayList<SpacecraftState>();
-        AbsoluteDate startTime = propagator.getInitialState().getDate();
-        Double period = propagator.getInitialState().getKeplerianPeriod();
-
-        final NormalizedSphericalHarmonicsProvider provider = GravityFieldFactory.getNormalizedProvider(10, 10);
-        final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(propagator.getFrame(), provider);
-
-        propagator.getMultiplexer().add(60.0, new OrekitFixedStepHandler() {
-            @Override
-            public void handleStep(SpacecraftState currentState) {
-                spacecraftStateList.add(currentState);
-            }
-        });
-
-        final SpacecraftState finalState = propagator.propagate(startTime.shiftedBy(period));
-        final KeplerianOrbit finalOrbit = (KeplerianOrbit) OrbitType.KEPLERIAN.convertType(finalState.getOrbit());
-
-        SpacecraftStateListInput input = new SpacecraftStateListInput(spacecraftStateList);
-
-        // Header
-        Header header = input.getHeader();
-        header.write();
-
-        // Satellite
-        Satellite satelliteSpacecraftStates = new Satellite(input,header);
-        satelliteSpacecraftStates.write();
-        satelliteSpacecraftStates.endFile();
-
-        // Output File
-        CZMLFile CZMLfile = new CZMLFile(pathName,outputPath);
-        CZMLFile.write(header);
-        CZMLFile.write(satelliteSpacecraftStates);
-         */
-
+        final long t1 = System.currentTimeMillis();
+        final double dt = (t1 - t0) * 1.e-3;
+        System.out.println("Final Time : " + dt + " s");
     }
 }

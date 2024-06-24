@@ -1,27 +1,33 @@
+/** .*/
+
 package org.example.CZMLObjects.CZMLSecondaryObects;
 
 import cesiumlanguagewriter.*;
-import cesiumlanguagewriter.advanced.ICesiumFontValuePropertyWriter;
 
 import java.awt.*;
 
-public class Label implements CZMLSecondaryObject{
+public class Label implements CZMLSecondaryObject {
 
-    private Color color;
-    private CesiumHorizontalOrigin horizontalOrigin;
-    private boolean show;
-    private CesiumLabelStyle labelStyle;
-    private String text;
-    private CesiumVerticalOrigin verticalOrigin;
-    private int alpha;
+    /** .*/
+    private final Color color;
+    /** .*/
+    private final CesiumHorizontalOrigin horizontalOrigin;
+    /** .*/
+    private final boolean show;
+    /** .*/
+    private final CesiumLabelStyle labelStyle;
+    /** .*/
+    private final String text;
+    /** .*/
+    private final CesiumVerticalOrigin verticalOrigin;
 
 
-    public Label(Object object){
-        int red = 0;
-        int blue = 255;
-        int green = 255;
-        int alpha = 255;
-        this.color = new Color(red,blue,green, alpha);
+    public Label(final Object object) {
+        final int red = 0;
+        final int blue = 255;
+        final int green = 255;
+        final int alpha = 255;
+        this.color = new Color(red, blue, green, alpha);
         this.horizontalOrigin = CesiumHorizontalOrigin.LEFT;
         this.verticalOrigin = CesiumVerticalOrigin.CENTER;
         this.labelStyle = CesiumLabelStyle.FILL_AND_OUTLINE;
@@ -29,8 +35,8 @@ public class Label implements CZMLSecondaryObject{
         this.show = true;
     }
 
-    public Label(String text,Color color, CesiumHorizontalOrigin horizontalOrigin,
-                 CesiumVerticalOrigin verticalOrigin, CesiumLabelStyle labelStyle, boolean show){
+    public Label(final String text, final Color color, final CesiumHorizontalOrigin horizontalOrigin,
+                 final CesiumVerticalOrigin verticalOrigin, final CesiumLabelStyle labelStyle, final boolean show) {
         this.color = color;
         this.horizontalOrigin = horizontalOrigin;
         this.verticalOrigin = verticalOrigin;
@@ -40,10 +46,10 @@ public class Label implements CZMLSecondaryObject{
     }
 
     @Override
-    public void write(PacketCesiumWriter packetWriter, CesiumOutputStream output) {
+    public void write(final PacketCesiumWriter packetWriter, final CesiumOutputStream output) {
     }
 
-    public Color getColor(){
+    public Color getColor() {
         return color;
     }
 
@@ -63,7 +69,7 @@ public class Label implements CZMLSecondaryObject{
         return labelStyle;
     }
 
-    public boolean getShow(){
+    public boolean getShow() {
         return show;
     }
 }

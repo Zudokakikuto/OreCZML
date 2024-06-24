@@ -6,8 +6,8 @@ import org.example.CZMLObjects.CZMLSecondaryObects.HeaderObjects.Clock;
 import org.example.Inputs.InputObjet;
 import org.orekit.data.DataSource;
 import org.orekit.files.ccsds.ndm.ParserBuilder;
+import org.orekit.files.ccsds.ndm.odm.CartesianCovariance;
 import org.orekit.files.ccsds.ndm.odm.oem.Oem;
-import org.orekit.files.ccsds.ndm.odm.oem.OemSegment;
 import org.orekit.files.ccsds.ndm.odm.oem.OemParser;
 import org.orekit.frames.Frame;
 import org.orekit.time.*;
@@ -17,44 +17,58 @@ import java.io.*;
 import java.util.List;
 import java.util.Set;
 
-public class OEMFile implements InputObjet,InputFileBuilder {
+public class OEMFile implements InputObjet, InputFileBuilder {
 
+    /** .*/
+    public static final String DEFAULT_DOCUMENT_NAME = "document";
+    /** .*/
+    public static final String DEFAULT_VERSION = "1.0";
     // Attributes
-    private String pathName;
+    /** .*/
+    private String path;
+    /** .*/
     private String ID;
+    /** .*/
     private String name;
+    /** .*/
     private String objectID;
 
+    /** .*/
     private final double version;
-
+    /** .*/
     private TimeScale timeScale;
-
+    /** .*/
     private final Frame frame;
-
+    /** .*/
     private final AbsoluteDate startTime;
+    /** .*/
     private final AbsoluteDate stopTime;
-
+    /** .*/
     private final List<TimeStampedPVCoordinates> Ephemeris;
 
     // Optional attributes
+    /** .*/
     private int interpolationDegree;
-    private String covariances;
+    /** .*/
+    private List<List<CartesianCovariance>> covariances;
+    /** .*/
     private String covarianceFrame;
-
+    /** .*/
     private int numberOfSatellites;
-
+    /** .*/
     private List<String> interpolations;
-
+    /** .*/
     private AbsoluteDate covarianceStartTime;
+    /** .*/
     private AbsoluteDate covarianceStopTime;
 
-    public OEMFile(String path){
+    public OEMFile(final String path) {
 
         final ParserBuilder parserBuilder = new ParserBuilder();
         final OemParser oemParser = parserBuilder.buildOemParser();
         final Oem oem = oemParser.parse(new DataSource(path));
 
-        Set<String> set = oem.getSatellites().keySet();
+        final Set<String> set = oem.getSatellites().keySet();
         this.numberOfSatellites = set.size();
         this.ID = oem.getHeader().getMessageId();
         this.version = oem.getHeader().getFormatVersion();
@@ -63,9 +77,27 @@ public class OEMFile implements InputObjet,InputFileBuilder {
         this.stopTime = oem.getSegments().get(0).getStop();
         this.Ephemeris = oem.getSegments().get(0).getData().getEphemeridesDataLines();
         this.timeScale = oem.getDataContext().getTimeScales().getUTC();
+        for (int i = 0; i < oem.getSegments().size(); i++) {
+            this.covariances.add(oem.getSegments().get(i).getCovarianceMatrices());
+        }
     }
 
-    public OEMFile(double version, String ObjectID, TimeScale timeScale, Frame frame, AbsoluteDate startTime, AbsoluteDate stopTime, List<TimeStampedPVCoordinates> Ephemeris){
+    public OEMFile(final Oem oem) {
+        final Set<String> set = oem.getSatellites().keySet();
+        this.numberOfSatellites = set.size();
+        this.ID = oem.getHeader().getMessageId();
+        this.version = oem.getHeader().getFormatVersion();
+        this.frame = oem.getSegments().get(0).getFrame();
+        this.startTime = oem.getSegments().get(0).getStart();
+        this.stopTime = oem.getSegments().get(0).getStop();
+        this.Ephemeris = oem.getSegments().get(0).getData().getEphemeridesDataLines();
+        this.timeScale = oem.getDataContext().getTimeScales().getUTC();
+        for (int i = 0; i < oem.getSegments().size(); i++) {
+            this.covariances.add(oem.getSegments().get(i).getCovarianceMatrices());
+        }
+    }
+
+    public OEMFile(final double version, final String ObjectID, final TimeScale timeScale, final Frame frame, final AbsoluteDate startTime, final AbsoluteDate stopTime, final List<TimeStampedPVCoordinates> Ephemeris) {
         this.objectID = ObjectID;
         this.version = version;
         this.timeScale = timeScale;
@@ -76,65 +108,73 @@ public class OEMFile implements InputObjet,InputFileBuilder {
     }
 
     @Override
-    public String read() throws IOException {
-        String path = this.getPath();
-        FileReader reader = new FileReader(path);
+    public String read(final String inputPath) throws IOException {
+        this.path = inputPath;
+        final FileReader reader = new FileReader(path);
         return reader.toString();
     }
 
     @Override
     public void close() throws IOException {
-        String path = this.getPath();
-        FileWriter writer = new FileWriter(path);
+        final FileWriter writer = new FileWriter(path);
         writer.close();
     }
 
     @Override
     public String getPath() {
-        return this.pathName;
+        return this.path;
     }
 
-    public String getID(){
+    public String getID() {
         return this.ID;
     }
 
-    public double getVersion(){
+    public double getVersion() {
         return this.version;
+    }
+
+    public List<List<CartesianCovariance>> getCovariances() {
+        return covariances;
     }
 
     public String getObjectID() { return this.objectID; }
 
-    public TimeScale getTimeScale(){
+    public TimeScale getTimeScale() {
         return this.timeScale;
     }
 
-    public Frame getFrame(){
+    public Frame getFrame() {
         return this.frame;
     }
 
-    public AbsoluteDate getStartTime(){
+    public AbsoluteDate getStartTime() {
         return this.startTime;
     }
 
-    public AbsoluteDate getStopTime(){
+    public AbsoluteDate getStopTime() {
         return this.stopTime;
     }
 
-    public List<TimeStampedPVCoordinates> getEphemeris(){
+    public List<TimeStampedPVCoordinates> getEphemeris() {
         return this.Ephemeris;
     }
 
+    /** This method sets the step of the simulation at 60.0 and gets the header with default parameters.*/
     @Override
     public Header getHeader() {
+        return this.getHeader(60.0);
+    }
 
-        JulianDate startJD = this.getJulianDate(startTime,this.timeScale);
-        JulianDate stopJD = this.getJulianDate(stopTime,this.timeScale);
-        TimeInterval interval = new TimeInterval(startJD,stopJD);
-        double multiplier = 60.0;
-        ClockRange range = ClockRange.LOOP_STOP;
-        ClockStep step = ClockStep.SYSTEM_CLOCK_MULTIPLIER;
-        Clock clock = new Clock(interval,startJD,multiplier,range,step);
+    /**@param step : The step in time used in the simulation
+     * @return : A header with a given step for simulation and default parameters*/
+    public Header getHeader(final double step) {
+        final JulianDate startJD = this.getJulianDate(startTime, this.timeScale);
+        final JulianDate stopJD = this.getJulianDate(stopTime, this.timeScale);
+        final TimeInterval interval = new TimeInterval(startJD, stopJD);
+        final ClockRange range = ClockRange.LOOP_STOP;
+        final ClockStep clockStep = ClockStep.SYSTEM_CLOCK_MULTIPLIER;
+        final Clock clock = new Clock(interval, startJD, step, range, clockStep);
 
-        return new Header("document", this.name,1.0,clock);
+        return new Header(DEFAULT_DOCUMENT_NAME, this.name, Header.DEFAULT_VERSION, clock);
     }
 }
