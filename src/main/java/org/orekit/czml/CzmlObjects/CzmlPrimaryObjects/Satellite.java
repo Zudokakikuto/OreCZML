@@ -16,7 +16,14 @@
  */
 package org.orekit.czml.CzmlObjects.CzmlPrimaryObjects;
 
-import cesiumlanguagewriter.*;
+import cesiumlanguagewriter.BooleanCesiumWriter;
+import cesiumlanguagewriter.Cartesian;
+import cesiumlanguagewriter.GregorianDate;
+import cesiumlanguagewriter.OrientationCesiumWriter;
+import cesiumlanguagewriter.PacketCesiumWriter;
+import cesiumlanguagewriter.PathCesiumWriter;
+import cesiumlanguagewriter.PositionCesiumWriter;
+import cesiumlanguagewriter.TimeInterval;
 import org.orekit.czml.CzmlObjects.CzmlAbstractObjects.CZMLModel;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.Billboard;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.SatelliteObjects.SatelliteAttitude;

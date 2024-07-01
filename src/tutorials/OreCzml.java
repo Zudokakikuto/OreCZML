@@ -59,6 +59,9 @@ import java.util.List;
 
 public class OreCzml
 {
+    private OreCzml() {
+    }
+
     public static void main(final String[] args ) throws Exception {
 
         try {

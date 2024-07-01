@@ -16,7 +16,15 @@
  */
 package org.orekit.czml.CzmlObjects.CzmlAbstractObjects;
 
-import cesiumlanguagewriter.*;
+import cesiumlanguagewriter.CesiumOutputStream;
+import cesiumlanguagewriter.CesiumResource;
+import cesiumlanguagewriter.CesiumResourceBehavior;
+import cesiumlanguagewriter.GregorianDate;
+import cesiumlanguagewriter.JulianDate;
+import cesiumlanguagewriter.ModelCesiumWriter;
+import cesiumlanguagewriter.NearFarScalar;
+import cesiumlanguagewriter.PacketCesiumWriter;
+import cesiumlanguagewriter.TimeInterval;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Header;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.Billboard;
 import org.orekit.czml.CzmlEnum.ModelType;

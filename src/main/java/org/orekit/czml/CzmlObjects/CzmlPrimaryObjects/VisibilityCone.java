@@ -130,7 +130,6 @@ public class VisibilityCone extends AbstractPrimaryObject implements CzmlPrimary
         this.setId(DEFAULT_ID_VIS + groundStation1.getName() + "/" + satellite.getName());
         this.setName(DEFAULT_NAME + groundStation1.getName() + DEFAULT_LOOKING_AT + satellite.getName());
         this.setAvailability(Header.MASTER_CLOCK.getAvailability());
-        System.out.println(this.getAvailability());
         this.cylinder = new Cylinder(groundStation1, satellite, angleOfAperture);
         this.position = cylinder.getPosition();
         this.groundStation = groundStation1.getOrekitGroundStation();

@@ -33,7 +33,7 @@ import org.hipparchus.util.FastMath;
 import org.orekit.frames.TopocentricFrame;
 import org.orekit.utils.Constants;
 
-import java.awt.*;
+import java.awt.Color;
 
 public class Cylinder implements CZMLSecondaryObject {
     /** .*/
