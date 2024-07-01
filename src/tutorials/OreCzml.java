@@ -75,6 +75,8 @@ public class OreCzml
 
         final long t0 = System.currentTimeMillis();
 
+        final String DEFAULT_SECONDS = " s";
+
         //// PATHS
         // Global
         final String root = System.getProperty("user.dir").replace("\\", "/");
@@ -130,7 +132,7 @@ public class OreCzml
 
         final long timeVariablesDeclared = System.currentTimeMillis();
         final double dtTimeVariablesDeclared = (timeVariablesDeclared - t0) * 1.e-3;
-        System.out.println("Temps variableDeclared " + dtTimeVariablesDeclared + " s");
+        System.out.println("Temps variableDeclared " + dtTimeVariablesDeclared + DEFAULT_SECONDS);
 
         propagator.setOrbitType(OrbitType.CARTESIAN);
         propagator.addForceModel(holmesFeatherstone);
@@ -155,7 +157,7 @@ public class OreCzml
 
         final long timeEarthCreated = System.currentTimeMillis();
         final double dtTimeTopocentricFramesDeclared = (timeEarthCreated - timeVariablesDeclared) * 1.e-3;
-        System.out.println("Temps TopocentricFramesDeclared " + dtTimeTopocentricFramesDeclared + " s");
+        System.out.println("Temps TopocentricFramesDeclared " + dtTimeTopocentricFramesDeclared + DEFAULT_SECONDS);
 
         //Position of Toulouse
         final GeodeticPoint toulouseFrame = new GeodeticPoint(FastMath.toRadians(43.6047), FastMath.toRadians(1.4442), 10);
@@ -169,7 +171,7 @@ public class OreCzml
 
         final long timeSetup = System.currentTimeMillis();
         final double dtSetup = (timeSetup - timeEarthCreated) * 1.e-3;
-        System.out.println("Temps setup " + dtSetup + " s");
+        System.out.println("Temps setup " + dtSetup + DEFAULT_SECONDS);
 
         // Header
         final Header header = new Header("test", new Clock(startDate, finalDate, UTC, step));
@@ -179,7 +181,7 @@ public class OreCzml
 
         final long timeHeader = System.currentTimeMillis();
         final double dtHeader = (timeHeader - timeSetup) * 1.e-3;
-        System.out.println("Temps Header " + dtHeader + " s");
+        System.out.println("Temps Header " + dtHeader + DEFAULT_SECONDS);
 
         // Satellite
         final Satellite satellite = new Satellite(propagator, finalDate, ISSModelAbsolute);
@@ -188,7 +190,7 @@ public class OreCzml
 
         final long timeSatellite = System.currentTimeMillis();
         final double dtSatellite = (timeSatellite - timeHeader) * 1.e-3;
-        System.out.println("Temps satellite " + dtSatellite + " s");
+        System.out.println("Temps satellite " + dtSatellite + DEFAULT_SECONDS);
 
         //Ground Station
         final CzmlGroundStation toulouseStation = new CzmlGroundStation(topocentricToulouse);
@@ -196,7 +198,7 @@ public class OreCzml
 
         final long timeGroundStation = System.currentTimeMillis();
         final double dtGroundStation = (timeGroundStation - timeSatellite) * 1.e-3;
-        System.out.println("Temps allStations " + dtGroundStation + " s");
+        System.out.println("Temps allStations " + dtGroundStation + DEFAULT_SECONDS);
 
         // Line of visibility
         final LineOfVisibility lineOfVisibility = new LineOfVisibility(topocentricToulouse, satellite);
@@ -204,7 +206,7 @@ public class OreCzml
 
         final long timeLineOfVisibility = System.currentTimeMillis();
         final double dtLineOfVisibility = (timeLineOfVisibility - timeGroundStation) * 1.e-3;
-        System.out.println("Temps LineOfVisibility " + dtLineOfVisibility + " s");
+        System.out.println("Temps LineOfVisibility " + dtLineOfVisibility + DEFAULT_SECONDS);
 
         file.write();
 
@@ -212,6 +214,6 @@ public class OreCzml
 
         final long t1 = System.currentTimeMillis();
         final double dt = (t1 - t0) * 1.e-3;
-        System.out.println("Final Time : " + dt + " s");
+        System.out.println("Final Time : " + dt + DEFAULT_SECONDS);
     }
 }
