@@ -1,6 +1,6 @@
-![Logo OreCZML](https://gitlab.orekit.org/Zudo/oreczml/-/wikis/uploads/ca37e6b276963c4e24618435e3a8bf91/image.png)
+![Logo OreCzml](https://gitlab.orekit.org/Zudo/oreczml/-/wikis/uploads/ca37e6b276963c4e24618435e3a8bf91/image.png)
 
-OreCZML
+OreCzml
 
 ===========
 
@@ -9,6 +9,8 @@ OreCZML
 This JAVA project was created in order to assess the matter of display in the library Orekit using the library Cesium.
 The aim was to create an interface with some outputs of Orekit and to display them with Cesium. 
 Cesium understands CZML file as inputs. Hence, this project provides a library to build a CZML file to input into Cesium.
+
+![Presentation](https://gitlab.orekit.org/Zudo/oreczml/-/raw/master/src/main/resources/Presentation.png)
 
 ===========
 
@@ -23,8 +25,9 @@ Cesium understands CZML file as inputs. Hence, this project provides a library t
 
 This converter accept several inputs to write a CZML file :
 
-- An OEM file (txt or xml file are supported)
+- An Oem file (txt or xml file are supported)
 - A list of Orekit SpacecraftStates
+- A Tle file
 - An Orekit Orbit defined with orbital parameters, the orbital parameters supported are : 
     - Keplerian parameters
     - Cartesian parameters
