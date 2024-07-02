@@ -20,7 +20,6 @@ import cesiumlanguagewriter.CesiumOutputStream;
 import cesiumlanguagewriter.CesiumResource;
 import cesiumlanguagewriter.CesiumResourceBehavior;
 import cesiumlanguagewriter.GregorianDate;
-import cesiumlanguagewriter.JulianDate;
 import cesiumlanguagewriter.ModelCesiumWriter;
 import cesiumlanguagewriter.NearFarScalar;
 import cesiumlanguagewriter.PacketCesiumWriter;
@@ -49,7 +48,7 @@ import java.nio.file.StandardCopyOption;
  * @since 1.0
  * @author Julien LEBLOND*/
 
-public class CZMLModel {
+public class CzmlModel {
     /** The default string to reference in local.*/
     public static final String DEFAULT_SLASH_LOCAL = "./";
     /** .*/
@@ -85,7 +84,7 @@ public class CZMLModel {
     /** This builder builds the model object with the absolute path of the file given by the user.
      * @param absolutePathToObject : The string leading to the absolute path of the object
      */
-    public CZMLModel(final String absolutePathToObject) throws URISyntaxException, IOException {
+    public CzmlModel(final String absolutePathToObject) throws URISyntaxException, IOException {
         this.modelType = getModelTypeFromString(absolutePathToObject);
 
         if (this.modelType == ModelType.MODEL_3D) {
@@ -111,7 +110,7 @@ public class CZMLModel {
         else {
             this.absolutePath = Header.DEFAULT_RESOURCES + "\\" + DEFAULT_MODEL_NAME;
             final GregorianDate startGregorianDate = new GregorianDate(1900, 1, 1, 0, 0, 0.0);
-            this.availability = new TimeInterval(new JulianDate(startGregorianDate), Header.MASTER_CLOCK.getAvailability().getStop());
+            this.availability = Header.MASTER_CLOCK.getAvailability();
             duplicateFile(absolutePath);
             final BufferedImage image = ImageIO.read(duplicatedLocalFile);
             final int height = image.getHeight();
@@ -134,6 +133,8 @@ public class CZMLModel {
                 modelWriter.writeGltfProperty(cesiumResource);
                 modelWriter.writeMaximumScaleProperty(getMaximumScale());
                 modelWriter.writeMinimumPixelSizeProperty(getMinimumPixelSize());
+                modelWriter.writeIncrementallyLoadTexturesProperty(true);
+                modelWriter.writeShowProperty(true);
             }
         }
         else if (modelType == ModelType.MODEL_2D) {

@@ -4,412 +4,40 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d636adb8-ceea-4d1b-886f-a5eba9ec35ca" name="Changes" comment="OreCzml V2.0 changes :&#10;- Name reworked : OreCZML -&gt; OreCzml&#10;- Repository root renamed : org.example -&gt; org.orekit.czml&#10;- JavaDoc of all classes added.&#10;- Renamed : CZMLFile -&gt; CzmlFile.&#10;- REWORK : renamed generateCZML() -&gt; writeCZMLBlock() . The writeCZMLBlocks function will be called directly in the CZMLFile.java instead of each time a primary object is added.&#10;- REWORK : The user only need to build a CzmlFile now, add the objects with the addObject(Object) function then call CzmlFile.write();&#10;- Add the AbstractPrimaryObject class to add a layer and a common ground for each PrimaryObject.&#10;- Added scr/tutorial for future tutorials added here.&#10;- The OreCzml main for test is now in tutorials.&#10;- Added LowEarthOrbitSatellite tutorial in Tutorials.&#10;- Header object can no longer be built with a propagator.&#10;- Renamed CZMLGroundStation -&gt; CzmlGroundStation&#10;- CzmlGroundStation can no longer be built with an Orekit groundStation.&#10;- A directory CzmlEnum has been created for each enum used.&#10;- Add a presentation image for the Readme.md&#10;- A Header.MASTER_CLOCK is not available to be used as a global clock.">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/2a0c2998445d1ea07470.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/IAU2006_XYS/IAU2006_XYS_0.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/IAU2006_XYS/IAU2006_XYS_1.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/IAU2006_XYS/IAU2006_XYS_10.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/IAU2006_XYS/IAU2006_XYS_11.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/IAU2006_XYS/IAU2006_XYS_12.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/IAU2006_XYS/IAU2006_XYS_13.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/IAU2006_XYS/IAU2006_XYS_14.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/IAU2006_XYS/IAU2006_XYS_15.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/IAU2006_XYS/IAU2006_XYS_16.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/IAU2006_XYS/IAU2006_XYS_17.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/IAU2006_XYS/IAU2006_XYS_18.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/IAU2006_XYS/IAU2006_XYS_19.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/IAU2006_XYS/IAU2006_XYS_2.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/IAU2006_XYS/IAU2006_XYS_20.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/IAU2006_XYS/IAU2006_XYS_21.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/IAU2006_XYS/IAU2006_XYS_22.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/IAU2006_XYS/IAU2006_XYS_23.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/IAU2006_XYS/IAU2006_XYS_24.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/IAU2006_XYS/IAU2006_XYS_25.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/IAU2006_XYS/IAU2006_XYS_26.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/IAU2006_XYS/IAU2006_XYS_27.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/IAU2006_XYS/IAU2006_XYS_3.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/IAU2006_XYS/IAU2006_XYS_4.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/IAU2006_XYS/IAU2006_XYS_5.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/IAU2006_XYS/IAU2006_XYS_6.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/IAU2006_XYS/IAU2006_XYS_7.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/IAU2006_XYS/IAU2006_XYS_8.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/IAU2006_XYS/IAU2006_XYS_9.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Images/bing_maps_credit.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Images/cesium_credit.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Images/google_earth_credit.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Images/ion-credit.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/LensFlare/DirtMask.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/LensFlare/StarBurst.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/NaturalEarthII/0/0/0.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/NaturalEarthII/0/1/0.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/NaturalEarthII/1/0/0.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/NaturalEarthII/1/0/1.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/NaturalEarthII/1/1/0.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/NaturalEarthII/1/1/1.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/NaturalEarthII/1/2/0.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/NaturalEarthII/1/2/1.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/NaturalEarthII/1/3/0.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/NaturalEarthII/1/3/1.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/NaturalEarthII/2/0/0.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/NaturalEarthII/2/0/1.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/NaturalEarthII/2/0/2.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/NaturalEarthII/2/0/3.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/NaturalEarthII/2/1/0.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/NaturalEarthII/2/1/1.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/NaturalEarthII/2/1/2.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/NaturalEarthII/2/1/3.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/NaturalEarthII/2/2/0.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/NaturalEarthII/2/2/1.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/NaturalEarthII/2/2/2.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/NaturalEarthII/2/2/3.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/NaturalEarthII/2/3/0.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/NaturalEarthII/2/3/1.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/NaturalEarthII/2/3/2.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/NaturalEarthII/2/3/3.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/NaturalEarthII/2/4/0.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/NaturalEarthII/2/4/1.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/NaturalEarthII/2/4/2.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/NaturalEarthII/2/4/3.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/NaturalEarthII/2/5/0.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/NaturalEarthII/2/5/1.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/NaturalEarthII/2/5/2.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/NaturalEarthII/2/5/3.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/NaturalEarthII/2/6/0.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/NaturalEarthII/2/6/1.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/NaturalEarthII/2/6/2.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/NaturalEarthII/2/6/3.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/NaturalEarthII/2/7/0.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/NaturalEarthII/2/7/1.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/NaturalEarthII/2/7/2.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/NaturalEarthII/2/7/3.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/NaturalEarthII/tilemapresource.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/SkyBox/tycho2t3_80_mx.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/SkyBox/tycho2t3_80_my.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/SkyBox/tycho2t3_80_mz.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/SkyBox/tycho2t3_80_px.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/SkyBox/tycho2t3_80_py.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/SkyBox/tycho2t3_80_pz.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/airfield.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/airport.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/alcohol-shop.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/america-football.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/art-gallery.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/bakery.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/bank.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/bar.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/baseball.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/basketball.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/beer.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/bicycle.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/building.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/bus.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/cafe.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/camera.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/campsite.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/car.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/cemetery.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/cesium.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/chemist.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/cinema.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/circle-stroked.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/circle.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/city.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/clothing-store.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/college.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/commercial.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/cricket.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/cross.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/dam.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/danger.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/disability.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/dog-park.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/embassy.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/emergency-telephone.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/entrance.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/farm.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/fast-food.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/ferry.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/fire-station.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/fuel.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/garden.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/gift.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/golf.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/grocery.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/hairdresser.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/harbor.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/heart.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/heliport.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/hospital.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/ice-cream.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/industrial.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/land-use.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/laundry.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/library.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/lighthouse.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/lodging.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/logging.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/london-underground.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/marker-stroked.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/marker.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/minefield.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/mobilephone.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/monument.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/museum.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/music.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/oil-well.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/park.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/park2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/parking-garage.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/parking.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/pharmacy.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/pitch.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/place-of-worship.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/playground.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/police.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/polling-place.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/post.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/prison.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/rail-above.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/rail-light.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/rail-metro.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/rail-underground.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/rail.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/religious-christian.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/religious-jewish.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/religious-muslim.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/restaurant.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/roadblock.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/rocket.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/school.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/scooter.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/shop.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/skiing.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/slaughterhouse.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/soccer.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/square-stroked.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/square.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/star-stroked.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/star.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/suitcase.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/swimming.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/telephone.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/tennis.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/theatre.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/toilets.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/town-hall.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/town.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/triangle-stroked.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/triangle.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/village.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/warehouse.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/waste-basket.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/water.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/wetland.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/maki/zoo.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/moonSmall.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/pin.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/waterNormals.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/Textures/waterNormalsSmall.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Assets/approximateTerrainHeights.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/Animation/Animation.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/Animation/lighter.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/BaseLayerPicker/BaseLayerPicker.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/BaseLayerPicker/lighter.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/Cesium3DTilesInspector/Cesium3DTilesInspector.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/CesiumInspector/CesiumInspector.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/CesiumWidget/CesiumWidget.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/CesiumWidget/lighter.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/FullscreenButton/FullscreenButton.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/Geocoder/Geocoder.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/Geocoder/lighter.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/I3SBuildingSceneLayerExplorer/I3SBuildingSceneLayerExplorer.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/Images/ImageryProviders/ArcGisMapServiceWorldHillshade.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/Images/ImageryProviders/ArcGisMapServiceWorldImagery.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/Images/ImageryProviders/ArcGisMapServiceWorldOcean.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/Images/ImageryProviders/bingAerial.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/Images/ImageryProviders/bingAerialLabels.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/Images/ImageryProviders/bingRoads.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/Images/ImageryProviders/blueMarble.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/Images/ImageryProviders/earthAtNight.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/Images/ImageryProviders/mapQuestOpenStreetMap.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/Images/ImageryProviders/mapboxSatellite.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/Images/ImageryProviders/mapboxStreets.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/Images/ImageryProviders/mapboxTerrain.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/Images/ImageryProviders/naturalEarthII.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/Images/ImageryProviders/openStreetMap.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/Images/ImageryProviders/sentinel-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/Images/ImageryProviders/stadiaAlidadeSmooth.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/Images/ImageryProviders/stadiaAlidadeSmoothDark.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/Images/ImageryProviders/stamenToner.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/Images/ImageryProviders/stamenWatercolor.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/Images/NavigationHelp/Mouse.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/Images/NavigationHelp/MouseLeft.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/Images/NavigationHelp/MouseMiddle.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/Images/NavigationHelp/MouseRight.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/Images/NavigationHelp/Touch.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/Images/NavigationHelp/TouchDrag.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/Images/NavigationHelp/TouchRotate.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/Images/NavigationHelp/TouchTilt.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/Images/NavigationHelp/TouchZoom.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/Images/TerrainProviders/CesiumWorldTerrain.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/Images/TerrainProviders/Ellipsoid.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/Images/TimelineIcons.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/Images/info-loading.gif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/InfoBox/InfoBox.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/InfoBox/InfoBoxDescription.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/NavigationHelpButton/NavigationHelpButton.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/NavigationHelpButton/lighter.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/PerformanceWatchdog/PerformanceWatchdog.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/ProjectionPicker/ProjectionPicker.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/SceneModePicker/SceneModePicker.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/SelectionIndicator/SelectionIndicator.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/Timeline/Timeline.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/Timeline/lighter.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/VRButton/VRButton.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/Viewer/Viewer.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/VoxelInspector/VoxelInspector.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/lighter.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/lighterShared.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/shared.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Widgets/widgets.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-2TLJ26OO.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-3FEM743H.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-42NIXFVW.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-4C7K4BFS.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-4FSMRIBR.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-4IWHN7T4.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-5DM27XHE.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-5YVCOCPP.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-65DFAZKW.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-77ESX6BV.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-7JCIFY66.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-7KKODWB2.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-7RBDS4IP.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-ACE4ZHPK.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-CIEXTRKV.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-CMXCDAKR.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-CRFMECNE.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-DUVNED7U.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-DVG6ROYF.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-ED2EM7ZX.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-EQCQ5LRI.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-FATK2EQ2.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-FPY4GPIL.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-IRDBGNMC.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-JE5KQ6H6.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-JFG572S7.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-JFTXHZ2O.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-JZYZ7RT4.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-K62YE2WO.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-L5JEMK3W.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-LJCGAQ64.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-LKPDAB55.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-MPVEZNKB.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-OSVMDAN4.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-PT2EMSIG.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-Q7FDDGQE.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-QBLZNHRV.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-REUYHR24.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-RQXB4B4V.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-TK3AFTVI.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-TLL4Q2KI.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-TRGIYWHT.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-U73D6PDD.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-VHVBHB4H.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-VVVZBARZ.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-W6AEJFXB.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-WIE5YNSS.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-WLRVP2UA.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-X5DMAS4Q.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-XXATY55N.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-Y5ISG54S.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/chunk-YZP3DYN3.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/combineGeometry.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/createBoxGeometry.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/createBoxOutlineGeometry.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/createCircleGeometry.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/createCircleOutlineGeometry.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/createCoplanarPolygonGeometry.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/createCoplanarPolygonOutlineGeometry.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/createCorridorGeometry.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/createCorridorOutlineGeometry.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/createCylinderGeometry.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/createCylinderOutlineGeometry.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/createEllipseGeometry.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/createEllipseOutlineGeometry.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/createEllipsoidGeometry.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/createEllipsoidOutlineGeometry.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/createFrustumGeometry.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/createFrustumOutlineGeometry.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/createGeometry.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/createGroundPolylineGeometry.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/createPlaneGeometry.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/createPlaneOutlineGeometry.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/createPolygonGeometry.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/createPolygonOutlineGeometry.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/createPolylineGeometry.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/createPolylineVolumeGeometry.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/createPolylineVolumeOutlineGeometry.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/createRectangleGeometry.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/createRectangleOutlineGeometry.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/createSimplePolylineGeometry.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/createSphereGeometry.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/createSphereOutlineGeometry.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/createTaskProcessorWorker.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/createVectorTileClampedPolylines.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/createVectorTileGeometries.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/createVectorTilePoints.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/createVectorTilePolygons.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/createVectorTilePolylines.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/createVerticesFromGoogleEarthEnterpriseBuffer.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/createVerticesFromHeightmap.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/createVerticesFromQuantizedTerrainMesh.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/createWallGeometry.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/createWallOutlineGeometry.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/decodeDraco.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/decodeGoogleEarthEnterprisePacket.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/decodeI3S.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/transcodeKTX2.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/transferTypedArrayTest.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/Workers/upsampleQuantizedTerrainMesh.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/app.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/planetary-imagery/earth.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/planetary-imagery/jupiter.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/planetary-imagery/mars.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/planetary-imagery/mercury.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/planetary-imagery/moon.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/planetary-imagery/neptune.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/planetary-imagery/pluto.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/planetary-imagery/saturn.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/planetary-imagery/sun.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/planetary-imagery/uranus.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/dist/planetary-imagery/venus.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/package-lock.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/package.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/public/ISSModel.glb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/public/Output.czml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/scripts/cesium-fix.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/scripts/cesium-fix.js.bak" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/src/css/main.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/src/css/main.css.bak" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/src/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/src/index.html.bak" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/src/index.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/src/index.js.bak" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/src/planetary-imagery/earth.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/src/planetary-imagery/jupiter.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/src/planetary-imagery/mars.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/src/planetary-imagery/mercury.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/src/planetary-imagery/moon.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/src/planetary-imagery/neptune.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/src/planetary-imagery/pluto.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/src/planetary-imagery/saturn.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/src/planetary-imagery/sun.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/src/planetary-imagery/uranus.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/src/planetary-imagery/venus.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/JavaScript/webpack.config.js" beforeDir="false" />
+    <list default="true" id="d636adb8-ceea-4d1b-886f-a5eba9ec35ca" name="Changes" comment="Removed JavaScript from the code">
+      <change afterPath="$PROJECT_DIR$/src/main/resources/ISSModel.glb" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/tutorials/ModelLoading.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/tutorials/SatelliteTracking.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CZMLShow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlShow.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlAbstractObjects/CZMLModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlAbstractObjects/CzmlModel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlAbstractObjects/JavaScriptRun.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlPrimaryObjects/CovarianceDisplay.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlPrimaryObjects/CovarianceDisplay.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlPrimaryObjects/CzmlGroundStation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlPrimaryObjects/CzmlGroundStation.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlPrimaryObjects/LineOfVisibility.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlPrimaryObjects/LineOfVisibility.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlPrimaryObjects/Satellite.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlPrimaryObjects/Satellite.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlSecondaryObjects/Billboard.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlSecondaryObjects/Billboard.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlSecondaryObjects/CZMLEllipsoid.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlSecondaryObjects/CzmlEllipsoid.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlSecondaryObjects/CZMLSecondaryObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlSecondaryObjects/CzmlSecondaryObject.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlSecondaryObjects/Cylinder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlSecondaryObjects/Cylinder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlSecondaryObjects/GroundTrack.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlSecondaryObjects/GroundTrack.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlSecondaryObjects/HeaderObjects/Clock.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlSecondaryObjects/HeaderObjects/Clock.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlSecondaryObjects/Label.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlSecondaryObjects/Label.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlSecondaryObjects/SatelliteObjects/Path.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlSecondaryObjects/SatelliteObjects/Path.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlSecondaryObjects/SatelliteObjects/SatellitePosition.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlSecondaryObjects/SatelliteObjects/SatellitePosition.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/Polyline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/Polyline.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/orekit/czml/Inputs/InputFiles/InputFileBuilder.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/orekit/czml/Inputs/InputFiles/OemFile.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/orekit/czml/Inputs/InputFiles/TleFile.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/orekit/czml/Inputs/InputObjet.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/orekit/czml/Inputs/OrbitInput/OrbitInput.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/orekit/czml/Inputs/SpacecraftStateInput/SpacecraftStateListInput.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/tutorials/ConstellationVisu.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/tutorials/ConstellationVisu.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/tutorials/LineOfVisuSatStation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/tutorials/LineOfVisuSatStation.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/tutorials/LowEarthOrbitSatellite.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/tutorials/LowEarthOrbitSatellite.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/tutorials/MultipleGroundStations.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/tutorials/MultipleGroundStations.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/tutorials/OreCzml.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/tutorials/OreCzml.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/tutorials/SatelliteTracking.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -471,14 +99,19 @@
     "Application.LineOfVisuSatStation.executor": "Run",
     "Application.LowEarthOrbitSatellite.executor": "Run",
     "Application.LowEarthOrbitSatelliteTutorial.executor": "Run",
+    "Application.ModelLoading.executor": "Run",
     "Application.MultipleGroundStations.executor": "Run",
     "Application.OrbitGenerator.executor": "Run",
     "Application.OreCZML.executor": "Run",
     "Application.OreCzml.executor": "Run",
+    "Application.SatelliteTracking.executor": "Run",
     "Application.org.example.OLDOrbitGenerator.OrbitGenerator.executor": "Run",
     "Application.org.example.OrbitGenerator.executor": "Run",
+    "Application.tutorials.ConstellationVisu.executor": "Run",
     "Downloaded.Files.Path.Enabled": "true",
+    "JUnit.All in OreCZML.executor": "Run",
     "Maven. [org.apache.maven.plugins:maven-archetype-plugin:RELEASE:generate].executor": "Run",
+    "Maven.OreCZML [clean,install].executor": "Run",
     "Maven.OreCZML [dependency:get...].executor": "Run",
     "Maven.OreCZML [install:install-file...].executor": "Run",
     "Maven.OreCZML [install].executor": "Run",
@@ -492,11 +125,11 @@
     "git-widget-placeholder": "master",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/jleblond/Documents/git/OreCZML/src/main/resources/cesiumlanguagewriter-3.0.0.jar",
-    "project.structure.last.edited": "Project",
+    "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.3761062",
     "run.code.analysis.last.selected.profile": "pProject Default",
-    "settings.editor.selected.configurable": "configurable.group.appearance"
+    "settings.editor.selected.configurable": "reference.projectsettings.compiler.javacompiler"
   }
 }]]></component>
   <component name="RecentsManager">
@@ -504,6 +137,7 @@
       <recent name="C:\Users\jleblond\Documents\git\OreCZML\src\main\resources" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\jleblond\Documents\git\OreCzml\src\main\java" />
       <recent name="C:\Users\jleblond\Documents\git\OreCzml\src\main\resources" />
       <recent name="C:\Users\jleblond\Documents\git\OreCZML\src\main\JarFiles" />
       <recent name="C:\Users\jleblond\Documents\git\OreCZML\src\main" />
@@ -513,6 +147,7 @@
     </key>
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
       <recent name="" />
+      <recent name="org.orekit.czml" />
       <recent name="org.orekit.czml.tutorial" />
     </key>
     <key name="CreateTestDialog.RecentsKey">
@@ -526,12 +161,26 @@
       <command value="mvn install" />
       <command value="mvn dependency:get -DrepoUrl=C:\Users\jleblond\Documents\git\Orekit\orekit -Dartifact=org.orekit:orekit:12.1" />
       <command value="mvn install:install-file -Dfile=C:\Users\jleblond\Documents\git\OreCZML\src\main\resources\cesiumlanguagewriter-3.0.0.jar -DgroupId=com.custom -DartifactId=cesium -Dversion=1.0 -Dpackaging=jar -DgeneratePom=true" />
+      <command value="mvn clean install" />
     </option>
   </component>
-  <component name="RunManager" selected="Application.ConstellationVisu">
+  <component name="RunManager" selected="Application.ModelLoading">
     <configuration name="ConstellationVisu" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="ConstellationVisu" />
       <module name="OreCZML" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ConstellationVisu" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="ConstellationVisu" />
+      <module name="OreCZML" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value=".*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -547,6 +196,13 @@
       <option name="ALTERNATIVE_JRE_PATH" value="openjdk-22" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
       <option name="MAIN_CLASS_NAME" value="LowEarthOrbitSatellite" />
+      <module name="OreCZML" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ModelLoading" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="ModelLoading" />
       <module name="OreCZML" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -574,16 +230,29 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="All in OreCZML" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="OreCZML" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="TEST_OBJECT" value="package" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <list>
       <item itemvalue="Application.LowEarthOrbitSatelliteTutorial" />
       <item itemvalue="Application.MultipleGroundStations" />
       <item itemvalue="Application.LineOfVisuSatStation" />
       <item itemvalue="Application.ConstellationVisu" />
+      <item itemvalue="Application.ModelLoading" />
+      <item itemvalue="Application.org.orekit.czml.ConstellationVisu" />
       <item itemvalue="Application.OreCzml" />
+      <item itemvalue="JUnit.All in OreCZML" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="Application.OreCzml" />
+        <item itemvalue="Application.org.orekit.czml.ConstellationVisu" />
+        <item itemvalue="JUnit.All in OreCZML" />
       </list>
     </recent_temporary>
   </component>
@@ -652,7 +321,15 @@
       <option name="project" value="LOCAL" />
       <updated>1719836431955</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Removed JavaScript from the code">
+      <option name="closed" value="true" />
+      <created>1719837936951</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1719837936952</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -670,6 +347,7 @@
     <MESSAGE value="Commit with JavaScript" />
     <MESSAGE value="Deletes some useless files and removed the node modules" />
     <MESSAGE value="OreCzml V2.0 changes :&#10;- Name reworked : OreCZML -&gt; OreCzml&#10;- Repository root renamed : org.example -&gt; org.orekit.czml&#10;- JavaDoc of all classes added.&#10;- Renamed : CZMLFile -&gt; CzmlFile.&#10;- REWORK : renamed generateCZML() -&gt; writeCZMLBlock() . The writeCZMLBlocks function will be called directly in the CZMLFile.java instead of each time a primary object is added.&#10;- REWORK : The user only need to build a CzmlFile now, add the objects with the addObject(Object) function then call CzmlFile.write();&#10;- Add the AbstractPrimaryObject class to add a layer and a common ground for each PrimaryObject.&#10;- Added scr/tutorial for future tutorials added here.&#10;- The OreCzml main for test is now in tutorials.&#10;- Added LowEarthOrbitSatellite tutorial in Tutorials.&#10;- Header object can no longer be built with a propagator.&#10;- Renamed CZMLGroundStation -&gt; CzmlGroundStation&#10;- CzmlGroundStation can no longer be built with an Orekit groundStation.&#10;- A directory CzmlEnum has been created for each enum used.&#10;- Add a presentation image for the Readme.md&#10;- A Header.MASTER_CLOCK is not available to be used as a global clock." />
-    <option name="LAST_COMMIT_MESSAGE" value="OreCzml V2.0 changes :&#10;- Name reworked : OreCZML -&gt; OreCzml&#10;- Repository root renamed : org.example -&gt; org.orekit.czml&#10;- JavaDoc of all classes added.&#10;- Renamed : CZMLFile -&gt; CzmlFile.&#10;- REWORK : renamed generateCZML() -&gt; writeCZMLBlock() . The writeCZMLBlocks function will be called directly in the CZMLFile.java instead of each time a primary object is added.&#10;- REWORK : The user only need to build a CzmlFile now, add the objects with the addObject(Object) function then call CzmlFile.write();&#10;- Add the AbstractPrimaryObject class to add a layer and a common ground for each PrimaryObject.&#10;- Added scr/tutorial for future tutorials added here.&#10;- The OreCzml main for test is now in tutorials.&#10;- Added LowEarthOrbitSatellite tutorial in Tutorials.&#10;- Header object can no longer be built with a propagator.&#10;- Renamed CZMLGroundStation -&gt; CzmlGroundStation&#10;- CzmlGroundStation can no longer be built with an Orekit groundStation.&#10;- A directory CzmlEnum has been created for each enum used.&#10;- Add a presentation image for the Readme.md&#10;- A Header.MASTER_CLOCK is not available to be used as a global clock." />
+    <MESSAGE value="Removed JavaScript from the code" />
+    <option name="LAST_COMMIT_MESSAGE" value="Removed JavaScript from the code" />
   </component>
 </project>

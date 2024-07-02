@@ -188,7 +188,7 @@ public class Polyline {
      * @param output : The cesium output stream that write the strings in the file
      * @param references : The references (example : object_ID#position the reference of the position of the object) that will be used to position each extremity of the polyline that will be displayed
      * @param showList : A list of Show objects, these objects will be useful to know when to display or not the polyline in time */
-    public void writePolylineOfVisibility(final PacketCesiumWriter packet, final CesiumOutputStream output, final Iterable<Reference> references, final List<CZMLShow> showList) {
+    public void writePolylineOfVisibility(final PacketCesiumWriter packet, final CesiumOutputStream output, final Iterable<Reference> references, final List<CzmlShow> showList) {
         try (PolylineCesiumWriter polylineWriter = packet.getPolylineWriter()) {
             polylineWriter.open(output);
             polylineWriter.writeWidthProperty(this.getWidth());
@@ -255,17 +255,17 @@ public class Polyline {
      * @param polylineWriter : the writer extracted from a packet cesium writer to write parameters of the polyline
      * @param output : The cesium output stream that write the strings in the file
      * @param showList : A list of Show objects, these objects will be useful to know when to display or not the polyline in time */
-    private void writeShowOfVisibility(final PolylineCesiumWriter polylineWriter, final CesiumOutputStream output, final List<CZMLShow> showList) {
+    private void writeShowOfVisibility(final PolylineCesiumWriter polylineWriter, final CesiumOutputStream output, final List<CzmlShow> showList) {
         try (BooleanCesiumWriter showWriter = polylineWriter.getShowWriter()) {
             showWriter.open(output);
             output.writeStartSequence();
             if (showList.size() == 1) {
-                final CZMLShow showTemp = showList.get(0);
+                final CzmlShow showTemp = showList.get(0);
                 showWriter.writeInterval(showTemp.getAvailability());
                 showWriter.writeBoolean(showTemp.getShow());
             } else {
                 for (int i = 0; i < showList.size(); i++) {
-                    final CZMLShow showTemp = showList.get(i);
+                    final CzmlShow showTemp = showList.get(i);
                     if (i == 0) {
                         showWriter.writeInterval(showTemp.getAvailability());
                         showWriter.writeBoolean(showTemp.getShow());

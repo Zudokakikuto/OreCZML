@@ -31,14 +31,14 @@ import cesiumlanguagewriter.TimeInterval;
  * @author Julien LEBLOND.
  */
 
-public class CZMLShow {
+public class CzmlShow {
 
     /** .*/
     private boolean toShow;
     /** .*/
     private TimeInterval availability;
 
-    public CZMLShow(final boolean toShow, final TimeInterval availability) {
+    public CzmlShow(final boolean toShow, final TimeInterval availability) {
         this.toShow = toShow;
         this.availability = availability;
     }

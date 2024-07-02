@@ -26,7 +26,7 @@ import cesiumlanguagewriter.UriCesiumWriter;
 
 import java.awt.Color;
 
-public class Billboard implements CZMLSecondaryObject {
+public class Billboard implements CzmlSecondaryObject {
 
     /** .*/
     public static final double DEFAULT_SCALE = 1.5;

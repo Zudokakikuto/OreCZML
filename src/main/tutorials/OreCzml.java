@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.CzmlGroundStation;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Header;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.LineOfVisibility;
@@ -101,12 +100,11 @@ public class OreCzml
         final String npm = Javascript + "/npm";
 
         // MODEL 3D
-        final String ISSModelRelative = "./ISSModel.glb";
+        final String ISSModelRelative = "ISSModel.glb";
         final String ImageModel = "C:\\Users\\jleblond\\Pictures\\satellite.png";
         final String ISSModelAbsolute = "C:\\Users\\jleblond\\Pictures\\ISSModel.glb";
 
         final CzmlFile file = new CzmlFile(outputPathFileJavaScript);
-
 
         // Propagator
         final Frame EME2000 = FramesFactory.getEME2000();
@@ -209,8 +207,6 @@ public class OreCzml
         System.out.println("Temps LineOfVisibility " + dtLineOfVisibility + DEFAULT_SECONDS);
 
         file.write();
-
-//      final JavaScriptRun run = new JavaScriptRun(Javascript);
 
         final long t1 = System.currentTimeMillis();
         final double dt = (t1 - t0) * 1.e-3;

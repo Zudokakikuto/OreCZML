@@ -21,12 +21,12 @@ import cesiumlanguagewriter.CesiumInterpolationAlgorithm;
 import cesiumlanguagewriter.CesiumOutputStream;
 import cesiumlanguagewriter.JulianDate;
 import cesiumlanguagewriter.PacketCesiumWriter;
-import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.CZMLSecondaryObject;
+import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.CzmlSecondaryObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SatellitePosition implements CZMLSecondaryObject {
+public class SatellitePosition implements CzmlSecondaryObject {
 
     /** .*/
     private final List<JulianDate> dates;

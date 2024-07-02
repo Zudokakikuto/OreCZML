@@ -23,7 +23,7 @@ import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.Reference;
 import cesiumlanguagewriter.TimeInterval;
 import cesiumlanguagewriter.UnitQuaternion;
-import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.CZMLEllipsoid;
+import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.CzmlEllipsoid;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.SatelliteObjects.SatellitePosition;
 import org.orekit.czml.CzmlObjects.Position;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
@@ -81,7 +81,7 @@ public class CovarianceDisplay extends AbstractPrimaryObject implements CzmlPrim
     /** The position of the covariance.*/
     private Position position;
     /** The ellipsoid used to represents the covariance.*/
-    private CZMLEllipsoid czmlEllipsoid;
+    private CzmlEllipsoid czmlEllipsoid;
     /** The reference frame of the covariance, here the inertial one is used by default.*/
     private final String referenceFrame = "INERTIAL";
     /** The position used as a reference to keep the ellipsoid at the same place as the satellite.*/
@@ -93,7 +93,7 @@ public class CovarianceDisplay extends AbstractPrimaryObject implements CzmlPrim
     /** The satellite which the ellipsoid will be around.*/
     private Satellite satellite;
     /** A list of all the ellipsoids computed in time, gathered in a list.*/
-    private List<CZMLEllipsoid> ellipsoidList;
+    private List<CzmlEllipsoid> ellipsoidList;
     /** All the julian dates of each step of computation in a list.*/
     private List<JulianDate> julianDates;
     /** A list of all the State Covariance object {@link org.orekit.propagation.StateCovariance}.*/
@@ -119,7 +119,7 @@ public class CovarianceDisplay extends AbstractPrimaryObject implements CzmlPrim
         this.setName(DEFAULT_NAME + satellite.getName());
         final List<Cartesian> tempSatelliteCartesian = satellite.getCartesianArraylist();
         final List<Double> timeList = satellite.getTimeList();
-        final List<CZMLEllipsoid> tempEllipsoids = new ArrayList<>();
+        final List<CzmlEllipsoid> tempEllipsoids = new ArrayList<>();
         final SatellitePosition tempSatellitePositions = new SatellitePosition(tempSatelliteCartesian, timeList);
         this.julianDates = tempSatellitePositions.getDates();
         this.positionReference = new Reference(satellite.getId() + DEFAULT_H_POSITION);
@@ -145,7 +145,7 @@ public class CovarianceDisplay extends AbstractPrimaryObject implements CzmlPrim
             final double transformedSigmaZ = transformedPVCoordinates.getPosition().getZ();
 
             final Cartesian transformedCartesian = new Cartesian(transformedSigmaX, transformedSigmaY, transformedSigmaZ);
-            tempEllipsoids.add(new CZMLEllipsoid(currentTimeInterval, transformedCartesian));
+            tempEllipsoids.add(new CzmlEllipsoid(currentTimeInterval, transformedCartesian));
         }
         this.ellipsoidList = tempEllipsoids;
         this.satelliteCartesianList = tempSatelliteCartesian;
@@ -160,7 +160,7 @@ public class CovarianceDisplay extends AbstractPrimaryObject implements CzmlPrim
         this.setName(DEFAULT_NAME + satellite.getName());
         final List<Cartesian> tempSatelliteCartesian = satellite.getCartesianArraylist();
         final List<Double> timeList = satellite.getTimeList();
-        final List<CZMLEllipsoid> tempEllipsoids = new ArrayList<>();
+        final List<CzmlEllipsoid> tempEllipsoids = new ArrayList<>();
         final SatellitePosition tempSatellitePositions = new SatellitePosition(tempSatelliteCartesian, timeList);
         this.julianDates = tempSatellitePositions.getDates();
         this.positionReference = new Reference(satellite.getId() + DEFAULT_H_POSITION);
@@ -177,7 +177,7 @@ public class CovarianceDisplay extends AbstractPrimaryObject implements CzmlPrim
             final double initialSigmaZ = FastMath.sqrt(currentMatrix.getRow(2)[2]);
 
             final Cartesian transformedCartesian = new Cartesian(initialSigmaX, initialSigmaY, initialSigmaZ);
-            tempEllipsoids.add(new CZMLEllipsoid(currentTimeInterval, transformedCartesian, color));
+            tempEllipsoids.add(new CzmlEllipsoid(currentTimeInterval, transformedCartesian, color));
         }
         this.ellipsoidList = tempEllipsoids;
         this.satelliteCartesianList = tempSatelliteCartesian;
@@ -209,7 +209,7 @@ public class CovarianceDisplay extends AbstractPrimaryObject implements CzmlPrim
         this.setName(DEFAULT_NAME + satellite.getName());
         final List<Cartesian> tempSatelliteCartesian = satellite.getCartesianArraylist();
         final List<Double> timeList = satellite.getTimeList();
-        final List<CZMLEllipsoid> tempEllipsoids = new ArrayList<>();
+        final List<CzmlEllipsoid> tempEllipsoids = new ArrayList<>();
         final SatellitePosition tempSatellitePositions = new SatellitePosition(tempSatelliteCartesian, timeList);
         this.julianDates = tempSatellitePositions.getDates();
         this.positionReference = new Reference(satellite.getId() + DEFAULT_H_POSITION);
@@ -225,7 +225,7 @@ public class CovarianceDisplay extends AbstractPrimaryObject implements CzmlPrim
             final double currentSigmaY = FastMath.sqrt(currentMatrix.getRow(1)[1]);
             final double currentSigmaZ = FastMath.sqrt(currentMatrix.getRow(2)[2]);
             final Cartesian currentCartesianEllipsoid = new Cartesian(currentSigmaX, currentSigmaY, currentSigmaZ);
-            tempEllipsoids.add(new CZMLEllipsoid(currentTimeInterval, currentCartesianEllipsoid, color));
+            tempEllipsoids.add(new CzmlEllipsoid(currentTimeInterval, currentCartesianEllipsoid, color));
         }
         this.ellipsoidList = tempEllipsoids;
         this.satelliteCartesianList = tempSatelliteCartesian;
@@ -248,7 +248,7 @@ public class CovarianceDisplay extends AbstractPrimaryObject implements CzmlPrim
         this.setName(DEFAULT_NAME + satellite.getName());
         final List<Cartesian> tempSatelliteCartesian = satellite.getCartesianArraylist();
         final List<Double> timeList = satellite.getTimeList();
-        final List<CZMLEllipsoid> tempEllipsoids = new ArrayList<>();
+        final List<CzmlEllipsoid> tempEllipsoids = new ArrayList<>();
         final SatellitePosition tempSatellitePositions = new SatellitePosition(tempSatelliteCartesian, timeList);
         this.julianDates = tempSatellitePositions.getDates();
         this.positionReference = new Reference(satellite.getId() + DEFAULT_H_POSITION);
@@ -264,7 +264,7 @@ public class CovarianceDisplay extends AbstractPrimaryObject implements CzmlPrim
             final double currentSigmaY = FastMath.sqrt(currentMatrix.getRow(1)[1]);
             final double currentSigmaZ = FastMath.sqrt(currentMatrix.getRow(2)[2]);
             final Cartesian currentCartesianEllipsoid = new Cartesian(currentSigmaX, currentSigmaY, currentSigmaZ);
-            tempEllipsoids.add(new CZMLEllipsoid(currentTimeInterval, currentCartesianEllipsoid, color));
+            tempEllipsoids.add(new CzmlEllipsoid(currentTimeInterval, currentCartesianEllipsoid, color));
         }
         this.ellipsoidList = tempEllipsoids;
         this.satelliteCartesianList = tempSatelliteCartesian;
@@ -275,7 +275,7 @@ public class CovarianceDisplay extends AbstractPrimaryObject implements CzmlPrim
      * @param position : The position of the ellipsoid.
      * @param ellipsoid : The ellipsoid to display.
      */
-    public CovarianceDisplay(final Position position, final CZMLEllipsoid ellipsoid) {
+    public CovarianceDisplay(final Position position, final CzmlEllipsoid ellipsoid) {
         this.setId(DEFAULT_ID + position.toString());
         this.setName(DEFAULT_NAME + position.toString());
         this.position = position;
@@ -288,7 +288,7 @@ public class CovarianceDisplay extends AbstractPrimaryObject implements CzmlPrim
      * @param position : The position of the ellipsoid.
      * @param ellipsoid : The ellipsoid to display.
      */
-    public CovarianceDisplay(final String id, final String name, final Position position, final CZMLEllipsoid ellipsoid) {
+    public CovarianceDisplay(final String id, final String name, final Position position, final CzmlEllipsoid ellipsoid) {
         this.setId(id);
         this.setName(name);
         this.position = position;
@@ -314,7 +314,7 @@ public class CovarianceDisplay extends AbstractPrimaryObject implements CzmlPrim
                     packet.writeId(getId() + julianDates.get(i).toString());
                     packet.writeName(getName());
                     packet.writePositionPropertyReference(positionReference);
-                    final CZMLEllipsoid currentEllipsoid = ellipsoidList.get(i);
+                    final CzmlEllipsoid currentEllipsoid = ellipsoidList.get(i);
 
                     try (OrientationCesiumWriter orientationWriter = packet.getOrientationWriter()) {
                         orientationWriter.open(OUTPUT);

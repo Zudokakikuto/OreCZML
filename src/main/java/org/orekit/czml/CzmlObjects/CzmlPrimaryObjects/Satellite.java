@@ -24,7 +24,7 @@ import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.PathCesiumWriter;
 import cesiumlanguagewriter.PositionCesiumWriter;
 import cesiumlanguagewriter.TimeInterval;
-import org.orekit.czml.CzmlObjects.CzmlAbstractObjects.CZMLModel;
+import org.orekit.czml.CzmlObjects.CzmlAbstractObjects.CzmlModel;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.Billboard;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.SatelliteObjects.SatelliteAttitude;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.SatelliteObjects.SatelliteReferenceSystem;
@@ -33,7 +33,6 @@ import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.SatelliteObjects.Satelli
 import org.orekit.czml.CzmlEnum.ModelType;
 import org.orekit.czml.CzmlEnum.PositionType;
 import org.orekit.czml.CzmlObjects.Position;
-import org.orekit.czml.Inputs.SpacecraftStateInput.SpacecraftStateListInput;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
@@ -113,7 +112,7 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
     /** .*/
     private String modelPath = "";
     /** .*/
-    private CZMLModel model;
+    private CzmlModel model;
     /** .*/
     private ModelType modelType;
 
@@ -162,11 +161,10 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
         this.frame = file.getSegments().get(0).getFrame();
         this.Ephemeris = file.getSegments().get(0).getData().getEphemeridesDataLines();
 
-        final double step = this.getStepBetweenDates();
         final List<Vector3D> vector3DS1 = new ArrayList<>();
         this.timeList = new ArrayList<>();
-        final List<Orbit> orbitList = new ArrayList<Orbit>();
-        final List<Position> positions = new ArrayList<Position>();
+        final List<Orbit> orbitList = new ArrayList<>();
+        final List<Position> positions = new ArrayList<>();
 
         for (int i = 0; i < Ephemeris.size(); i++) {
             timeList.add(absoluteDateToJulianDateDelta(Ephemeris.get(i).getDate()));
@@ -188,7 +186,7 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
         final List<Vector3D> toCartesians = propagationSat();
         this.cartesianArraylist = vectorToCartesian(toCartesians);
         this.modelPath = modelPath;
-        this.model = new CZMLModel(modelPath);
+        this.model = new CzmlModel(modelPath);
         this.modelType = model.getModelType();
         this.period = orbits.get(0).getKeplerianPeriod();
     }
@@ -213,7 +211,7 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
         orbits.add(initialOrbit);
         this.cartesianArraylist = propagationOrbit(initialOrbit);
         this.modelPath = modelPath;
-        this.model = new CZMLModel(modelPath);
+        this.model = new CzmlModel(modelPath);
         this.modelType = model.getModelType();
         this.period = orbits.get(0).getKeplerianPeriod();
     }
@@ -260,7 +258,7 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
         this.cartesianArraylist = vectorToCartesian(toCartesians);
 
         this.modelPath = modelPath;
-        this.model = new CZMLModel(modelPath);
+        this.model = new CzmlModel(modelPath);
         this.modelType = model.getModelType();
         this.period = orbits.get(0).getKeplerianPeriod();
     }
@@ -286,37 +284,42 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
         this.cartesianArraylist = propagationOrbit(orbit);
 
         this.modelPath = modelPath;
-        this.model = new CZMLModel(modelPath);
+        this.model = new CzmlModel(modelPath);
         this.modelType = model.getModelType();
         this.period = orbits.get(0).getKeplerianPeriod();
     }
 
-    public Satellite(final SpacecraftStateListInput input) throws URISyntaxException, IOException {
+    public Satellite(final List<SpacecraftState> input) throws URISyntaxException, IOException {
         this(input, DEFAULT_MODEL_PATH);
     }
 
-    public Satellite(final SpacecraftStateListInput input, final String modelPath) throws URISyntaxException, IOException {
-        final List<Double> timeList1;
-        final List<Orbit> orbits1;
+    public Satellite(final List<SpacecraftState> input, final String modelPath) throws URISyntaxException, IOException {
+        final List<Double> doubleListTemp = new ArrayList<>();
+        final List<Orbit> orbitTemp = new ArrayList<>();
+        final List<Vector3D> vector3DTemp = new ArrayList<>();
         this.positionsList = new ArrayList<>();
 
-        this.setId(input.getOrbits().get(0).toString());
+        this.setId(input.get(0).getOrbit().toString());
         this.setName(DEFAULT_NAME);
         this.setAvailability(Header.MASTER_CLOCK.getAvailability());
 
+        for (int i = 0; i < input.size(); i++) {
+            orbitTemp.add(input.get(i).getOrbit());
+            vector3DTemp.add(input.get(i).getPosition());
+            doubleListTemp.add(absoluteDateToJulianDateDelta(input.get(i).getDate()));
+        }
+
         this.description = DEFAULT_DESCRIPTION;
-        orbits1 = input.getOrbits();
-        this.orbits = orbits1;
-        this.vector3DS = input.getPositions();
-        timeList1 = input.getTimeList();
-        this.timeList = timeList1;
+        this.orbits = orbitTemp;
+        this.vector3DS = vector3DTemp;
+        this.timeList = doubleListTemp;
         final List<Vector3D> toCartesians = propagationSat();
         this.cartesianArraylist = vectorToCartesian(toCartesians);
 
         this.modelPath = modelPath;
-        this.model = new CZMLModel(modelPath);
+        this.model = new CzmlModel(modelPath);
         this.modelType = model.getModelType();
-        this.period = orbits.get(0).getKeplerianPeriod();
+        this.period = orbitTemp.get(0).getKeplerianPeriod();
     }
 
     public Satellite(final Propagator propagator, final AbsoluteDate finalDate) throws URISyntaxException, IOException {
@@ -358,7 +361,7 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
         }
 
         this.modelPath = modelPath;
-        this.model = new CZMLModel(modelPath);
+        this.model = new CzmlModel(modelPath);
         this.modelType = model.getModelType();
         this.period = orbits.get(0).getKeplerianPeriod();
     }
@@ -469,7 +472,7 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
         return modelType;
     }
 
-    public CZMLModel getModel() {
+    public CzmlModel getModel() {
         return model;
     }
 

@@ -22,7 +22,7 @@ import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.Reference;
 import cesiumlanguagewriter.TimeInterval;
 import org.orekit.czml.CzmlEnum.TypeOfVisu;
-import org.orekit.czml.CzmlObjects.CZMLShow;
+import org.orekit.czml.CzmlObjects.CzmlShow;
 import org.orekit.czml.CzmlObjects.Polyline;
 import org.hipparchus.ode.events.Action;
 import org.hipparchus.util.FastMath;
@@ -33,7 +33,9 @@ import org.orekit.propagation.events.ElevationDetector;
 import org.orekit.time.TimeScale;
 import org.orekit.utils.TimeSpanMap;
 
+import java.io.IOException;
 import java.io.StringWriter;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -74,6 +76,8 @@ public class LineOfVisibility extends AbstractPrimaryObject implements CzmlPrima
     /** .*/
     private List<TimeInterval> availabilities = new ArrayList<>();
     /** .*/
+    private List<List<TimeInterval>> singleSatAvailabilities = new ArrayList<>();
+    /** .*/
     private List<List<List<TimeInterval>>> multipleAvailability = new ArrayList<>();
 
 
@@ -93,11 +97,11 @@ public class LineOfVisibility extends AbstractPrimaryObject implements CzmlPrima
     /** .*/
     private List<List<Satellite>> multipleSatellite = new ArrayList<>();
     /** .*/
-    private List<CZMLShow> showList = new ArrayList<>();
+    private List<CzmlShow> showList = new ArrayList<>();
     /** .*/
-    private List<List<CZMLShow>> singleSatShowList = new ArrayList<>();
+    private List<List<CzmlShow>> singleSatShowList = new ArrayList<>();
     /** .*/
-    private List<List<List<CZMLShow>>> multipleShowList = new ArrayList<>();
+    private List<List<List<CzmlShow>>> multipleShowList = new ArrayList<>();
     /** .*/
     private List<TimeInterval> timeIntervals = new ArrayList<>();
     /** .*/
@@ -171,37 +175,13 @@ public class LineOfVisibility extends AbstractPrimaryObject implements CzmlPrima
         this.typeOfVisu = TypeOfVisu.MULTIPLE_SAT_SINGLE_STATION;
     }
 
-    public LineOfVisibility(final List<TopocentricFrame> topocentricFrames, final Satellite satellite) {
+    public LineOfVisibility(final List<TopocentricFrame> topocentricFrames, final Satellite satellite) throws URISyntaxException, IOException {
         this(topocentricFrames, satellite, DEFAULT_ANGLE_OF_APERTURE);
     }
 
-    public LineOfVisibility(final List<TopocentricFrame> topocentricFrames, final Satellite satellite, final double angleOfAperture) {
-        this.angleOfAperture = angleOfAperture;
-        final Reference referenceSat = new Reference(satellite.getId() + DEFAULT_H_POSITION);
-        final StringBuilder allIds = new StringBuilder();
-        final List<LineOfVisibility> lineOfVisibilityList = new ArrayList<>();
-        for (int i = 0; i < topocentricFrames.size(); i++) {
-            final TopocentricFrame currentTopocentricFrame = topocentricFrames.get(i);
-            allIds.append(currentTopocentricFrame.getName());
-            final VisibilityCone currentVisibilityCone = new VisibilityCone(currentTopocentricFrame, satellite);
-            currentVisibilityCone.noDisplay();
-            allVisibilityCones.add(currentVisibilityCone);
-            final Reference referenceStation = new Reference(currentVisibilityCone.getId() + DEFAULT_H_POSITION);
-            final Reference[] referenceList = Arrays.asList(referenceStation, referenceSat).toArray(new Reference[0]);
-            this.references = convertToIterable(referenceList);
-            singleSatReferences.add(references);
-            final LineOfVisibility currentLineOfVisibility = new LineOfVisibility(currentTopocentricFrame, satellite, angleOfAperture);
-            lineOfVisibilityList.add(currentLineOfVisibility);
-        }
-        this.allVisibilityLines = lineOfVisibilityList;
-        this.setId(allIds.toString() + "/" + satellite.getId());
-        this.setName(DEFAULT_LINE_BETWEEN + allIds.toString() + DEFAULT_AND + satellite.getName());
-        this.satellite = satellite;
-        this.timeIntervals = new ArrayList<>();
-        this.visuList = new ArrayList<>();
-        this.showList = new ArrayList<>();
+    public LineOfVisibility(final List<TopocentricFrame> topocentricFrames, final Satellite satellite, final double angleOfAperture) throws URISyntaxException, IOException {
+        this.buildSingleSatelliteTimeIntervalsAndVisu(topocentricFrames, satellite, angleOfAperture);
         this.typeOfVisu = TypeOfVisu.SINGLE_SAT_MULTIPLE_STATION;
-        buildSingleSatelliteTimeIntervalsAndVisu(topocentricFrames, satellite, angleOfAperture);
     }
 
     public LineOfVisibility(final List<TopocentricFrame> topocentricFrames, final Constellation constellation) {
@@ -252,14 +232,13 @@ public class LineOfVisibility extends AbstractPrimaryObject implements CzmlPrima
             }
         } else if (this.typeOfVisu == TypeOfVisu.SINGLE_SAT_MULTIPLE_STATION) {
             for (int i = 0; i < singleSatMultipleId.size(); i++) {
-                final LineOfVisibility currentVisibilityLine = getAllVisibilityLines().get(i);
                 this.setId(singleSatMultipleId.get(i));
                 this.setName(singleSatMultipleName.get(i));
                 this.references = singleSatReferences.get(i);
                 this.timeIntervals = singleSatTimeIntervals.get(i);
                 this.visuList = singleSatVisuList.get(i);
                 this.showList = singleSatShowList.get(i);
-                this.availabilities = currentVisibilityLine.getAvailabilities();
+                this.availabilities = singleSatAvailabilities.get(i);
                 writeCZML();
             }
         }
@@ -324,7 +303,7 @@ public class LineOfVisibility extends AbstractPrimaryObject implements CzmlPrima
         return visuList;
     }
 
-    public List<CZMLShow> getShowList() {
+    public List<CzmlShow> getShowList() {
         return showList;
     }
 
@@ -370,7 +349,7 @@ public class LineOfVisibility extends AbstractPrimaryObject implements CzmlPrima
         return multipleId;
     }
 
-    public List<List<List<CZMLShow>>> getMultipleShowList() {
+    public List<List<List<CzmlShow>>> getMultipleShowList() {
         return multipleShowList;
     }
 
@@ -388,6 +367,9 @@ public class LineOfVisibility extends AbstractPrimaryObject implements CzmlPrima
 
     // Intern methods
     private void buildSingleTimeIntervalsAndVisu(final TopocentricFrame topocentricFrame, final Satellite satellite_input) {
+
+        visuList = new ArrayList<>();
+        timeIntervals = new ArrayList<>();
 
         final BoundedPropagator boundedPropagator = satellite_input.getBoundedPropagator();
         final GregorianDate firstGregorianDate = new GregorianDate(1, 1, 1, 0, 0, 0.0);
@@ -453,20 +435,31 @@ public class LineOfVisibility extends AbstractPrimaryObject implements CzmlPrima
     private void buildSingleSatelliteTimeIntervalsAndVisu(final List<TopocentricFrame> topocentricFrames, final Satellite satellite_input, final double inputAngleOfAperture) {
 
         final List<List<Boolean>> tempMultipleVisu = new ArrayList<>();
-        final List<List<CZMLShow>> tempMultipleShow = new ArrayList<>();
+        final List<List<CzmlShow>> tempMultipleShow = new ArrayList<>();
         final List<List<TimeInterval>> tempMultipleAvailability = new ArrayList<>();
         final List<String> tempMultipleId = new ArrayList<>();
         final List<String> tempMultipleName = new ArrayList<>();
+        final List<Iterable<Reference>> tempReferences = new ArrayList<>();
+        final List<List<TimeInterval>> tempMultipleIntervals = new ArrayList<>();
 
         this.angleOfAperture = inputAngleOfAperture;
         this.satellite = satellite_input;
+        final Reference satReference = new Reference(satellite.getId() + DEFAULT_H_POSITION);
 
-        for (int i = 0; i < topocentricFrames.size(); i++) {
-            final TopocentricFrame currentTopocentricFrame = topocentricFrames.get(i);
+        for (final TopocentricFrame currentTopocentricFrame : topocentricFrames) {
             final String currentId = currentTopocentricFrame.getName() + "/" + satellite_input.getId();
             final String currentName = DEFAULT_LINE_BETWEEN + currentTopocentricFrame.getName() + DEFAULT_AND + satellite_input.getName();
+            this.setId(currentId);
+            this.setName(currentName);
             tempMultipleId.add(currentId);
             tempMultipleName.add(currentName);
+            final VisibilityCone currentVisibilityCone = new VisibilityCone(currentTopocentricFrame, satellite_input);
+            currentVisibilityCone.noDisplay();
+            allVisibilityCones.add(currentVisibilityCone);
+            final Reference currentTopocentricFrameReference = new Reference(currentVisibilityCone.getId() + DEFAULT_H_POSITION);
+            final Reference[] referenceList = Arrays.asList(satReference, currentTopocentricFrameReference).toArray(new Reference[0]);
+            this.references = convertToIterable(referenceList);
+            tempReferences.add(references);
 
             this.buildSingleTimeIntervalsAndVisu(currentTopocentricFrame, satellite_input);
             this.buildShowList();
@@ -474,12 +467,15 @@ public class LineOfVisibility extends AbstractPrimaryObject implements CzmlPrima
             tempMultipleAvailability.add(availabilities);
             tempMultipleVisu.add(visuList);
             tempMultipleShow.add(showList);
+            tempMultipleIntervals.add(timeIntervals);
         }
-        this.singleSatTimeIntervals = tempMultipleAvailability;
+        this.singleSatTimeIntervals = tempMultipleIntervals;
         this.singleSatShowList = tempMultipleShow;
         this.singleSatVisuList = tempMultipleVisu;
         this.singleSatMultipleId = tempMultipleId;
         this.singleSatMultipleName = tempMultipleName;
+        this.singleSatReferences = tempReferences;
+        this.singleSatAvailabilities = tempMultipleAvailability;
     }
 
     private void buildMultipleLineOfVisilibility(final List<TopocentricFrame> topocentricFrames, final List<Satellite> satelliteList, final double inputAngleOfAperture) {
@@ -488,7 +484,7 @@ public class LineOfVisibility extends AbstractPrimaryObject implements CzmlPrima
 
             final List<List<TimeInterval>> tempMultipleIntervals = new ArrayList<>();
             final List<List<Boolean>> tempMultipleVisu = new ArrayList<>();
-            final List<List<CZMLShow>> tempMultipleShow = new ArrayList<>();
+            final List<List<CzmlShow>> tempMultipleShow = new ArrayList<>();
             final List<List<TimeInterval>> tempMultipleAvailability = new ArrayList<>();
             final List<String> tempMultipleId = new ArrayList<>();
             final List<String> tempMultipleName = new ArrayList<>();
@@ -572,8 +568,9 @@ public class LineOfVisibility extends AbstractPrimaryObject implements CzmlPrima
     }
 
     private void buildShowList() {
+        showList = new ArrayList<>();
         for (int i = 0; i < visuList.size(); i++) {
-            final CZMLShow showTemp = new CZMLShow(visuList.get(i), timeIntervals.get(i));
+            final CzmlShow showTemp = new CzmlShow(visuList.get(i), timeIntervals.get(i));
             showList.add(showTemp);
         }
     }
@@ -582,8 +579,8 @@ public class LineOfVisibility extends AbstractPrimaryObject implements CzmlPrima
         return () -> Arrays.stream(array).iterator();
     }
 
-    private List<TimeInterval> getVisibilityInterval(final List<CZMLShow> inputShowList) {
-        final List<TimeInterval> toReturn = new ArrayList<TimeInterval>();
+    private List<TimeInterval> getVisibilityInterval(final List<CzmlShow> inputShowList) {
+        final List<TimeInterval> toReturn = new ArrayList<>();
         JulianDate firstInterval = null;
         JulianDate lastInterval = null;
         if (inputShowList.size() == 1) {
@@ -591,8 +588,8 @@ public class LineOfVisibility extends AbstractPrimaryObject implements CzmlPrima
             return toReturn;
         } else {
             for (int i = 1; i < inputShowList.size(); i++) {
-                final CZMLShow showTemp = inputShowList.get(i);
-                final CZMLShow showBefore = inputShowList.get(i - 1);
+                final CzmlShow showTemp = inputShowList.get(i);
+                final CzmlShow showBefore = inputShowList.get(i - 1);
                 if (showTemp.getShow()) {
                     if (!showBefore.getShow()) {
                         firstInterval = showTemp.getAvailability().getStart();

@@ -35,7 +35,7 @@ import org.orekit.utils.Constants;
 
 import java.awt.Color;
 
-public class Cylinder implements CZMLSecondaryObject {
+public class Cylinder implements CzmlSecondaryObject {
     /** .*/
     private final double lenght;
     /** .*/

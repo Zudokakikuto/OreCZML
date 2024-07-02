@@ -25,7 +25,7 @@ import cesiumlanguagewriter.TimeInterval;
 
 import java.awt.Color;
 
-public class CZMLEllipsoid implements CZMLSecondaryObject {
+public class CzmlEllipsoid implements CzmlSecondaryObject {
 
     /** .*/
     private boolean fill = false;
@@ -45,11 +45,11 @@ public class CZMLEllipsoid implements CZMLSecondaryObject {
     // Builders
 
 
-    public CZMLEllipsoid(final TimeInterval availability, final Cartesian cartesian) {
+    public CzmlEllipsoid(final TimeInterval availability, final Cartesian cartesian) {
         this(availability, cartesian, new Color(255, 255, 0, 255));
     }
 
-    public CZMLEllipsoid(final TimeInterval availability, final Cartesian cartesian, final Color color) {
+    public CzmlEllipsoid(final TimeInterval availability, final Cartesian cartesian, final Color color) {
         this.cartesian = cartesian;
         this.availability = availability;
         this.fill = false;
@@ -59,11 +59,11 @@ public class CZMLEllipsoid implements CZMLSecondaryObject {
         this.stackPartition = 36;
     }
 
-    public CZMLEllipsoid(final TimeInterval availability, final Cartesian cartesian, final int slicePartition, final int stackPartition) {
+    public CzmlEllipsoid(final TimeInterval availability, final Cartesian cartesian, final int slicePartition, final int stackPartition) {
         this(availability, cartesian, slicePartition, stackPartition, new Color(255, 255, 0, 255));
     }
 
-    public CZMLEllipsoid(final TimeInterval availability, final Cartesian cartesian, final int slicePartition, final int stackPartition, final Color color) {
+    public CzmlEllipsoid(final TimeInterval availability, final Cartesian cartesian, final int slicePartition, final int stackPartition, final Color color) {
         this.cartesian = cartesian;
         this.availability = availability;
         this.fill = false;
@@ -73,7 +73,7 @@ public class CZMLEllipsoid implements CZMLSecondaryObject {
         this.stackPartition = stackPartition;
     }
 
-    public CZMLEllipsoid(final TimeInterval availability, final Cartesian cartesian, final boolean fill, final boolean outline, final Color color, final int slicePartition, final int stackPartition) {
+    public CzmlEllipsoid(final TimeInterval availability, final Cartesian cartesian, final boolean fill, final boolean outline, final Color color, final int slicePartition, final int stackPartition) {
         this.cartesian = cartesian;
         this.availability = availability;
         this.fill = fill;

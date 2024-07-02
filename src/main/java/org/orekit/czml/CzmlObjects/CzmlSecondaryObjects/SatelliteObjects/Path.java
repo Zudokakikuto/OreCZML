@@ -21,9 +21,9 @@ import cesiumlanguagewriter.CesiumOutputStream;
 import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.PathCesiumWriter;
 import cesiumlanguagewriter.TimeInterval;
-import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.CZMLSecondaryObject;
+import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.CzmlSecondaryObject;
 
-public class Path implements CZMLSecondaryObject {
+public class Path implements CzmlSecondaryObject {
 
     /** .*/
     private TimeInterval availability;

@@ -19,7 +19,7 @@ package org.orekit.czml.CzmlObjects.CzmlSecondaryObjects;
 import cesiumlanguagewriter.CesiumOutputStream;
 import cesiumlanguagewriter.PacketCesiumWriter;
 
-public class GroundTrack implements CZMLSecondaryObject {
+public class GroundTrack implements CzmlSecondaryObject {
     @Override
     public void write(final PacketCesiumWriter packetWriter, final CesiumOutputStream output) {
 

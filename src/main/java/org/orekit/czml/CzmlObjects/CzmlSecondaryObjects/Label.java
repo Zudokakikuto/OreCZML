@@ -24,7 +24,7 @@ import cesiumlanguagewriter.PacketCesiumWriter;
 
 import java.awt.Color;
 
-public class Label implements CZMLSecondaryObject {
+public class Label implements CzmlSecondaryObject {
 
     /** .*/
     private final Color color;

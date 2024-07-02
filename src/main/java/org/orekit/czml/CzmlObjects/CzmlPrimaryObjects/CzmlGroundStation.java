@@ -126,6 +126,7 @@ public class CzmlGroundStation extends AbstractPrimaryObject implements CzmlPrim
     public CzmlGroundStation(final List<TopocentricFrame> topocentricFrames) {
         this.topocentricFrames = topocentricFrames;
         this.setName("Packet containing " + topocentricFrames.size() + " ground stations");
+        this.setId("GROUND_STATIONS_PACKED/" + topocentricFrames.size());
         for (final TopocentricFrame currentTopocentricFrame : topocentricFrames) {
             final CzmlGroundStation currentGroundStation = new CzmlGroundStation(currentTopocentricFrame);
             multipleAvailability.add(currentGroundStation.getAvailability());

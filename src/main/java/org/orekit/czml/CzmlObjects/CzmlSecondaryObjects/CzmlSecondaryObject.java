@@ -27,7 +27,7 @@ import org.orekit.time.TimeComponents;
 import org.orekit.time.TimeScale;
 import org.orekit.time.TimeScalesFactory;
 
-public interface CZMLSecondaryObject {
+public interface CzmlSecondaryObject {
 
     void write(PacketCesiumWriter packetWriter, CesiumOutputStream output);
 

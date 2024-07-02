@@ -24,9 +24,9 @@ import cesiumlanguagewriter.GregorianDate;
 import cesiumlanguagewriter.JulianDate;
 import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.TimeInterval;
-import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.CZMLSecondaryObject;
-import org.orekit.czml.Inputs.InputFiles.OemFile;
+import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.CzmlSecondaryObject;
 import org.hipparchus.util.FastMath;
+import org.orekit.files.ccsds.ndm.odm.oem.Oem;
 import org.orekit.time.AbsoluteDate;
 import org.orekit.time.DateComponents;
 import org.orekit.time.DateTimeComponents;
@@ -36,7 +36,7 @@ import org.orekit.utils.TimeStampedPVCoordinates;
 
 import java.util.List;
 
-public class Clock implements CZMLSecondaryObject {
+public class Clock implements CzmlSecondaryObject {
 
     /** .*/
     private TimeInterval availability;
@@ -52,7 +52,7 @@ public class Clock implements CZMLSecondaryObject {
     private TimeScale timeScale;
 
     public Clock(final AbsoluteDate startDate, final AbsoluteDate stopDate, final TimeScale timeScale, final double step) {
-        this.step = ClockStep.SYSTEM_CLOCK_MULTIPLIER;
+        this.step = ClockStep.TICK_DEPENDENT;
         this.availability = new TimeInterval(this.getJulianDate(startDate, timeScale), this.getJulianDate(stopDate, timeScale));
         this.multiplier = step;
         this.range = ClockRange.LOOP_STOP;
@@ -61,25 +61,25 @@ public class Clock implements CZMLSecondaryObject {
     }
 
     public Clock(final TimeInterval interval, final JulianDate currentTime, final double multiplier, final ClockRange range, final ClockStep step) {
-        this.availability = interval;
+        this.availability = new TimeInterval(interval.getStart(), interval.getStop());
         this.currentTime = currentTime;
         this.multiplier = multiplier;
         this.range = range;
         this.step = step;
     }
 
-    public Clock(final OemFile oemFile) {
-        this(oemFile, 60.0);
+    public Clock(final Oem oem) {
+        this(oem, 60.0);
     }
 
-    public Clock(final OemFile file, final double step) {
-        final List<TimeStampedPVCoordinates> Ephemeris = file.getEphemeris();
+    public Clock(final Oem oem, final double step) {
+        final List<TimeStampedPVCoordinates> Ephemeris = oem.getSegments().get(0).getData().getEphemeridesDataLines();
         final int length = Ephemeris.size();
-        final AbsoluteDate startTime = file.getStartTime();
-        final AbsoluteDate stopTime = file.getStopTime();
+        final AbsoluteDate startTime = oem.getSegments().get(0).getStart();
+        final AbsoluteDate stopTime = oem.getSegments().get(0).getStop();
         final int step_rounded = (int) FastMath.round(stopTime.durationFrom(startTime) / length);
 
-        this.timeScale = file.getTimeScale();
+        this.timeScale = oem.getDataContext().getTimeScales().getUTC();
         final JulianDate startJulianDate = this.getJulianDate(startTime, timeScale);
         final JulianDate stopJulianDate = this.getJulianDate(stopTime, timeScale);
 
@@ -137,7 +137,7 @@ public class Clock implements CZMLSecondaryObject {
         final ClockCesiumWriter writer = packetWriter.getClockWriter();
         writer.open(output);
         writer.writeInterval(availability);
-        writer.writeCurrentTime(availability.getStart());
+        writer.writeCurrentTime(currentTime);
         writer.writeMultiplier(multiplier);
         writer.writeRange(range);
         writer.writeStep(step);
