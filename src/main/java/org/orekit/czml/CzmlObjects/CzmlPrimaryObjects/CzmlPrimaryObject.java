@@ -105,6 +105,44 @@ public interface CzmlPrimaryObject {
         return toReturn;
     }
 
+    /** This method aims at reorganizing the list of list of objects by inverting indexes.
+     * @param objects : A list of objects.
+     * @param <T> : An object to be sorted.
+     * @return A sorted list of objects.*/
+    default <T> List<List<T>> sortingListList(final List<List<T>> objects) {
+        final List<List<T>> toReturn = new ArrayList<>();
+        for (int i = 0; i < objects.get(0).size(); i++) {
+            final List<T> sortedList = new ArrayList<>();
+            for (int j = 0; j < objects.size(); j++) {
+                final T objectsToSort = objects.get(j).get(i);
+                sortedList.add(objectsToSort);
+            }
+            toReturn.add(sortedList);
+        }
+        return toReturn;
+    }
+
+    /** This method aims at reorganizing the list of list of objects by inverting 1st and 3rd indexes.
+     * @param objects : A list of objects.
+     * @param <T> : An object to be sorted.
+     * @return A sorted list of objects.*/
+    default <T> List<List<List<T>>> sortingListListList(final List<List<List<T>>> objects) {
+        final List<List<List<T>>> toReturn = new ArrayList<>();
+        for (int i = 0; i < objects.get(0).get(0).size(); i++) {
+            final List<List<T>> tempListList = new ArrayList<>();
+            for (int j = 0; j < objects.get(0).size(); j++) {
+                final List<T> tempList = new ArrayList<>();
+                for (int k = 0; k < objects.size(); k++) {
+                    final T objectToSort = objects.get(k).get(j).get(i);
+                    tempList.add(objectToSort);
+                }
+                tempListList.add(tempList);
+            }
+            toReturn.add(tempListList);
+        }
+        return toReturn;
+    }
+
     void writeCzmlBlock() throws URISyntaxException, IOException;
     StringWriter getStringWriter();
     void cleanObject();

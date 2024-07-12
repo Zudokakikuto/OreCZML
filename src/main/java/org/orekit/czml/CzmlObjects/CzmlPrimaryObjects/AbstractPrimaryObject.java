@@ -18,6 +18,10 @@ package org.orekit.czml.CzmlObjects.CzmlPrimaryObjects;
 
 import cesiumlanguagewriter.TimeInterval;
 
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
+
 /** Abstract Primary Object
 
  * <p>
@@ -57,5 +61,83 @@ public abstract class AbstractPrimaryObject implements CzmlPrimaryObject {
 
     protected void setAvailability(final TimeInterval a) {
         this.availability = a;
+    }
+
+    protected java.util.List<Color> preMadeColorList() {
+        final List<Color> preMadeColorList = new ArrayList<>();
+        final Color red         = new Color(255, 0,   0);
+        final Color orange      = new Color(255, 127, 0);
+        final Color yellow      = new Color(255, 255, 0);
+        final Color light_green = new Color(127, 255, 0);
+        final Color green       = new Color(0,   255, 0);
+        final Color light_cyan  = new Color(0,   255, 127);
+        final Color cyan        = new Color(0,   255, 255);
+        final Color light_blue  = new Color(0,   127, 255);
+        final Color blue        = new Color(0,   0,   255);
+        final Color violet      = new Color(127, 0,   255);
+        final Color magenta     = new Color(255, 0,   255);
+        final Color pink        = new Color(255, 0,   127);
+        preMadeColorList.add(red);
+        preMadeColorList.add(orange);
+        preMadeColorList.add(yellow);
+        preMadeColorList.add(light_green);
+        preMadeColorList.add(green);
+        preMadeColorList.add(light_cyan);
+        preMadeColorList.add(cyan);
+        preMadeColorList.add(light_blue);
+        preMadeColorList.add(blue);
+        preMadeColorList.add(violet);
+        preMadeColorList.add(magenta);
+        preMadeColorList.add(pink);
+        return preMadeColorList;
+    }
+
+    protected List<Color> colorWheel(final int totalOfSat) {
+        // Check if the number of sat is bigger than 12 (number of primal colors made with r,g,b) :
+        final List<Color> toReturn = new ArrayList<>();
+        if (totalOfSat / 12.0 > 1) {
+            final int totalOfColorBySection = totalOfSat / 6;
+            final int rest = totalOfSat % 6;
+            final int shiftOfColor = 255 / totalOfColorBySection;
+            // To yellow
+            for (int i = 0; i < totalOfColorBySection; i++) {
+                final Color currentColor = new Color(255, shiftOfColor * i, 0);
+                toReturn.add(currentColor);
+            }
+            // To green
+            for (int i = 0; i < totalOfColorBySection; i++) {
+                final Color currentColor = new Color(255 - (shiftOfColor * i), 255, 0);
+                toReturn.add(currentColor);
+            }
+            // To cyan
+            for (int i = 0; i < totalOfColorBySection; i++) {
+                final Color currentColor = new Color(0, 255, shiftOfColor * i);
+                toReturn.add(currentColor);
+            }
+            // To blue
+            for (int i = 0; i < totalOfColorBySection; i++) {
+                final Color currentColor = new Color(0, 255 - (shiftOfColor * i), 255);
+                toReturn.add(currentColor);
+            }
+            // To magenta
+            for (int i = 0; i < totalOfColorBySection; i++) {
+                final Color currentColor = new Color(shiftOfColor * i, 0, 255);
+                toReturn.add(currentColor);
+            }
+            // To red
+            for (int i = 0; i < totalOfColorBySection + rest; i++) {
+                final int totalColorOfLastSection = totalOfColorBySection + rest;
+                final int shiftOfColorLastSection = 255 / totalColorOfLastSection;
+                final Color currentColor = new Color(255, 0, 255 - (shiftOfColorLastSection * i));
+                toReturn.add(currentColor);
+            }
+        }
+        else {
+            final List<Color> preMadeColors = preMadeColorList();
+            for (int i = 0; i < totalOfSat; i++) {
+                toReturn.add(preMadeColors.get(i));
+            }
+        }
+        return toReturn;
     }
 }

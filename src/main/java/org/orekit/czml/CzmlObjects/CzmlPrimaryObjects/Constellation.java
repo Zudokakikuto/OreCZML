@@ -24,6 +24,7 @@ import org.orekit.orbits.WalkerConstellationSlot;
 import org.orekit.time.TimeScale;
 import org.orekit.time.TimeScalesFactory;
 
+import java.awt.*;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
@@ -112,12 +113,13 @@ public class Constellation extends AbstractPrimaryObject implements CzmlPrimaryO
 
         allOrbits = this.allOrbits(referenceOrbit);
         this.allSatellites = new ArrayList<>();
+        final List<Color> colorList = colorWheel(allOrbits.size());
 
         for (int i = 0; i < allOrbits.size(); i++) {
             final List<Orbit> currentPlane = allOrbits.get(i);
             for (int j = 0; j < currentPlane.size(); j++) {
                 final Orbit currentOrbit = currentPlane.get(j);
-                final Satellite satelliteToOutput = new Satellite(currentOrbit);
+                final Satellite satelliteToOutput = new Satellite(currentOrbit, colorList.get(i));
                 allSatellites.add(satelliteToOutput);
             }
         }

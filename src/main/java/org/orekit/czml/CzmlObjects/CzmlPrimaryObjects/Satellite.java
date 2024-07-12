@@ -22,10 +22,14 @@ import cesiumlanguagewriter.GregorianDate;
 import cesiumlanguagewriter.OrientationCesiumWriter;
 import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.PathCesiumWriter;
+import cesiumlanguagewriter.PolylineMaterialCesiumWriter;
 import cesiumlanguagewriter.PositionCesiumWriter;
+import cesiumlanguagewriter.SolidColorMaterialCesiumWriter;
 import cesiumlanguagewriter.TimeInterval;
+import org.hipparchus.geometry.euclidean.threed.Rotation;
 import org.orekit.czml.CzmlObjects.CzmlAbstractObjects.CzmlModel;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.Billboard;
+import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.Orientation;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.SatelliteObjects.SatelliteAttitude;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.SatelliteObjects.SatelliteReferenceSystem;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.SatelliteObjects.Path;
@@ -37,8 +41,6 @@ import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.orekit.attitudes.Attitude;
-import org.orekit.attitudes.NadirPointing;
-import org.orekit.bodies.OneAxisEllipsoid;
 import org.orekit.files.ccsds.ndm.odm.oem.Oem;
 import org.orekit.forces.ForceModel;
 import org.orekit.forces.gravity.HolmesFeatherstoneAttractionModel;
@@ -61,9 +63,9 @@ import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScale;
 import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.Constants;
-import org.orekit.utils.IERSConventions;
 import org.orekit.utils.TimeStampedPVCoordinates;
 
+import java.awt.Color;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
@@ -97,6 +99,8 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
     /** .*/
     public static final String DEFAULT_FILE_SATELLITE_NAME = "Satellite created from : ";
     /** .*/
+    public static final Color DEFAULT_COLOR = new Color(255, 255, 255);
+    /** .*/
     private String description;
     /** .*/
     private List<TimeStampedPVCoordinates> Ephemeris = null;
@@ -115,6 +119,8 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
     private CzmlModel model;
     /** .*/
     private ModelType modelType;
+    /** .*/
+    private Rotation optionalRotation = Rotation.IDENTITY;
 
     // Intrinsic parameters
     /** .*/
@@ -145,14 +151,26 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
     private SatelliteAttitude satelliteAttitude = null;
     /** .*/
     private SatelliteReferenceSystem satelliteReferenceSystem = null;
+    /** .*/
+    private List<SpacecraftState> allSpaceCraftStates = new ArrayList<>();
+    /** .*/
+    private Color pathColor;
 
     //// BUILDERS
 
     public Satellite(final Oem file) throws URISyntaxException, IOException {
-        this(file, DEFAULT_MODEL_PATH);
+        this(file, DEFAULT_MODEL_PATH, DEFAULT_COLOR);
+    }
+
+    public Satellite(final Oem file, final Color color) throws URISyntaxException, IOException {
+        this(file, DEFAULT_MODEL_PATH, color);
     }
 
     public Satellite(final Oem file, final String modelPath) throws URISyntaxException, IOException {
+        this(file, modelPath, DEFAULT_COLOR);
+    }
+
+    public Satellite(final Oem file, final String modelPath, final Color color) throws URISyntaxException, IOException {
 
         this.setId(DEFAULT_FILE_SATELLITE_NAME + file.getHeader().getMessageId());
         this.setName(DEFAULT_NAME);
@@ -160,6 +178,7 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
         this.description = DEFAULT_DESCRIPTION;
         this.frame = file.getSegments().get(0).getFrame();
         this.Ephemeris = file.getSegments().get(0).getData().getEphemeridesDataLines();
+        this.pathColor = color;
 
         final List<Vector3D> vector3DS1 = new ArrayList<>();
         this.timeList = new ArrayList<>();
@@ -192,13 +211,22 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
     }
 
     public Satellite(final TLE tleFile) throws URISyntaxException, IOException {
-        this(tleFile, DEFAULT_MODEL_PATH);
+        this(tleFile, DEFAULT_MODEL_PATH, DEFAULT_COLOR);
     }
 
-    public Satellite(final TLE file, final String modelPath) throws URISyntaxException, IOException {
+    public Satellite(final TLE tleFile, final Color color) throws URISyntaxException, IOException {
+        this(tleFile, DEFAULT_MODEL_PATH, color);
+    }
+
+    public Satellite(final TLE tleFile, final String modelPath) throws URISyntaxException, IOException {
+        this(tleFile, modelPath, DEFAULT_COLOR);
+    }
+
+    public Satellite(final TLE file, final String modelPath, final Color color) throws URISyntaxException, IOException {
         this.setId(DEFAULT_FILE_SATELLITE_NAME + "#ID :" + file.toString());
         this.setName(DEFAULT_NAME);
         this.description = DEFAULT_DESCRIPTION;
+        this.pathColor = color;
         this.frame = FramesFactory.getTEME();
         this.setAvailability(Header.MASTER_CLOCK.getAvailability());
         this.description = DEFAULT_DESCRIPTION;
@@ -221,15 +249,24 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
     }
 
     public Satellite(final String name, final TimeInterval availability, final String description, final List<TimeStampedPVCoordinates> Ephemeris, final Frame frame) throws URISyntaxException, IOException {
-        this(name, availability, description, Ephemeris, frame, DEFAULT_MODEL_PATH);
+        this(name, availability, description, Ephemeris, frame, DEFAULT_MODEL_PATH, DEFAULT_COLOR);
+    }
+
+    public Satellite(final String name, final TimeInterval availability, final String description, final List<TimeStampedPVCoordinates> Ephemeris, final Frame frame, final Color color) throws URISyntaxException, IOException {
+        this(name, availability, description, Ephemeris, frame, DEFAULT_MODEL_PATH, color);
     }
 
     public Satellite(final String name, final TimeInterval availability, final String description, final List<TimeStampedPVCoordinates> Ephemeris, final Frame frame, final String modelPath) throws URISyntaxException, IOException {
+        this(name, availability, description, Ephemeris, frame, modelPath, DEFAULT_COLOR);
+    }
+
+    public Satellite(final String name, final TimeInterval availability, final String description, final List<TimeStampedPVCoordinates> Ephemeris, final Frame frame, final String modelPath, final Color color) throws URISyntaxException, IOException {
         this.setId(DEFAULT_NAME);
         this.setName(name);
         this.setAvailability(availability);
         this.description = description;
         this.Ephemeris = Ephemeris;
+        this.pathColor = color;
 
         final List<Orbit> orbitList = new ArrayList<Orbit>();
         final List<Vector3D> vector3DS1 = new ArrayList<>();
@@ -264,10 +301,18 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
     }
 
     public Satellite(final Orbit orbit) throws URISyntaxException, IOException {
-        this(orbit, DEFAULT_MODEL_PATH);
+        this(orbit, DEFAULT_MODEL_PATH, DEFAULT_COLOR);
+    }
+
+    public Satellite(final Orbit orbit, final Color color) throws URISyntaxException, IOException {
+        this(orbit, DEFAULT_MODEL_PATH, color);
     }
 
     public Satellite(final Orbit orbit, final String modelPath) throws URISyntaxException, IOException {
+        this(orbit, modelPath, DEFAULT_COLOR);
+    }
+
+    public Satellite(final Orbit orbit, final String modelPath, final Color color) throws URISyntaxException, IOException {
         this.setId(orbit.toString());
         this.setName(orbit.toString());
         this.setAvailability(Header.MASTER_CLOCK.getAvailability());
@@ -276,6 +321,7 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
         this.timeList = new ArrayList<>();
         this.orbits = new ArrayList<>();
         this.positionsList = new ArrayList<>();
+        this.pathColor = color;
         this.description = DEFAULT_DESCRIPTION;
         timeList.add(absoluteDateToJulianDateDelta(startTime));
         timeList.add(absoluteDateToJulianDateDelta(stopTime));
@@ -290,14 +336,23 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
     }
 
     public Satellite(final List<SpacecraftState> input) throws URISyntaxException, IOException {
-        this(input, DEFAULT_MODEL_PATH);
+        this(input, DEFAULT_MODEL_PATH, DEFAULT_COLOR);
+    }
+
+    public Satellite(final List<SpacecraftState> input, final Color color) throws URISyntaxException, IOException {
+        this(input, DEFAULT_MODEL_PATH, color);
     }
 
     public Satellite(final List<SpacecraftState> input, final String modelPath) throws URISyntaxException, IOException {
+        this(input, modelPath, DEFAULT_COLOR);
+    }
+
+    public Satellite(final List<SpacecraftState> input, final String modelPath, final Color color) throws URISyntaxException, IOException {
         final List<Double> doubleListTemp = new ArrayList<>();
         final List<Orbit> orbitTemp = new ArrayList<>();
         final List<Vector3D> vector3DTemp = new ArrayList<>();
         this.positionsList = new ArrayList<>();
+        this.pathColor = color;
 
         this.setId(input.get(0).getOrbit().toString());
         this.setName(DEFAULT_NAME);
@@ -326,7 +381,15 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
         this(propagator, finalDate, DEFAULT_MODEL_PATH);
     }
 
+    public Satellite(final Propagator propagator, final AbsoluteDate finalDate, final Color color) throws URISyntaxException, IOException {
+        this(propagator, finalDate, DEFAULT_MODEL_PATH, color);
+    }
+
     public Satellite(final Propagator propagator, final AbsoluteDate finalDate, final String modelPath) throws URISyntaxException, IOException {
+        this(propagator, finalDate, modelPath, DEFAULT_COLOR);
+    }
+
+    public Satellite(final Propagator propagator, final AbsoluteDate finalDate, final String modelPath, final Color color) throws URISyntaxException, IOException {
 
         if (propagator.getInitialState().getOrbit() == null) {
             throw new RuntimeException("The propagator has no initial state, please setup the propagator before building" +
@@ -339,6 +402,7 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
             this.satellitePropagator = propagator;
             this.description = DEFAULT_DESCRIPTION;
             this.frame = propagator.getFrame();
+            this.pathColor = color;
 
             // Creation of empty list to be filled with multiplexerSetup
             this.timeList = new ArrayList<>();
@@ -347,13 +411,14 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
             this.positionsList = new ArrayList<>();
 
             orbits.add(propagator.getInitialState().getOrbit());
+            final AbsoluteDate startDate = propagator.getInitialState().getDate();
 
             // Setup propagator
             final EphemerisGenerator generator = propagator.getEphemerisGenerator();
             this.vector3DS = multiplexerSetup(propagator);
 
             // Propagation
-            propagator.propagate(finalDate);
+            propagator.propagate(startDate, finalDate);
 
             // Retrieve parameters from propagation
             this.boundedPropagator = generator.getGeneratedEphemeris();
@@ -390,6 +455,7 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
         this.positionsList = new ArrayList<>();
         this.boundedPropagator = null;
         this.attitudes = new ArrayList<>();
+        this.allSpaceCraftStates = new ArrayList<>();
     }
 
     @Override
@@ -400,18 +466,14 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
             packet.writeName(getName());
             packet.writeAvailability(getAvailability());
 
-            generateDisplay(packet);
+            czmlDisplay(packet);
 
             czmlPath(packet);
 
-            generatePosition(packet);
+            czmlPosition(packet);
 
         } catch (URISyntaxException | IOException e) {
             throw new RuntimeException(e);
-        }
-        if (getDisplayAttitude()) {
-            this.satelliteAttitude = new SatelliteAttitude(this);
-            this.getSatelliteAttitude().writeCzmlBlock();
         }
         if (getDisplayReferenceSystem()) {
             getSatelliteReferenceSystem().writeCzmlBlock();
@@ -464,6 +526,10 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
         return frame;
     }
 
+    public Color getPathColor() {
+        return pathColor;
+    }
+
     public String getModelPath() {
         return modelPath;
     }
@@ -512,6 +578,10 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
         return period;
     }
 
+    public List<SpacecraftState> getAllSpaceCraftStates() {
+        return allSpaceCraftStates;
+    }
+
     // SETS
     public void setAttitudes(final List<Attitude> attitudes) {
         this.attitudes = attitudes;
@@ -521,7 +591,7 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
         this.boundedPropagator = boundedPropagator;
     }
 
-    // Functions
+    // User functions
 
     public void displayOnlyOnePeriod() {
         displayOnlyOnePeriod = true;
@@ -536,11 +606,19 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
         this.satelliteReferenceSystem = new SatelliteReferenceSystem(this);
     }
 
+    public void setOptionalRotation(final Rotation inputRotation) {
+        optionalRotation = inputRotation;
+    }
+
     // Functions
-    private void generateDisplay(final PacketCesiumWriter packet) throws URISyntaxException, IOException {
+    private void czmlDisplay(final PacketCesiumWriter packet) throws URISyntaxException, IOException {
 
         if (getModelType() == ModelType.MODEL_2D || getModelType() == ModelType.EMPTY_MODEL) {
             getModel().generateCZML(packet, OUTPUT);
+            if (getDisplayAttitude()) {
+                final Orientation orientation = new Orientation(getAttitudes(), getFrame(), optionalRotation);
+                orientation.write(packet, OUTPUT);
+            }
         }
         else if (getModelType() == ModelType.MODEL_3D)
         {
@@ -554,6 +632,10 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
                     orientationWriter.open(OUTPUT);
                     orientationWriter.writeVelocityReference(this.getId() + "#position");
                 }
+            }
+            else {
+                final Orientation orientation = new Orientation(getAttitudes(), getFrame(), optionalRotation);
+                orientation.write(packet, OUTPUT);
             }
             this.getModel().generateCZML(packet, OUTPUT);
         }
@@ -577,10 +659,19 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
                 }
                 displayOnlyOnePeriod = false;
             }
+            try (PolylineMaterialCesiumWriter materialWriter = pathProperty.getMaterialWriter()) {
+                materialWriter.open(OUTPUT);
+                OUTPUT.writeStartObject();
+                try (SolidColorMaterialCesiumWriter solidColorWriter = materialWriter.getSolidColorWriter()) {
+                    solidColorWriter.open(OUTPUT);
+                    solidColorWriter.writeColorProperty(getPathColor());
+                }
+                OUTPUT.writeEndObject();
+            }
         }
     }
 
-    private void generatePosition(final PacketCesiumWriter packet) {
+    private void czmlPosition(final PacketCesiumWriter packet) {
 
         final SatellitePosition Pos = new SatellitePosition(this.getCartesianArraylist(), getTimeList());
 
@@ -634,12 +725,6 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
         final Frame frame_temp = this.getFrame();
         final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(frame_temp, provider);
 
-        final Frame ITRF = FramesFactory.getITRF(IERSConventions.IERS_2010, true);
-        final OneAxisEllipsoid earth = new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS, Constants.WGS84_EARTH_FLATTENING, ITRF);
-        final NadirPointing nadirPointing = new NadirPointing(this.getFrame(), earth);
-
-        propagator.setAttitudeProvider(nadirPointing);
-
         propagator.setOrbitType(propagationType);
 
         propagator.addForceModel(holmesFeatherstone);
@@ -655,7 +740,7 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
         final AbsoluteDate stopDate = new AbsoluteDate(gregorianDate.getYear(), gregorianDate.getMonth(),
                 gregorianDate.getDay(), gregorianDate.getHour(), gregorianDate.getMinute(), gregorianDate.getSecond(), UTC);
 
-        final SpacecraftState finalState = propagator.propagate(stopDate);
+        propagator.propagate(stopDate);
         this.satellitePropagator = propagator;
         this.boundedPropagator = generator.getGeneratedEphemeris();
 
@@ -679,13 +764,12 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
 
         final List<Vector3D> toReturn = new ArrayList<>();
 
-        final Frame ITRF = FramesFactory.getITRF(IERSConventions.IERS_2010, true);
-
         propagator.getMultiplexer().add(Header.MASTER_CLOCK.getMultiplier(), new OrekitFixedStepHandler() {
             @Override
             public void handleStep(final SpacecraftState currentState) {
                 final KeplerianOrbit o = (KeplerianOrbit) OrbitType.KEPLERIAN.convertType(currentState.getOrbit());
                 toReturn.add(o.getPosition());
+                allSpaceCraftStates.add(currentState);
                 final Attitude currentSpaceCraftAttitude = currentState.getAttitude();
                 attitudes.add(currentSpaceCraftAttitude);
                 final double x = toReturn.get(toReturn.size() - 1).getX();

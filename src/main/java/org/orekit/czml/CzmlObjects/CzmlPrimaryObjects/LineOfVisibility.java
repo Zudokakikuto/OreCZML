@@ -164,15 +164,7 @@ public class LineOfVisibility extends AbstractPrimaryObject implements CzmlPrima
     }
 
     public LineOfVisibility(final TopocentricFrame topocentricFrame, final Constellation constellation, final double angleOfAperture) {
-        final List<Satellite> listOfSatellites = constellation.getAllSatellites();
-        final List<LineOfVisibility> lineOfVisibilityList = new ArrayList<>();
-
-        for (final Satellite currentSatellite : listOfSatellites) {
-            final LineOfVisibility currentLineOfVisibility = new LineOfVisibility(topocentricFrame, currentSatellite, angleOfAperture);
-            lineOfVisibilityList.add(currentLineOfVisibility);
-        }
-        this.allVisibilityLines = lineOfVisibilityList;
-        this.typeOfVisu = TypeOfVisu.MULTIPLE_SAT_SINGLE_STATION;
+        this(uniqueList(topocentricFrame), constellation, angleOfAperture);
     }
 
     public LineOfVisibility(final List<TopocentricFrame> topocentricFrames, final Satellite satellite) throws URISyntaxException, IOException {
@@ -598,13 +590,21 @@ public class LineOfVisibility extends AbstractPrimaryObject implements CzmlPrima
                 if (!showTemp.getShow()) {
                     if (showBefore.getShow()) {
                         lastInterval = showTemp.getAvailability().getStop();
-                        assert firstInterval != null;
+                        if (firstInterval == null) {
+                            firstInterval = inputShowList.get(0).getAvailability().getStart();
+                        }
                         toReturn.add(new TimeInterval(firstInterval, lastInterval));
                     }
                 }
             }
             return toReturn;
         }
+    }
+
+    private static List<TopocentricFrame> uniqueList(final TopocentricFrame topocentricFrame) {
+        final List<TopocentricFrame> toReturn = new ArrayList<>();
+        toReturn.add(topocentricFrame);
+        return toReturn;
     }
 
     private void writePolyline(final PacketCesiumWriter packet) {
@@ -621,7 +621,7 @@ public class LineOfVisibility extends AbstractPrimaryObject implements CzmlPrima
         try (PacketCesiumWriter packet = STREAM.openPacket(OUTPUT)) {
             packet.writeId(this.getId());
             packet.writeName(this.getName());
-            packet.writeAvailability(this.availabilities);
+            packet.writeAvailability(this.getAvailabilities());
             this.writePolyline(packet);
         }
     }

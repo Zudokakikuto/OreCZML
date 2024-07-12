@@ -14,14 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import org.hipparchus.util.FastMath;
-import org.orekit.bodies.GeodeticPoint;
 import org.orekit.bodies.OneAxisEllipsoid;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Constellation;
-import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.CzmlGroundStation;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Header;
-import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.LineOfVisibility;
+import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.GroundTrack;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.HeaderObjects.Clock;
 import org.orekit.czml.Outputs.CzmlFile;
 import org.orekit.data.DataContext;
@@ -30,7 +27,6 @@ import org.orekit.data.DirectoryCrawler;
 import org.orekit.errors.OrekitException;
 import org.orekit.frames.Frame;
 import org.orekit.frames.FramesFactory;
-import org.orekit.frames.TopocentricFrame;
 import org.orekit.orbits.KeplerianOrbit;
 import org.orekit.orbits.PositionAngleType;
 import org.orekit.time.AbsoluteDate;
@@ -40,12 +36,10 @@ import org.orekit.utils.Constants;
 import org.orekit.utils.IERSConventions;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
-public class ConstellationVisu {
+public class ConstellationGroundTracks {
 
-    private ConstellationVisu() {
+    private ConstellationGroundTracks() {
         // empty
     }
 
@@ -68,53 +62,34 @@ public class ConstellationVisu {
         // File created
         final CzmlFile file = new CzmlFile(output);
 
-        // Creation of the clock
+        // Creation of the clock.
         final TimeScale UTC = TimeScalesFactory.getUTC();
-        final double durationOfSimulation = 8 * 3600; // in seconds;
+        final double durationOfSimulation = 10 * 3600; // in seconds;
         final double stepBetweenEachInstant = 60.0; // in seconds
         final AbsoluteDate startDate = new AbsoluteDate(2024, 3, 15, 0, 0, 0.0, UTC);
         final AbsoluteDate finalDate = startDate.shiftedBy(durationOfSimulation);
         final Clock clock = new Clock(startDate, finalDate, UTC, stepBetweenEachInstant);
 
-        // Creation of the header
-        final Header header = new Header("Visualisation of a constellation by multiple ground station", clock);
+        final Header header = new Header("Visualisation of a ground track of a satellite", clock);
         file.addObject(header);
 
-        //// Creation of the constellation
-        // Creation of the initialOrbit
+        // Build of an MEO orbit
         final Frame EME2000 = FramesFactory.getEME2000();
-        final KeplerianOrbit initialOrbit = new KeplerianOrbit(7878000, 0, FastMath.toRadians(40), 0, FastMath.toRadians(90), FastMath.toRadians(0), PositionAngleType.MEAN, EME2000, startDate, Constants.WGS84_EARTH_MU);
+        final KeplerianOrbit initialOrbit = new KeplerianOrbit(10878000, 0, FastMath.toRadians(80), 0, FastMath.toRadians(0), FastMath.toRadians(0), PositionAngleType.MEAN, EME2000, startDate, Constants.WGS84_EARTH_MU);
 
-        // Build of the constellation
-        final Constellation constellation = new Constellation(4, 2, 1, initialOrbit);
+        // Creation of the Constellation
+        final Constellation constellation = new Constellation(10, 10, 1, initialOrbit);
         file.addObject(constellation);
 
-        //// Creation of the ground station
         // Creation of the model of the earth.
         final IERSConventions IERS = IERSConventions.IERS_2010;
         final Frame ITRF = FramesFactory.getITRF(IERS, true);
         final OneAxisEllipsoid earth = new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS, Constants.WGS84_EARTH_FLATTENING, ITRF);
 
-        // Creation of a topocentric frame around Toulouse.
-        final GeodeticPoint toulouseFrame = new GeodeticPoint(FastMath.toRadians(43.6047), FastMath.toRadians(1.4442), 10);
-        final TopocentricFrame topocentricToulouse = new TopocentricFrame(earth, toulouseFrame, "Toulouse Frame");
-
-        // Creation of another topocentric frame around Las Vegas.
-        final GeodeticPoint lasVegasFrame = new GeodeticPoint(FastMath.toRadians(36.1716), FastMath.toRadians(-115.1391), 10);
-        final TopocentricFrame topocentricLasVegas = new TopocentricFrame(earth, lasVegasFrame, "Las Vegas Frame");
-
-        // Creation of a list of topocentric frame containing both frames.
-        final List<TopocentricFrame> allStations = new ArrayList<>();
-        allStations.add(topocentricToulouse);
-        allStations.add(topocentricLasVegas);
-
-        // Build of the ground station
-        final CzmlGroundStation groundStation = new CzmlGroundStation(allStations);
-        file.addObject(groundStation);
-
-        //// Creation of the line of visibility
-        final LineOfVisibility lineOfVisibility = new LineOfVisibility(allStations, constellation);
-        file.addObject(lineOfVisibility);
+        // Build of the ground track
+        final GroundTrack groundTrack = new GroundTrack(constellation, earth);
+        groundTrack.displayLinkSatellite();
+        file.addObject(groundTrack);
 
         // Writing in the file
         file.write();

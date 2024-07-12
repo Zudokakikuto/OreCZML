@@ -16,12 +16,245 @@
  */
 package org.orekit.czml.CzmlObjects.CzmlSecondaryObjects;
 
-import cesiumlanguagewriter.CesiumOutputStream;
-import cesiumlanguagewriter.PacketCesiumWriter;
+import cesiumlanguagewriter.*;
+import org.hipparchus.geometry.euclidean.threed.Vector3D;
+import org.orekit.bodies.BodyShape;
+import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.AbstractPrimaryObject;
+import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Constellation;
+import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.CzmlPrimaryObject;
+import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Header;
+import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Satellite;
+import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.SatelliteObjects.Path;
+import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.SatelliteObjects.SatellitePosition;
+import org.orekit.czml.CzmlObjects.CzmlShow;
+import org.orekit.czml.CzmlObjects.Polyline;
+import org.orekit.frames.Frame;
+import org.orekit.time.AbsoluteDate;
 
-public class GroundTrack implements CzmlSecondaryObject {
+import java.awt.Color;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.net.URISyntaxException;
+import java.sql.Ref;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+public class GroundTrack extends AbstractPrimaryObject implements CzmlPrimaryObject {
+
+    /** .*/
+    public static final String DEFAULT_ID = "GROUND_TRACK/";
+    /** .*/
+    public static final String DEFAULT_NAME = "Ground track of : ";
+    /** .*/
+    public static final String DEFAULT_H_POSITION = "#position";
+    /** .*/
+    public static final String DEFAULT_CONSTELLATION_ID = "GROUND_TRACK_OF_CONSTELLATION/";
+    /** .*/
+    public static final String DEFAULT_CONSTELLATION_NUMBEROFSAT = " satellites";
+    /** .*/
+    public static final Color DEFAULT_COLOR = new Color(255, 255, 255);
+
+    /** .*/
+    private Satellite satellite;
+    /** .*/
+    private Boolean displayLinkSatellite = false;
+    /** .*/
+    private Iterable<Reference> referencesLink;
+    /** .*/
+    private List<CzmlShow> showListLink = new ArrayList<>();
+    /** .*/
+    private List<Cartesian> initialCartesiansSatellite;
+    /** .*/
+    private SatellitePosition clampedPositionOnBody;
+    /** .*/
+    private Color color;
+    /** .*/
+    private List<GroundTrack> allGroundTracks = new ArrayList<>();
+
+    // Constructors
+    public GroundTrack(final Satellite satellite, final BodyShape body) {
+        this(satellite, body, DEFAULT_COLOR);
+    }
+
+    public GroundTrack(final Satellite satellite, final BodyShape body, final Color color) {
+        this.satellite = satellite;
+        this.setId(DEFAULT_ID + satellite.getId());
+        this.setName(DEFAULT_NAME + satellite.getName());
+        this.setAvailability(Header.MASTER_CLOCK.getAvailability());
+        this.color = color;
+        initialCartesiansSatellite = satellite.getCartesianArraylist();
+        final List<AbsoluteDate> allSatelliteDates = satellite.getAbsoluteDateList();
+        final List<Cartesian> projectedCartesianList = new ArrayList<>();
+        for (int i = 0; i < initialCartesiansSatellite.size(); i++) {
+            final Cartesian currentCartesian = initialCartesiansSatellite.get(i);
+            final Vector3D currentVector3D = new Vector3D(currentCartesian.getX(), currentCartesian.getY(), currentCartesian.getZ());
+            final Frame bodyFrame = body.getBodyFrame();
+            final Vector3D projectedVector3D = body.projectToGround(currentVector3D, allSatelliteDates.get(i), bodyFrame);
+            final Cartesian projectedCartesian = new Cartesian(projectedVector3D.getX(), projectedVector3D.getY(), projectedVector3D.getZ());
+            projectedCartesianList.add(projectedCartesian);
+        }
+        this.clampedPositionOnBody = new SatellitePosition(projectedCartesianList, satellite.getTimeList());
+    }
+
+    public GroundTrack(final Constellation constellation, final BodyShape body) {
+        final List<Satellite> allSatellites = constellation.getAllSatellites();
+        this.allGroundTracks =  new ArrayList<>();
+        this.setId(DEFAULT_CONSTELLATION_ID + constellation.getId());
+        this.setName(DEFAULT_NAME + constellation.getTotalOfSatellite() + DEFAULT_CONSTELLATION_NUMBEROFSAT);
+        this.setAvailability(Header.MASTER_CLOCK.getAvailability());
+        for (int i = 0; i < allSatellites.size(); i++) {
+            final Satellite currentSat = allSatellites.get(i);
+            final GroundTrack currentGroundTrack = new GroundTrack(currentSat, body, currentSat.getPathColor());
+            allGroundTracks.add(currentGroundTrack);
+        }
+    }
+
+    // Overrides
     @Override
-    public void write(final PacketCesiumWriter packetWriter, final CesiumOutputStream output) {
+    public void writeCzmlBlock() throws URISyntaxException, IOException {
+        if (allGroundTracks.isEmpty()) {
+            OUTPUT.setPrettyFormatting(true);
+            try (PacketCesiumWriter packet = STREAM.openPacket(OUTPUT)) {
+                packet.writeId(getId());
+                packet.writeName(getName());
+                packet.writeAvailability(getAvailability());
 
+                writePosition(packet);
+                writeCzmlPath(packet);
+                if (displayLinkSatellite) {
+                    final Reference groundTrackReference = new Reference(this.getId() + DEFAULT_H_POSITION);
+                    final Reference satelliteReference = new Reference(this.getSatellite().getId() + DEFAULT_H_POSITION);
+                    final Reference[] referenceList = Arrays.asList(groundTrackReference, satelliteReference).toArray(new Reference[0]);
+                    final Iterable<Reference> referenceIterable = convertToIterable(referenceList);
+                    final CzmlShow show = new CzmlShow(true, Header.MASTER_CLOCK.getAvailability());
+                    final List<CzmlShow> shows = new ArrayList<>();
+                    shows.add(show);
+                    final Polyline polylineInput = new Polyline();
+                    polylineInput.writePolylineOfVisibility(packet, OUTPUT, referenceIterable, shows);
+                }
+            }
+            cleanObject();
+        }
+        else {
+            OUTPUT.setPrettyFormatting(true);
+            for (int i = 0; i < allGroundTracks.size(); i++) {
+                final GroundTrack currentGroundTrack = allGroundTracks.get(i);
+                try (PacketCesiumWriter packet = STREAM.openPacket(OUTPUT)) {
+                    packet.writeId(currentGroundTrack.getId());
+                    packet.writeName(currentGroundTrack.getName());
+                    packet.writeAvailability(currentGroundTrack.getAvailability());
+
+                    this.satellite = currentGroundTrack.getSatellite();
+                    this.clampedPositionOnBody = currentGroundTrack.clampedPositionOnBody;
+                    this.color = currentGroundTrack.getColor();
+
+                    writePosition(packet);
+                    writeCzmlPath(packet);
+                    if (displayLinkSatellite) {
+                        final Reference groundTrackReference = new Reference(currentGroundTrack.getId() + DEFAULT_H_POSITION);
+                        final Reference satelliteReference = new Reference(currentGroundTrack.getSatellite().getId() + DEFAULT_H_POSITION);
+                        final Reference[] referenceList = Arrays.asList(groundTrackReference, satelliteReference).toArray(new Reference[0]);
+                        final Iterable<Reference> referenceIterable = convertToIterable(referenceList);
+                        final CzmlShow show = new CzmlShow(true, Header.MASTER_CLOCK.getAvailability());
+                        final List<CzmlShow> shows = new ArrayList<>();
+                        shows.add(show);
+                        final Polyline polylineInput = new Polyline(currentGroundTrack.getColor());
+                        polylineInput.writePolylineOfVisibility(packet, OUTPUT, referenceIterable, shows);
+                    }
+                }
+            }
+            cleanObject();
+        }
+    }
+
+    @Override
+    public StringWriter getStringWriter() {
+        return STRING_WRITER;
+    }
+
+    @Override
+    public void cleanObject() {
+        this.setId("");
+        this.setName("");
+        this.setAvailability(null);
+        this.satellite = null;
+        this.initialCartesiansSatellite = new ArrayList<>();
+        this.clampedPositionOnBody = null;
+        this.allGroundTracks = new ArrayList<>();
+    }
+
+    // Getters
+
+    public Satellite getSatellite() {
+        return satellite;
+    }
+
+    public SatellitePosition getClampedPositionOnBody() {
+        return clampedPositionOnBody;
+    }
+
+    public List<Cartesian> getInitialCartesiansSatellite() {
+        return initialCartesiansSatellite;
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
+    public List<GroundTrack> getAllGroundTracks() {
+        if (allGroundTracks.isEmpty()) {
+            throw new RuntimeException("The ground tracks are empty, either the file is already written or the ground track is not build with a constellation");
+        }
+        return allGroundTracks;
+    }
+
+    public void displayLinkSatellite() {
+        displayLinkSatellite = true;
+    }
+
+    private void writePosition(final PacketCesiumWriter packet) {
+        try (PositionCesiumWriter positionWriter = packet.getPositionWriter()) {
+            positionWriter.open(OUTPUT);
+            positionWriter.writeReferenceFrame(clampedPositionOnBody.getReferenceFrame());
+            positionWriter.writeInterpolationAlgorithm(clampedPositionOnBody.getCesiumInterpolationAlgorithm());
+            positionWriter.writeInterpolationDegree(clampedPositionOnBody.getInterpolationDegree());
+            positionWriter.writeCartesian(clampedPositionOnBody.getDates(), clampedPositionOnBody.getPositions());
+        }
+    }
+
+    private void writeCzmlPath(final PacketCesiumWriter packet) {
+        try (PathCesiumWriter pathProperty = packet.openPathProperty()) {
+            if (!satellite.getDisplayOnlyOnePeriod()) {
+                final Path path = new Path(getAvailability(), packet);
+                try (BooleanCesiumWriter showPath = pathProperty.openShowProperty()) {
+                    showPath.writeInterval(getAvailability().getStart(), getAvailability().getStop());
+                    showPath.writeBoolean(path.getShow());
+                }
+            } else {
+                final Path path = new Path(getAvailability(), packet);
+                pathProperty.writeLeadTimeProperty(satellite.getOrbits().get(0).getKeplerianPeriod());
+                pathProperty.writeTrailTimeProperty(0.0);
+                try (BooleanCesiumWriter showPath = pathProperty.openShowProperty()) {
+                    showPath.writeInterval(getAvailability().getStart(), getAvailability().getStop());
+                    showPath.writeBoolean(path.getShow());
+                }
+            }
+
+            try (PolylineMaterialCesiumWriter materialWriter = pathProperty.getMaterialWriter()) {
+                materialWriter.open(OUTPUT);
+                OUTPUT.writeStartObject();
+                try (SolidColorMaterialCesiumWriter solidColorWriter = materialWriter.getSolidColorWriter()) {
+                    solidColorWriter.open(OUTPUT);
+                    solidColorWriter.writeColorProperty(color);
+                }
+                OUTPUT.writeEndObject();
+            }
+        }
+    }
+
+    private static Iterable<Reference> convertToIterable(final Reference[] array) {
+        return () -> Arrays.stream(array).iterator();
     }
 }
+

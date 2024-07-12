@@ -58,8 +58,8 @@ public class SatelliteAttitude extends AbstractPrimaryObject implements CzmlPrim
     private Satellite satellite;
 
     public SatelliteAttitude(final Satellite satellite) throws URISyntaxException, IOException {
-        this.setId("REFERENCE SYSTEM/" + satellite.getId());
-        this.setName("Reference system of : " + satellite.getName());
+        this.setId("Attitude/" + satellite.getId());
+        this.setName("Attitude of : " + satellite.getName());
         this.setAvailability(satellite.getAvailability());
         this.reference = new Reference(satellite.getId() + DEFAULT_H_POSITION);
         this.satellite = satellite;

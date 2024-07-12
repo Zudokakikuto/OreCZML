@@ -192,7 +192,7 @@ public class CovarianceDisplay extends AbstractPrimaryObject implements CzmlPrim
      * @param oem : An OEMFile in input.
      * @param color : The color of the ellipsoid.*/
     public CovarianceDisplay(final Oem oem, final Color color) throws URISyntaxException, IOException {
-        System.out.println("CHANGER TIMESCALE COVARIANCE DISPLAY");
+        //System.out.println("CHANGER TIMESCALE COVARIANCE DISPLAY");
         final Satellite satelliteInit = new Satellite(oem);
 
         final List<List<CartesianCovariance>> listOfCovariances = new ArrayList<>();
