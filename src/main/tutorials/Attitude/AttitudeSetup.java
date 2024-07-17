@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+package Attitude;/* Copyright 2002-2024 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -14,32 +14,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
+import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
-import org.orekit.bodies.OneAxisEllipsoid;
-import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Constellation;
+import org.orekit.attitudes.LofOffset;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Header;
-import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.GroundTrack;
+import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Satellite;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.HeaderObjects.Clock;
 import org.orekit.czml.Outputs.CzmlFile;
 import org.orekit.data.DataContext;
 import org.orekit.data.DataProvider;
 import org.orekit.data.DirectoryCrawler;
 import org.orekit.errors.OrekitException;
+import org.orekit.forces.ForceModel;
+import org.orekit.forces.gravity.HolmesFeatherstoneAttractionModel;
+import org.orekit.forces.gravity.potential.GravityFieldFactory;
+import org.orekit.forces.gravity.potential.NormalizedSphericalHarmonicsProvider;
 import org.orekit.frames.Frame;
 import org.orekit.frames.FramesFactory;
+import org.orekit.frames.LOFType;
 import org.orekit.orbits.KeplerianOrbit;
+import org.orekit.orbits.OrbitType;
 import org.orekit.orbits.PositionAngleType;
+import org.orekit.propagation.SpacecraftState;
+import org.orekit.propagation.numerical.NumericalPropagator;
 import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScale;
 import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.Constants;
-import org.orekit.utils.IERSConventions;
 
+import java.awt.Color;
 import java.io.File;
 
-public class ConstellationGroundTracks {
+public class AttitudeSetup {
 
-    private ConstellationGroundTracks() {
+    private AttitudeSetup() {
         // empty
     }
 
@@ -58,6 +67,7 @@ public class ConstellationGroundTracks {
         final String outputPath = root + "/Output";
         final String outputName = "Output.czml";
         final String output = outputPath + "/" + outputName;
+        final String IssModel = root + "/src/main/resources/ISSModel.glb";
 
         // File created
         final CzmlFile file = new CzmlFile(output);
@@ -70,26 +80,41 @@ public class ConstellationGroundTracks {
         final AbsoluteDate finalDate = startDate.shiftedBy(durationOfSimulation);
         final Clock clock = new Clock(startDate, finalDate, UTC, stepBetweenEachInstant);
 
-        final Header header = new Header("Visualisation of a ground track of a satellite", clock);
+        final Header header = new Header("Setup of the attitude of a satellite", clock);
         file.addObject(header);
 
-        // Build of an MEO orbit
+        //// Build of a satellite with a propagator
+        // Build of a LEO orbit
         final Frame EME2000 = FramesFactory.getEME2000();
-        final KeplerianOrbit initialOrbit = new KeplerianOrbit(10878000, 0, FastMath.toRadians(80), 0, FastMath.toRadians(0), FastMath.toRadians(0), PositionAngleType.MEAN, EME2000, startDate, Constants.WGS84_EARTH_MU);
+        final KeplerianOrbit initialOrbit = new KeplerianOrbit(7878000, 0, FastMath.toRadians(20), 0, FastMath.toRadians(0), FastMath.toRadians(0), PositionAngleType.MEAN, EME2000, startDate, Constants.WGS84_EARTH_MU);
 
-        // Creation of the Constellation
-        final Constellation constellation = new Constellation(10, 10, 1, initialOrbit);
-        file.addObject(constellation);
+        final SpacecraftState initialState = new SpacecraftState(initialOrbit);
 
-        // Creation of the model of the earth.
-        final IERSConventions IERS = IERSConventions.IERS_2010;
-        final Frame ITRF = FramesFactory.getITRF(IERS, true);
-        final OneAxisEllipsoid earth = new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS, Constants.WGS84_EARTH_FLATTENING, ITRF);
+        // Build of the propagator
+        final double positionTolerance = 10.0;
+        final double minStep = 0.001;
+        final double maxStep = 1000.0;
 
-        // Build of the ground track
-        final GroundTrack groundTrack = new GroundTrack(constellation, earth);
-        groundTrack.displayLinkSatellite();
-        file.addObject(groundTrack);
+        final double[][] tolerances = NumericalPropagator.tolerances(positionTolerance, initialOrbit, OrbitType.CARTESIAN);
+        final AdaptiveStepsizeIntegrator integrator = new DormandPrince853Integrator(minStep, maxStep, tolerances[0], tolerances[1]);
+
+        final NumericalPropagator propagator = new NumericalPropagator(integrator);
+
+        final NormalizedSphericalHarmonicsProvider provider = GravityFieldFactory.getNormalizedProvider(10, 10);
+        final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(EME2000, provider);
+
+        propagator.setOrbitType(OrbitType.CARTESIAN);
+        propagator.addForceModel(holmesFeatherstone);
+        propagator.setInitialState(initialState);
+
+        final LofOffset lofOffset = new LofOffset(EME2000, LOFType.TNW);
+        propagator.setAttitudeProvider(lofOffset);
+
+        // Creation of the satellite
+        final Satellite satellite = new Satellite(propagator, finalDate, IssModel, Color.RED);
+        satellite.displayOnlyOnePeriod();
+        satellite.displaySatelliteAttitude();
+        file.addObject(satellite);
 
         // Writing in the file
         file.write();

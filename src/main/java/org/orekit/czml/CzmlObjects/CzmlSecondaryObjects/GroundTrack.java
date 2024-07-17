@@ -16,7 +16,14 @@
  */
 package org.orekit.czml.CzmlObjects.CzmlSecondaryObjects;
 
-import cesiumlanguagewriter.*;
+import cesiumlanguagewriter.BooleanCesiumWriter;
+import cesiumlanguagewriter.Cartesian;
+import cesiumlanguagewriter.PacketCesiumWriter;
+import cesiumlanguagewriter.PathCesiumWriter;
+import cesiumlanguagewriter.PolylineMaterialCesiumWriter;
+import cesiumlanguagewriter.PositionCesiumWriter;
+import cesiumlanguagewriter.Reference;
+import cesiumlanguagewriter.SolidColorMaterialCesiumWriter;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.orekit.bodies.BodyShape;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.AbstractPrimaryObject;
@@ -35,7 +42,6 @@ import java.awt.Color;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
-import java.sql.Ref;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

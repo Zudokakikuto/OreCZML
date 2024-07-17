@@ -49,9 +49,9 @@ V2.0.0 :
         TUTORIALS :
             LowEarthOrbitSatellite : An example of how to setup a basic LEO satellite
             MultipleGroundStations : An example of how to setup several ground stations
-            LineOfVisuSatStation   : An example of how to setup a line of visibility between a satellite and a ground station
-            ConstellationVisu      : An example of how to setup a visualisation of a constellation with several ground stations
-            SatelliteTracking      : An example of how several ground station can track a single satellite
+            TrackingVisu.LineOfVisuSatStation   : An example of how to setup a line of visibility between a satellite and a ground station
+            TrackingVisu.ConstellationVisu      : An example of how to setup a visualisation of a constellation with several ground stations
+            TrackingVisu.SatelliteTracking      : An example of how several ground station can track a single satellite
             ModelLoading           : An example of how to setup a 3D model in the scene
     
     Removed : 

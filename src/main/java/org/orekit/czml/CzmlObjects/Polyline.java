@@ -272,6 +272,7 @@ public class Polyline {
         try (PolylineCesiumWriter polylineWriter = packet.getPolylineWriter()) {
             polylineWriter.open(output);
             polylineWriter.writeWidthProperty(this.getWidth());
+            polylineWriter.writeArcTypeProperty(CesiumArcType.NONE);
             try (PolylineMaterialCesiumWriter materialWriter = polylineWriter.getMaterialWriter()) {
                 materialWriter.open(output);
                 output.writeStartObject();
@@ -287,11 +288,14 @@ public class Polyline {
         }
     }
 
-    // Write with references
+    /** This function aims at writing a polyline defined with references.
+     * @param packet : The packet where the polyline is written.
+     * @param output : The cesium output stream that write in the czml file.*/
     public void writeReferencesPolyline(final PacketCesiumWriter packet, final CesiumOutputStream output) {
         try (PolylineCesiumWriter polylineWriter = packet.getPolylineWriter()) {
             polylineWriter.open(output);
             polylineWriter.writeWidthProperty(this.getWidth());
+            polylineWriter.writeArcTypeProperty(CesiumArcType.NONE);
             try (PolylineMaterialCesiumWriter materialWriter = polylineWriter.getMaterialWriter()) {
                 materialWriter.open(output);
                 output.writeStartObject();
@@ -384,13 +388,20 @@ public class Polyline {
         }
     }
 
-    // Write references
+    /** This function take the first and second reference defined in the constructor and build a polyline with them.
+     * @param polylineCesiumWriter : The writer that can write inside a polyline.
+     * @param output : The cesium output stream that write inside the czml file.*/
     private void writeReferences(final PolylineCesiumWriter polylineCesiumWriter, final CesiumOutputStream output) {
-        try (PositionListCesiumWriter positionWriter = polylineCesiumWriter.getPositionsWriter()) {
-            positionWriter.open(output);
-            final Reference[] references = Arrays.asList(firstReference, secondReference).toArray(new Reference[0]);
-            final Iterable<Reference> listOfReferences = convertToIterable(references);
-            positionWriter.writeReferences(listOfReferences);
+        if (firstReference == null || secondReference == null) {
+            throw new RuntimeException("The polyline was not defined with references, so it cannot be written that way.");
+        }
+        else {
+            try (PositionListCesiumWriter positionWriter = polylineCesiumWriter.getPositionsWriter()) {
+                positionWriter.open(output);
+                final Reference[] references = Arrays.asList(firstReference, secondReference).toArray(new Reference[0]);
+                final Iterable<Reference> listOfReferences = convertToIterable(references);
+                positionWriter.writeReferences(listOfReferences);
+            }
         }
     }
 

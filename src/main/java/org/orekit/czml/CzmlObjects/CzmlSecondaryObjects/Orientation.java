@@ -27,6 +27,7 @@ import cesiumlanguagewriter.UnitQuaternion;
 import org.hipparchus.geometry.euclidean.threed.Rotation;
 import org.hipparchus.geometry.euclidean.threed.RotationConvention;
 
+import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.orekit.attitudes.Attitude;
 import org.orekit.frames.Frame;
 import org.orekit.frames.FramesFactory;
@@ -64,9 +65,14 @@ public class Orientation implements CzmlSecondaryObject {
     private int interpolationDegree;
     /** .*/
     private boolean multipleAttitudes;
+    /** .*/
+    private List<Attitude> attitudes = new ArrayList<>();
+    /** .*/
+    private Attitude singleAttitude;
 
     public Orientation(final Attitude attitude, final Frame satelliteFrame, final Rotation optionalRotation) {
         this.multipleAttitudes = false;
+        singleAttitude = attitude;
         final Frame ITRF = FramesFactory.getITRF(IERSConventions.IERS_2010, true);
         final Transform transformSatelliteFrameToITRF = satelliteFrame.getTransformTo(ITRF, attitude.getDate());
         final Rotation rotationFromSatelliteFrameToITRF = transformSatelliteFrameToITRF.getRotation();
@@ -81,12 +87,18 @@ public class Orientation implements CzmlSecondaryObject {
         this.interpolationDegree = 5;
     }
 
+    public Orientation(final List<Attitude> attitudes, final Frame satelliteFrame) {
+        this(attitudes, satelliteFrame, null);
+    }
+
     public Orientation(final List<Attitude> attitudes, final Frame satelliteFrame, final Rotation optionalRotation) {
         this.multipleAttitudes = true;
+        this.attitudes = attitudes;
         final JulianDate startDate = absoluteDateToJulianDate(attitudes.get(0).getDate());
         final JulianDate finalDate = absoluteDateToJulianDate(attitudes.get(attitudes.size() - 1).getDate());
         final Frame ITRF = FramesFactory.getITRF(IERSConventions.IERS_2010, true);
         this.interval = new TimeInterval(startDate, finalDate);
+
         for (final Attitude currentAttitude : attitudes) {
             final JulianDate currentDate = absoluteDateToJulianDate(currentAttitude.getDate());
             this.julianDates.add(currentDate);
@@ -94,16 +106,25 @@ public class Orientation implements CzmlSecondaryObject {
             final Transform transformSatelliteFrameToITRF = ITRF.getTransformTo(satelliteFrame, currentAttitude.getDate());
             final Rotation rotationFromSatelliteFrameToITRF = transformSatelliteFrameToITRF.getRotation();
             final Rotation satelliteRotation = currentAttitude.getRotation();
-            //final Rotation rotation180 = new Rotation(Vector3D.PLUS_I, FastMath.PI, RotationConvention.VECTOR_OPERATOR);
-            //final Rotation satelliteRotation180 = rotation180.compose(satelliteRotation, RotationConvention.VECTOR_OPERATOR);
-            final Rotation currentRotation = satelliteRotation.compose(rotationFromSatelliteFrameToITRF, RotationConvention.VECTOR_OPERATOR);
-
-            final double currentQ0 = currentRotation.getQ0();
-            final double currentQ1 = currentRotation.getQ1();
-            final double currentQ2 = currentRotation.getQ2();
-            final double currentQ3 = currentRotation.getQ3();
-            final UnitQuaternion currentUnitQuaternion = new UnitQuaternion(currentQ0, currentQ1, currentQ2, currentQ3);
-            multipleQuaternions.add(currentUnitQuaternion);
+            if (optionalRotation == null) {
+                final Rotation currentRotation = satelliteRotation.compose(rotationFromSatelliteFrameToITRF, RotationConvention.VECTOR_OPERATOR);
+                final double currentQ0 = currentRotation.getQ0();
+                final double currentQ1 = currentRotation.getQ1();
+                final double currentQ2 = currentRotation.getQ2();
+                final double currentQ3 = currentRotation.getQ3();
+                final UnitQuaternion currentUnitQuaternion = new UnitQuaternion(currentQ0, currentQ1, currentQ2, currentQ3);
+                multipleQuaternions.add(currentUnitQuaternion);
+            }
+            else {
+                final Rotation tempRotation = satelliteRotation.compose(rotationFromSatelliteFrameToITRF, RotationConvention.VECTOR_OPERATOR);
+                final Rotation currentRotation = tempRotation.compose(optionalRotation, RotationConvention.VECTOR_OPERATOR);
+                final double currentQ0 = currentRotation.getQ0();
+                final double currentQ1 = currentRotation.getQ1();
+                final double currentQ2 = currentRotation.getQ2();
+                final double currentQ3 = currentRotation.getQ3();
+                final UnitQuaternion currentUnitQuaternion = new UnitQuaternion(currentQ0, currentQ1, currentQ2, currentQ3);
+                multipleQuaternions.add(currentUnitQuaternion);
+            }
         }
         this.interpolationAlgorithm = CesiumInterpolationAlgorithm.LAGRANGE;
         this.interpolationDegree = 5;
@@ -142,6 +163,24 @@ public class Orientation implements CzmlSecondaryObject {
 
     public TimeInterval getInterval() {
         return interval;
+    }
+
+    public Attitude getSingleAttitude() {
+        if (singleAttitude == null) {
+            throw new RuntimeException("Attitudes were created in multiples, can't return a single attitude, use getAttitudes instead.");
+        }
+        else {
+            return singleAttitude;
+        }
+    }
+
+    public List<Attitude> getAttitudes() {
+        if (attitudes.isEmpty()) {
+            throw new RuntimeException("Attitude is build singularily, can't return multiple attitudes, use getSingleAttitude instead.");
+        }
+        else {
+            return attitudes;
+        }
     }
 
     public List<JulianDate> getJulianDates() {

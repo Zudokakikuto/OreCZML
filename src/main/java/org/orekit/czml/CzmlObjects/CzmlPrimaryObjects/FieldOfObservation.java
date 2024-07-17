@@ -35,13 +35,14 @@ import org.orekit.propagation.SpacecraftState;
 import org.orekit.utils.Constants;
 import org.orekit.utils.IERSConventions;
 
+import java.awt.Color;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LineOfObservation extends AbstractPrimaryObject implements CzmlPrimaryObject {
+public class FieldOfObservation extends AbstractPrimaryObject implements CzmlPrimaryObject {
 
     /** .*/
     public static final String DEFAULT_ID = "LINE_OBSERVATION/";
@@ -51,6 +52,8 @@ public class LineOfObservation extends AbstractPrimaryObject implements CzmlPrim
     public static final double DEFAULT_ANGULAR_STEP = FastMath.toRadians(36);
     /** .*/
     public static final String DEFAULT_H_POSITION = "#position";
+    /** .*/
+    public static final Color DEFAULT_COLOR = Color.CYAN;
 
     /** .*/
     private Reference referenceSatellite;
@@ -65,6 +68,8 @@ public class LineOfObservation extends AbstractPrimaryObject implements CzmlPrim
     /** .*/
     private Polyline line;
     /** .*/
+    private Color polylineColor;
+    /** .*/
     private Transform initialFovToBody;
     /** .*/
     private boolean noDetection;
@@ -76,21 +81,33 @@ public class LineOfObservation extends AbstractPrimaryObject implements CzmlPrim
     private List<List<List<Cartesian>>> cartesianListFootPrint = new ArrayList<>();
 
     @DefaultDataContext
-    public LineOfObservation(final Satellite satellite, final FieldOfView fieldOfView, final Transform fovToBodyInput) {
+    public FieldOfObservation(final Satellite satellite, final FieldOfView fieldOfView, final Transform fovToBodyInput) {
         this(satellite, fieldOfView, fovToBodyInput,  new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS,
                 Constants.WGS84_EARTH_FLATTENING, FramesFactory.getITRF(IERSConventions.IERS_2010, true)),
-                DEFAULT_ANGULAR_STEP);
+                DEFAULT_ANGULAR_STEP,
+                DEFAULT_COLOR);
     }
 
-    public LineOfObservation(final Satellite satellite, final FieldOfView fieldOfView, final Transform fovToBody, final OneAxisEllipsoid body) {
-        this(satellite, fieldOfView, fovToBody, body, DEFAULT_ANGULAR_STEP);
+    public FieldOfObservation(final Satellite satellite, final FieldOfView fieldOfView, final Transform fovToBodyInput, final Color color) {
+        this(satellite, fieldOfView, fovToBodyInput, new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS,
+                Constants.WGS84_EARTH_FLATTENING, FramesFactory.getITRF(IERSConventions.IERS_2010, true)),
+                DEFAULT_ANGULAR_STEP, color);
+    }
+
+    public FieldOfObservation(final Satellite satellite, final FieldOfView fieldOfView, final Transform fovToBody, final OneAxisEllipsoid body) {
+        this(satellite, fieldOfView, fovToBody, body, DEFAULT_ANGULAR_STEP, DEFAULT_COLOR);
+    }
+
+    public FieldOfObservation(final Satellite satellite, final FieldOfView fieldOfView, final Transform fovToBody, final OneAxisEllipsoid body, final Color color) {
+        this(satellite, fieldOfView, fovToBody, body, DEFAULT_ANGULAR_STEP, color);
     }
 
     @SuppressWarnings("checkstyle:Regexp")
-    public LineOfObservation(final Satellite satellite, final FieldOfView fov, final Transform initialFovBody, final OneAxisEllipsoid body, final double angularStep) {
+    public FieldOfObservation(final Satellite satellite, final FieldOfView fov, final Transform initialFovBody, final OneAxisEllipsoid body, final double angularStep, final Color color) {
         this.setId(DEFAULT_ID + fov.toString());
         this.setName(DEFAULT_NAME + satellite.getName());
         this.initialFovToBody = initialFovBody;
+        this.polylineColor = color;
         referenceSatellite = new Reference(satellite.getId() + DEFAULT_H_POSITION);
         this.body = body;
         initialFootprint = fov.getFootprint(initialFovBody, body, angularStep);
@@ -117,9 +134,9 @@ public class LineOfObservation extends AbstractPrimaryObject implements CzmlPrim
     public void writeCzmlBlock() throws URISyntaxException, IOException {
         OUTPUT.setPrettyFormatting(true);
         if (!noDetection) {
-            for (int i = 0; i < footprintsInTime.size(); i++) {
-                for (int j = 0; j < footprintsInTime.get(i).size(); j++) {
-                    final AbstractPointOnEarth currentPointOnEarth = new AbstractPointOnEarth(julianDates, footprintsInTime.get(i).get(j), body);
+            for (List<List<GeodeticPoint>> lists : footprintsInTime) {
+                for (List<GeodeticPoint> list : lists) {
+                    final AbstractPointOnEarth currentPointOnEarth = new AbstractPointOnEarth(julianDates, list, body);
                     allPoints.add(currentPointOnEarth);
                     currentPointOnEarth.writeCzmlBlock();
                     groundReferences.add(new Reference(currentPointOnEarth.getId() + DEFAULT_H_POSITION));
@@ -128,7 +145,7 @@ public class LineOfObservation extends AbstractPrimaryObject implements CzmlPrim
 
             for (int i = 0; i < footprintsInTime.size(); i++) {
                 try (PacketCesiumWriter packet = STREAM.openPacket(OUTPUT)) {
-                    final Polyline currentPolyline = new Polyline(referenceSatellite, groundReferences.get(i));
+                    final Polyline currentPolyline = new Polyline(referenceSatellite, groundReferences.get(i), polylineColor);
                     currentPolyline.setArcType(CesiumArcType.NONE);
                     packet.writeId(currentPolyline.toString());
                     packet.writeName("Line of the Line of observation : " + currentPolyline);
@@ -142,7 +159,7 @@ public class LineOfObservation extends AbstractPrimaryObject implements CzmlPrim
                 final Reference currentPointReference = new Reference(currentPoint.getId() + DEFAULT_H_POSITION);
                 final Reference secondPointReference = new Reference(nextPoint.getId() + DEFAULT_H_POSITION);
                 try (PacketCesiumWriter packet = STREAM.openPacket(OUTPUT)) {
-                    final Polyline currentPolyline = new Polyline(currentPointReference, secondPointReference);
+                    final Polyline currentPolyline = new Polyline(currentPointReference, secondPointReference, polylineColor);
                     currentPolyline.setArcType(CesiumArcType.NONE);
                     packet.writeId(currentPolyline.toString());
                     packet.writeName("Outline of the line of observation : " + currentPolyline);
@@ -154,7 +171,7 @@ public class LineOfObservation extends AbstractPrimaryObject implements CzmlPrim
             final Reference lastPointReference = new Reference(lastPoint.getId() + DEFAULT_H_POSITION);
             final Reference firstPointReference = new Reference(firstPoint.getId() + DEFAULT_H_POSITION);
             try (PacketCesiumWriter packet = STREAM.openPacket(OUTPUT)) {
-                final Polyline currentPolyline = new Polyline(lastPointReference, firstPointReference);
+                final Polyline currentPolyline = new Polyline(lastPointReference, firstPointReference, polylineColor);
                 currentPolyline.setArcType(CesiumArcType.NONE);
                 packet.writeId(currentPolyline.toString());
                 packet.writeName("Outline of the last line of observation : " + currentPolyline);
@@ -170,7 +187,16 @@ public class LineOfObservation extends AbstractPrimaryObject implements CzmlPrim
 
     @Override
     public void cleanObject() {
-
+        groundReferences = new ArrayList<>();
+        initialFootprint = new ArrayList<>();
+        footprintsInTime = new ArrayList<>();
+        allPoints = new ArrayList<>();
+        julianDates = new ArrayList<>();
+        cartesianListFootPrint = new ArrayList<>();
+        referenceSatellite = null;
+        line = null;
+        body = null;
+        initialFovToBody = null;
     }
 
     private List<List<List<Cartesian>>> extractCartesianFromGeodetic(final List<List<List<GeodeticPoint>>> geodeticPoints) {

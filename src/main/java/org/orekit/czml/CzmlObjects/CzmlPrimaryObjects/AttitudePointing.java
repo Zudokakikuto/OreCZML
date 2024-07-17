@@ -1,0 +1,153 @@
+/* Copyright 2002-2024 CS GROUP
+ * Licensed to CS GROUP (CS) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * CS licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.orekit.czml.CzmlObjects.CzmlPrimaryObjects;
+
+import cesiumlanguagewriter.Cartesian;
+import cesiumlanguagewriter.JulianDate;
+import cesiumlanguagewriter.PacketCesiumWriter;
+import cesiumlanguagewriter.Reference;
+import cesiumlanguagewriter.TimeInterval;
+import cesiumlanguagewriter.UnitQuaternion;
+import org.hipparchus.geometry.euclidean.threed.Line;
+import org.hipparchus.geometry.euclidean.threed.Rotation;
+import org.hipparchus.geometry.euclidean.threed.Vector3D;
+import org.orekit.attitudes.Attitude;
+import org.orekit.bodies.GeodeticPoint;
+import org.orekit.bodies.OneAxisEllipsoid;
+import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.Orientation;
+import org.orekit.czml.CzmlObjects.Polyline;
+import org.orekit.frames.Frame;
+import org.orekit.propagation.SpacecraftState;
+import org.orekit.time.AbsoluteDate;
+import java.awt.Color;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
+
+public class AttitudePointing extends AbstractPrimaryObject implements CzmlPrimaryObject {
+
+    /** .*/
+    public static final String DEFAULT_NAME = "Attitude pointing of : ";
+    /** .*/
+    public static final String DEFAULT_ID = "ATTITUDE_POINTING/";
+    /** .*/
+    public static final String DEFAULT_H_POSITION = "#position";
+    /** .*/
+    public static final Color DEFAULT_COLOR = Color.GREEN;
+
+    /** .*/
+    private Orientation satelliteOrientation;
+    /** .*/
+    private Polyline attitudePointingPolyline;
+    /** .*/
+    private OneAxisEllipsoid body;
+    /** .*/
+    private List<UnitQuaternion> unitQuaternions = new ArrayList<>();
+    /** .*/
+    private List<Vector3D> directions = new ArrayList<>();
+    /** .*/
+    private List<Line> lines = new ArrayList<>();
+    /** .*/
+    private List<GeodeticPoint> projectedAttitudes = new ArrayList<>();
+    /** .*/
+    private List<JulianDate> julianDates = new ArrayList<>();
+    /** .*/
+    private AbstractPointOnEarth pointOnEarth;
+    /** .*/
+    private List<Attitude> satelliteAttitudes = new ArrayList<>();
+    /** .*/
+    private List<Cartesian> satelliteCartesians = new ArrayList<>();
+    /** .*/
+    private boolean show;
+
+    public AttitudePointing(final Satellite satellite, final OneAxisEllipsoid body, final Vector3D direction) {
+        this(satellite, body, direction, Header.MASTER_CLOCK.getAvailability());
+    }
+
+    public AttitudePointing(final Satellite satellite, final OneAxisEllipsoid body, final Vector3D direction, final TimeInterval availability) {
+        this(satellite, body, direction, availability, DEFAULT_COLOR);
+    }
+
+    public AttitudePointing(final Satellite satellite, final OneAxisEllipsoid body, final Vector3D direction, final Color color) {
+        this(satellite, body, direction, Header.MASTER_CLOCK.getAvailability(), color);
+    }
+
+    public AttitudePointing(final Satellite satellite, final OneAxisEllipsoid body, final Vector3D direction, final TimeInterval availability, final Color color) {
+        this.setId(DEFAULT_ID + satellite.getId());
+        this.show = true;
+        this.setName(DEFAULT_NAME + satellite.getName());
+        this.setAvailability(availability);
+        final List<SpacecraftState> spacecraftStateList = satellite.getAllSpaceCraftStates();
+        this.satelliteOrientation = satellite.getOrientation();
+        this.unitQuaternions = satelliteOrientation.getMultipleQuaternions();
+        this.satelliteAttitudes = satellite.getAttitudes();
+        this.satelliteCartesians = satellite.getCartesianArraylist();
+        this.julianDates = satelliteOrientation.getJulianDates();
+        final Frame currentFrame = satellite.getFrame();
+
+        for (int i = 0; i < satelliteAttitudes.size(); i++) {
+            final Cartesian currentCartesian = satelliteCartesians.get(i);
+            final Attitude currentAttitude = satelliteAttitudes.get(i);
+            final Rotation currentRotation = currentAttitude.getRotation();
+            final AbsoluteDate currentDate = julianDateToAbsoluteDate(julianDates.get(i), Header.TIME_SCALE);
+            final Vector3D origin = new Vector3D(currentCartesian.getX(), currentCartesian.getY(), currentCartesian.getZ());
+            final Vector3D inputDirection = currentRotation.applyInverseTo(direction);
+            final Vector3D closestToGround = body.projectToGround(origin, currentDate, currentFrame);
+            final Line currentLine = Line.fromDirection(origin, inputDirection, 1.0);
+            lines.add(currentLine);
+            final GeodeticPoint intersectionGeodetic = body.getIntersectionPoint(currentLine, closestToGround, currentFrame, currentDate);
+            projectedAttitudes.add(intersectionGeodetic);
+        }
+        this.pointOnEarth = new AbstractPointOnEarth(julianDates, projectedAttitudes, body);
+        final Reference satelliteReference = new Reference(satellite.getId() + DEFAULT_H_POSITION);
+        final Reference groundReference = new Reference(pointOnEarth.getId() + DEFAULT_H_POSITION);
+        this.attitudePointingPolyline = new Polyline(satelliteReference, groundReference, color);
+    }
+
+    @Override
+    public void writeCzmlBlock() throws URISyntaxException, IOException {
+        OUTPUT.setPrettyFormatting(true);
+        pointOnEarth.writeCzmlBlock();
+        try (PacketCesiumWriter packet = STREAM.openPacket(OUTPUT)) {
+            packet.writeId(getId());
+            packet.writeName(getName());
+            packet.writeAvailability(getAvailability());
+            attitudePointingPolyline.writeReferencesPolyline(packet, OUTPUT);
+        }
+    }
+
+    @Override
+    public StringWriter getStringWriter() {
+        return STRING_WRITER;
+    }
+
+    @Override
+    public void cleanObject() {
+        satelliteOrientation = null;
+        attitudePointingPolyline = null;
+        body = null;
+        unitQuaternions = new ArrayList<>();
+        lines = new ArrayList<>();
+        projectedAttitudes = new ArrayList<>();
+        julianDates = new ArrayList<>();
+        pointOnEarth = null;
+        show = true;
+    }
+}
+

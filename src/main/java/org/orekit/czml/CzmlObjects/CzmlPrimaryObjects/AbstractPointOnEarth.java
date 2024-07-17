@@ -41,10 +41,6 @@ public class AbstractPointOnEarth extends AbstractPrimaryObject implements CzmlP
     public static final String DEFAULT_H_POSITION = "#position";
 
     /** .*/
-    private String name;
-    /** .*/
-    private String Id;
-    /** .*/
     private List<GeodeticPoint> footprintsInTime = new ArrayList<>();
     /** .*/
     private List<Vector3D> positionsList = new ArrayList<>();
@@ -59,13 +55,17 @@ public class AbstractPointOnEarth extends AbstractPrimaryObject implements CzmlP
         this.setName(DEFAULT_NAME + footprintsInTime.toString());
         this.setAvailability(Header.MASTER_CLOCK.getAvailability());
         this.julianDates = julianDates;
-        for (int i = 0; i < geodeticPoints.size(); i++) {
-            final GeodeticPoint currentGeodeticPoint = geodeticPoints.get(i);
-            final TopocentricFrame topocentricFrame = new TopocentricFrame(body, currentGeodeticPoint, "");
-            positionsList.add(topocentricFrame.getCartesianPoint());
-            final Cartesian currentCartesian = new Cartesian(topocentricFrame.getCartesianPoint().getX(),
-                            topocentricFrame.getCartesianPoint().getY(), topocentricFrame.getCartesianPoint().getZ());
-            cartesians.add(currentCartesian);
+        for (final GeodeticPoint currentGeodeticPoint : geodeticPoints) {
+            if (currentGeodeticPoint == null) {
+                cartesians.add(new Cartesian(0, 0, 0));
+            }
+            else {
+                final TopocentricFrame topocentricFrame = new TopocentricFrame(body, currentGeodeticPoint, "");
+                positionsList.add(topocentricFrame.getCartesianPoint());
+                final Cartesian currentCartesian = new Cartesian(topocentricFrame.getCartesianPoint().getX(),
+                        topocentricFrame.getCartesianPoint().getY(), topocentricFrame.getCartesianPoint().getZ());
+                cartesians.add(currentCartesian);
+            }
         }
     }
 
@@ -98,7 +98,6 @@ public class AbstractPointOnEarth extends AbstractPrimaryObject implements CzmlP
     }
 
     // Gets
-
 
     public List<GeodeticPoint> getFootprintsInTime() {
         return footprintsInTime;

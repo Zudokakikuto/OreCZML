@@ -1,10 +1,27 @@
+/* Copyright 2002-2024 CS GROUP
+ * Licensed to CS GROUP (CS) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * CS licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
 import org.orekit.attitudes.LofOffset;
-import org.orekit.attitudes.NadirPointing;
 import org.orekit.bodies.OneAxisEllipsoid;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Header;
+import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.FieldOfObservation;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Satellite;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.HeaderObjects.Clock;
 import org.orekit.czml.Outputs.CzmlFile;
@@ -19,6 +36,10 @@ import org.orekit.forces.gravity.potential.NormalizedSphericalHarmonicsProvider;
 import org.orekit.frames.Frame;
 import org.orekit.frames.FramesFactory;
 import org.orekit.frames.LOFType;
+import org.orekit.frames.Transform;
+//import org.orekit.geometry.fov.CircularFieldOfView;
+import org.orekit.geometry.fov.DoubleDihedraFieldOfView;
+import org.orekit.geometry.fov.FieldOfView;
 import org.orekit.orbits.KeplerianOrbit;
 import org.orekit.orbits.OrbitType;
 import org.orekit.orbits.PositionAngleType;
@@ -33,9 +54,9 @@ import org.orekit.utils.IERSConventions;
 import java.awt.Color;
 import java.io.File;
 
-public class AttitudeSetup {
+public class FieldOfObservationSatellite {
 
-    private AttitudeSetup() {
+    private FieldOfObservationSatellite() {
         // empty
     }
 
@@ -67,8 +88,13 @@ public class AttitudeSetup {
         final AbsoluteDate finalDate = startDate.shiftedBy(durationOfSimulation);
         final Clock clock = new Clock(startDate, finalDate, UTC, stepBetweenEachInstant);
 
-        final Header header = new Header("Setup of the attitude of a satellite", clock);
+        final Header header = new Header("Setup of a satellite with a line of sight", clock);
         file.addObject(header);
+
+        // Creation of the model of the earth.
+        final IERSConventions IERS = IERSConventions.IERS_2010;
+        final Frame ITRF = FramesFactory.getITRF(IERS, true);
+        final OneAxisEllipsoid earth = new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS, Constants.WGS84_EARTH_FLATTENING, ITRF);
 
         //// Build of a satellite with a propagator
         // Build of a LEO orbit
@@ -102,6 +128,16 @@ public class AttitudeSetup {
         satellite.displayOnlyOnePeriod();
         satellite.displaySatelliteAttitude();
         file.addObject(satellite);
+
+        // Creation of the field of observation of the satellite, it describes the area the satellite see
+        final Transform initialInertToBody = initialState.getFrame().getTransformTo(earth.getBodyFrame(), initialState.getDate());
+        final Transform initialFovBody = new Transform(initialState.getDate(), initialState.toTransform().getInverse(), initialInertToBody);
+        // A circular field of view
+        //final FieldOfView fov = new CircularFieldOfView(Vector3D.PLUS_J, FastMath.toRadians(50), 2);
+        // A rectangular field of view
+        final FieldOfView fov = new DoubleDihedraFieldOfView(Vector3D.PLUS_J, Vector3D.PLUS_I, FastMath.toRadians(20), Vector3D.PLUS_K, FastMath.toRadians(20), 2);
+        final FieldOfObservation fieldOfObservation = new FieldOfObservation(satellite, fov, initialFovBody);
+        file.addObject(fieldOfObservation);
 
         // Writing in the file
         file.write();

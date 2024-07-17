@@ -189,7 +189,6 @@ public class LineOfVisibility extends AbstractPrimaryObject implements CzmlPrima
     // Overrides
     @Override
     public void writeCzmlBlock() {
-
         if (this.typeOfVisu == TypeOfVisu.SINGLE_SAT_SINGLE_STATION) {
             writeCZML();
         } else if (this.typeOfVisu == TypeOfVisu.MULTIPLE_SAT_MULTIPLE_STATION) {

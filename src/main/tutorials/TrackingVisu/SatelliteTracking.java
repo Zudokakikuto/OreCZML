@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+package TrackingVisu;/* Copyright 2002-2024 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -39,10 +39,12 @@ import org.orekit.utils.Constants;
 import org.orekit.utils.IERSConventions;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
-public class LineOfVisuSatStation {
+public class SatelliteTracking {
 
-    private LineOfVisuSatStation() {
+    private SatelliteTracking() {
         // empty
     }
 
@@ -73,9 +75,20 @@ public class LineOfVisuSatStation {
         final AbsoluteDate finalDate = startDate.shiftedBy(durationOfSimulation);
         final Clock clock = new Clock(startDate, finalDate, UTC, stepBetweenEachInstant);
 
+        // Creation of the header
         final Header header = new Header("Line of visibility between a satellite and a station", clock);
         file.addObject(header);
 
+        //// Creation of the satellite
+        // Creation of the orbit
+        final Frame EME2000 = FramesFactory.getEME2000();
+        final KeplerianOrbit initialOrbit = new KeplerianOrbit(7878000, 0, FastMath.toRadians(20), 0, FastMath.toRadians(90), FastMath.toRadians(0), PositionAngleType.MEAN, EME2000, startDate, Constants.WGS84_EARTH_MU);
+        // Build of the satellite
+        final Satellite satellite = new Satellite(initialOrbit);
+        satellite.displayOnlyOnePeriod();
+        file.addObject(satellite);
+
+        //// Creation of several ground stations
         // Creation of the model of the earth.
         final IERSConventions IERS = IERSConventions.IERS_2010;
         final Frame ITRF = FramesFactory.getITRF(IERS, true);
@@ -84,24 +97,36 @@ public class LineOfVisuSatStation {
         // Creation of a topocentric frame around Toulouse.
         final GeodeticPoint toulouseFrame = new GeodeticPoint(FastMath.toRadians(43.6047), FastMath.toRadians(1.4442), 10);
         final TopocentricFrame topocentricToulouse = new TopocentricFrame(earth, toulouseFrame, "Toulouse Frame");
+        // Creation of a topocentric frame around Quito
+        final GeodeticPoint quitoFrame = new GeodeticPoint(FastMath.toRadians(0.1807), FastMath.toRadians(11.5382), 2850);
+        final TopocentricFrame topocentricQuito = new TopocentricFrame(earth, quitoFrame, "Quito Frame");
+        // Creation of a topocentric frame around Sydney
+        final GeodeticPoint sydneyFrame = new GeodeticPoint(FastMath.toRadians(-33.8688), FastMath.toRadians(-241.2093), 100);
+        final TopocentricFrame topocentricSydney = new TopocentricFrame(earth, sydneyFrame, "Sydney Frame");
+        // Creation of a topocentric frame around gibraltar
+        final GeodeticPoint gibraltarFrame = new GeodeticPoint(FastMath.toRadians(36.1408), FastMath.toRadians(5.3536), 400);
+        final TopocentricFrame topocentricGibraltar = new TopocentricFrame(earth, gibraltarFrame, "Gibraltar Frame");
+        // Creation of another topocentric frame around Las Vegas.
+        final GeodeticPoint lasVegasFrame = new GeodeticPoint(FastMath.toRadians(36.1716), FastMath.toRadians(-115.1391), 10);
+        final TopocentricFrame topocentricLasVegas = new TopocentricFrame(earth, lasVegasFrame, "Las Vegas Frame");
 
-        // Creation of a ground Station at Toulouse
-        final CzmlGroundStation toulouseStation = new CzmlGroundStation(topocentricToulouse);
-        file.addObject(toulouseStation);
+        // Creation of a list of topocentric frame containing both frames.
+        final List<TopocentricFrame> allStations = new ArrayList<>();
+        allStations.add(topocentricToulouse);
+        allStations.add(topocentricSydney);
+        allStations.add(topocentricQuito);
+        allStations.add(topocentricGibraltar);
+        allStations.add(topocentricLasVegas);
 
-        // Build of an orbit that will fly above toulouse
-        final Frame EME2000 = FramesFactory.getEME2000();
-        final KeplerianOrbit initialOrbit = new KeplerianOrbit(7878000, 0, FastMath.toRadians(80), 0, FastMath.toRadians(90), FastMath.toRadians(0), PositionAngleType.MEAN, EME2000, startDate, Constants.WGS84_EARTH_MU);
+        // Build of the ground stations
+        final CzmlGroundStation groundStations = new CzmlGroundStation(allStations);
+        file.addObject(groundStations);
 
-        // Creation of the satellite
-        final Satellite satellite = new Satellite(initialOrbit);
-        file.addObject(satellite);
-
-        // Creation of a line of visibility
-        final LineOfVisibility lineOfVisibility = new LineOfVisibility(topocentricToulouse, satellite);
+        //// Creation of a line of visu between the satellite and all the ground stations
+        final LineOfVisibility lineOfVisibility = new LineOfVisibility(allStations, satellite);
         file.addObject(lineOfVisibility);
 
-        // Writing in the file
+        // Write inside the CzmlFile the objects
         file.write();
     }
 }

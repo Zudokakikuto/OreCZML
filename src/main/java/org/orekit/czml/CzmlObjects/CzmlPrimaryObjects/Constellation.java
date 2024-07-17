@@ -24,7 +24,7 @@ import org.orekit.orbits.WalkerConstellationSlot;
 import org.orekit.time.TimeScale;
 import org.orekit.time.TimeScalesFactory;
 
-import java.awt.*;
+import java.awt.Color;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URISyntaxException;

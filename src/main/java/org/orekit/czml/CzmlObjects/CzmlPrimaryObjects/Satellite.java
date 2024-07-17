@@ -132,6 +132,8 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
     /** .*/
     private List<AbsoluteDate> absoluteDateList;
     /** .*/
+    private Orientation orientation;
+    /** .*/
     private List<Cartesian> cartesianArraylist;
     /** .*/
     private List<Orbit> orbits;
@@ -155,6 +157,8 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
     private List<SpacecraftState> allSpaceCraftStates = new ArrayList<>();
     /** .*/
     private Color pathColor;
+    /** .*/
+    private boolean oriented = false;
 
     //// BUILDERS
 
@@ -171,7 +175,6 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
     }
 
     public Satellite(final Oem file, final String modelPath, final Color color) throws URISyntaxException, IOException {
-
         this.setId(DEFAULT_FILE_SATELLITE_NAME + file.getHeader().getMessageId());
         this.setName(DEFAULT_NAME);
         this.setAvailability(Header.MASTER_CLOCK.getAvailability());
@@ -358,10 +361,10 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
         this.setName(DEFAULT_NAME);
         this.setAvailability(Header.MASTER_CLOCK.getAvailability());
 
-        for (int i = 0; i < input.size(); i++) {
-            orbitTemp.add(input.get(i).getOrbit());
-            vector3DTemp.add(input.get(i).getPosition());
-            doubleListTemp.add(absoluteDateToJulianDateDelta(input.get(i).getDate()));
+        for (SpacecraftState spacecraftState : input) {
+            orbitTemp.add(spacecraftState.getOrbit());
+            vector3DTemp.add(spacecraftState.getPosition());
+            doubleListTemp.add(absoluteDateToJulianDateDelta(spacecraftState.getDate()));
         }
 
         this.description = DEFAULT_DESCRIPTION;
@@ -411,7 +414,7 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
             this.positionsList = new ArrayList<>();
 
             orbits.add(propagator.getInitialState().getOrbit());
-            final AbsoluteDate startDate = propagator.getInitialState().getDate();
+            final AbsoluteDate startDate = julianDateToAbsoluteDate(Header.MASTER_CLOCK.getAvailability().getStart(), Header.TIME_SCALE);
 
             // Setup propagator
             final EphemerisGenerator generator = propagator.getEphemerisGenerator();
@@ -456,6 +459,19 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
         this.boundedPropagator = null;
         this.attitudes = new ArrayList<>();
         this.allSpaceCraftStates = new ArrayList<>();
+        this.oriented = false;
+        this.displayAttitude = false;
+        this.orientation = null;
+        this.optionalRotation = null;
+        this.displayOnlyOnePeriod = false;
+        this.pathColor = null;
+        this.absoluteDateList = new ArrayList<>();
+        this.displayReferenceSystem = false;
+        this.satelliteReferenceSystem = null;
+        this.satellitePropagator = null;
+        this.modelType = null;
+        this.satelliteAttitude = null;
+        this.period = 0.0;
     }
 
     @Override
@@ -554,6 +570,15 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
         return positionsList;
     }
 
+    public Orientation getOrientation() {
+        if (orientation != null) {
+            return orientation;
+        }
+        else {
+            throw new RuntimeException("The satellite did not display the orientation, please use the displaySatelliteAttitude() method first");
+        }
+    }
+
     public BoundedPropagator getBoundedPropagator() {
         return boundedPropagator;
     }
@@ -591,6 +616,11 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
         this.boundedPropagator = boundedPropagator;
     }
 
+    public void setOrientation(final Orientation orientation) {
+        oriented = true;
+        this.orientation = orientation;
+    }
+
     // User functions
 
     public void displayOnlyOnePeriod() {
@@ -599,6 +629,7 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
 
     public void displaySatelliteAttitude() throws URISyntaxException, IOException {
         this.displayAttitude = true;
+        orientationSetup();
     }
 
     public void displaySatelliteReferenceSystem() {
@@ -616,7 +647,9 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
         if (getModelType() == ModelType.MODEL_2D || getModelType() == ModelType.EMPTY_MODEL) {
             getModel().generateCZML(packet, OUTPUT);
             if (getDisplayAttitude()) {
-                final Orientation orientation = new Orientation(getAttitudes(), getFrame(), optionalRotation);
+                if (!oriented) {
+                    this.orientation = new Orientation(getAttitudes(), getFrame(), optionalRotation);
+                }
                 orientation.write(packet, OUTPUT);
             }
         }
@@ -631,11 +664,14 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
                 try (OrientationCesiumWriter orientationWriter = packet.getOrientationWriter()) {
                     orientationWriter.open(OUTPUT);
                     orientationWriter.writeVelocityReference(this.getId() + "#position");
+                    this.orientation = null;
                 }
             }
             else {
-                final Orientation orientation = new Orientation(getAttitudes(), getFrame(), optionalRotation);
-                orientation.write(packet, OUTPUT);
+                if (!oriented) {
+                    this.orientation = new Orientation(getAttitudes(), getFrame(), optionalRotation);
+                }
+                this.orientation.write(packet, OUTPUT);
             }
             this.getModel().generateCZML(packet, OUTPUT);
         }
@@ -784,5 +820,21 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
             }
         });
         return toReturn;
+    }
+
+    private void orientationSetup() {
+        if (!oriented) {
+            if (getModelType() == ModelType.MODEL_2D || getModelType() == ModelType.EMPTY_MODEL) {
+                if (displayAttitude) {
+                    this.orientation = new Orientation(getAttitudes(), getFrame(), optionalRotation);
+                }
+            } else if (getModelType() == ModelType.MODEL_3D) {
+                if (!displayAttitude) {
+                    this.orientation = null;
+                } else {
+                    this.orientation = new Orientation(getAttitudes(), getFrame(), optionalRotation);
+                }
+            }
+        }
     }
 }
