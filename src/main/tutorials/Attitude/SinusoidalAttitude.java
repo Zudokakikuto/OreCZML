@@ -137,6 +137,8 @@ public class SinusoidalAttitude {
         file.addObject(satellite);
 
         final AttitudePointing pointing = new AttitudePointing(satellite, earth, Vector3D.MINUS_K, Color.ORANGE);
+        pointing.displayPointingPath();
+        pointing.displayPeriodPointingPath();
         file.addObject(pointing);
 
         // Creation of the field of observation of the satellite, it describes the area the satellite see

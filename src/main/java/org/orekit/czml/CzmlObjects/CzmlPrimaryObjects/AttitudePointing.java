@@ -54,6 +54,10 @@ public class AttitudePointing extends AbstractPrimaryObject implements CzmlPrima
     /** .*/
     private Orientation satelliteOrientation;
     /** .*/
+    private Satellite satellite;
+    /** .*/
+    private boolean displayPeriodPointingPath = false;
+    /** .*/
     private Polyline attitudePointingPolyline;
     /** .*/
     private OneAxisEllipsoid body;
@@ -69,6 +73,8 @@ public class AttitudePointing extends AbstractPrimaryObject implements CzmlPrima
     private List<JulianDate> julianDates = new ArrayList<>();
     /** .*/
     private AbstractPointOnEarth pointOnEarth;
+    /** .*/
+    private boolean displayPointingPath = false;
     /** .*/
     private List<Attitude> satelliteAttitudes = new ArrayList<>();
     /** .*/
@@ -91,6 +97,7 @@ public class AttitudePointing extends AbstractPrimaryObject implements CzmlPrima
     public AttitudePointing(final Satellite satellite, final OneAxisEllipsoid body, final Vector3D direction, final TimeInterval availability, final Color color) {
         this.setId(DEFAULT_ID + satellite.getId());
         this.show = true;
+        this.satellite = satellite;
         this.setName(DEFAULT_NAME + satellite.getName());
         this.setAvailability(availability);
         final List<SpacecraftState> spacecraftStateList = satellite.getAllSpaceCraftStates();
@@ -120,8 +127,25 @@ public class AttitudePointing extends AbstractPrimaryObject implements CzmlPrima
         this.attitudePointingPolyline = new Polyline(satelliteReference, groundReference, color);
     }
 
+    public void displayPointingPath() {
+        this.displayPointingPath = true;
+    }
+
+    public void displayPeriodPointingPath() {
+        this.displayPeriodPointingPath = true;
+        if (!displayPointingPath) {
+            throw new RuntimeException("The pointing path is not displayed yet, use displayPointingPath");
+        }
+    }
+
     @Override
     public void writeCzmlBlock() throws URISyntaxException, IOException {
+        if (displayPointingPath) {
+            this.pointOnEarth.setDisplayPath(true);
+            if (displayPeriodPointingPath) {
+                this.pointOnEarth.setDisplayPeriodPointingPath(true, satellite.getPeriod());
+            }
+        }
         OUTPUT.setPrettyFormatting(true);
         pointOnEarth.writeCzmlBlock();
         try (PacketCesiumWriter packet = STREAM.openPacket(OUTPUT)) {

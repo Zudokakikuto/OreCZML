@@ -16,10 +16,7 @@
  */
 package org.orekit.czml.CzmlObjects.CzmlPrimaryObjects;
 
-import cesiumlanguagewriter.Cartesian;
-import cesiumlanguagewriter.JulianDate;
-import cesiumlanguagewriter.PacketCesiumWriter;
-import cesiumlanguagewriter.PositionCesiumWriter;
+import cesiumlanguagewriter.*;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.orekit.bodies.BodyShape;
 import org.orekit.bodies.GeodeticPoint;
@@ -45,9 +42,15 @@ public class AbstractPointOnEarth extends AbstractPrimaryObject implements CzmlP
     /** .*/
     private List<Vector3D> positionsList = new ArrayList<>();
     /** .*/
+    private boolean displayPath = false;
+    /** .*/
     private List<JulianDate> julianDates = new ArrayList<>();
     /** .*/
+    private boolean displayPeriodPointingPath = false;
+    /** .*/
     private List<Cartesian> cartesians = new ArrayList<>();
+    /** .*/
+    private double periodForPath;
 
     public AbstractPointOnEarth(final List<JulianDate> julianDates, final List<GeodeticPoint> geodeticPoints, final BodyShape body) {
         this.footprintsInTime = geodeticPoints;
@@ -78,6 +81,17 @@ public class AbstractPointOnEarth extends AbstractPrimaryObject implements CzmlP
             packet.writeAvailability(getAvailability());
 
             writePosition(packet);
+            if (displayPath) {
+                try (PathCesiumWriter pathWriter = packet.getPathWriter()) {
+                    pathWriter.open(OUTPUT);
+                    pathWriter.writeShowProperty(true);
+                    pathWriter.writeInterval(Header.MASTER_CLOCK.getAvailability());
+                    if (displayPeriodPointingPath) {
+                        pathWriter.writeTrailTimeProperty(0.0);
+                        pathWriter.writeLeadTimeProperty(this.periodForPath);
+                    }
+                }
+            }
         }
     }
 
@@ -113,6 +127,15 @@ public class AbstractPointOnEarth extends AbstractPrimaryObject implements CzmlP
 
     public List<Cartesian> getCartesians() {
         return cartesians;
+    }
+
+    public void setDisplayPath(final boolean displayPath) {
+        this.displayPath = displayPath;
+    }
+
+    public void setDisplayPeriodPointingPath (final boolean displayPeriodPointingPathInput, final double period) {
+        this.displayPeriodPointingPath = displayPeriodPointingPathInput;
+        this.periodForPath = period;
     }
 
     // Private functions

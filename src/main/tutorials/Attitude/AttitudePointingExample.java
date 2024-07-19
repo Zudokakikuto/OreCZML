@@ -128,6 +128,8 @@ public class AttitudePointingExample {
         file.addObject(satellite);
 
         final AttitudePointing pointing = new AttitudePointing(satellite, earth, Vector3D.MINUS_J, Color.ORANGE);
+        pointing.displayPointingPath();
+        pointing.displayPeriodPointingPath();
         file.addObject(pointing);
 
         // Writing in the file

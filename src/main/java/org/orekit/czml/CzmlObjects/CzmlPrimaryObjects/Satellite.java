@@ -648,7 +648,7 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
             getModel().generateCZML(packet, OUTPUT);
             if (getDisplayAttitude()) {
                 if (!oriented) {
-                    this.orientation = new Orientation(getAttitudes(), getFrame(), optionalRotation);
+                    this.orientation = new Orientation(getAttitudes(), getFrame(), false, optionalRotation);
                 }
                 orientation.write(packet, OUTPUT);
             }
@@ -669,7 +669,7 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
             }
             else {
                 if (!oriented) {
-                    this.orientation = new Orientation(getAttitudes(), getFrame(), optionalRotation);
+                    this.orientation = new Orientation(getAttitudes(), getFrame(), false, optionalRotation);
                 }
                 this.orientation.write(packet, OUTPUT);
             }
@@ -768,8 +768,6 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
         final EphemerisGenerator generator = propagator.getEphemerisGenerator();
 
         propagator.setInitialState(initialState);
-
-        System.out.println(initialState);
 
         toReturn = multiplexerSetup(propagator);
 
