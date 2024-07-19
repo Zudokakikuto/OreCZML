@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 package Attitude;
-import org.hipparchus.geometry.Vector;
 import org.hipparchus.geometry.euclidean.threed.Rotation;
 import org.hipparchus.geometry.euclidean.threed.RotationConvention;
 import org.hipparchus.geometry.euclidean.threed.RotationOrder;

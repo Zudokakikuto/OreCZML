@@ -80,12 +80,14 @@ public class CzmlFile {
                 }
             }
             Files.createDirectories(Paths.get(getPathDirectory()));
-            final FileWriter FileWriter = new FileWriter(getPathFile());
+
             for (final AbstractPrimaryObject currentPrimaryObject : noDuplicates) {
                 currentPrimaryObject.writeCzmlBlock();
             }
-            FileWriter.write(writer.toString() + "\n]");
-            FileWriter.close();
+
+            try (FileWriter FileWriter = new FileWriter(getPathFile())) {
+                FileWriter.write(writer.toString() + "\n]");
+            }
         }
     }
 

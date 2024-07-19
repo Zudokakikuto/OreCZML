@@ -4,31 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d636adb8-ceea-4d1b-886f-a5eba9ec35ca" name="Changes" comment="Added an Orientation class to represents the orientation of objects&#10;&#10;Added an AttitudeSetup tutorial to explain how to set up the attitude of a satellite&#10;&#10;Added a LineOfObservation tutorial to show how to display the cone of observation of the satellite following the attitude with a field of view.">
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlAbstractObjects/AttitudeFunctionFactory.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlAbstractObjects/AttitudeShift.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlPrimaryObjects/AttitudePointing.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/tutorials/Attitude/AttitudePointingExample.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/tutorials/Attitude/SinusoidalAttitude.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/tutorials/Demonstrator.java" afterDir="false" />
+    <list default="true" id="d636adb8-ceea-4d1b-886f-a5eba9ec35ca" name="Changes" comment="Rework of the CovarianceDisplay to make it work properly">
+      <change afterPath="$PROJECT_DIR$/src/main/tutorials/CovarianceExample.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CHANGELOG.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CHANGELOG.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlPrimaryObjects/AbstractPointOnEarth.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlPrimaryObjects/AbstractPointOnEarth.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlPrimaryObjects/AbstractPrimaryObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlPrimaryObjects/AbstractPrimaryObject.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlPrimaryObjects/Constellation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlPrimaryObjects/Constellation.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlPrimaryObjects/LineOfObservation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlPrimaryObjects/FieldOfObservation.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlPrimaryObjects/LineOfVisibility.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlPrimaryObjects/LineOfVisibility.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlPrimaryObjects/Satellite.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlPrimaryObjects/Satellite.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlSecondaryObjects/GroundTrack.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlSecondaryObjects/GroundTrack.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlPrimaryObjects/CovarianceDisplay.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlPrimaryObjects/CovarianceDisplay.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlSecondaryObjects/CzmlEllipsoid.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlSecondaryObjects/CzmlEllipsoid.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlSecondaryObjects/Orientation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/CzmlSecondaryObjects/Orientation.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/Polyline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/orekit/czml/CzmlObjects/Polyline.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/tutorials/AttitudeSetup.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/tutorials/Attitude/AttitudeSetup.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/tutorials/ConstellationGroundTracks.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/tutorials/GroundTrack/ConstellationGroundTracks.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/tutorials/ConstellationVisu.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/tutorials/TrackingVisu/ConstellationVisu.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/tutorials/GroundTrackDisplay.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/tutorials/GroundTrack/GroundTrackDisplay.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/tutorials/LineOfObservationSatellite.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/tutorials/FieldOfObservationSatellite.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/tutorials/LineOfVisuSatStation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/tutorials/TrackingVisu/LineOfVisuSatStation.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/tutorials/SatelliteTracking.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/tutorials/TrackingVisu/SatelliteTracking.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/orekit/czml/Outputs/CzmlFile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/orekit/czml/Outputs/CzmlFile.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/tutorials/Attitude/AttitudeSetup.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/tutorials/Attitude/AttitudeSetup.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/tutorials/Attitude/SinusoidalAttitude.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/tutorials/Attitude/SinusoidalAttitude.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/tutorials/TrackingVisu/ConstellationVisu.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/tutorials/TrackingVisu/ConstellationVisu.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -90,6 +76,7 @@
     "Application.AttitudeSetup.executor": "Run",
     "Application.ConstellationGroundTracks.executor": "Run",
     "Application.ConstellationVisu.executor": "Run",
+    "Application.CovarianceExample.executor": "Run",
     "Application.Demonstrator.executor": "Run",
     "Application.FieldOfObservationSatellite.executor": "Run",
     "Application.GroundTrackDisplay.executor": "Run",
@@ -162,7 +149,7 @@
       <command value="mvn clean install" />
     </option>
   </component>
-  <component name="RunManager" selected="Application.SinusoidalAttitude">
+  <component name="RunManager" selected="Application.CovarianceExample">
     <configuration name="AttitudePointingExample" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="Attitude.AttitudePointingExample" />
       <module name="OreCZML" />
@@ -179,6 +166,13 @@
     </configuration>
     <configuration name="ConstellationGroundTracks" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="GroundTrack.ConstellationGroundTracks" />
+      <module name="OreCZML" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="CovarianceExample" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="CovarianceExample" />
       <module name="OreCZML" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -225,6 +219,7 @@
       <item itemvalue="Application.ConstellationGroundTracks" />
       <item itemvalue="Application.FieldOfObservationSatellite" />
       <item itemvalue="Application.SinusoidalAttitude" />
+      <item itemvalue="Application.CovarianceExample" />
       <item itemvalue="Application.OreCzml" />
       <item itemvalue="JUnit.All in OreCZML" />
     </list>
@@ -324,7 +319,15 @@
       <option name="project" value="LOCAL" />
       <updated>1720795364880</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="Added a FieldOfObservation class to display what the satellite see in orbit.&#10;&#10;Added a FieldOfObservationSatellite tutorial to show how to display the field of observation of the satellite, modulated by the attitude.&#10;&#10;Added an AttitudePointing class, to display the line of sight of the satellite on ground.&#10;&#10;Added a SinusoidalAttitude tutorial, to see how to setup a sinusoidal attitude for a satellite.&#10;&#10;Refactor of the organisation of tutorials">
+      <option name="closed" value="true" />
+      <created>1721208175797</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1721208175797</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -345,7 +348,8 @@
     <MESSAGE value="Removed JavaScript from the code" />
     <MESSAGE value="- Removed all inputs objects&#10;- Added ModelLoading a tutorial of loading a 3D model&#10;- The satellite object now understands clearly Orekit Inputs&#10;- The clock object now understands clearly the Oem orekit input&#10;- &#10;- Added SatelliteTracking a tutorial of how a satellite can be tracked by several ground stations&#10;&#10;- An ISSModel.glb has been added to the repository for the tutorial&#10;&#10;Renamed :&#10;CZMLModel -&gt; CzmlModel&#10;CZMLShow -&gt; CzmlShow&#10;CZMLSecondaryObject -&gt; CzmlSecondaryObject&#10;CZMLEllipsoid -&gt; CzmlEllipsoid&#10;CZMLPrimaryObject -&gt; CzmlPrimaryObject&#10;CZMLSecondaryObject -&gt; CzmlSecondaryObject" />
     <MESSAGE value="Added an Orientation class to represents the orientation of objects&#10;&#10;Added an AttitudeSetup tutorial to explain how to set up the attitude of a satellite&#10;&#10;Added a LineOfObservation tutorial to show how to display the cone of observation of the satellite following the attitude with a field of view." />
-    <option name="LAST_COMMIT_MESSAGE" value="Added an Orientation class to represents the orientation of objects&#10;&#10;Added an AttitudeSetup tutorial to explain how to set up the attitude of a satellite&#10;&#10;Added a LineOfObservation tutorial to show how to display the cone of observation of the satellite following the attitude with a field of view." />
+    <MESSAGE value="Added a FieldOfObservation class to display what the satellite see in orbit.&#10;&#10;Added a FieldOfObservationSatellite tutorial to show how to display the field of observation of the satellite, modulated by the attitude.&#10;&#10;Added an AttitudePointing class, to display the line of sight of the satellite on ground.&#10;&#10;Added a SinusoidalAttitude tutorial, to see how to setup a sinusoidal attitude for a satellite.&#10;&#10;Refactor of the organisation of tutorials" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added a FieldOfObservation class to display what the satellite see in orbit.&#10;&#10;Added a FieldOfObservationSatellite tutorial to show how to display the field of observation of the satellite, modulated by the attitude.&#10;&#10;Added an AttitudePointing class, to display the line of sight of the satellite on ground.&#10;&#10;Added a SinusoidalAttitude tutorial, to see how to setup a sinusoidal attitude for a satellite.&#10;&#10;Refactor of the organisation of tutorials" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

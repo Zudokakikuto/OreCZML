@@ -769,6 +769,8 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
 
         propagator.setInitialState(initialState);
 
+        System.out.println(initialState);
+
         toReturn = multiplexerSetup(propagator);
 
         final GregorianDate gregorianDate = new GregorianDate(getAvailability().getStop());

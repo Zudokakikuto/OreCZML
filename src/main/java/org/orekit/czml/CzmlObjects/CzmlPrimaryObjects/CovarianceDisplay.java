@@ -18,37 +18,30 @@ package org.orekit.czml.CzmlObjects.CzmlPrimaryObjects;
 
 import cesiumlanguagewriter.Cartesian;
 import cesiumlanguagewriter.JulianDate;
-import cesiumlanguagewriter.OrientationCesiumWriter;
 import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.Reference;
-import cesiumlanguagewriter.TimeInterval;
-import cesiumlanguagewriter.UnitQuaternion;
+import org.hipparchus.exception.MathIllegalArgumentException;
+import org.hipparchus.geometry.euclidean.threed.Rotation;
+import org.hipparchus.linear.EigenDecompositionNonSymmetric;
+import org.hipparchus.linear.RealMatrix;
+import org.hipparchus.linear.RealVector;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.CzmlEllipsoid;
+import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.Orientation;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.SatelliteObjects.SatellitePosition;
 import org.orekit.czml.CzmlObjects.Position;
-import org.hipparchus.geometry.euclidean.threed.Vector3D;
-import org.hipparchus.linear.RealMatrix;
-import org.hipparchus.util.FastMath;
 import org.orekit.attitudes.Attitude;
 import org.orekit.files.ccsds.ndm.odm.CartesianCovariance;
 import org.orekit.files.ccsds.ndm.odm.oem.Oem;
-import org.orekit.frames.Frame;
 import org.orekit.frames.FramesFactory;
+import org.orekit.frames.LOF;
 import org.orekit.frames.LOFType;
-import org.orekit.frames.Transform;
-import org.orekit.orbits.OrbitType;
-import org.orekit.orbits.PositionAngleType;
-import org.orekit.propagation.BoundedPropagator;
 import org.orekit.propagation.MatricesHarvester;
 import org.orekit.propagation.Propagator;
 import org.orekit.propagation.SpacecraftState;
 import org.orekit.propagation.StateCovariance;
 import org.orekit.propagation.StateCovarianceMatrixProvider;
-import org.orekit.propagation.sampling.OrekitFixedStepHandler;
-import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScale;
-import org.orekit.utils.IERSConventions;
-import org.orekit.utils.PVCoordinates;
+import org.orekit.utils.AngularCoordinates;
 import org.orekit.utils.TimeStampedPVCoordinates;
 
 import java.awt.Color;
@@ -88,6 +81,10 @@ public class CovarianceDisplay extends AbstractPrimaryObject implements CzmlPrim
     private Reference positionReference = null;
     /** The orientation used as a reference to keep the ellipsoid in the good orientation.*/
     private final Reference orientationReference = null;
+    /** .*/
+    private Attitude attitude;
+    /** .*/
+    private List<SpacecraftState> allSpaceCraftStates = new ArrayList<>();
 
     // Intrinsic parameters
     /** The satellite which the ellipsoid will be around.*/
@@ -98,63 +95,45 @@ public class CovarianceDisplay extends AbstractPrimaryObject implements CzmlPrim
     private List<JulianDate> julianDates;
     /** A list of all the State Covariance object {@link org.orekit.propagation.StateCovariance}.*/
     private final List<StateCovariance> covarianceList = new ArrayList<>();
-    /** A list of UnitQuaternions used to orientate the covariance when the reference orientation is not used.*/
-    private final List<UnitQuaternion> unitQuaternions = new ArrayList<>();
+    /** .*/
+    private List<Cartesian> dimensionsOfEllipsoids = new ArrayList<>();
     /** A list of all the attitudes of the satellite used to orientate the covariance when the reference orientation si not used.*/
-    private final List<Attitude> attitudes = new ArrayList<>();
+    private List<Attitude> attitudes = new ArrayList<>();
     /** A list containing all the cartesian in time of the satellite. */
     private List<Cartesian> satelliteCartesianList = new ArrayList<>();
     /** .*/
     private TimeScale timeScale = null;
+    /** .*/
+    private CzmlEllipsoid uniqueEllipsoid;
+    /** .*/
+    private LOF lof;
 
     // BUILDERS
 
     // The following builders build several ellipsoids, in order to follow the satellite
-    /** This builder classically use the satellite and a initial covariance to build a covariance.
+    /** This builder classically use the satellite and an initial covariance to build a covariance.
      * @param satellite : The satellite used to build the covariance around.
+     * @param lof : The lof of the satellite
      * @param initCovariance : The initial covariance.*/
-    public CovarianceDisplay(final Satellite satellite, final StateCovariance initCovariance) {
+    public CovarianceDisplay(final Satellite satellite, final StateCovariance initCovariance, final LOF lof) {
         this.satellite = satellite;
         this.setId(DEFAULT_ID + satellite.getId());
         this.setName(DEFAULT_NAME + satellite.getName());
-        final List<Cartesian> tempSatelliteCartesian = satellite.getCartesianArraylist();
-        final List<Double> timeList = satellite.getTimeList();
-        final List<CzmlEllipsoid> tempEllipsoids = new ArrayList<>();
-        final SatellitePosition tempSatellitePositions = new SatellitePosition(tempSatelliteCartesian, timeList);
-        this.julianDates = tempSatellitePositions.getDates();
+        this.satelliteCartesianList = satellite.getCartesianArraylist();
+        this.julianDates = absoluteDatelistToJulianDateList(satellite.getAbsoluteDateList());
         this.positionReference = new Reference(satellite.getId() + DEFAULT_H_POSITION);
+        this.lof = lof;
 
         this.covariancePropagation(satellite, initCovariance);
 
-        for (int i = 0; i < tempSatelliteCartesian.size() - 1; i++) {
-            // Ellipsoids
-            final TimeInterval currentTimeInterval = new TimeInterval(julianDates.get(i), julianDates.get(i).addSeconds(Header.MASTER_CLOCK.getMultiplier()));
-            final StateCovariance currentCovariance = covarianceList.get(i);
-            final RealMatrix currentMatrix = currentCovariance.getMatrix();
-            final double toTransformSigmaX = FastMath.sqrt(currentMatrix.getRow(0)[0]);
-            final double toTransformSigmaY = FastMath.sqrt(currentMatrix.getRow(1)[1]);
-            final double toTransformSigmaZ = FastMath.sqrt(currentMatrix.getRow(2)[2]);
-
-            final Vector3D vectorInertial = new Vector3D(toTransformSigmaX, toTransformSigmaY, toTransformSigmaZ);
-            final PVCoordinates toTransformIntoITRF = new PVCoordinates(vectorInertial);
-            final Transform transformFromInertialToIRTF = FramesFactory.getEME2000().getTransformTo(FramesFactory.getITRF(IERSConventions.IERS_2010, true), julianDateToAbsoluteDate(currentTimeInterval.getStart(), timeScale));
-            final PVCoordinates transformedPVCoordinates = transformFromInertialToIRTF.transformPVCoordinates(toTransformIntoITRF);
-
-            final double transformedSigmaX = transformedPVCoordinates.getPosition().getX();
-            final double transformedSigmaY = transformedPVCoordinates.getPosition().getY();
-            final double transformedSigmaZ = transformedPVCoordinates.getPosition().getZ();
-
-            final Cartesian transformedCartesian = new Cartesian(transformedSigmaX, transformedSigmaY, transformedSigmaZ);
-            tempEllipsoids.add(new CzmlEllipsoid(currentTimeInterval, transformedCartesian));
-        }
-        this.ellipsoidList = tempEllipsoids;
-        this.satelliteCartesianList = tempSatelliteCartesian;
+        this.postPropagationComputation(Color.green, lof);
     }
     /** The classic builder with a given color for the ellipsoid.
      * @param satellite : The satellite used to build the covariance around.
      * @param initCovariance : The initial covariance.
+     * @param lof : The lof of the satellite
      * @param color : The color of the ellipsoid. */
-    public CovarianceDisplay(final Satellite satellite, final StateCovariance initCovariance, final Color color) {
+    public CovarianceDisplay(final Satellite satellite, final StateCovariance initCovariance, final LOF lof, final Color color) {
         this.satellite = satellite;
         this.setId(DEFAULT_ID + satellite.getId());
         this.setName(DEFAULT_NAME + satellite.getName());
@@ -164,34 +143,24 @@ public class CovarianceDisplay extends AbstractPrimaryObject implements CzmlPrim
         final SatellitePosition tempSatellitePositions = new SatellitePosition(tempSatelliteCartesian, timeList);
         this.julianDates = tempSatellitePositions.getDates();
         this.positionReference = new Reference(satellite.getId() + DEFAULT_H_POSITION);
+        this.lof = lof;
 
         this.covariancePropagation(satellite, initCovariance);
 
-        for (int i = 0; i < tempSatelliteCartesian.size() - 1; i++) {
-            // Ellipsoids
-            final TimeInterval currentTimeInterval = new TimeInterval(julianDates.get(i), julianDates.get(i).addSeconds(Header.MASTER_CLOCK.getMultiplier()));
-            final StateCovariance currentCovariance = covarianceList.get(i);
-            final RealMatrix currentMatrix = currentCovariance.getMatrix();
-            final double initialSigmaX = FastMath.sqrt(currentMatrix.getRow(0)[0]);
-            final double initialSigmaY = FastMath.sqrt(currentMatrix.getRow(1)[1]);
-            final double initialSigmaZ = FastMath.sqrt(currentMatrix.getRow(2)[2]);
-
-            final Cartesian transformedCartesian = new Cartesian(initialSigmaX, initialSigmaY, initialSigmaZ);
-            tempEllipsoids.add(new CzmlEllipsoid(currentTimeInterval, transformedCartesian, color));
-        }
-        this.ellipsoidList = tempEllipsoids;
-        this.satelliteCartesianList = tempSatelliteCartesian;
+        this.postPropagationComputation(color, lof);
     }
 
     /** A covariance display builder from an OEMFile.
-     * @param oem : An OEMFile in input.*/
-    public CovarianceDisplay(final Oem oem) throws URISyntaxException, IOException {
-        this(oem, new Color(255, 255, 0, 255));
+     * @param oem : An OEMFile in input.
+     * @param lof : The lof of the satellite*/
+    public CovarianceDisplay(final Oem oem, final LOF lof) throws URISyntaxException, IOException {
+        this(oem, lof, new Color(255, 255, 0, 255));
     }
     /** A covariance display builder from an OEMFile with a given color for the ellipsoid.
      * @param oem : An OEMFile in input.
+     * @param lof : The lof of the satellite
      * @param color : The color of the ellipsoid.*/
-    public CovarianceDisplay(final Oem oem, final Color color) throws URISyntaxException, IOException {
+    public CovarianceDisplay(final Oem oem, final LOF lof, final Color color) throws URISyntaxException, IOException {
         //System.out.println("CHANGER TIMESCALE COVARIANCE DISPLAY");
         final Satellite satelliteInit = new Satellite(oem);
 
@@ -207,79 +176,56 @@ public class CovarianceDisplay extends AbstractPrimaryObject implements CzmlPrim
 
         this.setId(DEFAULT_ID + satellite.getId());
         this.setName(DEFAULT_NAME + satellite.getName());
-        final List<Cartesian> tempSatelliteCartesian = satellite.getCartesianArraylist();
+        this.satelliteCartesianList = satellite.getCartesianArraylist();
         final List<Double> timeList = satellite.getTimeList();
-        final List<CzmlEllipsoid> tempEllipsoids = new ArrayList<>();
-        final SatellitePosition tempSatellitePositions = new SatellitePosition(tempSatelliteCartesian, timeList);
+        final SatellitePosition tempSatellitePositions = new SatellitePosition(satelliteCartesianList, timeList);
         this.julianDates = tempSatellitePositions.getDates();
         this.positionReference = new Reference(satellite.getId() + DEFAULT_H_POSITION);
 
         this.covariancePropagation(satellite, initCovariance);
 
-        for (int i = 0; i < tempSatelliteCartesian.size() - 1; i++) {
-            // Ellipsoids
-            final TimeInterval currentTimeInterval = new TimeInterval(julianDates.get(i), julianDates.get(i).addSeconds(Header.MASTER_CLOCK.getMultiplier()));
-            final StateCovariance currentCovariance = covarianceList.get(i);
-            final RealMatrix currentMatrix = currentCovariance.getMatrix();
-            final double currentSigmaX = FastMath.sqrt(currentMatrix.getRow(0)[0]);
-            final double currentSigmaY = FastMath.sqrt(currentMatrix.getRow(1)[1]);
-            final double currentSigmaZ = FastMath.sqrt(currentMatrix.getRow(2)[2]);
-            final Cartesian currentCartesianEllipsoid = new Cartesian(currentSigmaX, currentSigmaY, currentSigmaZ);
-            tempEllipsoids.add(new CzmlEllipsoid(currentTimeInterval, currentCartesianEllipsoid, color));
-        }
-        this.ellipsoidList = tempEllipsoids;
-        this.satelliteCartesianList = tempSatelliteCartesian;
+        this.postPropagationComputation(color, lof);
     }
 
     /** A covariance display builder from an ephemeris and an initial covariance.
      * @param ephemeris : A list of TimeStampedPVCoordinates {@link org.orekit.utils.TimeStampedPVCoordinates} that defines the ephemeris of an object.
+     * @param lof : The lof of the satellite
      * @param initCovariance : The initial covariance.
      */
-    public CovarianceDisplay(final List<TimeStampedPVCoordinates> ephemeris, final StateCovariance initCovariance) throws URISyntaxException, IOException {
-        this(ephemeris, initCovariance, new Color(255, 255, 0, 255));
+    public CovarianceDisplay(final List<TimeStampedPVCoordinates> ephemeris, final StateCovariance initCovariance, final LOF lof) throws URISyntaxException, IOException {
+        this(ephemeris, initCovariance, lof, new Color(255, 0, 125, 255));
     }
     /** A covariance display builder from an ephemeris and an initial covariance with a given color for the ellipsoid.
      * @param ephemeris : A list of TimeStampedPVCoordinates {@link org.orekit.utils.TimeStampedPVCoordinates} that defines the ephemeris of an object.
+     * @param lof : The lof of the satellite
      * @param initCovariance : The initial covariance.
      * @param color : The color of the ellipsoid.*/
-    public CovarianceDisplay(final List<TimeStampedPVCoordinates> ephemeris, final StateCovariance initCovariance, final Color color) throws URISyntaxException, IOException {
+    public CovarianceDisplay(final List<TimeStampedPVCoordinates> ephemeris, final StateCovariance initCovariance, final LOF lof, final Color color) throws URISyntaxException, IOException {
         this.satellite = new Satellite(Header.MASTER_CLOCK.getAvailability(), ephemeris, FramesFactory.getEME2000());
         this.setId(DEFAULT_ID + satellite.getId());
         this.setName(DEFAULT_NAME + satellite.getName());
-        final List<Cartesian> tempSatelliteCartesian = satellite.getCartesianArraylist();
+        this.satelliteCartesianList = satellite.getCartesianArraylist();
         final List<Double> timeList = satellite.getTimeList();
-        final List<CzmlEllipsoid> tempEllipsoids = new ArrayList<>();
-        final SatellitePosition tempSatellitePositions = new SatellitePosition(tempSatelliteCartesian, timeList);
+        final SatellitePosition tempSatellitePositions = new SatellitePosition(satelliteCartesianList, timeList);
         this.julianDates = tempSatellitePositions.getDates();
         this.positionReference = new Reference(satellite.getId() + DEFAULT_H_POSITION);
 
         this.covariancePropagation(satellite, initCovariance);
 
-        for (int i = 0; i < tempSatelliteCartesian.size() - 1; i++) {
-            // Ellipsoids
-            final TimeInterval currentTimeInterval = new TimeInterval(julianDates.get(i), julianDates.get(i).addSeconds(Header.MASTER_CLOCK.getMultiplier()));
-            final StateCovariance currentCovariance = covarianceList.get(i);
-            final RealMatrix currentMatrix = currentCovariance.getMatrix();
-            final double currentSigmaX = FastMath.sqrt(currentMatrix.getRow(0)[0]);
-            final double currentSigmaY = FastMath.sqrt(currentMatrix.getRow(1)[1]);
-            final double currentSigmaZ = FastMath.sqrt(currentMatrix.getRow(2)[2]);
-            final Cartesian currentCartesianEllipsoid = new Cartesian(currentSigmaX, currentSigmaY, currentSigmaZ);
-            tempEllipsoids.add(new CzmlEllipsoid(currentTimeInterval, currentCartesianEllipsoid, color));
-        }
-        this.ellipsoidList = tempEllipsoids;
-        this.satelliteCartesianList = tempSatelliteCartesian;
+        this.postPropagationComputation(color, lof);
     }
 
     // The following builders only build one ellipsoid
     /** A single ellipsoid builder to display it in a given position.
      * @param position : The position of the ellipsoid.
      * @param ellipsoid : The ellipsoid to display.
-     */
-    public CovarianceDisplay(final Position position, final CzmlEllipsoid ellipsoid) {
+     * @param attitude  : The 'attitude' of the covariance. */
+    public CovarianceDisplay(final Position position, final CzmlEllipsoid ellipsoid, final Attitude attitude) {
         this.setId(DEFAULT_ID + position.toString());
-        this.setName(DEFAULT_NAME + position.toString());
+        this.setName(DEFAULT_NAME + position);
         this.position = position;
         this.czmlEllipsoid = ellipsoid;
+        this.attitude = attitude;
     }
 
     /** A single ellipsoid builder from basic components.
@@ -287,45 +233,45 @@ public class CovarianceDisplay extends AbstractPrimaryObject implements CzmlPrim
      * @param name : The name of the packet to write.
      * @param position : The position of the ellipsoid.
      * @param ellipsoid : The ellipsoid to display.
-     */
-    public CovarianceDisplay(final String id, final String name, final Position position, final CzmlEllipsoid ellipsoid) {
+     * @param attitude : The 'attitude of the covariance. */
+    public CovarianceDisplay(final String id, final String name, final Position position, final CzmlEllipsoid ellipsoid, final Attitude attitude) {
         this.setId(id);
         this.setName(name);
         this.position = position;
         this.czmlEllipsoid = ellipsoid;
+        this.attitude = attitude;
     }
 
     /** The generation function for the CZML file for the covariance display.*/
     public void writeCzmlBlock() {
-        if (ellipsoidList.isEmpty()) {
+        if (julianDates.isEmpty()) {
             OUTPUT.setPrettyFormatting(true);
             try (PacketCesiumWriter packet = STREAM.openPacket(OUTPUT)) {
                 packet.writeId(getId());
                 packet.writeName(getName());
+
+                //final Orientation orientation = new Orientation(attitude, satellite.getFrame(), true);
+                //orientation.write(packet, OUTPUT);
 
                 position.write(packet, OUTPUT, Header.MASTER_CLOCK.getAvailability(), referenceFrame);
 
                 czmlEllipsoid.write(packet, OUTPUT);
             }
         } else {
-            for (int i = 0; i < ellipsoidList.size(); i++) {
-                OUTPUT.setPrettyFormatting(true);
-                try (PacketCesiumWriter packet = STREAM.openPacket(OUTPUT)) {
-                    packet.writeId(getId() + julianDates.get(i).toString());
-                    packet.writeName(getName());
-                    packet.writePositionPropertyReference(positionReference);
-                    final CzmlEllipsoid currentEllipsoid = ellipsoidList.get(i);
+            OUTPUT.setPrettyFormatting(true);
+            try (PacketCesiumWriter packet = STREAM.openPacket(OUTPUT)) {
+                packet.writeId(getId() + julianDates.toString());
+                packet.writeName(getName());
 
-                    try (OrientationCesiumWriter orientationWriter = packet.getOrientationWriter()) {
-                        orientationWriter.open(OUTPUT);
-                        orientationWriter.writeVelocityReference(satellite.getId() + DEFAULT_H_POSITION);
-                    }
+                final Orientation orientation = new Orientation(attitudes, satellite.getFrame(), false);
+                orientation.write(packet, OUTPUT);
 
-                    currentEllipsoid.write(packet, OUTPUT);
-                }
+                packet.writePositionPropertyReference(positionReference);
+
+                this.uniqueEllipsoid.write(packet, OUTPUT);
             }
-            cleanObject();
         }
+        cleanObject();
     }
 
     // GETS
@@ -346,12 +292,6 @@ public class CovarianceDisplay extends AbstractPrimaryObject implements CzmlPrim
      * @return : The reference frame used. */
     public String getReferenceFrame() {
         return referenceFrame;
-    }
-
-    /** This getter return the list of unit quaternion for the orientation.
-     * @return : The list of unit quaternion used. */
-    public List<UnitQuaternion> getUnitQuaternions() {
-        return unitQuaternions;
     }
 
     /** This getter return the reference used for the orientation of the ellipsoid.
@@ -406,6 +346,8 @@ public class CovarianceDisplay extends AbstractPrimaryObject implements CzmlPrim
         this.czmlEllipsoid = null;
         this.satellite = null;
         this.ellipsoidList = new ArrayList<>();
+        this.attitude = null;
+        this.attitudes = new ArrayList<>();
     }
 
     // Functions
@@ -415,45 +357,74 @@ public class CovarianceDisplay extends AbstractPrimaryObject implements CzmlPrim
     private void covariancePropagation(final Satellite inputSatellite, final StateCovariance initCovariance) {
         final Propagator propagator = inputSatellite.getSatellitePropagator();
 
-        satellite.setAttitudes(new ArrayList<>());
+        inputSatellite.setAttitudes(new ArrayList<>());
 
-        final BoundedPropagator boundedPropagator = inputSatellite.getBoundedPropagator();
+//        final RealMatrix covInitMatrix = initCovariance.getMatrix();
+//        System.out.println(covInitMatrix);
 
-        final List<AbsoluteDate> absoluteDateList = inputSatellite.getAbsoluteDateList();
-
-        final Frame covFrame = FramesFactory.getITRF(IERSConventions.IERS_2010, true);
-
-        final RealMatrix covInitMatrix = initCovariance.getMatrix();
-
-        final AbsoluteDate covDate = propagator.getInitialState().getDate();
-
-        final StateCovariance covInit = new StateCovariance(covInitMatrix, covDate, covFrame, OrbitType.CARTESIAN, PositionAngleType.MEAN);
-
-        final String stm = "State Transition Matrix ";
+        final String stm = "stm";
 
         final MatricesHarvester harvester = propagator.setupMatricesComputation(stm, null, null);
 
         final StateCovarianceMatrixProvider provider = new StateCovarianceMatrixProvider("covariance", stm,
-                harvester, covInit);
+                harvester, initCovariance);
 
         propagator.addAdditionalStateProvider(provider);
 
-        propagator.getMultiplexer().add(Header.MASTER_CLOCK.getMultiplier(), new OrekitFixedStepHandler() {
-            @Override
-            public void handleStep(final SpacecraftState spacecraftState) {
-                final StateCovariance matrix = provider.getStateCovariance(spacecraftState).changeCovarianceFrame(spacecraftState.getOrbit(), LOFType.TNW);
-                covarianceList.add(matrix);
-            }
+        propagator.getMultiplexer().add(Header.MASTER_CLOCK.getMultiplier(), spacecraftState -> {
+            final StateCovariance covariance = provider.getStateCovariance(spacecraftState);
+            covarianceList.add(covariance);
+            allSpaceCraftStates.add(spacecraftState);
         });
 
-        propagator.propagate(satellite.getOrbits().get(0).getDate(), satellite.getOrbits().get(satellite.getOrbits().size() - 1).getDate());
+        propagator.propagate(inputSatellite.getOrbits().get(0).getDate(), inputSatellite.getOrbits().get(inputSatellite.getOrbits().size() - 1).getDate());
 
-        boundedPropagator.propagate(satellite.getOrbits().get(0).getDate(), satellite.getOrbits().get(satellite.getOrbits().size() - 1).getDate());
+    }
 
-        for (final AbsoluteDate currentAbsDate : absoluteDateList) {
-            final Attitude currentAttitude = boundedPropagator.getAttitudeProvider().getAttitude(boundedPropagator, currentAbsDate, covFrame);
-            attitudes.add(currentAttitude);
+    private void postPropagationComputation(final Color color, final LOF lofInput) {
+        for (int i = 0; i < covarianceList.size(); i++) {
+            final StateCovariance covariance = covarianceList.get(i);
+            final RealMatrix realMatrix = covariance.getMatrix().getSubMatrix(0, 2, 0, 2);
+//            System.out.println(realMatrix);
+            //final RealMatrix realMatrix = MatrixUtils.createRealDiagonalMatrix(new double[] {1000, 100, 100, 1e-2, 1e-2, 1e-2}).getSubMatrix(0, 2, 0, 2);
+
+            final EigenDecompositionNonSymmetric decomposition = new EigenDecompositionNonSymmetric(realMatrix);
+            final RealMatrix matrixEigenVectors = decomposition.getV();
+            final RealMatrix copyOfEigenVectors = matrixEigenVectors.copy();
+            final double[][] dataEigenValues = decomposition.getD().getData();
+            boolean inverted = false;
+            Rotation currentRotation;
+            try {
+                currentRotation = new Rotation(matrixEigenVectors.getData(), 0.01);
+            }
+            // If the rotation failed, it's that the determinant of the matrix is equal to -1, this means that the system is
+            // left-handed, to invert it we need to invert two columns, this way the determinant will be multiplied by -1.
+            // We will need to invert the eigen values related to the eigen vectors that we inverted.
+            catch (MathIllegalArgumentException e) {
+                inverted = true;
+                final RealVector firstColumnMatrix = matrixEigenVectors.getColumnVector(0);
+                final RealVector secondColumnMatrix = matrixEigenVectors.getColumnVector(1);
+                final RealVector thirdColumnMatrix = matrixEigenVectors.getColumnVector(2);
+                copyOfEigenVectors.setColumnVector(0, firstColumnMatrix);
+                copyOfEigenVectors.setColumnVector(1, thirdColumnMatrix);
+                copyOfEigenVectors.setColumnVector(2, secondColumnMatrix);
+                currentRotation = new Rotation(copyOfEigenVectors.getData(), 0.01);
+            }
+
+            if (inverted) {
+                dimensionsOfEllipsoids.add(new Cartesian(dataEigenValues[0][0], dataEigenValues[2][2], dataEigenValues[1][1]));
+            }
+            else {
+                dimensionsOfEllipsoids.add(new Cartesian(dataEigenValues[0][0], dataEigenValues[1][1], dataEigenValues[2][2]));
+            }
+
+            final Rotation rotationFromLOF = lofInput.rotationFromInertial(allSpaceCraftStates.get(i).getDate(), allSpaceCraftStates.get(i).getPVCoordinates());
+//            final Rotation finalRotation = currentRotation.compose(rotationFromLOF, RotationConvention.VECTOR_OPERATOR);
+            final AngularCoordinates angularCoordinatesRotated = new AngularCoordinates(rotationFromLOF);
+            final Attitude currentAttitudeCovariance = new Attitude(allSpaceCraftStates.get(i).getDate(), allSpaceCraftStates.get(0).getFrame(), angularCoordinatesRotated);
+            attitudes.add(currentAttitudeCovariance);
         }
+        this.uniqueEllipsoid = new CzmlEllipsoid(julianDates, dimensionsOfEllipsoids, color);
     }
 
     /** This function basically converts an array of reference into an iterable of reference.
