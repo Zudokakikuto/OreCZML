@@ -1,4 +1,4 @@
-![Logo OreCzml](https://gitlab.orekit.org/Zudo/oreczml/-/wikis/uploads/ca37e6b276963c4e24618435e3a8bf91/image.png)
+![Logo OreCzml](https://gitlab.orekit.org/Zudo/oreczml/-/raw/master/src/main/resources/OreCZML.jpg)
 
 OreCzml
 

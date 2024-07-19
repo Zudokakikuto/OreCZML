@@ -357,6 +357,8 @@ public class CovarianceDisplay extends AbstractPrimaryObject implements CzmlPrim
     private void covariancePropagation(final Satellite inputSatellite, final StateCovariance initCovariance) {
         final Propagator propagator = inputSatellite.getSatellitePropagator();
 
+        propagator.resetInitialState(satellite.getAllSpaceCraftStates().get(0));
+
         inputSatellite.setAttitudes(new ArrayList<>());
 
 //        final RealMatrix covInitMatrix = initCovariance.getMatrix();
