@@ -81,10 +81,20 @@ public class CzmlModel {
     /** The duplicated file in local at the relative path.*/
     private File duplicatedLocalFile;
 
-    /** This builder builds the model object with the absolute path of the file given by the user.
+    /** Builder for the model of the satellite, default parameters entered.
      * @param absolutePathToObject : The string leading to the absolute path of the object
      */
     public CzmlModel(final String absolutePathToObject) throws URISyntaxException, IOException {
+        this(absolutePathToObject, 5000000, 400, 1);
+    }
+
+    /** This builder builds the model object with the absolute path of the file given by the user.
+     * @param absolutePathToObject : The string leading to the absolute path of the object
+     * @param maximumScale : The minimum scale for the object
+     * @param minimumPixelSizeInput : The minimum of pixels display for the object
+     * @param scale : The scale of the 3D model
+     */
+    public CzmlModel(final String absolutePathToObject, final double maximumScale, final double minimumPixelSizeInput, final double scale) throws URISyntaxException, IOException {
         this.modelType = getModelTypeFromString(absolutePathToObject);
 
         if (this.modelType == ModelType.MODEL_3D) {
@@ -93,8 +103,9 @@ public class CzmlModel {
             this.availability = Header.MASTER_CLOCK.getAvailability();
             this.uri = new URI(DEFAULT_SLASH_LOCAL + nameOfObject);
             this.show = true;
-            this.minimumPixelSize = 400;
-            this.maximumScale = 5000000;
+            this.minimumPixelSize = minimumPixelSizeInput;
+            this.maximumScale = maximumScale;
+            this.scale = scale;
         }
         else if (this.modelType == ModelType.MODEL_2D) {
             this.absolutePath = absolutePathToObject;
@@ -131,6 +142,7 @@ public class CzmlModel {
                 final CesiumResourceBehavior cesiumResourceBehavior = CesiumResourceBehavior.LINK_TO;
                 final CesiumResource cesiumResource = new CesiumResource(getUri(), cesiumResourceBehavior);
                 modelWriter.writeGltfProperty(cesiumResource);
+                modelWriter.writeScaleProperty(getScale());
                 modelWriter.writeMaximumScaleProperty(getMaximumScale());
                 modelWriter.writeMinimumPixelSizeProperty(getMinimumPixelSize());
                 modelWriter.writeIncrementallyLoadTexturesProperty(true);

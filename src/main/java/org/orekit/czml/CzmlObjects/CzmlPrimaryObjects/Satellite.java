@@ -31,7 +31,6 @@ import org.orekit.czml.CzmlObjects.CzmlAbstractObjects.CzmlModel;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.Billboard;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.Orientation;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.SatelliteObjects.SatelliteAttitude;
-import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.SatelliteObjects.SatelliteReferenceSystem;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.SatelliteObjects.Path;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.SatelliteObjects.SatellitePosition;
 import org.orekit.czml.CzmlEnum.ModelType;
@@ -632,7 +631,7 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
         orientationSetup();
     }
 
-    public void displaySatelliteReferenceSystem() {
+    public void displaySatelliteReferenceSystem() throws URISyntaxException, IOException {
         this.displayReferenceSystem = true;
         this.satelliteReferenceSystem = new SatelliteReferenceSystem(this);
     }

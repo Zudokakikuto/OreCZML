@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class AbstractPointOnEarth extends AbstractPrimaryObject implements CzmlPrimaryObject {
@@ -54,8 +55,9 @@ public class AbstractPointOnEarth extends AbstractPrimaryObject implements CzmlP
 
     public AbstractPointOnEarth(final List<JulianDate> julianDates, final List<GeodeticPoint> geodeticPoints, final BodyShape body) {
         this.footprintsInTime = geodeticPoints;
-        this.setId(DEFAULT_ID + footprintsInTime.toString());
-        this.setName(DEFAULT_NAME + footprintsInTime.toString());
+        // Taking only the 10 first geodetic points to not surcharge the czml file
+        this.setId(DEFAULT_ID + Arrays.toString(Arrays.copyOfRange(footprintsInTime.toArray(), 0, 10)));
+        this.setName(DEFAULT_NAME + Arrays.toString(Arrays.copyOfRange(footprintsInTime.toArray(), 0, 10)));
         this.setAvailability(Header.MASTER_CLOCK.getAvailability());
         this.julianDates = julianDates;
         for (final GeodeticPoint currentGeodeticPoint : geodeticPoints) {

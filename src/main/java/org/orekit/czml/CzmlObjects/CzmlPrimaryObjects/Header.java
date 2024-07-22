@@ -47,7 +47,7 @@ public class Header extends AbstractPrimaryObject implements CzmlPrimaryObject {
     /** .*/
     public static final String DEFAULT_ROOT = System.getProperty("user.dir").replace("\\", "/");
     /** .*/
-    public static final String DEFAULT_RESOURCES = DEFAULT_ROOT + "\\src\\main\\resources";
+    public static final String DEFAULT_RESOURCES = DEFAULT_ROOT + "/src/main/resources";
 
     /** The version of the header.*/
     private String version;

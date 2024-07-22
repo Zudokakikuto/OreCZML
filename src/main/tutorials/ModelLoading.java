@@ -81,6 +81,7 @@ public class ModelLoading {
         // Build of the satellite
         final Satellite satellite = new Satellite(initialOrbit, IssModel);
         satellite.displayOnlyOnePeriod();
+        satellite.displaySatelliteReferenceSystem();
         file.addObject(satellite);
 
         // Write inside the CzmlFile the objects

@@ -62,9 +62,9 @@ import org.orekit.utils.PVCoordinatesProvider;
 import java.awt.Color;
 import java.io.File;
 
-public class SinusoidalAttitude {
+public class CompensationOrbitAttitude {
 
-    private SinusoidalAttitude() {
+    private CompensationOrbitAttitude() {
         // empty
     }
 
@@ -90,7 +90,7 @@ public class SinusoidalAttitude {
 
         // Creation of the clock.
         final TimeScale UTC = TimeScalesFactory.getUTC();
-        final double durationOfSimulation = 10 * 3600; // in seconds;
+        final double durationOfSimulation = 24 * 3600; // in seconds;
         final double stepBetweenEachInstant = 60.0; // in seconds
         final AbsoluteDate startDate = new AbsoluteDate(2024, 3, 15, 0, 0, 0.0, UTC);
         final AbsoluteDate finalDate = startDate.shiftedBy(durationOfSimulation);
@@ -106,7 +106,7 @@ public class SinusoidalAttitude {
 
         // Build of a LEO orbit
         final Frame EME2000 = FramesFactory.getEME2000();
-        final KeplerianOrbit initialOrbit = new KeplerianOrbit(7878000, 0, FastMath.toRadians(20), 0, FastMath.toRadians(0), FastMath.toRadians(0), PositionAngleType.MEAN, EME2000, startDate, Constants.WGS84_EARTH_MU);
+        final KeplerianOrbit initialOrbit = new KeplerianOrbit(7200000, 0, FastMath.toRadians(98.7), 0, FastMath.toRadians(90), FastMath.toRadians(0), PositionAngleType.MEAN, EME2000, startDate, Constants.WGS84_EARTH_MU);
 
         final SpacecraftState initialState = new SpacecraftState(initialOrbit);
 
@@ -132,7 +132,6 @@ public class SinusoidalAttitude {
 
         // Creation of the satellite
         final Satellite satellite = new Satellite(propagator, finalDate, IssModel, Color.RED);
-        satellite.displayOnlyOnePeriod();
         satellite.displaySatelliteAttitude();
         satellite.displaySatelliteReferenceSystem();
         file.addObject(satellite);
@@ -212,5 +211,6 @@ public class SinusoidalAttitude {
         }
     }
 }
+
 
 

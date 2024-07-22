@@ -125,6 +125,7 @@ public class AttitudePointingExample {
         final Satellite satellite = new Satellite(propagator, finalDate, IssModel, Color.RED);
         satellite.displayOnlyOnePeriod();
         satellite.displaySatelliteAttitude();
+        satellite.displaySatelliteReferenceSystem();
         file.addObject(satellite);
 
         final AttitudePointing pointing = new AttitudePointing(satellite, earth, Vector3D.MINUS_J, Color.ORANGE);
