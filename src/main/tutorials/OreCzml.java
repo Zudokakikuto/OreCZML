@@ -20,8 +20,8 @@ import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.CzmlGroundStation;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Header;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.LineOfVisibility;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Satellite;
-import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.HeaderObjects.Clock;
-import org.orekit.czml.CzmlObjects.TerrestrialReferenceSystem;
+import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.Clock;
+import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.CentralBodyReferenceSystem;
 import org.orekit.czml.Outputs.CzmlFile;
 import org.hipparchus.linear.MatrixUtils;
 import org.hipparchus.linear.RealMatrix;
@@ -177,7 +177,7 @@ public class OreCzml
         final Header header = new Header("test", new Clock(startDate, finalDate, UTC, step));
         file.addObject(header);
 
-        final TerrestrialReferenceSystem system = new TerrestrialReferenceSystem();
+        final CentralBodyReferenceSystem system = new CentralBodyReferenceSystem();
 
         final long timeHeader = System.currentTimeMillis();
         final double dtHeader = (timeHeader - timeSetup) * 1.e-3;

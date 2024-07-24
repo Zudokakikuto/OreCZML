@@ -30,9 +30,8 @@ import org.hipparchus.geometry.euclidean.threed.Rotation;
 import org.orekit.czml.CzmlObjects.CzmlAbstractObjects.CzmlModel;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.Billboard;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.Orientation;
-import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.SatelliteObjects.SatelliteAttitude;
-import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.SatelliteObjects.Path;
-import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.SatelliteObjects.SatellitePosition;
+import org.orekit.czml.CzmlObjects.Path;
+import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.TimePosition;
 import org.orekit.czml.CzmlEnum.ModelType;
 import org.orekit.czml.CzmlEnum.PositionType;
 import org.orekit.czml.CzmlObjects.Position;
@@ -149,13 +148,11 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
     /** .*/
     private List<Attitude> attitudes = new ArrayList<>();
     /** .*/
-    private SatelliteAttitude satelliteAttitude = null;
-    /** .*/
     private SatelliteReferenceSystem satelliteReferenceSystem = null;
     /** .*/
     private List<SpacecraftState> allSpaceCraftStates = new ArrayList<>();
     /** .*/
-    private Color pathColor;
+    private Color color;
     /** .*/
     private boolean oriented = false;
 
@@ -180,7 +177,7 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
         this.description = DEFAULT_DESCRIPTION;
         this.frame = file.getSegments().get(0).getFrame();
         this.Ephemeris = file.getSegments().get(0).getData().getEphemeridesDataLines();
-        this.pathColor = color;
+        this.color = color;
 
         final List<Vector3D> vector3DS1 = new ArrayList<>();
         this.timeList = new ArrayList<>();
@@ -228,7 +225,7 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
         this.setId(DEFAULT_FILE_SATELLITE_NAME + "#ID :" + file.toString());
         this.setName(DEFAULT_NAME);
         this.description = DEFAULT_DESCRIPTION;
-        this.pathColor = color;
+        this.color = color;
         this.frame = FramesFactory.getTEME();
         this.setAvailability(Header.MASTER_CLOCK.getAvailability());
         this.description = DEFAULT_DESCRIPTION;
@@ -268,7 +265,7 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
         this.setAvailability(availability);
         this.description = description;
         this.Ephemeris = Ephemeris;
-        this.pathColor = color;
+        this.color = color;
 
         final List<Orbit> orbitList = new ArrayList<Orbit>();
         final List<Vector3D> vector3DS1 = new ArrayList<>();
@@ -323,7 +320,7 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
         this.timeList = new ArrayList<>();
         this.orbits = new ArrayList<>();
         this.positionsList = new ArrayList<>();
-        this.pathColor = color;
+        this.color = color;
         this.description = DEFAULT_DESCRIPTION;
         timeList.add(absoluteDateToJulianDateDelta(startTime));
         timeList.add(absoluteDateToJulianDateDelta(stopTime));
@@ -354,7 +351,7 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
         final List<Orbit> orbitTemp = new ArrayList<>();
         final List<Vector3D> vector3DTemp = new ArrayList<>();
         this.positionsList = new ArrayList<>();
-        this.pathColor = color;
+        this.color = color;
 
         this.setId(input.get(0).getOrbit().toString());
         this.setName(DEFAULT_NAME);
@@ -404,7 +401,7 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
             this.satellitePropagator = propagator;
             this.description = DEFAULT_DESCRIPTION;
             this.frame = propagator.getFrame();
-            this.pathColor = color;
+            this.color = color;
 
             // Creation of empty list to be filled with multiplexerSetup
             this.timeList = new ArrayList<>();
@@ -463,13 +460,12 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
         this.orientation = null;
         this.optionalRotation = null;
         this.displayOnlyOnePeriod = false;
-        this.pathColor = null;
+        this.color = null;
         this.absoluteDateList = new ArrayList<>();
         this.displayReferenceSystem = false;
         this.satelliteReferenceSystem = null;
         this.satellitePropagator = null;
         this.modelType = null;
-        this.satelliteAttitude = null;
         this.period = 0.0;
     }
 
@@ -541,8 +537,8 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
         return frame;
     }
 
-    public Color getPathColor() {
-        return pathColor;
+    public Color getColor() {
+        return color;
     }
 
     public String getModelPath() {
@@ -559,10 +555,6 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
 
     public Billboard getBillboard() {
         return billboard;
-    }
-
-    public SatelliteAttitude getSatelliteAttitude() {
-        return satelliteAttitude;
     }
 
     public List<Position> getPositionsList() {
@@ -699,7 +691,7 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
                 OUTPUT.writeStartObject();
                 try (SolidColorMaterialCesiumWriter solidColorWriter = materialWriter.getSolidColorWriter()) {
                     solidColorWriter.open(OUTPUT);
-                    solidColorWriter.writeColorProperty(getPathColor());
+                    solidColorWriter.writeColorProperty(getColor());
                 }
                 OUTPUT.writeEndObject();
             }
@@ -708,7 +700,7 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
 
     private void czmlPosition(final PacketCesiumWriter packet) {
 
-        final SatellitePosition Pos = new SatellitePosition(this.getCartesianArraylist(), getTimeList());
+        final TimePosition Pos = new TimePosition(this.getCartesianArraylist(), getTimeList());
 
         try (PositionCesiumWriter writer = packet.openPositionProperty()) {
             writer.writeReferenceFrame(Pos.getReferenceFrame());

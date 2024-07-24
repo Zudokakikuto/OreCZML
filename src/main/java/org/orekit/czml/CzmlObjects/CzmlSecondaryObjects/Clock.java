@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.HeaderObjects;
+package org.orekit.czml.CzmlObjects.CzmlSecondaryObjects;
 
 import cesiumlanguagewriter.CesiumOutputStream;
 import cesiumlanguagewriter.ClockCesiumWriter;
@@ -24,7 +24,6 @@ import cesiumlanguagewriter.GregorianDate;
 import cesiumlanguagewriter.JulianDate;
 import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.TimeInterval;
-import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.CzmlSecondaryObject;
 import org.hipparchus.util.FastMath;
 import org.orekit.files.ccsds.ndm.odm.oem.Oem;
 import org.orekit.time.AbsoluteDate;

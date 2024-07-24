@@ -21,7 +21,7 @@ import org.orekit.bodies.GeodeticPoint;
 import org.orekit.bodies.OneAxisEllipsoid;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.CzmlGroundStation;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Header;
-import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.HeaderObjects.Clock;
+import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.Clock;
 import org.orekit.czml.Outputs.CzmlFile;
 import org.orekit.data.DataContext;
 import org.orekit.data.DataProvider;

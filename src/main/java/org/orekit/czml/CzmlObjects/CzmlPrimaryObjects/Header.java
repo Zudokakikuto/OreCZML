@@ -18,7 +18,7 @@ package org.orekit.czml.CzmlObjects.CzmlPrimaryObjects;
 
 import cesiumlanguagewriter.ClockCesiumWriter;
 import cesiumlanguagewriter.PacketCesiumWriter;
-import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.HeaderObjects.Clock;
+import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.Clock;
 import org.orekit.czml.Outputs.CzmlFile;
 import org.orekit.time.TimeScale;
 

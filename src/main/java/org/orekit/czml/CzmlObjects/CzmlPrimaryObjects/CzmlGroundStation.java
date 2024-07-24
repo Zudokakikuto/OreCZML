@@ -65,13 +65,9 @@ public class CzmlGroundStation extends AbstractPrimaryObject implements CzmlPrim
     /** .*/
     private List<TimeInterval> multipleAvailability = new ArrayList<>();
     /** .*/
-    private String description;
+    private Vector3D positionOnEarth;
     /** .*/
-    private List<String> multipleDescription = new ArrayList<>();
-    /** .*/
-    private Vector3D positionsList;
-    /** .*/
-    private List<Vector3D> multiplePositionsList = new ArrayList<>();
+    private List<Vector3D> multiplePositionOnEarth = new ArrayList<>();
     /** .*/
     private Billboard billboard;
     /** .*/
@@ -91,11 +87,10 @@ public class CzmlGroundStation extends AbstractPrimaryObject implements CzmlPrim
     /** .*/
     private List<Position> multiplePositionObject = new ArrayList<>();
 
-    public CzmlGroundStation(final String name, final String id, final TimeInterval availability, final String description, final Position positionObject, final Billboard billboard) {
+    public CzmlGroundStation(final String name, final String id, final TimeInterval availability, final Position positionObject, final Billboard billboard) {
         this.setId(id);
         this.setAvailability(availability);
         this.setName(name);
-        this.description = description;
         this.billboard = billboard;
         final IERSConventions IERS = IERSConventions.IERS_2010;
         final Frame ITRF = FramesFactory.getITRF(IERS, true);
@@ -110,7 +105,7 @@ public class CzmlGroundStation extends AbstractPrimaryObject implements CzmlPrim
 
     public CzmlGroundStation(final TopocentricFrame topocentricFrame) {
         this.topocentricFrame = topocentricFrame;
-        this.positionsList = topocentricFrame.getCartesianPoint();
+        this.positionOnEarth = topocentricFrame.getCartesianPoint();
         this.setId(topocentricFrame.getName());
         this.setName(topocentricFrame.getName());
         this.setAvailability(Header.MASTER_CLOCK.getAvailability());
@@ -134,8 +129,7 @@ public class CzmlGroundStation extends AbstractPrimaryObject implements CzmlPrim
             multipleId.add(currentGroundStation.getId());
             multipleBillboard.add(currentGroundStation.billboard);
             multipleName.add(currentGroundStation.getName());
-            multipleDescription.add(currentGroundStation.description);
-            multiplePositionsList.add(currentGroundStation.positionsList);
+            multiplePositionOnEarth.add(currentGroundStation.positionOnEarth);
             multiplePositionObject.add(currentGroundStation.positionObject);
         }
     }
@@ -162,7 +156,7 @@ public class CzmlGroundStation extends AbstractPrimaryObject implements CzmlPrim
                 this.setId(getMultipleId().get(i));
                 this.setName(getMultipleName().get(i));
                 this.setAvailability(getMultipleAvailability().get(i));
-                this.positionsList = getMultiplePositionsList().get(i);
+                this.positionOnEarth = getMultiplePositionOnEarth().get(i);
                 this.groundStation = getMultipleGroundStations().get(i);
                 this.billboard = getMultipleBillboard().get(i);
                 this.positionObject = getMultiplePositionObject().get(i);
@@ -193,9 +187,8 @@ public class CzmlGroundStation extends AbstractPrimaryObject implements CzmlPrim
         this.setId("");
         this.setName("");
         this.setAvailability(null);
-        this.description = "";
         this.positionObject = null;
-        this.positionsList = null;
+        this.positionOnEarth = null;
         this.billboard = null;
         this.groundStation = null;
         topocentricFrame = null;
@@ -239,16 +232,12 @@ public class CzmlGroundStation extends AbstractPrimaryObject implements CzmlPrim
         try (PositionCesiumWriter positionWriter = packet.getPositionWriter()) {
             positionWriter.open(OUTPUT);
             positionWriter.writeInterval(this.getAvailability());
-            final Cartesian cartesian = new Cartesian(positionsList.getX(), positionsList.getY(), positionsList.getZ());
+            final Cartesian cartesian = new Cartesian(positionOnEarth.getX(), positionOnEarth.getY(), positionOnEarth.getZ());
             positionWriter.writeCartesian(cartesian);
         }
     }
 
     // Getters
-
-    public String getDescription() {
-        return description;
-    }
 
     public org.orekit.estimation.measurements.GroundStation getOrekitGroundStation() {
         return groundStation;
@@ -272,7 +261,7 @@ public class CzmlGroundStation extends AbstractPrimaryObject implements CzmlPrim
     }
 
     public Vector3D getPositions() {
-        return positionsList;
+        return positionOnEarth;
     }
 
     public Position getPositionObject() {
@@ -303,12 +292,8 @@ public class CzmlGroundStation extends AbstractPrimaryObject implements CzmlPrim
         return multipleName;
     }
 
-    public List<String> getMultipleDescription() {
-        return multipleDescription;
-    }
-
-    public List<Vector3D> getMultiplePositionsList() {
-        return multiplePositionsList;
+    public List<Vector3D> getMultiplePositionOnEarth() {
+        return multiplePositionOnEarth;
     }
 
 }

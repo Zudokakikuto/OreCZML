@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.SatelliteObjects;
+package org.orekit.czml.CzmlObjects;
 
 import cesiumlanguagewriter.BooleanCesiumWriter;
 import cesiumlanguagewriter.CesiumOutputStream;

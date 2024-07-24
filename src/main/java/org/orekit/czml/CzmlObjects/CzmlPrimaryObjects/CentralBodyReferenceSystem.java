@@ -14,15 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.orekit.czml.CzmlObjects;
+package org.orekit.czml.CzmlObjects.CzmlPrimaryObjects;
 
 import cesiumlanguagewriter.Cartesian;
 import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.PositionCesiumWriter;
-import cesiumlanguagewriter.TimeInterval;
-import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.CzmlPrimaryObject;
-import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Header;
 import org.orekit.bodies.OneAxisEllipsoid;
+import org.orekit.czml.CzmlObjects.Polyline;
 import org.orekit.frames.FramesFactory;
 import org.orekit.utils.Constants;
 import org.orekit.utils.IERSConventions;
@@ -44,9 +42,9 @@ import java.util.List;
  * @author Julien LEBLOND.
  */
 
-public class TerrestrialReferenceSystem implements CzmlPrimaryObject {
+public class CentralBodyReferenceSystem extends AbstractPrimaryObject implements CzmlPrimaryObject {
     /** .*/
-    public static final String DEFAULT_ID = "TerrestrialReferenceSystem";
+    public static final String DEFAULT_ID = "CENTRAL_BODY_REFERENCE_SYSTEM";
     /** .*/
     public static final String DEFAULT_NAME = "Reference system of the central body";
     /** .*/
@@ -57,20 +55,14 @@ public class TerrestrialReferenceSystem implements CzmlPrimaryObject {
     public static final Color DEFAULT_BLUE  = new Color(10, 10, 255);
 
     /** .*/
-    private String id;
-    /** .*/
-    private String name;
-    /** .*/
     private List<Polyline> polylines = new ArrayList<>();
-    /** .*/
-    private TimeInterval availability;
 
 
-    public TerrestrialReferenceSystem(final OneAxisEllipsoid body, final String id, final String name, final Color color1,
+    public CentralBodyReferenceSystem(final OneAxisEllipsoid body, final String id, final String name, final Color color1,
                                       final Color color2, final Color color3) {
-        this.id = id;
-        this.name = name;
-        this.availability = Header.MASTER_CLOCK.getAvailability();
+        this.setId(id);
+        this.setName(name);
+        this.setAvailability(Header.MASTER_CLOCK.getAvailability());
 
         final Cartesian centralCartesian = new Cartesian(0.1, 0.1, 0.1);
         final double depth = body.getEquatorialRadius() * 3;
@@ -91,15 +83,15 @@ public class TerrestrialReferenceSystem implements CzmlPrimaryObject {
         vectorToZ.add(centralCartesian);
         vectorToZ.add(plusZCartesian);
 
-        final Polyline XPolyline = new Polyline(vectorToX, availability, color1, 1, 1e9);
-        final Polyline YPolyline = new Polyline(vectorToY, availability, color2, 1, 1e9);
-        final Polyline ZPolyline = new Polyline(vectorToZ, availability, color3, 1, 1e9);
+        final Polyline XPolyline = new Polyline(vectorToX, getAvailability(), color1, 1, 1e9);
+        final Polyline YPolyline = new Polyline(vectorToY, getAvailability(), color2, 1, 1e9);
+        final Polyline ZPolyline = new Polyline(vectorToZ, getAvailability(), color3, 1, 1e9);
         this.polylines.add(XPolyline);
         this.polylines.add(YPolyline);
         this.polylines.add(ZPolyline);
     }
 
-    public TerrestrialReferenceSystem() {
+    public CentralBodyReferenceSystem() {
         this(   new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS,
                 Constants.WGS84_EARTH_FLATTENING,
                 FramesFactory.getITRF(IERSConventions.IERS_2010, true)),
@@ -110,7 +102,7 @@ public class TerrestrialReferenceSystem implements CzmlPrimaryObject {
                 DEFAULT_GREEN);
     }
 
-    public TerrestrialReferenceSystem(final Color color1, final Color color2, final Color color3) {
+    public CentralBodyReferenceSystem(final Color color1, final Color color2, final Color color3) {
         this(   new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS,
                 Constants.WGS84_EARTH_FLATTENING,
                 FramesFactory.getITRF(IERSConventions.IERS_2010, true)),
@@ -126,9 +118,9 @@ public class TerrestrialReferenceSystem implements CzmlPrimaryObject {
         OUTPUT.setPrettyFormatting(true);
         for (int i = 0; i < 3; i++) {
             try (PacketCesiumWriter packet = STREAM.openPacket(OUTPUT)) {
-                packet.writeId(id + " " + i);
-                packet.writeName(name);
-                packet.writeAvailability(availability);
+                packet.writeId(getId() + " " + i);
+                packet.writeName(getName());
+                packet.writeAvailability(getAvailability());
 
                 try (PositionCesiumWriter positionWriter = packet.getPositionWriter()) {
                     positionWriter.open(OUTPUT);
@@ -148,8 +140,8 @@ public class TerrestrialReferenceSystem implements CzmlPrimaryObject {
 
     @Override
     public void cleanObject() {
-        id = "";
-        name = "";
+        setId("");
+        setName("");
         polylines = new ArrayList<>();
     }
 }

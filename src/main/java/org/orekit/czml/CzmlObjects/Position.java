@@ -24,7 +24,7 @@ import cesiumlanguagewriter.Motion1;
 import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.PositionCesiumWriter;
 import cesiumlanguagewriter.TimeInterval;
-import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.SatelliteObjects.SatellitePosition;
+import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.TimePosition;
 import org.orekit.czml.CzmlEnum.PositionType;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.hipparchus.util.FastMath;
@@ -32,7 +32,7 @@ import org.hipparchus.util.FastMath;
 /** Position
 
  * <p>
- * The position object is used to represent a position of any object except the satellite (see {@link SatellitePosition} for more information).
+ * The position object is used to represent a position of any object except the satellite (see {@link TimePosition} for more information).
  * The position object can be build in many ways, following all the position type that exists : {@link PositionType}.
  * </p>
  *

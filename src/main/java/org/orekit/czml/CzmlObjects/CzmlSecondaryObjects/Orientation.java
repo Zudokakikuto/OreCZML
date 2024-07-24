@@ -21,7 +21,6 @@ import cesiumlanguagewriter.CesiumOutputStream;
 import cesiumlanguagewriter.JulianDate;
 import cesiumlanguagewriter.OrientationCesiumWriter;
 import cesiumlanguagewriter.PacketCesiumWriter;
-import cesiumlanguagewriter.Reference;
 import cesiumlanguagewriter.TimeInterval;
 import cesiumlanguagewriter.UnitQuaternion;
 import org.hipparchus.geometry.euclidean.threed.Rotation;
@@ -54,10 +53,6 @@ public class Orientation implements CzmlSecondaryObject {
     private List<JulianDate> julianDates = new ArrayList<>();
     /** .*/
     private TimeInterval interval;
-    /** .*/
-    private Reference reference;
-    /** .*/
-    private Reference velocityReference;
     /** .*/
     private CesiumInterpolationAlgorithm interpolationAlgorithm;
     /** .*/
@@ -258,14 +253,6 @@ public class Orientation implements CzmlSecondaryObject {
 
     public List<UnitQuaternion> getMultipleQuaternions() {
         return multipleQuaternions;
-    }
-
-    public Reference getReference() {
-        return reference;
-    }
-
-    public Reference getVelocityReference() {
-        return velocityReference;
     }
 
     public UnitQuaternion getUnitQuaternion() {

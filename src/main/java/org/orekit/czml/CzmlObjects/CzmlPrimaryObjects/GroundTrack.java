@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.orekit.czml.CzmlObjects.CzmlSecondaryObjects;
+package org.orekit.czml.CzmlObjects.CzmlPrimaryObjects;
 
 import cesiumlanguagewriter.BooleanCesiumWriter;
 import cesiumlanguagewriter.Cartesian;
@@ -26,13 +26,8 @@ import cesiumlanguagewriter.Reference;
 import cesiumlanguagewriter.SolidColorMaterialCesiumWriter;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.orekit.bodies.BodyShape;
-import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.AbstractPrimaryObject;
-import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Constellation;
-import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.CzmlPrimaryObject;
-import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Header;
-import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Satellite;
-import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.SatelliteObjects.Path;
-import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.SatelliteObjects.SatellitePosition;
+import org.orekit.czml.CzmlObjects.Path;
+import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.TimePosition;
 import org.orekit.czml.CzmlObjects.CzmlShow;
 import org.orekit.czml.CzmlObjects.Polyline;
 import org.orekit.frames.Frame;
@@ -66,13 +61,9 @@ public class GroundTrack extends AbstractPrimaryObject implements CzmlPrimaryObj
     /** .*/
     private Boolean displayLinkSatellite = false;
     /** .*/
-    private Iterable<Reference> referencesLink;
-    /** .*/
-    private List<CzmlShow> showListLink = new ArrayList<>();
-    /** .*/
     private List<Cartesian> initialCartesiansSatellite;
     /** .*/
-    private SatellitePosition clampedPositionOnBody;
+    private TimePosition clampedPositionOnBody;
     /** .*/
     private Color color;
     /** .*/
@@ -100,18 +91,23 @@ public class GroundTrack extends AbstractPrimaryObject implements CzmlPrimaryObj
             final Cartesian projectedCartesian = new Cartesian(projectedVector3D.getX(), projectedVector3D.getY(), projectedVector3D.getZ());
             projectedCartesianList.add(projectedCartesian);
         }
-        this.clampedPositionOnBody = new SatellitePosition(projectedCartesianList, satellite.getTimeList());
+        this.clampedPositionOnBody = new TimePosition(projectedCartesianList, satellite.getTimeList());
     }
 
     public GroundTrack(final Constellation constellation, final BodyShape body) {
+        this(constellation, body, DEFAULT_COLOR);
+    }
+
+    public GroundTrack(final Constellation constellation, final BodyShape body, final Color color) {
         final List<Satellite> allSatellites = constellation.getAllSatellites();
+        this.color = color;
         this.allGroundTracks =  new ArrayList<>();
         this.setId(DEFAULT_CONSTELLATION_ID + constellation.getId());
         this.setName(DEFAULT_NAME + constellation.getTotalOfSatellite() + DEFAULT_CONSTELLATION_NUMBEROFSAT);
         this.setAvailability(Header.MASTER_CLOCK.getAvailability());
         for (int i = 0; i < allSatellites.size(); i++) {
             final Satellite currentSat = allSatellites.get(i);
-            final GroundTrack currentGroundTrack = new GroundTrack(currentSat, body, currentSat.getPathColor());
+            final GroundTrack currentGroundTrack = new GroundTrack(currentSat, body, currentSat.getColor());
             allGroundTracks.add(currentGroundTrack);
         }
     }
@@ -196,7 +192,7 @@ public class GroundTrack extends AbstractPrimaryObject implements CzmlPrimaryObj
         return satellite;
     }
 
-    public SatellitePosition getClampedPositionOnBody() {
+    public TimePosition getClampedPositionOnBody() {
         return clampedPositionOnBody;
     }
 

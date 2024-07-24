@@ -25,11 +25,8 @@ import org.hipparchus.util.FastMath;
 import org.orekit.attitudes.Attitude;
 import org.orekit.attitudes.LofOffset;
 import org.orekit.bodies.OneAxisEllipsoid;
-import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.AttitudePointing;
-import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.FieldOfObservation;
-import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Header;
-import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Satellite;
-import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.HeaderObjects.Clock;
+import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.*;
+import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.Clock;
 import org.orekit.czml.Outputs.CzmlFile;
 import org.orekit.data.DataContext;
 import org.orekit.data.DataProvider;
@@ -141,6 +138,9 @@ public class SinusoidalAttitude {
         pointing.displayPointingPath();
         pointing.displayPeriodPointingPath();
         file.addObject(pointing);
+
+        final CentralBodyReferenceSystem system = new CentralBodyReferenceSystem();
+        file.addObject(system);
 
         // Creation of the field of observation of the satellite, it describes the area the satellite see
         final Transform initialInertToBody = initialState.getFrame().getTransformTo(earth.getBodyFrame(), initialState.getDate());

@@ -34,15 +34,15 @@ public class CzmlEllipsoid implements CzmlSecondaryObject {
     /** .*/
     private boolean fill = false;
     /** .*/
-    private TimeInterval availability;
+    private final TimeInterval availability;
     /** .*/
     private boolean outline = true;
     /** .*/
-    private Color color;
+    private final Color color;
     /** .*/
-    private int slicePartition;
+    private final int slicePartition;
     /** .*/
-    private int stackPartition;
+    private final int stackPartition;
     /** .*/
     private Cartesian cartesian;
     /** .*/
@@ -60,7 +60,7 @@ public class CzmlEllipsoid implements CzmlSecondaryObject {
     }
 
     public CzmlEllipsoid(final TimeInterval availability, final Cartesian cartesian, final Color color) {
-        this(availability, cartesian, false, true, color, 24, 36);
+        this(availability, cartesian, false, true, 24, 36, color);
     }
 
     public CzmlEllipsoid(final TimeInterval availability, final Cartesian cartesian, final int slicePartition, final int stackPartition) {
@@ -71,13 +71,12 @@ public class CzmlEllipsoid implements CzmlSecondaryObject {
         this.cartesian = cartesian;
         this.availability = availability;
         this.fill = false;
-        this.outline = true;
         this.color = color;
         this.slicePartition = slicePartition;
         this.stackPartition = stackPartition;
     }
 
-    public CzmlEllipsoid(final TimeInterval availability, final Cartesian cartesian, final boolean fill, final boolean outline, final Color color, final int slicePartition, final int stackPartition) {
+    public CzmlEllipsoid(final TimeInterval availability, final Cartesian cartesian, final boolean fill, final boolean outline, final int slicePartition, final int stackPartition, final Color color) {
         this.cartesian = cartesian;
         this.availability = availability;
         this.fill = fill;
@@ -88,20 +87,20 @@ public class CzmlEllipsoid implements CzmlSecondaryObject {
     }
 
     // UNIQUE ELLIPSOIDS
-    public CzmlEllipsoid(final List<JulianDate> julianDates, final List<Cartesian> cartesians) {
-        this(julianDates, cartesians, new Color(255, 255, 0, 255));
+    public CzmlEllipsoid(final List<JulianDate> julianDates, final List<Cartesian> dimensions) {
+        this(julianDates, dimensions, new Color(255, 255, 0, 255));
     }
 
-    public CzmlEllipsoid(final List<JulianDate> julianDates, final List<Cartesian> cartesians, final Color color) {
-        this(julianDates, cartesians, false, true, color, 24, 36);
+    public CzmlEllipsoid(final List<JulianDate> julianDates, final List<Cartesian> dimensions, final Color color) {
+        this(julianDates, dimensions, false, true, 24, 36, color);
     }
 
-    public CzmlEllipsoid(final List<JulianDate> julianDates, final List<Cartesian> cartesians, final int slicePartition, final int stackPartition) {
-        this(julianDates, cartesians, slicePartition, stackPartition, new Color(255, 255, 0, 255));
+    public CzmlEllipsoid(final List<JulianDate> julianDates, final List<Cartesian> dimensions, final int slicePartition, final int stackPartition) {
+        this(julianDates, dimensions, slicePartition, stackPartition, new Color(255, 255, 0, 255));
     }
 
-    public CzmlEllipsoid(final List<JulianDate> julianDates, final List<Cartesian> cartesians, final int slicePartition, final int stackPartition, final Color color) {
-        this(julianDates, cartesians, false, true, color, slicePartition, stackPartition);
+    public CzmlEllipsoid(final List<JulianDate> julianDates, final List<Cartesian> dimensions, final int slicePartition, final int stackPartition, final Color color) {
+        this(julianDates, dimensions, false, true, slicePartition, stackPartition, color);
     }
 
     /** Unique ellipsoid made to follow an object, this ellipsoid will need several cartesians and several dates.
@@ -112,7 +111,7 @@ public class CzmlEllipsoid implements CzmlSecondaryObject {
      * @param color : the color of the ellipsoid
      * @param slicePartition : the number of slice of the ellipsoid (number of lines in the orthogonal direction)
      * @param stackPartition : the number of stack of the ellipsoid (number of line in the vertical direction) */
-    public CzmlEllipsoid(final List<JulianDate> julianDates, final List<Cartesian> dimensions, final boolean fill, final boolean outline, final Color color, final int slicePartition, final int stackPartition) {
+    public CzmlEllipsoid(final List<JulianDate> julianDates, final List<Cartesian> dimensions, final boolean fill, final boolean outline, final int slicePartition, final int stackPartition, final Color color) {
         this.fill = fill;
         this.outline = outline;
         this.color = color;

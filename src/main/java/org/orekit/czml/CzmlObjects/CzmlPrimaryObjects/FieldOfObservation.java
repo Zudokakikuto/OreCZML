@@ -60,13 +60,11 @@ public class FieldOfObservation extends AbstractPrimaryObject implements CzmlPri
     /** .*/
     private List<Reference> groundReferences = new ArrayList<>();
     /** .*/
-    private List<List<GeodeticPoint>> initialFootprint = new ArrayList<>();
+    private List<List<GeodeticPoint>> initialFootprint;
     /** .*/
     private List<List<List<GeodeticPoint>>> footprintsInTime = new ArrayList<>();
     /** .*/
-    private List<AbstractPointOnEarth> allPoints = new ArrayList<>();
-    /** .*/
-    private Polyline line;
+    private List<AbstractPointOnBody> allPoints = new ArrayList<>();
     /** .*/
     private Color polylineColor;
     /** .*/
@@ -76,9 +74,9 @@ public class FieldOfObservation extends AbstractPrimaryObject implements CzmlPri
     /** .*/
     private OneAxisEllipsoid body;
     /** .*/
-    private List<JulianDate> julianDates = new ArrayList<>();
+    private List<JulianDate> julianDates;
     /** .*/
-    private List<List<List<Cartesian>>> cartesianListFootPrint = new ArrayList<>();
+    private List<List<List<Cartesian>>> cartesianListFootprint = new ArrayList<>();
 
     @DefaultDataContext
     public FieldOfObservation(final Satellite satellite, final FieldOfView fieldOfView, final Transform fovToBodyInput) {
@@ -102,7 +100,6 @@ public class FieldOfObservation extends AbstractPrimaryObject implements CzmlPri
         this(satellite, fieldOfView, fovToBody, body, DEFAULT_ANGULAR_STEP, color);
     }
 
-    @SuppressWarnings("checkstyle:Regexp")
     public FieldOfObservation(final Satellite satellite, final FieldOfView fov, final Transform initialFovBody, final OneAxisEllipsoid body, final double angularStep, final Color color) {
         this.setId(DEFAULT_ID + fov.toString());
         this.setName(DEFAULT_NAME + satellite.getName());
@@ -125,7 +122,7 @@ public class FieldOfObservation extends AbstractPrimaryObject implements CzmlPri
             noDetection = true;
         }
         else {
-            this.cartesianListFootPrint = extractCartesianFromGeodetic(footprintsInTime);
+            this.cartesianListFootprint = extractCartesianFromGeodetic(footprintsInTime);
             this.footprintsInTime = sortingListListList(footprintsInTime);
         }
     }
@@ -136,7 +133,7 @@ public class FieldOfObservation extends AbstractPrimaryObject implements CzmlPri
         if (!noDetection) {
             for (List<List<GeodeticPoint>> lists : footprintsInTime) {
                 for (List<GeodeticPoint> list : lists) {
-                    final AbstractPointOnEarth currentPointOnEarth = new AbstractPointOnEarth(julianDates, list, body);
+                    final AbstractPointOnBody currentPointOnEarth = new AbstractPointOnBody(julianDates, list, body);
                     allPoints.add(currentPointOnEarth);
                     currentPointOnEarth.writeCzmlBlock();
                     groundReferences.add(new Reference(currentPointOnEarth.getId() + DEFAULT_H_POSITION));
@@ -154,8 +151,8 @@ public class FieldOfObservation extends AbstractPrimaryObject implements CzmlPri
             }
             // Display outlines of the line of sight
             for (int i = 0; i < allPoints.size() - 1; i++) {
-                final AbstractPointOnEarth currentPoint = allPoints.get(i);
-                final AbstractPointOnEarth nextPoint = allPoints.get(i + 1);
+                final AbstractPointOnBody currentPoint = allPoints.get(i);
+                final AbstractPointOnBody nextPoint = allPoints.get(i + 1);
                 final Reference currentPointReference = new Reference(currentPoint.getId() + DEFAULT_H_POSITION);
                 final Reference secondPointReference = new Reference(nextPoint.getId() + DEFAULT_H_POSITION);
                 try (PacketCesiumWriter packet = STREAM.openPacket(OUTPUT)) {
@@ -166,8 +163,8 @@ public class FieldOfObservation extends AbstractPrimaryObject implements CzmlPri
                     currentPolyline.writeReferencesPolyline(packet, OUTPUT);
                 }
             }
-            final AbstractPointOnEarth lastPoint = allPoints.get(allPoints.size() - 1);
-            final AbstractPointOnEarth firstPoint = allPoints.get(0);
+            final AbstractPointOnBody lastPoint = allPoints.get(allPoints.size() - 1);
+            final AbstractPointOnBody firstPoint = allPoints.get(0);
             final Reference lastPointReference = new Reference(lastPoint.getId() + DEFAULT_H_POSITION);
             final Reference firstPointReference = new Reference(firstPoint.getId() + DEFAULT_H_POSITION);
             try (PacketCesiumWriter packet = STREAM.openPacket(OUTPUT)) {
@@ -192,11 +189,50 @@ public class FieldOfObservation extends AbstractPrimaryObject implements CzmlPri
         footprintsInTime = new ArrayList<>();
         allPoints = new ArrayList<>();
         julianDates = new ArrayList<>();
-        cartesianListFootPrint = new ArrayList<>();
+        cartesianListFootprint = new ArrayList<>();
         referenceSatellite = null;
-        line = null;
         body = null;
         initialFovToBody = null;
+    }
+
+    public Reference getReferenceSatellite() {
+        return referenceSatellite;
+    }
+
+    public List<Reference> getGroundReferences() {
+        return groundReferences;
+    }
+
+    public List<List<GeodeticPoint>> getInitialFootprint() {
+        return initialFootprint;
+    }
+
+    public List<List<List<GeodeticPoint>>> getFootprintsInTime() {
+        return footprintsInTime;
+    }
+
+    public List<AbstractPointOnBody> getAllPoints() {
+        return allPoints;
+    }
+
+    public Color getPolylineColor() {
+        return polylineColor;
+    }
+
+    public Transform getInitialFovToBody() {
+        return initialFovToBody;
+    }
+
+    public OneAxisEllipsoid getBody() {
+        return body;
+    }
+
+    public List<JulianDate> getJulianDates() {
+        return julianDates;
+    }
+
+    public List<List<List<Cartesian>>> getCartesianListFootprint() {
+        return cartesianListFootprint;
     }
 
     private List<List<List<Cartesian>>> extractCartesianFromGeodetic(final List<List<List<GeodeticPoint>>> geodeticPoints) {

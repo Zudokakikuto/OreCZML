@@ -63,7 +63,7 @@ public class CzmlModel {
     /** The maximum pixel size of the display.*/
     private double maximumScale;
     /** A boolean to show or not the model.*/
-    private boolean show;
+    private final boolean show;
     /** The time interval when the model is displayed.*/
     private TimeInterval availability;
     /** The absolute path of the file for 2D or 3D model.*/

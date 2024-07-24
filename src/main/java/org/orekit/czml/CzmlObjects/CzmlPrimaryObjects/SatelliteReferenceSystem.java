@@ -49,11 +49,11 @@ public class SatelliteReferenceSystem extends AbstractPrimaryObject implements C
 
     // Builders
 
-    public SatelliteReferenceSystem(final Satellite satellite) throws URISyntaxException, IOException {
+    SatelliteReferenceSystem(final Satellite satellite) throws URISyntaxException, IOException {
         this(satellite, 0.02, 1000000, 200);
     }
 
-    public SatelliteReferenceSystem(final Satellite satellite, final double scale, final double maximumScale, final double minimumPixelSize) throws URISyntaxException, IOException {
+    SatelliteReferenceSystem(final Satellite satellite, final double scale, final double maximumScale, final double minimumPixelSize) throws URISyntaxException, IOException {
         this.satellite = satellite;
         this.setId(DEFAULT_ID + satellite.getId());
         this.setName(DEFAULT_NAME + satellite.getName());

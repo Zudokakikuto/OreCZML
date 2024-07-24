@@ -14,19 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.SatelliteObjects;
+package org.orekit.czml.CzmlObjects.CzmlSecondaryObjects;
 
 import cesiumlanguagewriter.Cartesian;
 import cesiumlanguagewriter.CesiumInterpolationAlgorithm;
 import cesiumlanguagewriter.CesiumOutputStream;
 import cesiumlanguagewriter.JulianDate;
 import cesiumlanguagewriter.PacketCesiumWriter;
-import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.CzmlSecondaryObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SatellitePosition implements CzmlSecondaryObject {
+public class TimePosition implements CzmlSecondaryObject {
 
     /** .*/
     private final List<JulianDate> dates;
@@ -39,7 +38,7 @@ public class SatellitePosition implements CzmlSecondaryObject {
     /** .*/
     private final String ReferenceFrame;
 
-    public SatellitePosition(final List<Cartesian> cartesians, final List<Double> timeList) {
+    public TimePosition(final List<Cartesian> cartesians, final List<Double> timeList) {
         int cpt = 0;
         this.dates = new ArrayList<>();
         this.positions = new ArrayList<>();

@@ -16,7 +16,11 @@
  */
 package org.orekit.czml.CzmlObjects.CzmlPrimaryObjects;
 
-import cesiumlanguagewriter.*;
+import cesiumlanguagewriter.Cartesian;
+import cesiumlanguagewriter.JulianDate;
+import cesiumlanguagewriter.PacketCesiumWriter;
+import cesiumlanguagewriter.PathCesiumWriter;
+import cesiumlanguagewriter.PositionCesiumWriter;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.orekit.bodies.BodyShape;
 import org.orekit.bodies.GeodeticPoint;
@@ -29,12 +33,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class AbstractPointOnEarth extends AbstractPrimaryObject implements CzmlPrimaryObject {
+public class AbstractPointOnBody extends AbstractPrimaryObject implements CzmlPrimaryObject {
 
     /** .*/
-    public static final String DEFAULT_ID = "ABSTRACT_POINT_ON_EARTH/";
+    public static final String DEFAULT_ID = "ABSTRACT_POINT_ON_BODY/";
     /** .*/
-    public static final String DEFAULT_NAME = "Abstract point on the earth at location : ";
+    public static final String DEFAULT_NAME = "Abstract point on the body at location(s) : ";
     /** .*/
     public static final String DEFAULT_H_POSITION = "#position";
 
@@ -53,7 +57,7 @@ public class AbstractPointOnEarth extends AbstractPrimaryObject implements CzmlP
     /** .*/
     private double periodForPath;
 
-    public AbstractPointOnEarth(final List<JulianDate> julianDates, final List<GeodeticPoint> geodeticPoints, final BodyShape body) {
+    public AbstractPointOnBody(final List<JulianDate> julianDates, final List<GeodeticPoint> geodeticPoints, final BodyShape body) {
         this.footprintsInTime = geodeticPoints;
         // Taking only the 10 first geodetic points to not surcharge the czml file
         this.setId(DEFAULT_ID + Arrays.toString(Arrays.copyOfRange(footprintsInTime.toArray(), 0, 10)));

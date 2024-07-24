@@ -27,7 +27,7 @@ import org.hipparchus.linear.RealMatrix;
 import org.hipparchus.linear.RealVector;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.CzmlEllipsoid;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.Orientation;
-import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.SatelliteObjects.SatellitePosition;
+import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.TimePosition;
 import org.orekit.czml.CzmlObjects.Position;
 import org.orekit.attitudes.Attitude;
 import org.orekit.files.ccsds.ndm.odm.CartesianCovariance;
@@ -105,8 +105,6 @@ public class CovarianceDisplay extends AbstractPrimaryObject implements CzmlPrim
     private TimeScale timeScale = null;
     /** .*/
     private CzmlEllipsoid uniqueEllipsoid;
-    /** .*/
-    private LOF lof;
 
     // BUILDERS
 
@@ -122,7 +120,6 @@ public class CovarianceDisplay extends AbstractPrimaryObject implements CzmlPrim
         this.satelliteCartesianList = satellite.getCartesianArraylist();
         this.julianDates = absoluteDatelistToJulianDateList(satellite.getAbsoluteDateList());
         this.positionReference = new Reference(satellite.getId() + DEFAULT_H_POSITION);
-        this.lof = lof;
 
         this.covariancePropagation(satellite, initCovariance);
 
@@ -139,11 +136,9 @@ public class CovarianceDisplay extends AbstractPrimaryObject implements CzmlPrim
         this.setName(DEFAULT_NAME + satellite.getName());
         final List<Cartesian> tempSatelliteCartesian = satellite.getCartesianArraylist();
         final List<Double> timeList = satellite.getTimeList();
-        final List<CzmlEllipsoid> tempEllipsoids = new ArrayList<>();
-        final SatellitePosition tempSatellitePositions = new SatellitePosition(tempSatelliteCartesian, timeList);
-        this.julianDates = tempSatellitePositions.getDates();
+        final TimePosition tempTimePositions = new TimePosition(tempSatelliteCartesian, timeList);
+        this.julianDates = tempTimePositions.getDates();
         this.positionReference = new Reference(satellite.getId() + DEFAULT_H_POSITION);
-        this.lof = lof;
 
         this.covariancePropagation(satellite, initCovariance);
 
@@ -178,8 +173,8 @@ public class CovarianceDisplay extends AbstractPrimaryObject implements CzmlPrim
         this.setName(DEFAULT_NAME + satellite.getName());
         this.satelliteCartesianList = satellite.getCartesianArraylist();
         final List<Double> timeList = satellite.getTimeList();
-        final SatellitePosition tempSatellitePositions = new SatellitePosition(satelliteCartesianList, timeList);
-        this.julianDates = tempSatellitePositions.getDates();
+        final TimePosition tempTimePositions = new TimePosition(satelliteCartesianList, timeList);
+        this.julianDates = tempTimePositions.getDates();
         this.positionReference = new Reference(satellite.getId() + DEFAULT_H_POSITION);
 
         this.covariancePropagation(satellite, initCovariance);
@@ -206,8 +201,8 @@ public class CovarianceDisplay extends AbstractPrimaryObject implements CzmlPrim
         this.setName(DEFAULT_NAME + satellite.getName());
         this.satelliteCartesianList = satellite.getCartesianArraylist();
         final List<Double> timeList = satellite.getTimeList();
-        final SatellitePosition tempSatellitePositions = new SatellitePosition(satelliteCartesianList, timeList);
-        this.julianDates = tempSatellitePositions.getDates();
+        final TimePosition tempTimePositions = new TimePosition(satelliteCartesianList, timeList);
+        this.julianDates = tempTimePositions.getDates();
         this.positionReference = new Reference(satellite.getId() + DEFAULT_H_POSITION);
 
         this.covariancePropagation(satellite, initCovariance);
@@ -260,7 +255,7 @@ public class CovarianceDisplay extends AbstractPrimaryObject implements CzmlPrim
         } else {
             OUTPUT.setPrettyFormatting(true);
             try (PacketCesiumWriter packet = STREAM.openPacket(OUTPUT)) {
-                packet.writeId(getId() + julianDates.toString());
+                packet.writeId(getId() + Arrays.toString(Arrays.copyOfRange(julianDates.toArray(), 0, 10)));
                 packet.writeName(getName());
 
                 final Orientation orientation = new Orientation(attitudes, satellite.getFrame(), false);
@@ -335,6 +330,34 @@ public class CovarianceDisplay extends AbstractPrimaryObject implements CzmlPrim
     @Override
     public StringWriter getStringWriter() {
         return null;
+    }
+
+    public CzmlEllipsoid getCzmlEllipsoid() {
+        return czmlEllipsoid;
+    }
+
+    public Attitude getAttitude() {
+        return attitude;
+    }
+
+    public List<SpacecraftState> getAllSpaceCraftStates() {
+        return allSpaceCraftStates;
+    }
+
+    public List<CzmlEllipsoid> getEllipsoidList() {
+        return ellipsoidList;
+    }
+
+    public List<Cartesian> getDimensionsOfEllipsoids() {
+        return dimensionsOfEllipsoids;
+    }
+
+    public TimeScale getTimeScale() {
+        return timeScale;
+    }
+
+    public CzmlEllipsoid getUniqueEllipsoid() {
+        return uniqueEllipsoid;
     }
 
     /** This function cleans all the private attributes to be used for another object.*/
