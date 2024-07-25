@@ -129,4 +129,4 @@ CZMLFile.write(satelliteOrbit);
 
 ### Wiki and more ###
 
-Check out the [wiki](https://github.com/AnalyticalGraphicsInc/czml-writer/wiki), including the [quick start](https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/Quick-Start). Also browse the [forum](https://community.cesium.com/) for questions on Cesium.
+Check out the [wiki](https://gitlab.orekit.org/Zudo/oreczml/-/wikis/home), including the [Get Started](https://gitlab.orekit.org/Zudo/oreczml/-/wikis/Get-Started?redirected_from=How-to-get-started). Also browse the [forum](https://community.cesium.com/) for questions on Cesium.
