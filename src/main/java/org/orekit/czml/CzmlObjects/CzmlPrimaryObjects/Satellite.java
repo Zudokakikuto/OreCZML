@@ -46,6 +46,7 @@ import org.orekit.forces.gravity.potential.GravityFieldFactory;
 import org.orekit.forces.gravity.potential.NormalizedSphericalHarmonicsProvider;
 import org.orekit.frames.Frame;
 import org.orekit.frames.FramesFactory;
+import org.orekit.orbits.CartesianOrbit;
 import org.orekit.orbits.KeplerianOrbit;
 import org.orekit.orbits.Orbit;
 import org.orekit.orbits.OrbitType;
@@ -155,6 +156,8 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
     private Color color;
     /** .*/
     private boolean oriented = false;
+    /** .*/
+    private OrbitType orbitType;
 
     //// BUILDERS
 
@@ -201,6 +204,7 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
         this.positionsList = positions;
         this.vector3DS = vector3DS1;
         this.orbits = orbitList;
+        this.orbitType = orbits.get(0).getType();
         final List<Vector3D> toCartesians = propagationSat();
         this.cartesianArraylist = vectorToCartesian(toCartesians);
         this.modelPath = modelPath;
@@ -236,6 +240,7 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
         final Propagator propagator = TLEPropagator.selectExtrapolator(file);
         final Orbit initialOrbit = propagator.getInitialState().getOrbit();
         orbits.add(initialOrbit);
+        this.orbitType = orbits.get(0).getType();
         this.cartesianArraylist = propagationOrbit(initialOrbit);
         this.modelPath = modelPath;
         this.model = new CzmlModel(modelPath);
@@ -289,6 +294,7 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
         this.positionsList = positions;
         this.vector3DS = vector3DS1;
         this.orbits = orbitList;
+        this.orbitType = orbits.get(0).getType();
         this.frame = frame;
         final List<Vector3D> toCartesians = propagationSat();
         this.cartesianArraylist = vectorToCartesian(toCartesians);
@@ -316,6 +322,7 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
         this.setName(orbit.toString());
         this.setAvailability(Header.MASTER_CLOCK.getAvailability());
         final AbsoluteDate startTime = orbit.getDate();
+        this.orbitType = orbit.getType();
         final AbsoluteDate stopTime = julianDateToAbsoluteDate(Header.MASTER_CLOCK.getAvailability().getStop(), TimeScalesFactory.getUTC());
         this.timeList = new ArrayList<>();
         this.orbits = new ArrayList<>();
@@ -352,6 +359,7 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
         final List<Vector3D> vector3DTemp = new ArrayList<>();
         this.positionsList = new ArrayList<>();
         this.color = color;
+        this.orbitType = input.get(0).getOrbit().getType();
 
         this.setId(input.get(0).getOrbit().toString());
         this.setName(DEFAULT_NAME);
@@ -402,6 +410,7 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
             this.description = DEFAULT_DESCRIPTION;
             this.frame = propagator.getFrame();
             this.color = color;
+            this.orbitType = propagator.getInitialState().getOrbit().getType();
 
             // Creation of empty list to be filled with multiplexerSetup
             this.timeList = new ArrayList<>();
@@ -473,7 +482,7 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
     public void writeCzmlBlock() throws URISyntaxException, IOException {
         OUTPUT.setPrettyFormatting(true);
         try (PacketCesiumWriter packet = STREAM.openPacket(OUTPUT)) {
-            packet.writeId(getId());
+            packet.writeId(this.getId());
             packet.writeName(getName());
             packet.writeAvailability(getAvailability());
 
@@ -592,6 +601,10 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
 
     public double getPeriod() {
         return period;
+    }
+
+    public OrbitType getOrbitType() {
+        return orbitType;
     }
 
     public List<SpacecraftState> getAllSpaceCraftStates() {
@@ -788,13 +801,12 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
     }
 
     private List<Vector3D> multiplexerSetup(final Propagator propagator) {
-
         final List<Vector3D> toReturn = new ArrayList<>();
 
         propagator.getMultiplexer().add(Header.MASTER_CLOCK.getMultiplier(), new OrekitFixedStepHandler() {
             @Override
             public void handleStep(final SpacecraftState currentState) {
-                final KeplerianOrbit o = (KeplerianOrbit) OrbitType.KEPLERIAN.convertType(currentState.getOrbit());
+                final KeplerianOrbit o = new KeplerianOrbit(currentState.getOrbit());
                 toReturn.add(o.getPosition());
                 allSpaceCraftStates.add(currentState);
                 final Attitude currentSpaceCraftAttitude = currentState.getAttitude();

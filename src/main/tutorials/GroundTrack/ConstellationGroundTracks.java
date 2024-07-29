@@ -14,7 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package main.tutorials.GroundTrack;
+package GroundTrack;
+
 import org.hipparchus.util.FastMath;
 import org.orekit.bodies.OneAxisEllipsoid;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Constellation;
