@@ -43,13 +43,13 @@ public class AbstractPointOnBody extends AbstractPrimaryObject implements CzmlPr
     public static final String DEFAULT_H_POSITION = "#position";
 
     /** .*/
-    private List<GeodeticPoint> footprintsInTime = new ArrayList<>();
+    private List<GeodeticPoint> footprintsInTime;
     /** .*/
     private List<Vector3D> positionsList = new ArrayList<>();
     /** .*/
     private boolean displayPath = false;
     /** .*/
-    private List<JulianDate> julianDates = new ArrayList<>();
+    private List<JulianDate> julianDates;
     /** .*/
     private boolean displayPeriodPointingPath = false;
     /** .*/
@@ -156,12 +156,12 @@ public class AbstractPointOnBody extends AbstractPrimaryObject implements CzmlPr
 
     private List<List<Cartesian>> vector3DToCartesianList(final List<List<Vector3D>> vectors) {
         final List<List<Cartesian>> toReturn = new ArrayList<>();
-        for (int i = 0; i < vectors.size(); i++) {
+        for (List<Vector3D> vector : vectors) {
             final List<Cartesian> tempCartesians = new ArrayList<>();
             for (int j = 0; j < vectors.get(0).size(); j++) {
-                final double X = vectors.get(i).get(j).getX();
-                final double Y = vectors.get(i).get(j).getY();
-                final double Z = vectors.get(i).get(j).getZ();
+                final double X = vector.get(j).getX();
+                final double Y = vector.get(j).getY();
+                final double Z = vector.get(j).getZ();
                 final Cartesian currentCartesian = new Cartesian(X, Y, Z);
                 tempCartesians.add(currentCartesian);
             }

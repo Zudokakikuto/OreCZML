@@ -24,7 +24,6 @@ import cesiumlanguagewriter.TimeInterval;
 import org.hipparchus.geometry.euclidean.threed.Line;
 import org.hipparchus.geometry.euclidean.threed.Rotation;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
-import org.hipparchus.util.FastMath;
 import org.orekit.attitudes.Attitude;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.bodies.OneAxisEllipsoid;
@@ -33,7 +32,6 @@ import org.orekit.czml.CzmlObjects.Polyline;
 import org.orekit.frames.Frame;
 import org.orekit.propagation.SpacecraftState;
 import org.orekit.time.AbsoluteDate;
-import org.orekit.utils.Constants;
 
 import java.awt.Color;
 import java.io.IOException;
@@ -56,7 +54,7 @@ public class AttitudePointing extends AbstractPrimaryObject implements CzmlPrima
     /** .*/
     private Orientation satelliteOrientation;
     /** .*/
-    private Satellite satellite;
+    private final Satellite satellite;
     /** .*/
     private boolean displayPeriodPointingPath = false;
     /** .*/
@@ -68,15 +66,15 @@ public class AttitudePointing extends AbstractPrimaryObject implements CzmlPrima
     /** .*/
     private List<GeodeticPoint> projectedAttitudes = new ArrayList<>();
     /** .*/
-    private List<JulianDate> julianDates = new ArrayList<>();
+    private List<JulianDate> julianDates;
     /** .*/
     private AbstractPointOnBody pointOnBody;
     /** .*/
     private boolean displayPointingPath = false;
     /** .*/
-    private List<Attitude> satelliteAttitudes = new ArrayList<>();
+    private final List<Attitude> satelliteAttitudes;
     /** .*/
-    private List<Cartesian> satelliteCartesians = new ArrayList<>();
+    private final List<Cartesian> satelliteCartesians;
 
     public AttitudePointing(final Satellite satellite, final OneAxisEllipsoid body, final Vector3D direction) {
         this(satellite, body, direction, Header.MASTER_CLOCK.getAvailability());

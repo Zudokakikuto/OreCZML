@@ -258,6 +258,13 @@ public class LineOfVisibility extends AbstractPrimaryObject implements CzmlPrima
         this.multipleVisuList = new ArrayList<>();
         this.angleOfAperture = 0.0;
         this.allVisibilityLines = new ArrayList<>();
+        this.multipleId = new ArrayList<>();
+        this.multipleName = new ArrayList<>();
+        this.multipleReferences = new ArrayList<>();
+        this.multipleSatellite = new ArrayList<>();
+        this.multipleAngleOfAperture = new ArrayList<>();
+        this.allVisibilityCones = new ArrayList<>();
+        this.typeOfVisu = null;
     }
 
     /** This function aims at clearing only the redundant parameters without destroying the multiple parameters. */
@@ -470,7 +477,7 @@ public class LineOfVisibility extends AbstractPrimaryObject implements CzmlPrima
 
     private void buildMultipleLineOfVisilibility(final List<TopocentricFrame> topocentricFrames, final List<Satellite> satelliteList, final double inputAngleOfAperture) throws URISyntaxException, IOException {
 
-        for (int i = 0; i < topocentricFrames.size(); i++) {
+        for (TopocentricFrame topocentricFrame : topocentricFrames) {
 
             final List<List<TimeInterval>> tempMultipleIntervals = new ArrayList<>();
             final List<List<Boolean>> tempMultipleVisu = new ArrayList<>();
@@ -482,7 +489,7 @@ public class LineOfVisibility extends AbstractPrimaryObject implements CzmlPrima
             final List<Iterable<Reference>> tempMultipleReferences = new ArrayList<>();
             final List<Satellite> tempMultipleSatellites = new ArrayList<>();
 
-            final TopocentricFrame currentTopocentricFrame = topocentricFrames.get(i);
+            final TopocentricFrame currentTopocentricFrame = topocentricFrame;
 
             for (final Satellite currentSatellite : satelliteList) {
                 this.angleOfAperture = inputAngleOfAperture;
@@ -572,7 +579,7 @@ public class LineOfVisibility extends AbstractPrimaryObject implements CzmlPrima
     private List<TimeInterval> getVisibilityInterval(final List<CzmlShow> inputShowList) {
         final List<TimeInterval> toReturn = new ArrayList<>();
         JulianDate firstInterval = null;
-        JulianDate lastInterval = null;
+        JulianDate lastInterval;
         if (inputShowList.size() == 1) {
             toReturn.add(inputShowList.get(0).getAvailability());
             return toReturn;

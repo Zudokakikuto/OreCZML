@@ -231,6 +231,14 @@ public class CzmlGroundStation extends AbstractPrimaryObject implements CzmlPrim
         this.groundStation = null;
         topocentricFrame = null;
         topocentricFrames = new ArrayList<>();
+        multipleName = new ArrayList<>();
+        multipleId = new ArrayList<>();
+        multipleAvailability = new ArrayList<>();
+        multiplePositionOnEarth = new ArrayList<>();
+        multipleBillboard = new ArrayList<>();
+        multipleGroundStations = new ArrayList<>();
+        multiplePositionObject = new ArrayList<>();
+        model = null;
     }
 
     private Cartesian vectorToCartesian(final Vector3D positions) {

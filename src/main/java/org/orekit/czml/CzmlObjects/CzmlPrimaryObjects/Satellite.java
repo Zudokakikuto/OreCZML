@@ -271,10 +271,10 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
         this.Ephemeris = Ephemeris;
         this.color = color;
 
-        final List<Orbit> orbitList = new ArrayList<Orbit>();
+        final List<Orbit> orbitList = new ArrayList<>();
         final List<Vector3D> vector3DS1 = new ArrayList<>();
         this.timeList = new ArrayList<>();
-        final List<Position> positions = new ArrayList<Position>();
+        final List<Position> positions = new ArrayList<>();
 
         for (int i = 0; i < Ephemeris.size(); i++) {
             timeList.add(absoluteDateToJulianDateDelta(Ephemeris.get(i).getDate()));
@@ -475,6 +475,7 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
         this.satellitePropagator = null;
         this.modelType = null;
         this.period = 0.0;
+        this.orbitType = null;
     }
 
     @Override
@@ -630,7 +631,7 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
         displayOnlyOnePeriod = true;
     }
 
-    public void displaySatelliteAttitude() throws URISyntaxException, IOException {
+    public void displaySatelliteAttitude() {
         this.displayAttitude = true;
         orientationSetup();
     }

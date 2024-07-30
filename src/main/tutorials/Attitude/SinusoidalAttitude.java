@@ -163,8 +163,6 @@ public class SinusoidalAttitude {
         /** .*/
         private final Frame inertialFrame;
         /** .*/
-        private final Rotation offset = new Rotation(RotationOrder.XYZ, RotationConvention.VECTOR_OPERATOR, 0, 0, 0).revert();
-        /** .*/
 
         private final double period;
         /** .*/
@@ -176,9 +174,6 @@ public class SinusoidalAttitude {
         /** .*/
 
         private final double maxAngle;
-        /** .*/
-
-        private final LOF lof;
 
         public SinusoidalLof(final Frame inertialFrame, final LOF lof, final Vector3D axis, final double period, final double maxAngle, final AbsoluteDate initialDate) {
             super(inertialFrame, lof);
@@ -186,7 +181,6 @@ public class SinusoidalAttitude {
             this.inertialFrame = inertialFrame;
             this.initialDate = initialDate;
             this.maxAngle = maxAngle;
-            this.lof = lof;
             this.axis = axis;
         }
 
@@ -196,7 +190,6 @@ public class SinusoidalAttitude {
             this.period = period;
             this.initialDate = initialDate;
             this.maxAngle = maxAngle;
-            this.lof = lof;
             this.axis = axis;
         }
 
