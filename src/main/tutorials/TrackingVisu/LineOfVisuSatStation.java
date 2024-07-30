@@ -63,6 +63,7 @@ public class LineOfVisuSatStation {
         final String outputPath = root + "/Output";
         final String outputName = "Output.czml";
         final String output = outputPath + "/" + outputName;
+        final String groundStationModel = root + "/src/main/resources/ground_Station.glb";
 
         // File created
         final CzmlFile file = new CzmlFile(output);
@@ -84,11 +85,11 @@ public class LineOfVisuSatStation {
         final OneAxisEllipsoid earth = new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS, Constants.WGS84_EARTH_FLATTENING, ITRF);
 
         // Creation of a topocentric frame around Toulouse.
-        final GeodeticPoint toulouseFrame = new GeodeticPoint(FastMath.toRadians(43.6047), FastMath.toRadians(1.4442), 10);
+        final GeodeticPoint toulouseFrame = new GeodeticPoint(FastMath.toRadians(43.6047), FastMath.toRadians(1.4442), 0);
         final TopocentricFrame topocentricToulouse = new TopocentricFrame(earth, toulouseFrame, "Toulouse Frame");
 
         // Creation of a ground Station at Toulouse
-        final CzmlGroundStation toulouseStation = new CzmlGroundStation(topocentricToulouse);
+        final CzmlGroundStation toulouseStation = new CzmlGroundStation(topocentricToulouse, groundStationModel);
         file.addObject(toulouseStation);
 
         // Build of an orbit that will fly above toulouse
@@ -97,6 +98,7 @@ public class LineOfVisuSatStation {
 
         // Creation of the satellite
         final Satellite satellite = new Satellite(initialOrbit);
+        satellite.displayOnlyOnePeriod();
         file.addObject(satellite);
 
         // Creation of a line of visibility

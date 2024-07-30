@@ -59,7 +59,7 @@ public class AbstractPointOnBody extends AbstractPrimaryObject implements CzmlPr
 
     public AbstractPointOnBody(final List<JulianDate> julianDates, final List<GeodeticPoint> geodeticPoints, final BodyShape body) {
         this.footprintsInTime = geodeticPoints;
-        // Taking only the 10 first geodetic points to not surcharge the czml file
+        // Taking only the 10 first geodetic points for the id and the name to not surcharge the czml file
         this.setId(DEFAULT_ID + Arrays.toString(Arrays.copyOfRange(footprintsInTime.toArray(), 0, 10)));
         this.setName(DEFAULT_NAME + Arrays.toString(Arrays.copyOfRange(footprintsInTime.toArray(), 0, 10)));
         this.setAvailability(Header.MASTER_CLOCK.getAvailability());

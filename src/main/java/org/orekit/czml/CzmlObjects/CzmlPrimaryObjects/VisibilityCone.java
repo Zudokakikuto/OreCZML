@@ -30,7 +30,9 @@ import org.orekit.utils.Constants;
 import org.orekit.utils.IERSConventions;
 
 import java.awt.Color;
+import java.io.IOException;
 import java.io.StringWriter;
+import java.net.URISyntaxException;
 
 /** Visibility COne
 
@@ -121,11 +123,11 @@ public class VisibilityCone extends AbstractPrimaryObject implements CzmlPrimary
         this.angleOfAperture = angleOfAperture;
     }
 
-    public VisibilityCone(final TopocentricFrame topocentricFrame, final Satellite satellite) {
+    public VisibilityCone(final TopocentricFrame topocentricFrame, final Satellite satellite) throws URISyntaxException, IOException {
         this(topocentricFrame, satellite, DEFAULT_ANGLE_OF_APERTURE);
     }
 
-    public VisibilityCone(final TopocentricFrame topocentricFrame, final Satellite satellite, final double angleOfAperture) {
+    public VisibilityCone(final TopocentricFrame topocentricFrame, final Satellite satellite, final double angleOfAperture) throws URISyntaxException, IOException {
         final CzmlGroundStation groundStation1 = new CzmlGroundStation(topocentricFrame);
         this.setId(DEFAULT_ID_VIS + groundStation1.getName() + "/" + satellite.getName());
         this.setName(DEFAULT_NAME + groundStation1.getName() + DEFAULT_LOOKING_AT + satellite.getName());

@@ -127,11 +127,11 @@ public class LineOfVisibility extends AbstractPrimaryObject implements CzmlPrima
 
     // BUILDERS
 
-    public LineOfVisibility(final TopocentricFrame topocentricFrame, final Satellite satellite) {
+    public LineOfVisibility(final TopocentricFrame topocentricFrame, final Satellite satellite) throws URISyntaxException, IOException {
         this(topocentricFrame, satellite, DEFAULT_ANGLE_OF_APERTURE);
     }
 
-    public LineOfVisibility(final TopocentricFrame topocentricFrame, final Satellite satellite, final double angleOfAperture) {
+    public LineOfVisibility(final TopocentricFrame topocentricFrame, final Satellite satellite, final double angleOfAperture) throws URISyntaxException, IOException {
         this.angleOfAperture = angleOfAperture;
 
         this.setId(topocentricFrame.getName() + "/" + satellite.getId());
@@ -158,12 +158,11 @@ public class LineOfVisibility extends AbstractPrimaryObject implements CzmlPrima
         this.typeOfVisu = TypeOfVisu.SINGLE_SAT_SINGLE_STATION;
     }
 
-    public LineOfVisibility(final TopocentricFrame topocentricFrame, final Constellation constellation) {
-
+    public LineOfVisibility(final TopocentricFrame topocentricFrame, final Constellation constellation) throws URISyntaxException, IOException {
         this(topocentricFrame, constellation, DEFAULT_ANGLE_OF_APERTURE);
     }
 
-    public LineOfVisibility(final TopocentricFrame topocentricFrame, final Constellation constellation, final double angleOfAperture) {
+    public LineOfVisibility(final TopocentricFrame topocentricFrame, final Constellation constellation, final double angleOfAperture) throws URISyntaxException, IOException {
         this(uniqueList(topocentricFrame), constellation, angleOfAperture);
     }
 
@@ -176,11 +175,11 @@ public class LineOfVisibility extends AbstractPrimaryObject implements CzmlPrima
         this.typeOfVisu = TypeOfVisu.SINGLE_SAT_MULTIPLE_STATION;
     }
 
-    public LineOfVisibility(final List<TopocentricFrame> topocentricFrames, final Constellation constellation) {
+    public LineOfVisibility(final List<TopocentricFrame> topocentricFrames, final Constellation constellation) throws URISyntaxException, IOException {
         this(topocentricFrames, constellation, DEFAULT_ANGLE_OF_APERTURE);
     }
 
-    public LineOfVisibility(final List<TopocentricFrame> topocentricFrames, final Constellation constellation, final double angleOfAperture) {
+    public LineOfVisibility(final List<TopocentricFrame> topocentricFrames, final Constellation constellation, final double angleOfAperture) throws URISyntaxException, IOException {
         final List<Satellite> listOfSatellites = constellation.getAllSatellites();
         this.buildMultipleLineOfVisilibility(topocentricFrames, listOfSatellites, angleOfAperture);
         this.typeOfVisu = TypeOfVisu.MULTIPLE_SAT_MULTIPLE_STATION;
@@ -423,7 +422,7 @@ public class LineOfVisibility extends AbstractPrimaryObject implements CzmlPrima
         satellite_input.setBoundedPropagator(boundedPropagator);
     }
 
-    private void buildSingleSatelliteTimeIntervalsAndVisu(final List<TopocentricFrame> topocentricFrames, final Satellite satellite_input, final double inputAngleOfAperture) {
+    private void buildSingleSatelliteTimeIntervalsAndVisu(final List<TopocentricFrame> topocentricFrames, final Satellite satellite_input, final double inputAngleOfAperture) throws URISyntaxException, IOException {
 
         final List<List<Boolean>> tempMultipleVisu = new ArrayList<>();
         final List<List<CzmlShow>> tempMultipleShow = new ArrayList<>();
@@ -469,7 +468,7 @@ public class LineOfVisibility extends AbstractPrimaryObject implements CzmlPrima
         this.singleSatAvailabilities = tempMultipleAvailability;
     }
 
-    private void buildMultipleLineOfVisilibility(final List<TopocentricFrame> topocentricFrames, final List<Satellite> satelliteList, final double inputAngleOfAperture) {
+    private void buildMultipleLineOfVisilibility(final List<TopocentricFrame> topocentricFrames, final List<Satellite> satelliteList, final double inputAngleOfAperture) throws URISyntaxException, IOException {
 
         for (int i = 0; i < topocentricFrames.size(); i++) {
 

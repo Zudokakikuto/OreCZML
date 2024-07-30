@@ -161,7 +161,7 @@ public class SinusoidalAttitude {
     protected static class SinusoidalLof extends LofOffset {
 
         /** .*/
-        private Frame inertialFrame;
+        private final Frame inertialFrame;
         /** .*/
         private final Rotation offset = new Rotation(RotationOrder.XYZ, RotationConvention.VECTOR_OPERATOR, 0, 0, 0).revert();
         /** .*/
@@ -172,13 +172,13 @@ public class SinusoidalAttitude {
         private final AbsoluteDate initialDate;
         /** .*/
 
-        private Vector3D axis;
+        private final Vector3D axis;
         /** .*/
 
-        private double maxAngle;
+        private final double maxAngle;
         /** .*/
 
-        private LOF lof;
+        private final LOF lof;
 
         public SinusoidalLof(final Frame inertialFrame, final LOF lof, final Vector3D axis, final double period, final double maxAngle, final AbsoluteDate initialDate) {
             super(inertialFrame, lof);

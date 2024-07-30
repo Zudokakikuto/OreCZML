@@ -46,7 +46,6 @@ import org.orekit.forces.gravity.potential.GravityFieldFactory;
 import org.orekit.forces.gravity.potential.NormalizedSphericalHarmonicsProvider;
 import org.orekit.frames.Frame;
 import org.orekit.frames.FramesFactory;
-import org.orekit.orbits.CartesianOrbit;
 import org.orekit.orbits.KeplerianOrbit;
 import org.orekit.orbits.Orbit;
 import org.orekit.orbits.OrbitType;
@@ -159,7 +158,7 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
     /** .*/
     private OrbitType orbitType;
 
-    //// BUILDERS
+    //// Constructors
 
     public Satellite(final Oem file) throws URISyntaxException, IOException {
         this(file, DEFAULT_MODEL_PATH, DEFAULT_COLOR);

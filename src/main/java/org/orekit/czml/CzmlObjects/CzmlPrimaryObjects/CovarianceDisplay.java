@@ -25,6 +25,7 @@ import org.hipparchus.geometry.euclidean.threed.Rotation;
 import org.hipparchus.linear.EigenDecompositionNonSymmetric;
 import org.hipparchus.linear.RealMatrix;
 import org.hipparchus.linear.RealVector;
+import org.hipparchus.util.FastMath;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.CzmlEllipsoid;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.Orientation;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.TimePosition;
@@ -437,10 +438,10 @@ public class CovarianceDisplay extends AbstractPrimaryObject implements CzmlPrim
             }
 
             if (inverted) {
-                dimensionsOfEllipsoids.add(new Cartesian(dataEigenValues[0][0], dataEigenValues[2][2], dataEigenValues[1][1]));
+                dimensionsOfEllipsoids.add(new Cartesian(FastMath.sqrt(dataEigenValues[0][0]), FastMath.sqrt(dataEigenValues[2][2]), FastMath.sqrt(dataEigenValues[1][1])));
             }
             else {
-                dimensionsOfEllipsoids.add(new Cartesian(dataEigenValues[0][0], dataEigenValues[1][1], dataEigenValues[2][2]));
+                dimensionsOfEllipsoids.add(new Cartesian(FastMath.sqrt(dataEigenValues[0][0]), FastMath.sqrt(dataEigenValues[1][1]), FastMath.sqrt(dataEigenValues[2][2])));
             }
 
             final Rotation rotationFromLOF = lofInput.rotationFromInertial(allSpaceCraftStates.get(i).getDate(), allSpaceCraftStates.get(i).getPVCoordinates());

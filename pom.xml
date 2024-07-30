@@ -12,7 +12,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <dependency.orekit.version>12.1.2</dependency.orekit.version>
+    <dependency.orekit.version>12.2-SNAPSHOT</dependency.orekit.version>
     <dependency.junit.jupiter.version>5.10.2</dependency.junit.jupiter.version>
     <dependency.cesiumwriter.version>1.0</dependency.cesiumwriter.version>
     <project.compiler.source>17</project.compiler.source>

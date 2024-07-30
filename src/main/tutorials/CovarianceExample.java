@@ -118,16 +118,8 @@ public class CovarianceExample {
         propagator.setInitialState(initialState);
 
         // Build of the covariance
-        final RealMatrix realMatrix = MatrixUtils.createRealDiagonalMatrix(new double[] {1000, 100, 100, 1e-4, 1e-4, 1e-4});
-        // With this datasArray, we obtain the same result as the tutorial, so the propagation is correct.
-//        final double[][] datasArray = { {86.51816029065394, 56.8998712665727, -27.63870763721462, -0.02435617200936485, 0.020582741368923928, -0.005872883050786668},
-//                                        {56.8998712665727, 70.7062432081459, 13.671209089262682, -0.006112622012706486, 0.007623626007527378, -0.012394131901568663},
-//                                        {-27.63870763721462, 13.671209089262682, 181.1858898030072, 0.03143798991624274, -0.04963106558582378, -7.420114384979074E-4},
-//                                        {-0.02435617200936485, -0.006112622012706486, 0.03143798991624274, 4.65707738862789E-5, 1.4699436343326518E-5, 3.328475593311651E-5},
-//                                        {0.020582741368923928, 0.007623626007527378, -0.04963106558582378, 1.4699436343326518E-5, 3.950715933635926E-5, 2.5160442575178392E-5},
-//                                        {-0.005872883050786668, -0.012394131901568663, -7.420114384979074E-4, 3.328475593311651E-5, 2.5160442575178392E-5, 3.5474661199690905E-5}};
-//        final RealMatrix realMatrix1 = MatrixUtils.createRealMatrix(datasArray);
-        final StateCovariance stateCovariance = new StateCovariance(realMatrix, startDate, LOFType.TNW);
+        final RealMatrix realMatrix = MatrixUtils.createRealDiagonalMatrix(new double[] {20000 * 20000, 1e-6, 1e-6, 1e-6, 1e-6, (36 * 4.848e-6) * (36 * 4.848e-6)});
+        final StateCovariance stateCovariance = new StateCovariance(realMatrix, startDate, EME2000, OrbitType.EQUINOCTIAL, PositionAngleType.MEAN);
         final CovarianceDisplay covariance = new CovarianceDisplay(satellite, stateCovariance, LOFType.TNW);
         file.addObject(covariance);
         covariancePropagation(propagator, satellite, stateCovariance);
