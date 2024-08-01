@@ -62,7 +62,6 @@ This converter accept several inputs to write a CZML file :
 
 The output obtained will be a .czml file that you can directly enter in cesium to display.
 
-
 ===========
 
 # Wiki and more #
