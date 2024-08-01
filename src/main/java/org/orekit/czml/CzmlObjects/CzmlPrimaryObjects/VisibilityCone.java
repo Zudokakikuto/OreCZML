@@ -18,11 +18,11 @@ package org.orekit.czml.CzmlObjects.CzmlPrimaryObjects;
 
 import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.TimeInterval;
-import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.Cylinder;
-import org.orekit.czml.CzmlObjects.Position;
 import org.hipparchus.util.FastMath;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.bodies.OneAxisEllipsoid;
+import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.Cylinder;
+import org.orekit.czml.CzmlObjects.Position;
 import org.orekit.frames.Frame;
 import org.orekit.frames.FramesFactory;
 import org.orekit.frames.TopocentricFrame;
@@ -34,47 +34,72 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
 
-/** Visibility COne
-
+/**
+ * Visibility COne
+ *
  * <p>
  * This class will allows the user to build a visibility cone of a ground station. The visibility cone can have a given
  * angle of aperture. The cone will define how wide is the visibility of the station, this object is mandatory to build
  * a line of visibility.
  * </p>
  *
- * @since 1.0
  * @author Julien LEBLOND.
+ * @since 1.0
  */
 
 public class VisibilityCone extends AbstractPrimaryObject implements CzmlPrimaryObject {
 
-    /** .*/
+    /**
+     * .
+     */
     public static final double DEFAULT_ANGLE_OF_APERTURE = 80.0;
-    /** .*/
+    /**
+     * .
+     */
     public static final Satellite DEFAULT_SATELLITE_PARAMETER = null;
-    /** .*/
+    /**
+     * .
+     */
     public static final String DEFAULT_NAME_FRAME = "Frame of the station";
-    /** .*/
+    /**
+     * .
+     */
     public static final String DEFAULT_ID_VIS = "VIS/";
-    /** .*/
+    /**
+     * .
+     */
     public static final String DEFAULT_NAME = "Visibility of ";
-    /** .*/
+    /**
+     * .
+     */
     public static final String DEFAULT_LOOKING_AT = " looking at ";
-    /** .*/
+    /**
+     * .
+     */
     private Cylinder cylinder;
-    /** .*/
+    /**
+     * .
+     */
     private Position position;
-    /** .*/
+    /**
+     * .
+     */
     private boolean clean = false;
-    /** .*/
+    /**
+     * .
+     */
     private double angleOfAperture;
 
     // Intrinsic parameters
-    /** .*/
+    /**
+     * .
+     */
     private org.orekit.estimation.measurements.GroundStation groundStation;
 
     // Satellite check for line of visibility
-    /** .*/
+    /**
+     * .
+     */
     private Satellite satellite;
 
 
@@ -184,8 +209,7 @@ public class VisibilityCone extends AbstractPrimaryObject implements CzmlPrimary
     public Satellite getSatellite() {
         if (satellite == null) {
             throw new RuntimeException("The Visibility cone was not defined with a given satellite");
-        }
-        else {
+        } else {
             return satellite;
         }
     }

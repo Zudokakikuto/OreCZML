@@ -43,12 +43,24 @@ public interface CzmlSecondaryObject {
     default JulianDate absoluteDateToJulianDate(AbsoluteDate date) {
 
         final TimeScale UTC = TimeScalesFactory.getUTC();
-        final int year = date.getComponents(UTC).getDate().getYear();
-        final int month = date.getComponents(UTC).getDate().getMonth();
-        final int day = date.getComponents(UTC).getDate().getDay();
-        final int hour = date.getComponents(UTC).getTime().getHour();
-        final int min = date.getComponents(UTC).getTime().getMinute();
-        final double sec = date.getComponents(UTC).getTime().getSecond();
+        final int year = date.getComponents(UTC)
+                             .getDate()
+                             .getYear();
+        final int month = date.getComponents(UTC)
+                              .getDate()
+                              .getMonth();
+        final int day = date.getComponents(UTC)
+                            .getDate()
+                            .getDay();
+        final int hour = date.getComponents(UTC)
+                             .getTime()
+                             .getHour();
+        final int min = date.getComponents(UTC)
+                            .getTime()
+                            .getMinute();
+        final double sec = date.getComponents(UTC)
+                               .getTime()
+                               .getSecond();
 
         final GregorianDate gregorianDate = new GregorianDate(year, month, day, hour, min, sec);
         return new JulianDate(gregorianDate);

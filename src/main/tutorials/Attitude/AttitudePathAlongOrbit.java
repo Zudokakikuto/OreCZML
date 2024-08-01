@@ -35,6 +35,7 @@ import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Header;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Satellite;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.Clock;
 import org.orekit.czml.Outputs.CzmlFile;
+import org.orekit.czml.Outputs.CzmlFileBuilder;
 import org.orekit.data.DataContext;
 import org.orekit.data.DataProvider;
 import org.orekit.data.DirectoryCrawler;
@@ -50,6 +51,8 @@ import org.orekit.frames.TopocentricFrame;
 import org.orekit.orbits.KeplerianOrbit;
 import org.orekit.orbits.OrbitType;
 import org.orekit.orbits.PositionAngleType;
+import org.orekit.propagation.BoundedPropagator;
+import org.orekit.propagation.EphemerisGenerator;
 import org.orekit.propagation.SpacecraftState;
 import org.orekit.propagation.events.ElevationDetector;
 import org.orekit.propagation.events.EventDetector;
@@ -65,6 +68,8 @@ import org.orekit.utils.IERSConventions;
 
 import java.awt.Color;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AttitudePathAlongOrbit {
 
@@ -77,20 +82,20 @@ public class AttitudePathAlongOrbit {
             final File home = new File(System.getProperty("user.home"));
             final File orekitDir = new File(home, "orekit-data");
             final DataProvider provider = new DirectoryCrawler(orekitDir);
-            DataContext.getDefault().getDataProvidersManager().addProvider(provider);
+            DataContext.getDefault()
+                       .getDataProvidersManager()
+                       .addProvider(provider);
         } catch (OrekitException oe) {
             System.err.println(oe.getLocalizedMessage());
         }
 
         // Paths
-        final String root = System.getProperty("user.dir").replace("\\", "/");
+        final String root = System.getProperty("user.dir")
+                                  .replace("\\", "/");
         final String outputPath = root + "/Output";
         final String outputName = "Output.czml";
         final String output = outputPath + "/" + outputName;
         final String IssModel = root + "/src/main/resources/ISSModel.glb";
-
-        // File created
-        final CzmlFile file = new CzmlFile(output);
 
         // Creation of the clock.
         final TimeScale UTC = TimeScalesFactory.getUTC();
@@ -101,7 +106,6 @@ public class AttitudePathAlongOrbit {
         final Clock clock = new Clock(startDate, finalDate, UTC, stepBetweenEachInstant);
 
         final Header header = new Header("Initialisation of an attitude following a given path", clock);
-        file.addObject(header);
 
         // Creation of the model of the earth.
         final IERSConventions IERS = IERSConventions.IERS_2010;
@@ -158,27 +162,36 @@ public class AttitudePathAlongOrbit {
         final GroundPointTarget portMoresbyTarget = new GroundPointTarget(portMoresbyPositionOnEarth);
         final GroundPointTarget maracaiboTarget = new GroundPointTarget(maracaiboPositionOnEarth);
 
-        final AlignedAndConstrained attitudeProviderMexico      = new AlignedAndConstrained(Vector3D.PLUS_I, mexicoTarget,      Vector3D.PLUS_J, PredefinedTarget.SUN, sunModel, earth);
-        final AlignedAndConstrained attitudeProviderMadagascar  = new AlignedAndConstrained(Vector3D.PLUS_I, madagascarTarget,  Vector3D.PLUS_J, PredefinedTarget.SUN, sunModel, earth);
+        final AlignedAndConstrained attitudeProviderMexico = new AlignedAndConstrained(Vector3D.PLUS_I, mexicoTarget, Vector3D.PLUS_J, PredefinedTarget.SUN, sunModel, earth);
+        final AlignedAndConstrained attitudeProviderMadagascar = new AlignedAndConstrained(Vector3D.PLUS_I, madagascarTarget, Vector3D.PLUS_J, PredefinedTarget.SUN, sunModel, earth);
         final AlignedAndConstrained attitudeProviderPortMoresby = new AlignedAndConstrained(Vector3D.PLUS_I, portMoresbyTarget, Vector3D.PLUS_J, PredefinedTarget.SUN, sunModel, earth);
-        final AlignedAndConstrained attitudeProviderMaracaibo   = new AlignedAndConstrained(Vector3D.PLUS_I, maracaiboTarget,   Vector3D.PLUS_J, PredefinedTarget.SUN, sunModel, earth);
+        final AlignedAndConstrained attitudeProviderMaracaibo = new AlignedAndConstrained(Vector3D.PLUS_I, maracaiboTarget, Vector3D.PLUS_J, PredefinedTarget.SUN, sunModel, earth);
 
         final AttitudesSequence attitudesSequence = new AttitudesSequence();
         final AttitudeProvider attitudeProviderToEarth = new LofOffset(EME2000, LOFType.TNW);
 
-        final EventDetector mexicoToEarth = new ElevationDetector(topocentricMexico).withMaxCheck(60.).withHandler(new ContinueOnEvent());
-        final EventDetector earthToMexico = new ElevationDetector(topocentricMexico).withMaxCheck(60.).withHandler(new ContinueOnEvent());
+        final EventDetector mexicoToEarth = new ElevationDetector(topocentricMexico).withMaxCheck(60.)
+                                                                                    .withHandler(new ContinueOnEvent());
+        final EventDetector earthToMexico = new ElevationDetector(topocentricMexico).withMaxCheck(60.)
+                                                                                    .withHandler(new ContinueOnEvent());
 
-        final EventDetector madagascarToEarth = new ElevationDetector(topocentricMadagascar).withMaxCheck(60.).withHandler(new ContinueOnEvent());
-        final EventDetector earthToMadagascar = new ElevationDetector(topocentricMadagascar).withMaxCheck(60.).withHandler(new ContinueOnEvent());
+        final EventDetector madagascarToEarth = new ElevationDetector(topocentricMadagascar).withMaxCheck(60.)
+                                                                                            .withHandler(new ContinueOnEvent());
+        final EventDetector earthToMadagascar = new ElevationDetector(topocentricMadagascar).withMaxCheck(60.)
+                                                                                            .withHandler(new ContinueOnEvent());
 
-        final EventDetector portMoresbyToEarth = new ElevationDetector(topocentricPortMoresby).withMaxCheck(60.).withHandler(new ContinueOnEvent());
-        final EventDetector earthToPortMoresby = new ElevationDetector(topocentricPortMoresby).withMaxCheck(60.).withHandler(new ContinueOnEvent());
+        final EventDetector portMoresbyToEarth = new ElevationDetector(topocentricPortMoresby).withMaxCheck(60.)
+                                                                                              .withHandler(new ContinueOnEvent());
+        final EventDetector earthToPortMoresby = new ElevationDetector(topocentricPortMoresby).withMaxCheck(60.)
+                                                                                              .withHandler(new ContinueOnEvent());
 
-        final EventDetector maracaiboToEarth = new ElevationDetector(topocentricMaracaibo).withMaxCheck(60.).withHandler(new ContinueOnEvent());
-        final EventDetector earthToMaracaibo = new ElevationDetector(topocentricMaracaibo).withMaxCheck(60.).withHandler(new ContinueOnEvent());
+        final EventDetector maracaiboToEarth = new ElevationDetector(topocentricMaracaibo).withMaxCheck(60.)
+                                                                                          .withHandler(new ContinueOnEvent());
+        final EventDetector earthToMaracaibo = new ElevationDetector(topocentricMaracaibo).withMaxCheck(60.)
+                                                                                          .withHandler(new ContinueOnEvent());
 
-        final EventDetector mexicoToMaracaibo = new ElevationDetector(topocentricMaracaibo).withMaxCheck(60.).withHandler(new ContinueOnEvent());
+        final EventDetector mexicoToMaracaibo = new ElevationDetector(topocentricMaracaibo).withMaxCheck(60.)
+                                                                                           .withHandler(new ContinueOnEvent());
 
         //// Add switching condition to attitudes sequence
         // Add classic station to earth and earth to station
@@ -203,25 +216,42 @@ public class AttitudePathAlongOrbit {
 
         attitudesSequence.registerSwitchEvents(propagator);
 
-        final Satellite satellite = new Satellite(propagator, finalDate, IssModel, Color.PINK);
-        satellite.displayOnlyOnePeriod();
-        satellite.displaySatelliteAttitude();
-        file.addObject(satellite);
+        final EphemerisGenerator generator = propagator.getEphemerisGenerator();
 
-        final AttitudePointing attitudePointing = new AttitudePointing(satellite, earth, Vector3D.PLUS_I, Header.MASTER_CLOCK.getAvailability(), Color.cyan, true);
-        attitudePointing.displayPointingPath();
-        attitudePointing.displayPeriodPointingPath();
-        file.addObject(attitudePointing);
+        propagator.propagate(startDate, finalDate);
+        final BoundedPropagator boundedPropagator = generator.getGeneratedEphemeris();
+
+        final Satellite satellite = Satellite.builder(boundedPropagator, finalDate)
+                                             .withModelPath(IssModel)
+                                             .withColor(Color.PINK)
+                                             .displayOnlyOnePeriod()
+                                             .displayAttitude()
+                                             .build();
+
+        final AttitudePointing attitudePointing = AttitudePointing.builder(satellite, earth, Vector3D.PLUS_I)
+                                                                  .withAvailability(Header.MASTER_CLOCK.getAvailability())
+                                                                  .withColor(Color.cyan)
+                                                                  .withDisplayOnGround(true)
+                                                                  .displayPointingPath()
+                                                                  .displayPeriodPointingPath()
+                                                                  .build();
 
         final CzmlGroundStation mexicoGroundStation = new CzmlGroundStation(topocentricMexico);
         final CzmlGroundStation madagascarGroundStation = new CzmlGroundStation(topocentricMadagascar);
         final CzmlGroundStation portMoresbyGroundStation = new CzmlGroundStation(topocentricPortMoresby);
         final CzmlGroundStation maracaiboGroundStation = new CzmlGroundStation(topocentricMaracaibo);
+        final List<CzmlGroundStation> allGroundStation = new ArrayList<>();
+        allGroundStation.add(mexicoGroundStation);
+        allGroundStation.add(madagascarGroundStation);
+        allGroundStation.add(portMoresbyGroundStation);
+        allGroundStation.add(maracaiboGroundStation);
 
-        file.addObject(mexicoGroundStation);
-        file.addObject(madagascarGroundStation);
-        file.addObject(portMoresbyGroundStation);
-        file.addObject(maracaiboGroundStation);
+        // Creation of the file
+        final CzmlFile file = new CzmlFileBuilder(output).withHeader(header)
+                                                         .withSatellite(satellite)
+                                                         .withAttitudePointing(attitudePointing)
+                                                         .withCzmlGroundStation(allGroundStation)
+                                                         .build();
 
         // Writing the file
         file.write();

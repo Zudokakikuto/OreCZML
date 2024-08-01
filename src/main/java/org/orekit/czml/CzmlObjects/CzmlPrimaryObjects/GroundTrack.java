@@ -26,9 +26,9 @@ import cesiumlanguagewriter.Reference;
 import cesiumlanguagewriter.SolidColorMaterialCesiumWriter;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.orekit.bodies.BodyShape;
-import org.orekit.czml.CzmlObjects.Path;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.TimePosition;
 import org.orekit.czml.CzmlObjects.CzmlShow;
+import org.orekit.czml.CzmlObjects.Path;
 import org.orekit.czml.CzmlObjects.Polyline;
 import org.orekit.frames.Frame;
 import org.orekit.time.AbsoluteDate;
@@ -43,30 +43,54 @@ import java.util.List;
 
 public class GroundTrack extends AbstractPrimaryObject implements CzmlPrimaryObject {
 
-    /** .*/
+    /**
+     * .
+     */
     public static final String DEFAULT_ID = "GROUND_TRACK/";
-    /** .*/
+    /**
+     * .
+     */
     public static final String DEFAULT_NAME = "Ground track of : ";
-    /** .*/
+    /**
+     * .
+     */
     public static final String DEFAULT_H_POSITION = "#position";
-    /** .*/
+    /**
+     * .
+     */
     public static final String DEFAULT_CONSTELLATION_ID = "GROUND_TRACK_OF_CONSTELLATION/";
-    /** .*/
+    /**
+     * .
+     */
     public static final String DEFAULT_CONSTELLATION_NUMBEROFSAT = " satellites";
-    /** .*/
+    /**
+     * .
+     */
     public static final Color DEFAULT_COLOR = new Color(255, 255, 255);
 
-    /** .*/
+    /**
+     * .
+     */
     private Satellite satellite;
-    /** .*/
+    /**
+     * .
+     */
     private Boolean displayLinkSatellite = false;
-    /** .*/
+    /**
+     * .
+     */
     private List<Cartesian> initialCartesiansSatellite;
-    /** .*/
+    /**
+     * .
+     */
     private TimePosition clampedPositionOnBody;
-    /** .*/
+    /**
+     * .
+     */
     private Color color;
-    /** .*/
+    /**
+     * .
+     */
     private List<GroundTrack> allGroundTracks = new ArrayList<>();
 
     // Constructors
@@ -101,7 +125,7 @@ public class GroundTrack extends AbstractPrimaryObject implements CzmlPrimaryObj
     public GroundTrack(final Constellation constellation, final BodyShape body, final Color color) {
         final List<Satellite> allSatellites = constellation.getAllSatellites();
         this.color = color;
-        this.allGroundTracks =  new ArrayList<>();
+        this.allGroundTracks = new ArrayList<>();
         this.setId(DEFAULT_CONSTELLATION_ID + constellation.getId());
         this.setName(DEFAULT_NAME + constellation.getTotalOfSatellite() + DEFAULT_CONSTELLATION_NUMBEROFSAT);
         this.setAvailability(Header.MASTER_CLOCK.getAvailability());
@@ -110,6 +134,11 @@ public class GroundTrack extends AbstractPrimaryObject implements CzmlPrimaryObj
             final GroundTrack currentGroundTrack = new GroundTrack(currentSat, body, currentSat.getColor());
             allGroundTracks.add(currentGroundTrack);
         }
+    }
+
+    private static Iterable<Reference> convertToIterable(final Reference[] array) {
+        return () -> Arrays.stream(array)
+                           .iterator();
     }
 
     // Overrides
@@ -126,8 +155,10 @@ public class GroundTrack extends AbstractPrimaryObject implements CzmlPrimaryObj
                 writeCzmlPath(packet);
                 if (displayLinkSatellite) {
                     final Reference groundTrackReference = new Reference(this.getId() + DEFAULT_H_POSITION);
-                    final Reference satelliteReference = new Reference(this.getSatellite().getId() + DEFAULT_H_POSITION);
-                    final Reference[] referenceList = Arrays.asList(groundTrackReference, satelliteReference).toArray(new Reference[0]);
+                    final Reference satelliteReference = new Reference(this.getSatellite()
+                                                                           .getId() + DEFAULT_H_POSITION);
+                    final Reference[] referenceList = Arrays.asList(groundTrackReference, satelliteReference)
+                                                            .toArray(new Reference[0]);
                     final Iterable<Reference> referenceIterable = convertToIterable(referenceList);
                     final CzmlShow show = new CzmlShow(true, Header.MASTER_CLOCK.getAvailability());
                     final List<CzmlShow> shows = new ArrayList<>();
@@ -137,8 +168,7 @@ public class GroundTrack extends AbstractPrimaryObject implements CzmlPrimaryObj
                 }
             }
             cleanObject();
-        }
-        else {
+        } else {
             OUTPUT.setPrettyFormatting(true);
             for (int i = 0; i < allGroundTracks.size(); i++) {
                 final GroundTrack currentGroundTrack = allGroundTracks.get(i);
@@ -155,8 +185,10 @@ public class GroundTrack extends AbstractPrimaryObject implements CzmlPrimaryObj
                     writeCzmlPath(packet);
                     if (displayLinkSatellite) {
                         final Reference groundTrackReference = new Reference(currentGroundTrack.getId() + DEFAULT_H_POSITION);
-                        final Reference satelliteReference = new Reference(currentGroundTrack.getSatellite().getId() + DEFAULT_H_POSITION);
-                        final Reference[] referenceList = Arrays.asList(groundTrackReference, satelliteReference).toArray(new Reference[0]);
+                        final Reference satelliteReference = new Reference(currentGroundTrack.getSatellite()
+                                                                                             .getId() + DEFAULT_H_POSITION);
+                        final Reference[] referenceList = Arrays.asList(groundTrackReference, satelliteReference)
+                                                                .toArray(new Reference[0]);
                         final Iterable<Reference> referenceIterable = convertToIterable(referenceList);
                         final CzmlShow show = new CzmlShow(true, Header.MASTER_CLOCK.getAvailability());
                         final List<CzmlShow> shows = new ArrayList<>();
@@ -175,6 +207,8 @@ public class GroundTrack extends AbstractPrimaryObject implements CzmlPrimaryObj
         return STRING_WRITER;
     }
 
+    // Getters
+
     @Override
     public void cleanObject() {
         this.setId("");
@@ -185,8 +219,6 @@ public class GroundTrack extends AbstractPrimaryObject implements CzmlPrimaryObj
         this.clampedPositionOnBody = null;
         this.allGroundTracks = new ArrayList<>();
     }
-
-    // Getters
 
     public Satellite getSatellite() {
         return satellite;
@@ -235,7 +267,9 @@ public class GroundTrack extends AbstractPrimaryObject implements CzmlPrimaryObj
                 }
             } else {
                 final Path path = new Path(getAvailability(), packet);
-                pathProperty.writeLeadTimeProperty(satellite.getOrbits().get(0).getKeplerianPeriod());
+                pathProperty.writeLeadTimeProperty(satellite.getOrbits()
+                                                            .get(0)
+                                                            .getKeplerianPeriod());
                 pathProperty.writeTrailTimeProperty(0.0);
                 try (BooleanCesiumWriter showPath = pathProperty.openShowProperty()) {
                     showPath.writeInterval(getAvailability().getStart(), getAvailability().getStop());
@@ -253,10 +287,6 @@ public class GroundTrack extends AbstractPrimaryObject implements CzmlPrimaryObj
                 OUTPUT.writeEndObject();
             }
         }
-    }
-
-    private static Iterable<Reference> convertToIterable(final Reference[] array) {
-        return () -> Arrays.stream(array).iterator();
     }
 }
 

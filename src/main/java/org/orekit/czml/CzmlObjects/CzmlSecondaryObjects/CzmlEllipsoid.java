@@ -31,25 +31,45 @@ import java.util.List;
 
 public class CzmlEllipsoid implements CzmlSecondaryObject {
 
-    /** .*/
-    private boolean fill = false;
-    /** .*/
+    /**
+     * .
+     */
     private final TimeInterval availability;
-    /** .*/
-    private boolean outline = true;
-    /** .*/
+    /**
+     * .
+     */
     private final Color color;
-    /** .*/
+    /**
+     * .
+     */
     private final int slicePartition;
-    /** .*/
+    /**
+     * .
+     */
     private final int stackPartition;
-    /** .*/
+    /**
+     * .
+     */
+    private boolean fill = false;
+    /**
+     * .
+     */
+    private boolean outline = true;
+    /**
+     * .
+     */
     private Cartesian cartesian;
-    /** .*/
+    /**
+     * .
+     */
     private List<JulianDate> allJulianDates = new ArrayList<>();
-    /** .*/
+    /**
+     * .
+     */
     private List<Cartesian> allCartesians = new ArrayList<>();
-    /** .*/
+    /**
+     * .
+     */
     private boolean multipleEllipsoids = true;
 
     // Builders
@@ -103,14 +123,17 @@ public class CzmlEllipsoid implements CzmlSecondaryObject {
         this(julianDates, dimensions, false, true, slicePartition, stackPartition, color);
     }
 
-    /** Unique ellipsoid made to follow an object, this ellipsoid will need several cartesians and several dates.
-     * @param julianDates : ALl the dates where the ellipsoid must be computed
-     * @param dimensions : These cartesians represents the dimensions of the ellipsoid (x,y,z), each value is the distance from the center for each dimension.
-     * @param fill : To fill the ellipsoid or not, by default it is false
-     * @param outline : To display the outline or not, by default it is true
-     * @param color : the color of the ellipsoid
+    /**
+     * Unique ellipsoid made to follow an object, this ellipsoid will need several cartesians and several dates.
+     *
+     * @param julianDates    : ALl the dates where the ellipsoid must be computed
+     * @param dimensions     : These cartesians represents the dimensions of the ellipsoid (x,y,z), each value is the distance from the center for each dimension.
+     * @param fill           : To fill the ellipsoid or not, by default it is false
+     * @param outline        : To display the outline or not, by default it is true
+     * @param color          : the color of the ellipsoid
      * @param slicePartition : the number of slice of the ellipsoid (number of lines in the orthogonal direction)
-     * @param stackPartition : the number of stack of the ellipsoid (number of line in the vertical direction) */
+     * @param stackPartition : the number of stack of the ellipsoid (number of line in the vertical direction)
+     */
     public CzmlEllipsoid(final List<JulianDate> julianDates, final List<Cartesian> dimensions, final boolean fill, final boolean outline, final int slicePartition, final int stackPartition, final Color color) {
         this.fill = fill;
         this.outline = outline;
@@ -169,8 +192,7 @@ public class CzmlEllipsoid implements CzmlSecondaryObject {
                     radiiWriter.open(output);
                     radiiWriter.writeCartesian(this.getCartesian());
                 }
-            }
-            else {
+            } else {
                 try (EllipsoidRadiiCesiumWriter radiiWriter = ellipsoidCesiumWriter.getRadiiWriter()) {
                     radiiWriter.open(output);
                     radiiWriter.writeCartesian(allJulianDates, allCartesians);

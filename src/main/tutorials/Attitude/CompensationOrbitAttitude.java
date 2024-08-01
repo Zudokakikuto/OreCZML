@@ -32,6 +32,7 @@ import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Header;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Satellite;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.Clock;
 import org.orekit.czml.Outputs.CzmlFile;
+import org.orekit.czml.Outputs.CzmlFileBuilder;
 import org.orekit.data.DataContext;
 import org.orekit.data.DataProvider;
 import org.orekit.data.DirectoryCrawler;
@@ -50,6 +51,8 @@ import org.orekit.geometry.fov.FieldOfView;
 import org.orekit.orbits.KeplerianOrbit;
 import org.orekit.orbits.OrbitType;
 import org.orekit.orbits.PositionAngleType;
+import org.orekit.propagation.BoundedPropagator;
+import org.orekit.propagation.EphemerisGenerator;
 import org.orekit.propagation.SpacecraftState;
 import org.orekit.propagation.numerical.NumericalPropagator;
 import org.orekit.time.AbsoluteDate;
@@ -74,20 +77,20 @@ public class CompensationOrbitAttitude {
             final File home = new File(System.getProperty("user.home"));
             final File orekitDir = new File(home, "orekit-data");
             final DataProvider provider = new DirectoryCrawler(orekitDir);
-            DataContext.getDefault().getDataProvidersManager().addProvider(provider);
+            DataContext.getDefault()
+                       .getDataProvidersManager()
+                       .addProvider(provider);
         } catch (OrekitException oe) {
             System.err.println(oe.getLocalizedMessage());
         }
 
         // Paths
-        final String root = System.getProperty("user.dir").replace("\\", "/");
+        final String root = System.getProperty("user.dir")
+                                  .replace("\\", "/");
         final String outputPath = root + "/Output";
         final String outputName = "Output.czml";
         final String output = outputPath + "/" + outputName;
         final String IssModel = root + "/src/main/resources/ISSModel.glb";
-
-        // File created
-        final CzmlFile file = new CzmlFile(output);
 
         // Creation of the clock.
         final TimeScale UTC = TimeScalesFactory.getUTC();
@@ -97,8 +100,7 @@ public class CompensationOrbitAttitude {
         final AbsoluteDate finalDate = startDate.shiftedBy(durationOfSimulation);
         final Clock clock = new Clock(startDate, finalDate, UTC, stepBetweenEachInstant);
 
-        final Header header = new Header("Setup of a sinusoidal attitude for a satellite", clock);
-        file.addObject(header);
+        final Header header = new Header("Setup of an sun synchronous orbit with a sinusoidal attitude", clock);
 
         // Creation of the model of the earth.
         final IERSConventions IERS = IERSConventions.IERS_2010;
@@ -128,26 +130,43 @@ public class CompensationOrbitAttitude {
         propagator.addForceModel(holmesFeatherstone);
         propagator.setInitialState(initialState);
 
+        final EphemerisGenerator generator = propagator.getEphemerisGenerator();
+
         final SinusoidalLof sinusoidalLof = new SinusoidalLof(EME2000, LOFType.VNC, Vector3D.PLUS_I, 3600, FastMath.toRadians(45.0), initialState.getDate());
         propagator.setAttitudeProvider(sinusoidalLof);
 
-        // Creation of the satellite
-        final Satellite satellite = new Satellite(propagator, finalDate, IssModel, Color.RED);
-        satellite.displaySatelliteAttitude();
-        satellite.displaySatelliteReferenceSystem();
-        file.addObject(satellite);
+        propagator.propagate(startDate, finalDate);
+        final BoundedPropagator boundedPropagator = generator.getGeneratedEphemeris();
 
-        final AttitudePointing pointing = new AttitudePointing(satellite, earth, Vector3D.MINUS_K, Color.ORANGE);
-        pointing.displayPointingPath();
-        pointing.displayPeriodPointingPath();
-        file.addObject(pointing);
+        // Creation of the satellite
+        final Satellite satellite = Satellite.builder(boundedPropagator, finalDate)
+                                             .withModelPath(IssModel)
+                                             .withColor(Color.RED)
+                                             .displayOnlyOnePeriod()
+                                             .displayAttitude()
+                                             .displayReferenceSystem()
+                                             .build();
+
+        final AttitudePointing pointing = AttitudePointing.builder(satellite, earth, Vector3D.MINUS_K)
+                                                          .withColor(Color.ORANGE)
+                                                          .displayPointingPath()
+                                                          .displayPeriodPointingPath()
+                                                          .build();
 
         // Creation of the field of observation of the satellite, it describes the area the satellite see
-        final Transform initialInertToBody = initialState.getFrame().getTransformTo(earth.getBodyFrame(), initialState.getDate());
-        final Transform initialFovBody = new Transform(initialState.getDate(), initialState.toTransform().getInverse(), initialInertToBody);
+        final Transform initialInertToBody = initialState.getFrame()
+                                                         .getTransformTo(earth.getBodyFrame(), initialState.getDate());
+        final Transform initialFovBody = new Transform(initialState.getDate(), initialState.toTransform()
+                                                                                           .getInverse(), initialInertToBody);
         final FieldOfView fov = new DoubleDihedraFieldOfView(Vector3D.MINUS_K, Vector3D.PLUS_I, FastMath.toRadians(20), Vector3D.PLUS_J, FastMath.toRadians(20), 2);
         final FieldOfObservation fieldOfObservation = new FieldOfObservation(satellite, fov, initialFovBody);
-        file.addObject(fieldOfObservation);
+
+        // Creation of the file
+        final CzmlFile file = new CzmlFileBuilder(output).withHeader(header)
+                                                         .withSatellite(satellite)
+                                                         .withAttitudePointing(pointing)
+                                                         .withFieldOfObservation(fieldOfObservation)
+                                                         .build();
 
         // Writing in the file
         file.write();
@@ -155,23 +174,37 @@ public class CompensationOrbitAttitude {
 
     protected static class SinusoidalLof extends LofOffset {
 
-        /** .*/
-        private Frame inertialFrame;
-        /** .*/
+        /**
+         * .
+         */
         private final Rotation offset = new Rotation(RotationOrder.XYZ, RotationConvention.VECTOR_OPERATOR, 0, 0, 0).revert();
-        /** .*/
+        /**
+         * .
+         */
 
         private final double period;
-        /** .*/
+        /**
+         * .
+         */
 
         private final AbsoluteDate initialDate;
-        /** .*/
+        /**
+         * .
+         */
+        private Frame inertialFrame;
+        /**
+         * .
+         */
 
         private Vector3D axis;
-        /** .*/
+        /**
+         * .
+         */
 
         private double maxAngle;
-        /** .*/
+        /**
+         * .
+         */
 
         private LOF lof;
 

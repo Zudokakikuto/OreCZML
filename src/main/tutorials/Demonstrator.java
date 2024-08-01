@@ -26,10 +26,10 @@ import org.orekit.bodies.OneAxisEllipsoid;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.CzmlGroundStation;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.FieldOfObservation;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Header;
-import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.LineOfVisibility;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Satellite;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.Clock;
 import org.orekit.czml.Outputs.CzmlFile;
+import org.orekit.czml.Outputs.CzmlFileBuilder;
 import org.orekit.data.DataContext;
 import org.orekit.data.DataProvider;
 import org.orekit.data.DirectoryCrawler;
@@ -48,6 +48,8 @@ import org.orekit.geometry.fov.FieldOfView;
 import org.orekit.orbits.KeplerianOrbit;
 import org.orekit.orbits.OrbitType;
 import org.orekit.orbits.PositionAngleType;
+import org.orekit.propagation.BoundedPropagator;
+import org.orekit.propagation.EphemerisGenerator;
 import org.orekit.propagation.SpacecraftState;
 import org.orekit.propagation.numerical.NumericalPropagator;
 import org.orekit.time.AbsoluteDate;
@@ -66,25 +68,26 @@ public class Demonstrator {
     private Demonstrator() {
         // empty
     }
+
     public static void main(final String[] args) throws Exception {
         try {
             final File home = new File(System.getProperty("user.home"));
             final File orekitDir = new File(home, "orekit-data");
             final DataProvider provider = new DirectoryCrawler(orekitDir);
-            DataContext.getDefault().getDataProvidersManager().addProvider(provider);
+            DataContext.getDefault()
+                       .getDataProvidersManager()
+                       .addProvider(provider);
         } catch (OrekitException oe) {
             System.err.println(oe.getLocalizedMessage());
         }
 
         // Paths
-        final String root = System.getProperty("user.dir").replace("\\", "/");
+        final String root = System.getProperty("user.dir")
+                                  .replace("\\", "/");
         final String outputPath = root + "/Output";
         final String outputName = "Output.czml";
         final String output = outputPath + "/" + outputName;
         final String IssModel = root + "/src/main/resources/ISSModel.glb";
-
-        // File created
-        final CzmlFile file = new CzmlFile(output);
 
         // Creation of the clock.
         final TimeScale UTC = TimeScalesFactory.getUTC();
@@ -95,7 +98,6 @@ public class Demonstrator {
         final Clock clock = new Clock(startDate, finalDate, UTC, stepBetweenEachInstant);
 
         final Header header = new Header("Demonstrator", clock);
-        file.addObject(header);
 
         // Creation of the model of the earth.
         final IERSConventions IERS = IERSConventions.IERS_2010;
@@ -149,32 +151,48 @@ public class Demonstrator {
         propagator.addForceModel(holmesFeatherstone);
         propagator.setInitialState(initialState);
 
+        final EphemerisGenerator generator = propagator.getEphemerisGenerator();
+
         final LofOffset lofOffset = new LofOffset(EME2000, LOFType.TNW, RotationOrder.XYZ, FastMath.toRadians(0), FastMath.toRadians(0), FastMath.toRadians(0));
         propagator.setAttitudeProvider(lofOffset);
 
+        propagator.propagate(startDate, finalDate);
+        final BoundedPropagator boundedPropagator = generator.getGeneratedEphemeris();
+
         // Creation of the satellite
-        final Satellite satellite = new Satellite(propagator, finalDate, IssModel, Color.RED);
-        satellite.displayOnlyOnePeriod();
-        satellite.displaySatelliteAttitude();
-        file.addObject(satellite);
+        final Satellite satellite = Satellite.builder(boundedPropagator, finalDate)
+                                             .withModelPath(IssModel)
+                                             .withColor(Color.RED)
+                                             .displayOnlyOnePeriod()
+                                             .displayAttitude()
+                                             .build();
 
         // Build of the ground stations
-        final CzmlGroundStation groundStations = new CzmlGroundStation(allStations);
-        file.addObject(groundStations);
-
-        //// Creation of a line of visu between the satellite and all the ground stations
-        final LineOfVisibility lineOfVisibility = new LineOfVisibility(allStations, satellite);
-        file.addObject(lineOfVisibility);
+        final List<CzmlGroundStation> allGroundStations = new ArrayList<>();
+        for (TopocentricFrame allStation : allStations) {
+            allGroundStations.add(new CzmlGroundStation(allStation));
+        }
 
         // Creation of the field of observation of the satellite, it describes the area the satellite see
-        final Transform initialInertToBody = initialState.getFrame().getTransformTo(earth.getBodyFrame(), initialState.getDate());
-        final Transform initialFovBody = new Transform(initialState.getDate(), initialState.toTransform().getInverse(), initialInertToBody);
+        final Transform initialInertToBody = initialState.getFrame()
+                                                         .getTransformTo(earth.getBodyFrame(), initialState.getDate());
+        final Transform initialFovBody = new Transform(initialState.getDate(), initialState.toTransform()
+                                                                                           .getInverse(), initialInertToBody);
         // A circular field of view
         //final FieldOfView fov = new CircularFieldOfView(Vector3D.PLUS_J, FastMath.toRadians(50), 2);
         // A rectangular field of view
         final FieldOfView fov = new DoubleDihedraFieldOfView(Vector3D.PLUS_J, Vector3D.PLUS_I, FastMath.toRadians(20), Vector3D.PLUS_K, FastMath.toRadians(5), 2);
-        final FieldOfObservation fieldOfObservation = new FieldOfObservation(satellite, fov, initialFovBody, Color.PINK);
-        file.addObject(fieldOfObservation);
+        final FieldOfObservation fieldOfObservation = FieldOfObservation.builder(satellite, fov, initialFovBody)
+                                                                        .withColor(Color.PINK)
+                                                                        .build();
+
+        // Creation of the file
+        final CzmlFile file = new CzmlFileBuilder(output).withHeader(header)
+                                                         .withSatellite(satellite)
+                                                         .withCzmlGroundStation(allGroundStations)
+                                                         .withFieldOfObservation(fieldOfObservation)
+                                                         .withLineOfVisibility(allStations, satellite)
+                                                         .build();
 
         // Write inside the CzmlFile the objects
         file.write();

@@ -28,30 +28,53 @@ import java.awt.Color;
 
 public class Billboard implements CzmlSecondaryObject {
 
-    /** .*/
+    /**
+     * .
+     */
     public static final double DEFAULT_SCALE = 1.5;
-
-    /** .*/
-    private double scale = DEFAULT_SCALE;
-    /** .*/
+    /**
+     * .
+     */
     private final boolean show;
-    /** .*/
+    /**
+     * .
+     */
     private final String imageStr;
-    /** .*/
+    /**
+     * .
+     */
     private final CesiumHorizontalOrigin cesiumHorizontalOrigin;
-    /** .*/
+    /**
+     * .
+     */
     private final CesiumResourceBehavior cesiumResourceBehavior;
-    /** .*/
+    /**
+     * .
+     */
     private final int red;
-    /** .*/
+    /**
+     * .
+     */
     private final int blue;
-    /** .*/
+    /**
+     * .
+     */
     private final int green;
-    /** .*/
+    /**
+     * .
+     */
     private final int alpha;
-    /** .*/
+    /**
+     * .
+     */
+    private double scale = DEFAULT_SCALE;
+    /**
+     * .
+     */
     private BillboardCesiumWriter writer;
-    /** .*/
+    /**
+     * .
+     */
     private NearFarScalar nearFarScalar;
 
     public Billboard(final CesiumResourceBehavior cesiumResourceBehavior, final CesiumHorizontalOrigin cesiumHorizontalOrigin, final String imageStr, final boolean show, final double scale, final Color color) {
@@ -102,8 +125,7 @@ public class Billboard implements CzmlSecondaryObject {
             billboardWriter.writeColorProperty(red, green, blue, alpha);
             if (nearFarScalar == null) {
                 billboardWriter.writeScaleProperty(scale);
-            }
-            else {
+            } else {
                 billboardWriter.writeScaleByDistanceProperty(nearFarScalar);
             }
             billboardWriter.writeShowProperty(show);

@@ -35,26 +35,46 @@ import java.util.List;
 
 public class AbstractPointOnBody extends AbstractPrimaryObject implements CzmlPrimaryObject {
 
-    /** .*/
+    /**
+     * .
+     */
     public static final String DEFAULT_ID = "ABSTRACT_POINT_ON_BODY/";
-    /** .*/
+    /**
+     * .
+     */
     public static final String DEFAULT_NAME = "Abstract point on the body at location(s) : ";
-    /** .*/
+    /**
+     * .
+     */
     public static final String DEFAULT_H_POSITION = "#position";
 
-    /** .*/
+    /**
+     * .
+     */
     private List<GeodeticPoint> footprintsInTime;
-    /** .*/
+    /**
+     * .
+     */
     private List<Vector3D> positionsList = new ArrayList<>();
-    /** .*/
+    /**
+     * .
+     */
     private boolean displayPath = false;
-    /** .*/
+    /**
+     * .
+     */
     private List<JulianDate> julianDates;
-    /** .*/
+    /**
+     * .
+     */
     private boolean displayPeriodPointingPath = false;
-    /** .*/
+    /**
+     * .
+     */
     private List<Cartesian> cartesians = new ArrayList<>();
-    /** .*/
+    /**
+     * .
+     */
     private double periodForPath;
 
     public AbstractPointOnBody(final List<JulianDate> julianDates, final List<GeodeticPoint> geodeticPoints, final BodyShape body) {
@@ -67,12 +87,14 @@ public class AbstractPointOnBody extends AbstractPrimaryObject implements CzmlPr
         for (final GeodeticPoint currentGeodeticPoint : geodeticPoints) {
             if (currentGeodeticPoint == null) {
                 cartesians.add(new Cartesian(0, 0, 0));
-            }
-            else {
+            } else {
                 final TopocentricFrame topocentricFrame = new TopocentricFrame(body, currentGeodeticPoint, "");
                 positionsList.add(topocentricFrame.getCartesianPoint());
-                final Cartesian currentCartesian = new Cartesian(topocentricFrame.getCartesianPoint().getX(),
-                        topocentricFrame.getCartesianPoint().getY(), topocentricFrame.getCartesianPoint().getZ());
+                final Cartesian currentCartesian = new Cartesian(topocentricFrame.getCartesianPoint()
+                                                                                 .getX(),
+                                                                 topocentricFrame.getCartesianPoint()
+                                                                                 .getY(), topocentricFrame.getCartesianPoint()
+                                                                                                          .getZ());
                 cartesians.add(currentCartesian);
             }
         }
@@ -139,7 +161,7 @@ public class AbstractPointOnBody extends AbstractPrimaryObject implements CzmlPr
         this.displayPath = displayPath;
     }
 
-    public void setDisplayPeriodPointingPath (final boolean displayPeriodPointingPathInput, final double period) {
+    public void setDisplayPeriodPointingPath(final boolean displayPeriodPointingPathInput, final double period) {
         this.displayPeriodPointingPath = displayPeriodPointingPathInput;
         this.periodForPath = period;
     }
@@ -154,19 +176,4 @@ public class AbstractPointOnBody extends AbstractPrimaryObject implements CzmlPr
         }
     }
 
-    private List<List<Cartesian>> vector3DToCartesianList(final List<List<Vector3D>> vectors) {
-        final List<List<Cartesian>> toReturn = new ArrayList<>();
-        for (List<Vector3D> vector : vectors) {
-            final List<Cartesian> tempCartesians = new ArrayList<>();
-            for (int j = 0; j < vectors.get(0).size(); j++) {
-                final double X = vector.get(j).getX();
-                final double Y = vector.get(j).getY();
-                final double Z = vector.get(j).getZ();
-                final Cartesian currentCartesian = new Cartesian(X, Y, Z);
-                tempCartesians.add(currentCartesian);
-            }
-            toReturn.add(tempCartesians);
-        }
-        return toReturn;
-    }
 }

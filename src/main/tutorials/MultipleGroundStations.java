@@ -22,6 +22,7 @@ import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.CzmlGroundStation;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Header;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.Clock;
 import org.orekit.czml.Outputs.CzmlFile;
+import org.orekit.czml.Outputs.CzmlFileBuilder;
 import org.orekit.data.DataContext;
 import org.orekit.data.DataProvider;
 import org.orekit.data.DirectoryCrawler;
@@ -50,19 +51,19 @@ public class MultipleGroundStations {
             final File home = new File(System.getProperty("user.home"));
             final File orekitDir = new File(home, "orekit-data");
             final DataProvider provider = new DirectoryCrawler(orekitDir);
-            DataContext.getDefault().getDataProvidersManager().addProvider(provider);
+            DataContext.getDefault()
+                       .getDataProvidersManager()
+                       .addProvider(provider);
         } catch (OrekitException oe) {
             System.err.println(oe.getLocalizedMessage());
         }
 
         // Paths
-        final String root = System.getProperty("user.dir").replace("\\", "/");
+        final String root = System.getProperty("user.dir")
+                                  .replace("\\", "/");
         final String outputPath = root + "/Output";
         final String outputName = "Output.czml";
         final String output = outputPath + "/" + outputName;
-
-        // File created
-        final CzmlFile file = new CzmlFile(output);
 
         // Creation of the clock.
         final TimeScale UTC = TimeScalesFactory.getUTC();
@@ -74,7 +75,6 @@ public class MultipleGroundStations {
 
         // Creation of the header.
         final Header header = new Header("Multiple Ground Stations", clock);
-        file.addObject(header);
 
         // Creation of the model of the earth.
         final IERSConventions IERS = IERSConventions.IERS_2010;
@@ -89,14 +89,15 @@ public class MultipleGroundStations {
         final GeodeticPoint lasVegasFrame = new GeodeticPoint(FastMath.toRadians(36.1716), FastMath.toRadians(-115.1391), 10);
         final TopocentricFrame topocentricLasVegas = new TopocentricFrame(earth, lasVegasFrame, "Las Vegas Frame");
 
-        // Creation of a list of topocentric frame containing both frames.
-        final List<TopocentricFrame> allStations = new ArrayList<>();
-        allStations.add(topocentricToulouse);
-        allStations.add(topocentricLasVegas);
-
         // Creation of all the ground stations
-        final CzmlGroundStation allStation = new CzmlGroundStation(allStations);
-        file.addObject(allStation);
+        final List<CzmlGroundStation> allGroundStation = new ArrayList<>();
+        allGroundStation.add(new CzmlGroundStation(topocentricToulouse));
+        allGroundStation.add(new CzmlGroundStation(topocentricLasVegas));
+
+        // Creation of the file
+        final CzmlFile file = new CzmlFileBuilder(output).withHeader(header)
+                                                         .withCzmlGroundStation(allGroundStation)
+                                                         .build();
 
         // Writing in the file
         file.write();

@@ -22,41 +22,50 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Abstract Primary Object
-
+/**
+ * Abstract Primary Object
+ *
  * <p>
  * This class aims at giving a common abstract base where all primary objects will refer to.
  * </p>
  *
- * @since 2.0
  * @author Julien LEBLOND.
+ * @since 2.0
  */
 
 public abstract class AbstractPrimaryObject implements CzmlPrimaryObject {
 
-    /** THe id of the object.*/
+    /**
+     * THe id of the object.
+     */
     private String id;
-    /** The name of the object.*/
+    /**
+     * The name of the object.
+     */
     private String name;
-    /** .*/
+    /**
+     * .
+     */
     private TimeInterval availability;
 
     public String getId() {
         return id;
-    }
-    public String getName() {
-        return name;
-    }
-    public TimeInterval getAvailability() {
-        return availability;
     }
 
     protected void setId(final String s) {
         this.id = s;
     }
 
+    public String getName() {
+        return name;
+    }
+
     protected void setName(final String n) {
         this.name = n;
+    }
+
+    public TimeInterval getAvailability() {
+        return availability;
     }
 
     protected void setAvailability(final TimeInterval a) {
@@ -65,18 +74,18 @@ public abstract class AbstractPrimaryObject implements CzmlPrimaryObject {
 
     protected java.util.List<Color> preMadeColorList() {
         final List<Color> preMadeColorList = new ArrayList<>();
-        final Color red         = new Color(255, 0,   0);
-        final Color orange      = new Color(255, 127, 0);
-        final Color yellow      = new Color(255, 255, 0);
+        final Color red = new Color(255, 0, 0);
+        final Color orange = new Color(255, 127, 0);
+        final Color yellow = new Color(255, 255, 0);
         final Color light_green = new Color(127, 255, 0);
-        final Color green       = new Color(0,   255, 0);
-        final Color light_cyan  = new Color(0,   255, 127);
-        final Color cyan        = new Color(0,   255, 255);
-        final Color light_blue  = new Color(0,   127, 255);
-        final Color blue        = new Color(0,   0,   255);
-        final Color violet      = new Color(127, 0,   255);
-        final Color magenta     = new Color(255, 0,   255);
-        final Color pink        = new Color(255, 0,   127);
+        final Color green = new Color(0, 255, 0);
+        final Color light_cyan = new Color(0, 255, 127);
+        final Color cyan = new Color(0, 255, 255);
+        final Color light_blue = new Color(0, 127, 255);
+        final Color blue = new Color(0, 0, 255);
+        final Color violet = new Color(127, 0, 255);
+        final Color magenta = new Color(255, 0, 255);
+        final Color pink = new Color(255, 0, 127);
         preMadeColorList.add(red);
         preMadeColorList.add(orange);
         preMadeColorList.add(yellow);
@@ -131,8 +140,7 @@ public abstract class AbstractPrimaryObject implements CzmlPrimaryObject {
                 final Color currentColor = new Color(255, 0, 255 - (shiftOfColorLastSection * i));
                 toReturn.add(currentColor);
             }
-        }
-        else {
+        } else {
             final List<Color> preMadeColors = preMadeColorList();
             for (int i = 0; i < totalOfSat; i++) {
                 toReturn.add(preMadeColors.get(i));

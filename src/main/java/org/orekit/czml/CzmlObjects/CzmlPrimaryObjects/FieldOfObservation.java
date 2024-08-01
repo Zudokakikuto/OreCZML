@@ -26,6 +26,7 @@ import org.hipparchus.util.FastMath;
 import org.orekit.annotation.DefaultDataContext;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.bodies.OneAxisEllipsoid;
+import org.orekit.czml.ArchiObjects.FieldOfObservationBuilder;
 import org.orekit.czml.CzmlObjects.Polyline;
 import org.orekit.frames.FramesFactory;
 import org.orekit.frames.TopocentricFrame;
@@ -44,60 +45,78 @@ import java.util.List;
 
 public class FieldOfObservation extends AbstractPrimaryObject implements CzmlPrimaryObject {
 
-    /** .*/
+    /**
+     * .
+     */
     public static final String DEFAULT_ID = "LINE_OBSERVATION/";
-    /** .*/
+    /**
+     * .
+     */
     public static final String DEFAULT_NAME = "Line of observation of : ";
-    /** .*/
+    /**
+     * .
+     */
     public static final double DEFAULT_ANGULAR_STEP = FastMath.toRadians(36);
-    /** .*/
+    /**
+     * .
+     */
     public static final String DEFAULT_H_POSITION = "#position";
-    /** .*/
+    /**
+     * .
+     */
     public static final Color DEFAULT_COLOR = Color.CYAN;
 
-    /** .*/
+    /**
+     * .
+     */
     private Reference referenceSatellite;
-    /** .*/
+    /**
+     * .
+     */
     private List<Reference> groundReferences = new ArrayList<>();
-    /** .*/
+    /**
+     * .
+     */
     private List<List<GeodeticPoint>> initialFootprint;
-    /** .*/
+    /**
+     * .
+     */
     private List<List<List<GeodeticPoint>>> footprintsInTime = new ArrayList<>();
-    /** .*/
+    /**
+     * .
+     */
     private List<AbstractPointOnBody> allPoints = new ArrayList<>();
-    /** .*/
+    /**
+     * .
+     */
     private Color polylineColor;
-    /** .*/
+    /**
+     * .
+     */
     private Transform initialFovToBody;
-    /** .*/
+    /**
+     * .
+     */
     private boolean noDetection;
-    /** .*/
+    /**
+     * .
+     */
     private OneAxisEllipsoid body;
-    /** .*/
+    /**
+     * .
+     */
     private List<JulianDate> julianDates;
-    /** .*/
+    /**
+     * .
+     */
     private List<List<List<Cartesian>>> cartesianListFootprint = new ArrayList<>();
 
     @DefaultDataContext
     public FieldOfObservation(final Satellite satellite, final FieldOfView fieldOfView, final Transform fovToBodyInput) {
-        this(satellite, fieldOfView, fovToBodyInput,  new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS,
-                Constants.WGS84_EARTH_FLATTENING, FramesFactory.getITRF(IERSConventions.IERS_2010, true)),
-                DEFAULT_ANGULAR_STEP,
-                DEFAULT_COLOR);
-    }
-
-    public FieldOfObservation(final Satellite satellite, final FieldOfView fieldOfView, final Transform fovToBodyInput, final Color color) {
         this(satellite, fieldOfView, fovToBodyInput, new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS,
-                Constants.WGS84_EARTH_FLATTENING, FramesFactory.getITRF(IERSConventions.IERS_2010, true)),
-                DEFAULT_ANGULAR_STEP, color);
-    }
-
-    public FieldOfObservation(final Satellite satellite, final FieldOfView fieldOfView, final Transform fovToBody, final OneAxisEllipsoid body) {
-        this(satellite, fieldOfView, fovToBody, body, DEFAULT_ANGULAR_STEP, DEFAULT_COLOR);
-    }
-
-    public FieldOfObservation(final Satellite satellite, final FieldOfView fieldOfView, final Transform fovToBody, final OneAxisEllipsoid body, final Color color) {
-        this(satellite, fieldOfView, fovToBody, body, DEFAULT_ANGULAR_STEP, color);
+                                                                          Constants.WGS84_EARTH_FLATTENING, FramesFactory.getITRF(IERSConventions.IERS_2010, true)),
+             DEFAULT_ANGULAR_STEP,
+             DEFAULT_COLOR);
     }
 
     public FieldOfObservation(final Satellite satellite, final FieldOfView fov, final Transform initialFovBody, final OneAxisEllipsoid body, final double angularStep, final Color color) {
@@ -112,19 +131,25 @@ public class FieldOfObservation extends AbstractPrimaryObject implements CzmlPri
         this.julianDates = absoluteDatelistToJulianDateList(satellite.getAbsoluteDateList());
         for (int i = 0; i < julianDates.size(); i++) {
             final SpacecraftState currentState = allSatelliteSpaceCraftStates.get(i);
-            final Transform currentInertToBody = currentState.getFrame().getTransformTo(body.getBodyFrame(), currentState.getDate());
-            final Transform currentFovBody = new Transform(julianDateToAbsoluteDate(julianDates.get(i), Header.TIME_SCALE), currentState.toTransform().getInverse(), currentInertToBody);
+            final Transform currentInertToBody = currentState.getFrame()
+                                                             .getTransformTo(body.getBodyFrame(), currentState.getDate());
+            final Transform currentFovBody = new Transform(julianDateToAbsoluteDate(julianDates.get(i), Header.TIME_SCALE), currentState.toTransform()
+                                                                                                                                        .getInverse(), currentInertToBody);
             final List<List<GeodeticPoint>> currentFootprints = fov.getFootprint(currentFovBody, body, angularStep);
             footprintsInTime.add(currentFootprints);
         }
-        if (footprintsInTime.get(0).isEmpty()) {
+        if (footprintsInTime.get(0)
+                            .isEmpty()) {
             System.out.println("Could not display the field of view, it does not cross the surface of the geoid.");
             noDetection = true;
-        }
-        else {
+        } else {
             this.cartesianListFootprint = extractCartesianFromGeodetic(footprintsInTime);
             this.footprintsInTime = sortingListListList(footprintsInTime);
         }
+    }
+
+    public static FieldOfObservationBuilder builder(final Satellite satellite, final FieldOfView fieldOfView, final Transform fovToBodyInput) {
+        return new FieldOfObservationBuilder(satellite, fieldOfView, fovToBodyInput);
     }
 
     @Override
@@ -239,10 +264,15 @@ public class FieldOfObservation extends AbstractPrimaryObject implements CzmlPri
         final List<List<List<Cartesian>>> toReturn = new ArrayList<>();
         for (int i = 0; i < geodeticPoints.size(); i++) {
             final List<List<Cartesian>> tempToReturn = new ArrayList<>();
-            for (int j = 0; j < geodeticPoints.get(0).size(); j++) {
+            for (int j = 0; j < geodeticPoints.get(0)
+                                              .size(); j++) {
                 final List<Cartesian> tempCartesians = new ArrayList<>();
-                for (int k = 0; k < geodeticPoints.get(i).get(j).size(); k++) {
-                    final GeodeticPoint currentGeodeticPoint = geodeticPoints.get(i).get(j).get(k);
+                for (int k = 0; k < geodeticPoints.get(i)
+                                                  .get(j)
+                                                  .size(); k++) {
+                    final GeodeticPoint currentGeodeticPoint = geodeticPoints.get(i)
+                                                                             .get(j)
+                                                                             .get(k);
                     final TopocentricFrame currentTopocentricFrame = new TopocentricFrame(body, currentGeodeticPoint, "");
                     final Vector3D currentVector3D = currentTopocentricFrame.getCartesianPoint();
                     final Cartesian currentCartesian = new Cartesian(currentVector3D.getX(), currentVector3D.getY(), currentVector3D.getZ());

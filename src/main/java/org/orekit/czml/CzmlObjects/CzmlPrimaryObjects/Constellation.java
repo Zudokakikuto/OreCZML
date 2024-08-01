@@ -19,8 +19,7 @@ package org.orekit.czml.CzmlObjects.CzmlPrimaryObjects;
 import cesiumlanguagewriter.TimeInterval;
 import org.orekit.orbits.Orbit;
 import org.orekit.orbits.OrbitType;
-import org.orekit.orbits.WalkerConstellation;
-import org.orekit.orbits.WalkerConstellationSlot;
+import org.orekit.propagation.BoundedPropagator;
 import org.orekit.propagation.Propagator;
 import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScale;
@@ -32,187 +31,136 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Constellation
-
+/**
+ * Constellation
+ *
  * <p>
- * This class builds several Satellites objects {@link Satellite} at once.
- * Extending the Walker Constellation object {@link org.orekit.orbits.WalkerConstellation} this library works the same way
- * to build objects.
+ * This class builds several Satellites objects {@link Satellite} at once, with several propagators.
  * </p>
  *
- * @since 1.0
  * @author Julien LEBLOND.
+ * @since 1.0
  */
 public class Constellation extends AbstractPrimaryObject implements CzmlPrimaryObject {
 
-    /** The default empty string to represents the model, if this is used satellites are displayed with a 2D image from OreCZML/src/main/resources/.*/
+    /**
+     * The default empty string to represents the model, if this is used satellites are displayed with a 2D image from OreCZML/src/main/resources/.
+     */
     public static final String DEFAULT_STRING_3D_MODEL = "";
-    /** .*/
+    /**
+     * .
+     */
     public static final String DEFAULT_ID = "Constellation/";
-    /** .*/
+    /**
+     * .
+     */
     public static final String DEFAULT_NAME = "Constellation of : ";
-    /** .*/
+    /**
+     * .
+     */
     public static final String DEFAULT_NUMBER_OF_SAT = " satellites ";
-    /** .*/
+    /**
+     * .
+     */
     public static final String DEFAULT_INITIAL_ORBIT = "from the initial orbit : ";
-
-    /** The total number of satellites of the constellation.*/
-    private int totalOfSatellite;
-    /** The total number of orbital planes of the constellation.*/
-    private int numberOfOrbitalPlanes;
-    /** The phasing number for the constellation.*/
-    private int phasingParameters;
-    /** The type of orbit from {@link org.orekit.orbits.OrbitType}. It can be CARTESIAN, CIRCULAR, EQUINOCTIAL, KEPLERIAN*/
-    private OrbitType orbitType;
-    /** The timescale from {@link org.orekit.time.TimeScale}.*/
-    private TimeScale timeScale;
-    /** .*/
-    private WalkerConstellation walker;
+    /**
+     * .
+     */
+    private final List<Orbit> allOrbit = new ArrayList<>();
+    /**
+     * A model can be used for a specific display, it will be applied to all the satellite of the constellation.
+     * (under development for specified models for each satellite)
+     */
+    private final String modelPath;
+    /**
+     * .
+     */
+    private final List<String> allIds = new ArrayList<>();
 
     // intrinsic parameters
-    /** A list of lists referencing all orbits, the first indent of list correspond to all the different instants when the orbits are computed,
-     * the second indent of list contains all the orbits of all the satellite of the constellation for a given time.*/
-    private List<List<Orbit>> allOrbitsByPlane = new ArrayList<>();
-    /** .*/
-    private List<Orbit> allOrbit = new ArrayList<>();
-    /** The orbit used as a reference to compute all the others.*/
-    private Orbit referenceOrbit;
-    /** The list referencing all the satellites.*/
-    private List<Satellite> allSatellites = new ArrayList<>();
-    /** This boolean allows the constellation to display only the last period and not the entire path.*/
-    private boolean displayOnlyLastPeriod = false;
-    /** A model can be used for a specific display, it will be applied to all the satellite of the constellation.
-     * (under development for specified models for each satellite)*/
-    private String modelPath;
-    /** .*/
-    private List<String> allIds = new ArrayList<>();
-    /** .*/
-    private List<Propagator> allPropagators = new ArrayList<>();
-
-    // Builders
-    /** The classic builder of the constellation.
-     * @param totalOfSatellites : The total number of satellites.
-     * @param numberOfPlanes : The total number of orbital planes
-     * @param phasingNumber : The phasing number of the constellation
-     * @param referenceOrbit : The orbit used as a reference.
+    /**
+     * .
      */
-    public Constellation(final int totalOfSatellites, final int numberOfPlanes, final int phasingNumber, final Orbit referenceOrbit) throws URISyntaxException, IOException {
-        this(totalOfSatellites, numberOfPlanes, phasingNumber, referenceOrbit, DEFAULT_STRING_3D_MODEL);
-    }
+    private final List<BoundedPropagator> allPropagators;
+    /**
+     * The total number of satellites of the constellation.
+     */
+    private int totalOfSatellite;
+    /**
+     * The type of orbit from {@link org.orekit.orbits.OrbitType}. It can be CARTESIAN, CIRCULAR, EQUINOCTIAL, KEPLERIAN
+     */
+    private OrbitType orbitType;
+    /**
+     * The timescale from {@link org.orekit.time.TimeScale}.
+     */
+    private TimeScale timeScale;
+    /**
+     * A list of lists referencing all orbits, the first indent of list correspond to all the different instants when the orbits are computed,
+     * the second indent of list contains all the orbits of all the satellite of the constellation for a given time.
+     */
+    private List<List<Orbit>> allOrbitsByPlane = new ArrayList<>();
+    /**
+     * The orbit used as a reference to compute all the others.
+     */
+    private Orbit referenceOrbit;
+    /**
+     * The list referencing all the satellites.
+     */
+    private List<Satellite> allSatellites = new ArrayList<>();
+    /**
+     * This boolean allows the constellation to display only the last period and not the entire path.
+     */
+    private boolean displayOnlyLastPeriod = false;
 
-    /** This builder allows the used to specify a model 2D or 3D.
-     * @param totalOfSatellites : The total number of satellites.
-     * @param numberOfPlanes : The total number of orbital planes
-     * @param phasingNumber : The phasing number of the constellation
-     * @param referenceOrbit : The orbit used as a reference.
-     * @param model3DPath : The absolute path of the model.*/
-    public Constellation(final int totalOfSatellites, final int numberOfPlanes, final int phasingNumber, final Orbit referenceOrbit, final String model3DPath) throws URISyntaxException, IOException {
-        this.setId(DEFAULT_ID + totalOfSatellites + " " + numberOfPlanes + " " + phasingNumber + " " + referenceOrbit.toString());
-        this.setName(DEFAULT_NAME + totalOfSatellites + DEFAULT_NUMBER_OF_SAT + DEFAULT_INITIAL_ORBIT + referenceOrbit);
-        final TimeInterval intervalOfStudy = new TimeInterval(absoluteDateToJulianDate(referenceOrbit.getDate()), Header.MASTER_CLOCK.getAvailability().getStop());
-        this.setAvailability(intervalOfStudy);
-        this.walker = new WalkerConstellation(totalOfSatellites, numberOfPlanes, phasingNumber);
-        this.totalOfSatellite = totalOfSatellites;
-        this.numberOfOrbitalPlanes = numberOfPlanes;
-        this.phasingParameters = phasingNumber;
-        this.referenceOrbit = referenceOrbit;
-
-        allOrbitsByPlane = this.generateAllOrbits(referenceOrbit);
-        this.allOrbit = this.reorganiseOrbitList(allOrbitsByPlane);
-        this.allSatellites = new ArrayList<>();
-        final List<Color> colorList = colorWheel(allOrbit.size());
-
-        for (int i = 0; i < allOrbit.size(); i++) {
-            final Orbit currentOrbit = allOrbit.get(i);
-            final Satellite satelliteToOutput = new Satellite(currentOrbit, colorList.get(i));
-            allSatellites.add(satelliteToOutput);
-            allIds.add(satelliteToOutput.getId());
-            allPropagators.add(satelliteToOutput.getSatellitePropagator());
-        }
-
-        this.orbitType = referenceOrbit.getType();
-        // If not referenced, the timeScale used is UTC
-        this.timeScale = Header.TIME_SCALE;
-        this.modelPath = model3DPath;
-    }
-
-    public Constellation(final List<Propagator> allPropagators, final AbsoluteDate finalDate) throws URISyntaxException, IOException {
+    public Constellation(final List<BoundedPropagator> allPropagators, final AbsoluteDate finalDate) throws URISyntaxException, IOException {
         this(allPropagators, finalDate, DEFAULT_STRING_3D_MODEL);
     }
 
-    public Constellation(final List<Propagator> allPropagators, final AbsoluteDate finalDate, final String model3DPath) throws URISyntaxException, IOException {
+    public Constellation(final List<BoundedPropagator> allPropagators, final AbsoluteDate finalDate, final String model3DPath) throws URISyntaxException, IOException {
+
+        final List<Color> colorList = colorWheel(allPropagators.size());
+        final TimeInterval intervalOfStudy = new TimeInterval(Header.MASTER_CLOCK.getAvailability()
+                                                                                 .getStart(), Header.MASTER_CLOCK.getAvailability()
+                                                                                                                 .getStop());
+
         this.totalOfSatellite = allPropagators.size();
-        this.allPropagators = allPropagators;
         this.setId(DEFAULT_ID + totalOfSatellite);
         this.setName(DEFAULT_NAME + totalOfSatellite + DEFAULT_NUMBER_OF_SAT);
-        final TimeInterval intervalOfStudy = new TimeInterval(Header.MASTER_CLOCK.getAvailability().getStart(), Header.MASTER_CLOCK.getAvailability().getStop());
         this.setAvailability(intervalOfStudy);
-        final List<Color> colorList = colorWheel(allPropagators.size());
-        for (int i = 0; i < allPropagators.size(); i++) {
-            final Satellite currentSatellite = new Satellite(allPropagators.get(i), finalDate, colorList.get(i));
-            allSatellites.add(currentSatellite);
-            allOrbitsByPlane.add(currentSatellite.getOrbits());
-            allIds.add(currentSatellite.getId());
-            allOrbit.add(currentSatellite.getOrbits().get(0));
-        }
-        this.orbitType = allOrbitsByPlane.get(0).get(0).getType();
+        this.allPropagators = allPropagators;
         this.timeScale = Header.TIME_SCALE;
         this.modelPath = model3DPath;
+        this.defineMultipleArgument(finalDate, model3DPath, colorList);
+        this.orbitType = allOrbitsByPlane.get(0)
+                                         .get(0)
+                                         .getType();
     }
 
-    /** This function returns all the orbits of the constellation from a single reference orbit.
-     * @param referenceOrbitInput : The reference orbit.
-     * @return : All the orbits of the constellation in a list. */
-    public List<List<Orbit>> generateAllOrbits(final Orbit referenceOrbitInput) {
-        final List<List<WalkerConstellationSlot<Orbit>>> constellationSlots =  this.walker.buildRegularSlots(referenceOrbitInput);
-        final List<List<Orbit>> listOfAllOrbits = new ArrayList<>();
-
-        for (int i = 0; i < constellationSlots.size(); i++) {
-            final List<WalkerConstellationSlot<Orbit>> currentPlane = constellationSlots.get(i);
-            final List<Orbit> orbitsToAdd = new ArrayList<>();
-            for (int j = 0; j < currentPlane.size(); j++) {
-                final WalkerConstellationSlot<Orbit> currentSlot = currentPlane.get(j);
-                orbitsToAdd.add(currentSlot.getOrbit());
-            }
-            listOfAllOrbits.add(orbitsToAdd);
-        }
-        return listOfAllOrbits;
-    }
-
-    /** The generation function for the CZML file for the constellation.*/
+    /**
+     * The generation function for the CZML file for the constellation.
+     */
     @Override
     public void writeCzmlBlock() throws URISyntaxException, IOException {
 
         if (modelPath.isEmpty()) {
-            for (final Satellite satelliteToOutput : allSatellites) {
-                if (!displayOnlyLastPeriod) {
-                    satelliteToOutput.writeCzmlBlock();
-                } else {
-                    satelliteToOutput.displayOnlyOnePeriod();
-                    satelliteToOutput.writeCzmlBlock();
-                }
-            }
-        }
-        else {
-            for (final Satellite satelliteToOutput : allSatellites) {
-                if (!displayOnlyLastPeriod) {
-                    satelliteToOutput.writeCzmlBlock();
-                } else {
-                    satelliteToOutput.displayOnlyOnePeriod();
-                    satelliteToOutput.writeCzmlBlock();
-                }
-            }
+            this.iterateOnSatelliteWriting();
+        } else {
+            this.iterateOnSatelliteWriting();
             displayOnlyLastPeriod = false;
         }
     }
 
-    /** This function returns the string writer of the constellation.*/
+    /**
+     * This function returns the string writer of the constellation.
+     */
     @Override
     public StringWriter getStringWriter() {
         return STRING_WRITER;
     }
 
-    /** This function cleans all the private attributes to be used for another object.*/
+    /**
+     * This function cleans all the private attributes to be used for another object.
+     */
     @Override
     public void cleanObject() {
         this.allSatellites = null;
@@ -220,55 +168,49 @@ public class Constellation extends AbstractPrimaryObject implements CzmlPrimaryO
         this.timeScale = null;
         this.referenceOrbit = null;
         this.allOrbitsByPlane = null;
-        this.phasingParameters = 0;
-        this.numberOfOrbitalPlanes = 0;
         this.totalOfSatellite = 0;
     }
 
-    /** This function allows the constellation to display only one period at a time.*/
+    /**
+     * This function allows the constellation to display only one period at a time.
+     */
     public void displayOnlyOnePeriod() {
         displayOnlyLastPeriod = true;
     }
 
-    /** This getter return the number of orbital planes.
-     * @return : The number of orbital planes.*/
-    public int getNumberOfOrbitalPlanes() {
-        return numberOfOrbitalPlanes;
-    }
-    /** This getter return the timescale.
-     * @return : The timescale used.*/
+    /**
+     * This getter return the timescale.
+     *
+     * @return : The timescale used.
+     */
     public TimeScale getTimeScale() {
         return timeScale;
     }
-    /** This getter return the reference orbit.
-     * @return : The reference orbit used.*/
+
+    /**
+     * This getter return the reference orbit.
+     *
+     * @return : The reference orbit used.
+     */
     public Orbit getReferenceOrbit() {
         return referenceOrbit;
     }
-    /** This getter return all the satellites of the constellation.
-     * @return : All the satellites of the constellation.*/
+
+    /**
+     * This getter return all the satellites of the constellation.
+     *
+     * @return : All the satellites of the constellation.
+     */
     public List<Satellite> getAllSatellites() {
         return allSatellites;
     }
 
-    public List<Propagator> getAllPropagators() {
+    public List<BoundedPropagator> getAllPropagators() {
         return allPropagators;
-    }
-
-    public WalkerConstellation getWalker() {
-        return walker;
     }
 
     public List<Orbit> getAllOrbit() {
         return allOrbit;
-    }
-
-    public List<List<Orbit>> getAllOrbitsByPlane() {
-        return allOrbitsByPlane;
-    }
-
-    public int getPhasingParameters() {
-        return phasingParameters;
     }
 
     public int getTotalOfSatellite() {
@@ -279,11 +221,29 @@ public class Constellation extends AbstractPrimaryObject implements CzmlPrimaryO
         return allIds;
     }
 
-    private List<Orbit> reorganiseOrbitList(final List<List<Orbit>> listInput) {
-        final List<Orbit> toReturn = new ArrayList<>();
-        for (int i = 0; i < listInput.size(); i++) {
-            toReturn.addAll(listInput.get(i));
+    private void defineMultipleArgument(final AbsoluteDate finalDate, final String model3DPath, final List<Color> colorList) throws URISyntaxException, IOException {
+        for (int i = 0; i < allPropagators.size(); i++) {
+            final BoundedPropagator propagator = allPropagators.get(i);
+            final Satellite currentSatellite = Satellite.builder(propagator, finalDate)
+                                                        .withModelPath(model3DPath)
+                                                        .withColor(colorList.get(i))
+                                                        .build();
+            allSatellites.add(currentSatellite);
+            allOrbitsByPlane.add(currentSatellite.getOrbits());
+            allIds.add(currentSatellite.getId());
+            allOrbit.add(currentSatellite.getOrbits()
+                                         .get(0));
         }
-        return toReturn;
+    }
+
+    private void iterateOnSatelliteWriting() throws URISyntaxException, IOException {
+        for (final Satellite satelliteToOutput : allSatellites) {
+            if (!displayOnlyLastPeriod) {
+                satelliteToOutput.writeCzmlBlock();
+            } else {
+                satelliteToOutput.displayOnlyOnePeriod();
+                satelliteToOutput.writeCzmlBlock();
+            }
+        }
     }
 }

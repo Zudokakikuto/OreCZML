@@ -37,17 +37,29 @@ import java.util.List;
 
 public class Clock implements CzmlSecondaryObject {
 
-    /** .*/
+    /**
+     * .
+     */
     private TimeInterval availability;
-    /** .*/
+    /**
+     * .
+     */
     private JulianDate currentTime;
-    /** .*/
+    /**
+     * .
+     */
     private double multiplier;
-    /** .*/
+    /**
+     * .
+     */
     private ClockRange range;
-    /** .*/
+    /**
+     * .
+     */
     private ClockStep step;
-    /** .*/
+    /**
+     * .
+     */
     private TimeScale timeScale;
 
     public Clock(final AbsoluteDate startDate, final AbsoluteDate stopDate, final TimeScale timeScale, final double step) {
@@ -72,13 +84,22 @@ public class Clock implements CzmlSecondaryObject {
     }
 
     public Clock(final Oem oem, final double step) {
-        final List<TimeStampedPVCoordinates> Ephemeris = oem.getSegments().get(0).getData().getEphemeridesDataLines();
+        final List<TimeStampedPVCoordinates> Ephemeris = oem.getSegments()
+                                                            .get(0)
+                                                            .getData()
+                                                            .getEphemeridesDataLines();
         final int length = Ephemeris.size();
-        final AbsoluteDate startTime = oem.getSegments().get(0).getStart();
-        final AbsoluteDate stopTime = oem.getSegments().get(0).getStop();
+        final AbsoluteDate startTime = oem.getSegments()
+                                          .get(0)
+                                          .getStart();
+        final AbsoluteDate stopTime = oem.getSegments()
+                                         .get(0)
+                                         .getStop();
         final int step_rounded = (int) FastMath.round(stopTime.durationFrom(startTime) / length);
 
-        this.timeScale = oem.getDataContext().getTimeScales().getUTC();
+        this.timeScale = oem.getDataContext()
+                            .getTimeScales()
+                            .getUTC();
         final JulianDate startJulianDate = this.getJulianDate(startTime, timeScale);
         final JulianDate stopJulianDate = this.getJulianDate(stopTime, timeScale);
 
@@ -102,7 +123,7 @@ public class Clock implements CzmlSecondaryObject {
         final int hours = timeComponents.getHour();
         final int mins = timeComponents.getMinute();
         final double seconds = timeComponents.getSecond();
-        final GregorianDate gregorianDate =  new GregorianDate(year, month, day, hours, mins, seconds);
+        final GregorianDate gregorianDate = new GregorianDate(year, month, day, hours, mins, seconds);
         return new JulianDate(gregorianDate);
     }
 

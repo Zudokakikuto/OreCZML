@@ -14,19 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.orekit.czml.CzmlEnum;
+package org.orekit.czml.ArchiObjects;
 
-public enum TypeOfVisu {
+import org.orekit.propagation.AbstractPropagator;
+import org.orekit.propagation.Propagator;
 
-    /** .*/
-    SINGLE_SAT_SINGLE_STATION,
-    /** .*/
-    SINGLE_SAT_MULTIPLE_STATION,
-    /** .*/
-    MULTIPLE_SAT_SINGLE_STATION,
-    /** .*/
-    MULTIPLE_SAT_MULTIPLE_STATION;
+public abstract class AbstractAdaptor<I> extends AbstractPropagator {
 
-    TypeOfVisu() {
-    }
+    /**
+     * .
+     */
+    private I inputObject;
+
+    public abstract Propagator buildPropagator();
 }

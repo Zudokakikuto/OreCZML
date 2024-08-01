@@ -26,25 +26,43 @@ import java.net.URISyntaxException;
 
 public class SatelliteReferenceSystem extends AbstractPrimaryObject implements CzmlPrimaryObject {
 
-    /** .*/
+    /**
+     * .
+     */
     public static final String DEFAULT_ID = "REFERENCE SYSTEM/";
-    /** .*/
+    /**
+     * .
+     */
     public static final String DEFAULT_NAME = "Reference system of : ";
-    /** .*/
+    /**
+     * .
+     */
     public static final String DEFAULT_H_POSITION = "#position";
-    /** .*/
+    /**
+     * .
+     */
     public static final String DEFAULT_H_ORIENTATION = "#orientation";
-    /** .*/
+    /**
+     * .
+     */
     public static final String PATH_TO_REFERENCE_SYSTEM = Header.DEFAULT_RESOURCES + "/referenceSystem.glb";
 
     // Intrinsic parameters
-    /** .*/
+    /**
+     * .
+     */
     private Reference referencePosition;
-    /** .*/
+    /**
+     * .
+     */
     private Reference referenceOrientation;
-    /** .*/
+    /**
+     * .
+     */
     private Satellite satellite;
-    /** .*/
+    /**
+     * .
+     */
     private CzmlModel referenceSystemModel;
 
     // Builders
@@ -73,7 +91,8 @@ public class SatelliteReferenceSystem extends AbstractPrimaryObject implements C
             packet.writeAvailability(getAvailability());
             packet.writePositionPropertyReference(referencePosition);
             packet.writeOrientationPropertyReference(referenceOrientation);
-            this.getReferenceSystemModel().generateCZML(packet, OUTPUT);
+            this.getReferenceSystemModel()
+                .generateCZML(packet, OUTPUT);
         }
     }
 

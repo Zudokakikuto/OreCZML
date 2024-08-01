@@ -23,61 +23,87 @@ import org.orekit.czml.Outputs.CzmlFile;
 import org.orekit.time.TimeScale;
 
 import java.io.StringWriter;
-/** Header
 
+/**
+ * Header
+ *
  * <p>
- *    The header object is the base to all the CZML file. It contains all the primary information needed for the scene to display.
- *    The header must be the FIRST object to be created and written before any other object, else way the CZML will be corrupted.
+ * The header object is the base to all the CZML file. It contains all the primary information needed for the scene to display.
+ * The header must be the FIRST object to be created and written before any other object, else way the CZML will be corrupted.
  * </p>
  *
- * @since 1.0
  * @author Julien LEBLOND
+ * @since 1.0
  */
 
 public class Header extends AbstractPrimaryObject implements CzmlPrimaryObject {
 
-    /** The default id of a CZML file.*/
+    /**
+     * The default id of a CZML file.
+     */
     public static final String DEFAULT_ID = "document";
-    /** The default version of a CZML file.*/
+    /**
+     * The default version of a CZML file.
+     */
     public static final String DEFAULT_VERSION = "1.0";
-    /** .*/
-    public static Clock MASTER_CLOCK = null;
-    /** .*/
-    public static TimeScale TIME_SCALE = null;
-    /** .*/
-    public static final String DEFAULT_ROOT = System.getProperty("user.dir").replace("\\", "/");
-    /** .*/
+    /**
+     * .
+     */
+    public static final String DEFAULT_ROOT = System.getProperty("user.dir")
+                                                    .replace("\\", "/");
+    /**
+     * .
+     */
     public static final String DEFAULT_RESOURCES = DEFAULT_ROOT + "/src/main/resources";
-
-    /** The version of the header.*/
+    /**
+     * .
+     */
+    public static Clock MASTER_CLOCK = null;
+    /**
+     * .
+     */
+    public static TimeScale TIME_SCALE = null;
+    /**
+     * The version of the header.
+     */
     private String version;
     /** The clock object to describes all temporal aspects of the scene.*/
-    /** The minimum step in time between each instant.*/
+    /**
+     * The minimum step in time between each instant.
+     */
     private double stepSimulation;
 
-    /** The classic builder, a name and a clock.
-     * @param name : the name of the header.
-     * @param clock : the clock of the header*/
+    /**
+     * The classic builder, a name and a clock.
+     *
+     * @param name  : the name of the header.
+     * @param clock : the clock of the header
+     */
     public Header(final String name, final Clock clock) {
         this.setId(DEFAULT_ID);
         this.setName(name);
         this.version = DEFAULT_VERSION;
-        this.stepSimulation = clock.getStep().getValue();
+        this.stepSimulation = clock.getStep()
+                                   .getValue();
         MASTER_CLOCK = clock;
         CzmlFile.setHeader(this);
         TIME_SCALE = clock.getTimeScale();
     }
 
-    /** The versioned builder, if you don't know which version use, do not use this builder.
-     * @param name : the name of the header.
+    /**
+     * The versioned builder, if you don't know which version use, do not use this builder.
+     *
+     * @param name    : the name of the header.
      * @param version : the version of the header.
-     * @param clock : the clock of the header.*/
+     * @param clock   : the clock of the header.
+     */
     public Header(final String name, final String version, final Clock clock) {
         this.setId(DEFAULT_ID);
         this.setName(name);
         this.version = version;
         MASTER_CLOCK = clock;
-        this.stepSimulation = clock.getStep().getValue();
+        this.stepSimulation = clock.getStep()
+                                   .getValue();
         CzmlFile.setHeader(this);
     }
 

@@ -24,6 +24,7 @@ import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Header;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.InterSatVisu;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.Clock;
 import org.orekit.czml.Outputs.CzmlFile;
+import org.orekit.czml.Outputs.CzmlFileBuilder;
 import org.orekit.data.DataContext;
 import org.orekit.data.DataProvider;
 import org.orekit.data.DirectoryCrawler;
@@ -37,7 +38,8 @@ import org.orekit.frames.FramesFactory;
 import org.orekit.orbits.KeplerianOrbit;
 import org.orekit.orbits.OrbitType;
 import org.orekit.orbits.PositionAngleType;
-import org.orekit.propagation.Propagator;
+import org.orekit.propagation.BoundedPropagator;
+import org.orekit.propagation.EphemerisGenerator;
 import org.orekit.propagation.SpacecraftState;
 import org.orekit.propagation.numerical.NumericalPropagator;
 import org.orekit.time.AbsoluteDate;
@@ -49,9 +51,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class InterConstellationExample {
+public class InterVisuConstellationExample {
 
-    private InterConstellationExample() {
+    private InterVisuConstellationExample() {
         // empty
     }
 
@@ -60,19 +62,19 @@ public class InterConstellationExample {
             final File home = new File(System.getProperty("user.home"));
             final File orekitDir = new File(home, "orekit-data");
             final DataProvider provider = new DirectoryCrawler(orekitDir);
-            DataContext.getDefault().getDataProvidersManager().addProvider(provider);
+            DataContext.getDefault()
+                       .getDataProvidersManager()
+                       .addProvider(provider);
         } catch (OrekitException oe) {
             System.err.println(oe.getLocalizedMessage());
         }
 
         // Paths
-        final String root = System.getProperty("user.dir").replace("\\", "/");
+        final String root = System.getProperty("user.dir")
+                                  .replace("\\", "/");
         final String outputPath = root + "/Output";
         final String outputName = "Output.czml";
         final String output = outputPath + "/" + outputName;
-
-        // File created
-        final CzmlFile file = new CzmlFile(output);
 
         // Creation of the clock.
         final TimeScale UTC = TimeScalesFactory.getUTC();
@@ -84,10 +86,9 @@ public class InterConstellationExample {
 
         // Build of the Header
         final Header header = new Header("Setup of the visualisation inter-constellation of 5 satellites", clock);
-        file.addObject(header);
 
         // List of propagator
-        final List<Propagator> allPropagators = new ArrayList<>();
+        final List<BoundedPropagator> allPropagators = new ArrayList<>();
 
         // Built the orbit
         final Frame EME2000 = FramesFactory.getEME2000();
@@ -132,36 +133,56 @@ public class InterConstellationExample {
         firstPropagator.setOrbitType(OrbitType.CARTESIAN);
         firstPropagator.addForceModel(holmesFeatherstone);
         firstPropagator.setInitialState(firstState);
+        final EphemerisGenerator firstGenerator = firstPropagator.getEphemerisGenerator();
+        firstPropagator.propagate(startDate, finalDate);
+        final BoundedPropagator firstBoundedPropagator = firstGenerator.getGeneratedEphemeris();
 
         secondPropagator.setOrbitType(OrbitType.CARTESIAN);
         secondPropagator.addForceModel(holmesFeatherstone);
         secondPropagator.setInitialState(secondState);
+        final EphemerisGenerator secondGenerator = secondPropagator.getEphemerisGenerator();
+        secondPropagator.propagate(startDate, finalDate);
+        final BoundedPropagator secondBoundedPropagator = secondGenerator.getGeneratedEphemeris();
 
         thirdPropagator.setOrbitType(OrbitType.CARTESIAN);
         thirdPropagator.addForceModel(holmesFeatherstone);
         thirdPropagator.setInitialState(thirdState);
+        final EphemerisGenerator thirdGenerator = thirdPropagator.getEphemerisGenerator();
+        thirdPropagator.propagate(startDate, finalDate);
+        final BoundedPropagator thirdBoundedPropagator = thirdGenerator.getGeneratedEphemeris();
 
         fourthPropagator.setOrbitType(OrbitType.CARTESIAN);
         fourthPropagator.addForceModel(holmesFeatherstone);
         fourthPropagator.setInitialState(fourthState);
+        final EphemerisGenerator fourthGenerator = fourthPropagator.getEphemerisGenerator();
+        fourthPropagator.propagate(startDate, finalDate);
+        final BoundedPropagator fourthBoundedPropagator = fourthGenerator.getGeneratedEphemeris();
 
         fifthPropagator.setOrbitType(OrbitType.CARTESIAN);
         fifthPropagator.addForceModel(holmesFeatherstone);
         fifthPropagator.setInitialState(fifthState);
+        final EphemerisGenerator fifthGenerator = fifthPropagator.getEphemerisGenerator();
+        fifthPropagator.propagate(startDate, finalDate);
+        final BoundedPropagator fifthBoundedPropagator = fifthGenerator.getGeneratedEphemeris();
 
-        allPropagators.add(firstPropagator);
-        allPropagators.add(secondPropagator);
-        allPropagators.add(thirdPropagator);
-        allPropagators.add(fourthPropagator);
-        allPropagators.add(fifthPropagator);
+
+        allPropagators.add(firstBoundedPropagator);
+        allPropagators.add(secondBoundedPropagator);
+        allPropagators.add(thirdBoundedPropagator);
+        allPropagators.add(fourthBoundedPropagator);
+        allPropagators.add(fifthBoundedPropagator);
 
         final Constellation constellation = new Constellation(allPropagators, finalDate);
         constellation.displayOnlyOnePeriod();
-        file.addObject(constellation);
 
         // Creation of the inter-sat visualisation
         final InterSatVisu interSatVisu = new InterSatVisu(constellation);
-        file.addObject(interSatVisu);
+
+        // Creation of the file
+        final CzmlFile file = new CzmlFileBuilder(output).withHeader(header)
+                                                         .withConstellation(constellation)
+                                                         .withInterSatVisu(interSatVisu)
+                                                         .build();
 
         // Writing in the file
         file.write();

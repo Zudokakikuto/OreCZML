@@ -27,6 +27,7 @@ import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.orekit.attitudes.Attitude;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.bodies.OneAxisEllipsoid;
+import org.orekit.czml.ArchiObjects.AttitudePointingBuilder;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.Orientation;
 import org.orekit.czml.CzmlObjects.Polyline;
 import org.orekit.frames.Frame;
@@ -42,54 +43,73 @@ import java.util.List;
 
 public class AttitudePointing extends AbstractPrimaryObject implements CzmlPrimaryObject {
 
-    /** .*/
+    /**
+     * .
+     */
     public static final String DEFAULT_NAME = "Attitude pointing of : ";
-    /** .*/
+    /**
+     * .
+     */
     public static final String DEFAULT_ID = "ATTITUDE_POINTING/";
-    /** .*/
+    /**
+     * .
+     */
     public static final String DEFAULT_H_POSITION = "#position";
-    /** .*/
+    /**
+     * .
+     */
     public static final Color DEFAULT_COLOR = Color.GREEN;
-
-    /** .*/
-    private Orientation satelliteOrientation;
-    /** .*/
+    /**
+     * .
+     */
     private final Satellite satellite;
-    /** .*/
-    private boolean displayPeriodPointingPath = false;
-    /** .*/
-    private Polyline attitudePointingPolyline;
-    /** .*/
-    private OneAxisEllipsoid body;
-    /** .*/
-    private List<Line> lines = new ArrayList<>();
-    /** .*/
-    private List<GeodeticPoint> projectedAttitudes = new ArrayList<>();
-    /** .*/
-    private List<JulianDate> julianDates;
-    /** .*/
-    private AbstractPointOnBody pointOnBody;
-    /** .*/
-    private boolean displayPointingPath = false;
-    /** .*/
+    /**
+     * .
+     */
     private final List<Attitude> satelliteAttitudes;
-    /** .*/
+    /**
+     * .
+     */
     private final List<Cartesian> satelliteCartesians;
+    /**
+     * .
+     */
+    private Orientation satelliteOrientation;
+    /**
+     * .
+     */
+    private boolean displayPeriodPointingPath = false;
+    /**
+     * .
+     */
+    private Polyline attitudePointingPolyline;
+    /**
+     * .
+     */
+    private OneAxisEllipsoid body;
+    /**
+     * .
+     */
+    private List<Line> lines = new ArrayList<>();
+    /**
+     * .
+     */
+    private List<GeodeticPoint> projectedAttitudes = new ArrayList<>();
+    /**
+     * .
+     */
+    private List<JulianDate> julianDates;
+    /**
+     * .
+     */
+    private AbstractPointOnBody pointOnBody;
+    /**
+     * .
+     */
+    private boolean displayPointingPath = false;
 
     public AttitudePointing(final Satellite satellite, final OneAxisEllipsoid body, final Vector3D direction) {
-        this(satellite, body, direction, Header.MASTER_CLOCK.getAvailability());
-    }
-
-    public AttitudePointing(final Satellite satellite, final OneAxisEllipsoid body, final Vector3D direction, final TimeInterval availability) {
-        this(satellite, body, direction, availability, DEFAULT_COLOR);
-    }
-
-    public AttitudePointing(final Satellite satellite, final OneAxisEllipsoid body, final Vector3D direction, final Color color) {
-        this(satellite, body, direction, Header.MASTER_CLOCK.getAvailability(), color);
-    }
-
-    public AttitudePointing(final Satellite satellite, final OneAxisEllipsoid body, final Vector3D direction, final TimeInterval availability, final Color color) {
-        this(satellite, body, direction, availability, color, false);
+        this(satellite, body, direction, Header.MASTER_CLOCK.getAvailability(), DEFAULT_COLOR, false);
     }
 
     public AttitudePointing(final Satellite satellite, final OneAxisEllipsoid body, final Vector3D direction, final TimeInterval availability, final Color color, final boolean alwaysDisplayOnGround) {
@@ -122,8 +142,7 @@ public class AttitudePointing extends AbstractPrimaryObject implements CzmlPrima
                 final Vector3D projectedVector3D = body.projectToGround(currentSatellitePosition, currentDate, satellite.getFrame());
                 final GeodeticPoint substitutePoint = body.transform(projectedVector3D, state.getFrame(), currentDate);
                 projectedAttitudes.add(substitutePoint);
-            }
-            else {
+            } else {
                 projectedAttitudes.add(intersectionGeodetic);
             }
         }
@@ -131,6 +150,10 @@ public class AttitudePointing extends AbstractPrimaryObject implements CzmlPrima
         final Reference satelliteReference = new Reference(satellite.getId() + DEFAULT_H_POSITION);
         final Reference groundReference = new Reference(pointOnBody.getId() + DEFAULT_H_POSITION);
         this.attitudePointingPolyline = new Polyline(satelliteReference, groundReference, color);
+    }
+
+    public static AttitudePointingBuilder builder(final Satellite satelliteInput, final OneAxisEllipsoid bodyInput, final Vector3D directionInput) {
+        return new AttitudePointingBuilder(satelliteInput, bodyInput, directionInput);
     }
 
     public void displayPointingPath() {

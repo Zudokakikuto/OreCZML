@@ -27,15 +27,25 @@ import java.util.List;
 
 public class TimePosition implements CzmlSecondaryObject {
 
-    /** .*/
+    /**
+     * .
+     */
     private final List<JulianDate> dates;
-    /** .*/
+    /**
+     * .
+     */
     private final List<Cartesian> positions;
-    /** .*/
+    /**
+     * .
+     */
     private final CesiumInterpolationAlgorithm cesiumInterpolationAlgorithm;
-    /** .*/
+    /**
+     * .
+     */
     private final int interpolationDegree;
-    /** .*/
+    /**
+     * .
+     */
     private final String ReferenceFrame;
 
     public TimePosition(final List<Cartesian> cartesians, final List<Double> timeList) {

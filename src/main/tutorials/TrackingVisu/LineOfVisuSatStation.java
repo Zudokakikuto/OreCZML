@@ -16,24 +16,35 @@
  */
 package TrackingVisu;
 
+import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
+import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.bodies.OneAxisEllipsoid;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.CzmlGroundStation;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Header;
-import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.LineOfVisibility;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Satellite;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.Clock;
 import org.orekit.czml.Outputs.CzmlFile;
+import org.orekit.czml.Outputs.CzmlFileBuilder;
 import org.orekit.data.DataContext;
 import org.orekit.data.DataProvider;
 import org.orekit.data.DirectoryCrawler;
 import org.orekit.errors.OrekitException;
+import org.orekit.forces.ForceModel;
+import org.orekit.forces.gravity.HolmesFeatherstoneAttractionModel;
+import org.orekit.forces.gravity.potential.GravityFieldFactory;
+import org.orekit.forces.gravity.potential.NormalizedSphericalHarmonicsProvider;
 import org.orekit.frames.Frame;
 import org.orekit.frames.FramesFactory;
 import org.orekit.frames.TopocentricFrame;
 import org.orekit.orbits.KeplerianOrbit;
+import org.orekit.orbits.OrbitType;
 import org.orekit.orbits.PositionAngleType;
+import org.orekit.propagation.BoundedPropagator;
+import org.orekit.propagation.EphemerisGenerator;
+import org.orekit.propagation.SpacecraftState;
+import org.orekit.propagation.numerical.NumericalPropagator;
 import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScale;
 import org.orekit.time.TimeScalesFactory;
@@ -53,20 +64,20 @@ public class LineOfVisuSatStation {
             final File home = new File(System.getProperty("user.home"));
             final File orekitDir = new File(home, "orekit-data");
             final DataProvider provider = new DirectoryCrawler(orekitDir);
-            DataContext.getDefault().getDataProvidersManager().addProvider(provider);
+            DataContext.getDefault()
+                       .getDataProvidersManager()
+                       .addProvider(provider);
         } catch (OrekitException oe) {
             System.err.println(oe.getLocalizedMessage());
         }
 
         // Paths
-        final String root = System.getProperty("user.dir").replace("\\", "/");
+        final String root = System.getProperty("user.dir")
+                                  .replace("\\", "/");
         final String outputPath = root + "/Output";
         final String outputName = "Output.czml";
         final String output = outputPath + "/" + outputName;
         final String groundStationModel = root + "/src/main/resources/ground_Station.glb";
-
-        // File created
-        final CzmlFile file = new CzmlFile(output);
 
         // Creation of the clock.
         final TimeScale UTC = TimeScalesFactory.getUTC();
@@ -77,7 +88,6 @@ public class LineOfVisuSatStation {
         final Clock clock = new Clock(startDate, finalDate, UTC, stepBetweenEachInstant);
 
         final Header header = new Header("Line of visibility between a satellite and a station", clock);
-        file.addObject(header);
 
         // Creation of the model of the earth.
         final IERSConventions IERS = IERSConventions.IERS_2010;
@@ -88,22 +98,47 @@ public class LineOfVisuSatStation {
         final GeodeticPoint toulouseFrame = new GeodeticPoint(FastMath.toRadians(43.6047), FastMath.toRadians(1.4442), 0);
         final TopocentricFrame topocentricToulouse = new TopocentricFrame(earth, toulouseFrame, "Toulouse Frame");
 
-        // Creation of a ground Station at Toulouse
-        final CzmlGroundStation toulouseStation = new CzmlGroundStation(topocentricToulouse, groundStationModel);
-        file.addObject(toulouseStation);
 
         // Build of an orbit that will fly above toulouse
         final Frame EME2000 = FramesFactory.getEME2000();
         final KeplerianOrbit initialOrbit = new KeplerianOrbit(7878000, 0, FastMath.toRadians(80), 0, FastMath.toRadians(90), FastMath.toRadians(0), PositionAngleType.MEAN, EME2000, startDate, Constants.WGS84_EARTH_MU);
 
-        // Creation of the satellite
-        final Satellite satellite = new Satellite(initialOrbit);
-        satellite.displayOnlyOnePeriod();
-        file.addObject(satellite);
+        final SpacecraftState initialState = new SpacecraftState(initialOrbit);
 
-        // Creation of a line of visibility
-        final LineOfVisibility lineOfVisibility = new LineOfVisibility(topocentricToulouse, satellite);
-        file.addObject(lineOfVisibility);
+        final double positionTolerance = 10.0;
+        final double minStep = 0.001;
+        final double maxStep = 1000;
+        final NormalizedSphericalHarmonicsProvider provider = GravityFieldFactory.getNormalizedProvider(10, 10);
+        final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(EME2000, provider);
+
+        final double[][] tolerances = NumericalPropagator.tolerances(positionTolerance, initialOrbit, OrbitType.CARTESIAN);
+        final AdaptiveStepsizeIntegrator integrator = new DormandPrince853Integrator(minStep, maxStep, tolerances[0], tolerances[1]);
+
+        final NumericalPropagator propagator = new NumericalPropagator(integrator);
+
+        propagator.setOrbitType(OrbitType.CARTESIAN);
+        propagator.addForceModel(holmesFeatherstone);
+        propagator.setInitialState(initialState);
+
+        final EphemerisGenerator generator = propagator.getEphemerisGenerator();
+
+        propagator.propagate(startDate, finalDate);
+        final BoundedPropagator boundedPropagator = generator.getGeneratedEphemeris();
+
+        // Creation of a ground Station at Toulouse
+        final CzmlGroundStation toulouseStation = new CzmlGroundStation(topocentricToulouse, groundStationModel);
+
+        // Creation of the satellite
+        final Satellite satellite = Satellite.builder(boundedPropagator, finalDate)
+                                             .displayOnlyOnePeriod()
+                                             .build();
+
+        final CzmlFile file = new CzmlFileBuilder(output).
+                withHeader(header).
+                withCzmlGroundStation(toulouseStation).
+                withSatellite(satellite).
+                withLineOfVisibility(topocentricToulouse, satellite).
+                build();
 
         // Writing in the file
         file.write();

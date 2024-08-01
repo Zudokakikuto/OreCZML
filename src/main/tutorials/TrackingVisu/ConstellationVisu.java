@@ -16,24 +16,37 @@
  */
 package TrackingVisu;
 
+import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
+import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.bodies.OneAxisEllipsoid;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Constellation;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.CzmlGroundStation;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Header;
-import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.LineOfVisibility;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.Clock;
 import org.orekit.czml.Outputs.CzmlFile;
+import org.orekit.czml.Outputs.CzmlFileBuilder;
 import org.orekit.data.DataContext;
 import org.orekit.data.DataProvider;
 import org.orekit.data.DirectoryCrawler;
 import org.orekit.errors.OrekitException;
+import org.orekit.forces.ForceModel;
+import org.orekit.forces.gravity.HolmesFeatherstoneAttractionModel;
+import org.orekit.forces.gravity.potential.GravityFieldFactory;
+import org.orekit.forces.gravity.potential.NormalizedSphericalHarmonicsProvider;
 import org.orekit.frames.Frame;
 import org.orekit.frames.FramesFactory;
 import org.orekit.frames.TopocentricFrame;
 import org.orekit.orbits.KeplerianOrbit;
+import org.orekit.orbits.Orbit;
+import org.orekit.orbits.OrbitType;
 import org.orekit.orbits.PositionAngleType;
+import org.orekit.propagation.BoundedPropagator;
+import org.orekit.propagation.EphemerisGenerator;
+import org.orekit.propagation.Propagator;
+import org.orekit.propagation.SpacecraftState;
+import org.orekit.propagation.numerical.NumericalPropagator;
 import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScale;
 import org.orekit.time.TimeScalesFactory;
@@ -55,19 +68,19 @@ public class ConstellationVisu {
             final File home = new File(System.getProperty("user.home"));
             final File orekitDir = new File(home, "orekit-data");
             final DataProvider provider = new DirectoryCrawler(orekitDir);
-            DataContext.getDefault().getDataProvidersManager().addProvider(provider);
+            DataContext.getDefault()
+                       .getDataProvidersManager()
+                       .addProvider(provider);
         } catch (OrekitException oe) {
             System.err.println(oe.getLocalizedMessage());
         }
 
         // Paths
-        final String root = System.getProperty("user.dir").replace("\\", "/");
+        final String root = System.getProperty("user.dir")
+                                  .replace("\\", "/");
         final String outputPath = root + "/Output";
         final String outputName = "Output.czml";
         final String output = outputPath + "/" + outputName;
-
-        // File created
-        final CzmlFile file = new CzmlFile(output);
 
         // Creation of the clock
         final TimeScale UTC = TimeScalesFactory.getUTC();
@@ -79,16 +92,35 @@ public class ConstellationVisu {
 
         // Creation of the header
         final Header header = new Header("Visualisation of a constellation by multiple ground station", clock);
-        file.addObject(header);
 
         //// Creation of the constellation
-        // Creation of the initialOrbit
+        // Build of propagators
+        final double positionTolerance = 10.0;
+        final double minStep = 0.001;
+        final double maxStep = 1000;
         final Frame EME2000 = FramesFactory.getEME2000();
-        final KeplerianOrbit initialOrbit = new KeplerianOrbit(7878000, 0, FastMath.toRadians(40), 0, FastMath.toRadians(90), FastMath.toRadians(0), PositionAngleType.MEAN, EME2000, startDate, Constants.WGS84_EARTH_MU);
+        final NormalizedSphericalHarmonicsProvider provider = GravityFieldFactory.getNormalizedProvider(10, 10);
+        final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(EME2000, provider);
+
+        final List<BoundedPropagator> propagators = new ArrayList<>();
+
+        for (int i = 0; i < 4; i++) {
+            final Orbit currentOrbit = new KeplerianOrbit(10878000, 0, FastMath.toRadians(i * 10), 0, FastMath.toRadians(90 * FastMath.pow(-1, i)), FastMath.toRadians(0), PositionAngleType.MEAN, EME2000, startDate, Constants.WGS84_EARTH_MU);
+            final SpacecraftState state = new SpacecraftState(currentOrbit);
+            final double[][] currentTolerance = NumericalPropagator.tolerances(positionTolerance, currentOrbit, OrbitType.CARTESIAN);
+            final AdaptiveStepsizeIntegrator currentIntegrator = new DormandPrince853Integrator(minStep, maxStep, currentTolerance[0], currentTolerance[1]);
+            final NumericalPropagator propagator = new NumericalPropagator(currentIntegrator);
+            propagator.setOrbitType(OrbitType.CARTESIAN);
+            propagator.addForceModel(holmesFeatherstone);
+            propagator.setInitialState(state);
+            final EphemerisGenerator generator = propagator.getEphemerisGenerator();
+            propagator.propagate(startDate, finalDate);
+            final BoundedPropagator boundedPropagator = generator.getGeneratedEphemeris();
+            propagators.add(boundedPropagator);
+        }
 
         // Build of the constellation
-        final Constellation constellation = new Constellation(4, 2, 1, initialOrbit);
-        file.addObject(constellation);
+        final Constellation constellation = new Constellation(propagators, finalDate);
 
         //// Creation of the ground station
         // Creation of the model of the earth.
@@ -109,13 +141,17 @@ public class ConstellationVisu {
         allStations.add(topocentricToulouse);
         allStations.add(topocentricLasVegas);
 
-        // Build of the ground station
-        final CzmlGroundStation groundStation = new CzmlGroundStation(allStations);
-        file.addObject(groundStation);
+        // Build of the ground stations
+        final List<CzmlGroundStation> allGroundStation = new ArrayList<>();
+        for (TopocentricFrame allStation : allStations) {
+            allGroundStation.add(new CzmlGroundStation(allStation));
+        }
 
-        //// Creation of the line of visibility
-        final LineOfVisibility lineOfVisibility = new LineOfVisibility(allStations, constellation);
-        file.addObject(lineOfVisibility);
+        final CzmlFile file = new CzmlFileBuilder(output).withHeader(header)
+                                                         .withConstellation(constellation)
+                                                         .withCzmlGroundStation(allGroundStation)
+                                                         .withLineOfVisibility(allStations, constellation)
+                                                         .build();
 
         // Writing in the file
         file.write();

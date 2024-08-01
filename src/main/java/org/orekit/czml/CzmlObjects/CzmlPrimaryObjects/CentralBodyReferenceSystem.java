@@ -31,30 +31,43 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-/** Terrestrial reference system
-
+/**
+ * Terrestrial reference system
+ *
  * <p>
  * The terrestrial reference systems aims at representing the cartesian system of a body to be displayed as an help for the user
  * during the simulation.
  * </p>
  *
- * @since 1.0
  * @author Julien LEBLOND.
+ * @since 1.0
  */
 
 public class CentralBodyReferenceSystem extends AbstractPrimaryObject implements CzmlPrimaryObject {
-    /** .*/
+    /**
+     * .
+     */
     public static final String DEFAULT_ID = "CENTRAL_BODY_REFERENCE_SYSTEM";
-    /** .*/
+    /**
+     * .
+     */
     public static final String DEFAULT_NAME = "Reference system of the central body";
-    /** .*/
-    public static final Color DEFAULT_RED   = new Color(255, 10, 10);
-    /** .*/
+    /**
+     * .
+     */
+    public static final Color DEFAULT_RED = new Color(255, 10, 10);
+    /**
+     * .
+     */
     public static final Color DEFAULT_GREEN = new Color(10, 255, 10);
-    /** .*/
-    public static final Color DEFAULT_BLUE  = new Color(10, 10, 255);
+    /**
+     * .
+     */
+    public static final Color DEFAULT_BLUE = new Color(10, 10, 255);
 
-    /** .*/
+    /**
+     * .
+     */
     private List<Polyline> polylines = new ArrayList<>();
 
 
@@ -92,25 +105,25 @@ public class CentralBodyReferenceSystem extends AbstractPrimaryObject implements
     }
 
     public CentralBodyReferenceSystem() {
-        this(   new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS,
-                Constants.WGS84_EARTH_FLATTENING,
-                FramesFactory.getITRF(IERSConventions.IERS_2010, true)),
-                DEFAULT_ID,
-                DEFAULT_NAME,
-                DEFAULT_RED,
-                DEFAULT_GREEN,
-                DEFAULT_GREEN);
+        this(new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS,
+                                  Constants.WGS84_EARTH_FLATTENING,
+                                  FramesFactory.getITRF(IERSConventions.IERS_2010, true)),
+             DEFAULT_ID,
+             DEFAULT_NAME,
+             DEFAULT_RED,
+             DEFAULT_GREEN,
+             DEFAULT_GREEN);
     }
 
     public CentralBodyReferenceSystem(final Color color1, final Color color2, final Color color3) {
-        this(   new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS,
-                Constants.WGS84_EARTH_FLATTENING,
-                FramesFactory.getITRF(IERSConventions.IERS_2010, true)),
-                DEFAULT_ID,
-                DEFAULT_NAME,
-                color1,
-                color2,
-                color3);
+        this(new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS,
+                                  Constants.WGS84_EARTH_FLATTENING,
+                                  FramesFactory.getITRF(IERSConventions.IERS_2010, true)),
+             DEFAULT_ID,
+             DEFAULT_NAME,
+             color1,
+             color2,
+             color3);
     }
 
 
@@ -127,7 +140,8 @@ public class CentralBodyReferenceSystem extends AbstractPrimaryObject implements
                     positionWriter.writeCartesian(new Cartesian(0, 0, 0));
                 }
 
-                polylines.get(i).writePolylineVectorFixed(packet, OUTPUT);
+                polylines.get(i)
+                         .writePolylineVectorFixed(packet, OUTPUT);
             }
         }
         cleanObject();

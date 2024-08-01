@@ -25,6 +25,7 @@ import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Header;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Satellite;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.Clock;
 import org.orekit.czml.Outputs.CzmlFile;
+import org.orekit.czml.Outputs.CzmlFileBuilder;
 import org.orekit.data.DataContext;
 import org.orekit.data.DataProvider;
 import org.orekit.data.DirectoryCrawler;
@@ -37,8 +38,11 @@ import org.orekit.frames.Frame;
 import org.orekit.frames.FramesFactory;
 import org.orekit.frames.LOFType;
 import org.orekit.orbits.KeplerianOrbit;
+import org.orekit.orbits.Orbit;
 import org.orekit.orbits.OrbitType;
 import org.orekit.orbits.PositionAngleType;
+import org.orekit.propagation.BoundedPropagator;
+import org.orekit.propagation.EphemerisGenerator;
 import org.orekit.propagation.MatricesHarvester;
 import org.orekit.propagation.Propagator;
 import org.orekit.propagation.SpacecraftState;
@@ -65,20 +69,20 @@ public class CovarianceExample {
             final File home = new File(System.getProperty("user.home"));
             final File orekitDir = new File(home, "orekit-data");
             final DataProvider provider = new DirectoryCrawler(orekitDir);
-            DataContext.getDefault().getDataProvidersManager().addProvider(provider);
+            DataContext.getDefault()
+                       .getDataProvidersManager()
+                       .addProvider(provider);
         } catch (OrekitException oe) {
             System.err.println(oe.getLocalizedMessage());
         }
 
         // Paths
-        final String root = System.getProperty("user.dir").replace("\\", "/");
+        final String root = System.getProperty("user.dir")
+                                  .replace("\\", "/");
         final String outputPath = root + "/Output";
         final String outputName = "Output.czml";
         final String output = outputPath + "/" + outputName;
         final String IssModel = root + "/src/main/resources/ISSModel.glb";
-
-        // File created
-        final CzmlFile file = new CzmlFile(output);
 
         // Creation of the clock.
         final TimeScale UTC = TimeScalesFactory.getUTC();
@@ -89,16 +93,11 @@ public class CovarianceExample {
         final Clock clock = new Clock(startDate, finalDate, UTC, stepBetweenEachInstant);
 
         final Header header = new Header("Setup of a covariance of a satellite", clock);
-        file.addObject(header);
 
         // Build of a LEO orbit
         final Frame EME2000 = FramesFactory.getEME2000();
         final KeplerianOrbit initialOrbit = new KeplerianOrbit(7878000, 0, FastMath.toRadians(20), 0, FastMath.toRadians(0), FastMath.toRadians(0), PositionAngleType.MEAN, EME2000, startDate, Constants.WGS84_EARTH_MU);
         final SpacecraftState initialState = new SpacecraftState(initialOrbit);
-
-        final Satellite satellite = new Satellite(initialOrbit, IssModel, Color.MAGENTA);
-        satellite.displayOnlyOnePeriod();
-        file.addObject(satellite);
 
         // Build of the propagator
         final double positionTolerance = 10.0;
@@ -117,38 +116,65 @@ public class CovarianceExample {
         propagator.addForceModel(holmesFeatherstone);
         propagator.setInitialState(initialState);
 
+        final EphemerisGenerator generator = propagator.getEphemerisGenerator();
+
+        propagator.propagate(startDate, finalDate);
+        final BoundedPropagator boundedPropagator = generator.getGeneratedEphemeris();
+
+        final Satellite satellite = Satellite.builder(boundedPropagator, finalDate)
+                                             .withModelPath(IssModel)
+                                             .withColor(Color.MAGENTA)
+                                             .displayOnlyOnePeriod()
+                                             .build();
+
         // Build of the covariance
         final RealMatrix realMatrix = MatrixUtils.createRealDiagonalMatrix(new double[] {20000 * 20000, 1e-6, 1e-6, 1e-6, 1e-6, (36 * 4.848e-6) * (36 * 4.848e-6)});
         final StateCovariance stateCovariance = new StateCovariance(realMatrix, startDate, EME2000, OrbitType.EQUINOCTIAL, PositionAngleType.MEAN);
-        final CovarianceDisplay covariance = new CovarianceDisplay(satellite, stateCovariance, LOFType.TNW);
-        file.addObject(covariance);
-        covariancePropagation(propagator, satellite, stateCovariance);
+        final List<StateCovariance> allCovariances = covariancePropagation(satellite, propagator, stateCovariance);
+        final CovarianceDisplay covariance = CovarianceDisplay.builder(satellite, allCovariances, LOFType.TNW)
+                                                              .build();
+
+        // Creation of the file
+        final CzmlFile file = new CzmlFileBuilder(output).withHeader(header)
+                                                         .withSatellite(satellite)
+                                                         .withCovarianceDisplay(covariance)
+                                                         .build();
+
         // Writing in the file
         file.write();
     }
 
-    public static void covariancePropagation(final Propagator propagator, final Satellite inputSatellite, final StateCovariance initCovariance) {
+    public static List<StateCovariance> covariancePropagation(final Satellite satellite, final Propagator propagator, final StateCovariance initCovariance) {
 
-        final List<StateCovariance> covarianceList = new ArrayList<>();
-        final List<SpacecraftState> allSpaceCraftState = new ArrayList<>();
-        inputSatellite.setAttitudes(new ArrayList<>());
+        final List<StateCovariance> covarianceListTemp = new ArrayList<>();
+        final List<SpacecraftState> allSpaceCraftStateTemp = new ArrayList<>();
+        satellite.setAttitudes(new ArrayList<>());
+
+        final List<Orbit> allOrbits = satellite.getOrbits();
+        // Reset the spacecraft states of the satellite, mandatory !
+        satellite.resetSpacecraftStates();
 
         final String stm = "stm";
 
-        final MatricesHarvester harvester = propagator.setupMatricesComputation(stm, null, null);
+        final MatricesHarvester harvester =  propagator.setupMatricesComputation(stm, null, null);
 
         final StateCovarianceMatrixProvider provider = new StateCovarianceMatrixProvider("covariance", stm,
-                harvester, initCovariance);
+                                                                                         harvester, initCovariance);
 
         propagator.addAdditionalStateProvider(provider);
 
-        propagator.getMultiplexer().add(Header.MASTER_CLOCK.getMultiplier(), spacecraftState -> {
-            final StateCovariance covariance = provider.getStateCovariance(spacecraftState);
-            covarianceList.add(covariance);
-            allSpaceCraftState.add(spacecraftState);
-        });
+        propagator.getMultiplexer()
+                      .add(Header.MASTER_CLOCK.getMultiplier(), spacecraftState -> {
+                          final StateCovariance covariance = provider.getStateCovariance(spacecraftState);
+                          covarianceListTemp.add(covariance);
+                          allSpaceCraftStateTemp.add(spacecraftState);
+                      });
 
-        propagator.propagate(inputSatellite.getOrbits().get(0).getDate(), inputSatellite.getOrbits().get(inputSatellite.getOrbits().size() - 1).getDate());
-
+        satellite.setAllSpaceCraftStates(allSpaceCraftStateTemp);
+        propagator.propagate(allOrbits.get(0)
+                                          .getDate(),
+                                 allOrbits.get(allOrbits.size() - 1)
+                                          .getDate());
+        return covarianceListTemp;
     }
 }

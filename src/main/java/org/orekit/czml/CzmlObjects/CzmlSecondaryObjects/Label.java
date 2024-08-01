@@ -26,17 +26,29 @@ import java.awt.Color;
 
 public class Label implements CzmlSecondaryObject {
 
-    /** .*/
+    /**
+     * .
+     */
     private final Color color;
-    /** .*/
+    /**
+     * .
+     */
     private final CesiumHorizontalOrigin horizontalOrigin;
-    /** .*/
+    /**
+     * .
+     */
     private final boolean show;
-    /** .*/
+    /**
+     * .
+     */
     private final CesiumLabelStyle labelStyle;
-    /** .*/
+    /**
+     * .
+     */
     private final String text;
-    /** .*/
+    /**
+     * .
+     */
     private final CesiumVerticalOrigin verticalOrigin;
 
 

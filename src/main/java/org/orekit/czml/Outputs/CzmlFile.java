@@ -17,7 +17,6 @@
 package org.orekit.czml.Outputs;
 
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.AbstractPrimaryObject;
-import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.CzmlPrimaryObject;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Header;
 
 import java.io.FileWriter;
@@ -29,27 +28,34 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Czml File
-
+/**
+ * Czml File
+ *
  * <p>
  * The Czml file is the center of all the project. It carries all the information that will are written after each object as been declared.
  * It contains only packets and objects and interface with the Czml File Writer that write everything inside the file.
  * </p>
  *
- * @since 1.0
  * @author Julien LEBLOND.
+ * @since 1.0
  */
 public class CzmlFile {
 
-    /** .*/
-    private final List<AbstractPrimaryObject> abstractPrimaryObjects;
-    /** .*/
-    private final List<CzmlPrimaryObject> czmlObjects;
-    /** .*/
+    /**
+     * .
+     */
     private static Header header;
-    /** .*/
+    /**
+     * .
+     */
+    private final List<AbstractPrimaryObject> abstractPrimaryObjects;
+    /**
+     * .
+     */
     private String pathFile = "";
-    /** .*/
+    /**
+     * .
+     */
     private String pathDirectory = "";
 
 
@@ -57,25 +63,30 @@ public class CzmlFile {
         final String[] splittedPath = pathFile.split("/");
         final StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < splittedPath.length - 1; i++) {
-            stringBuilder.append(splittedPath[i]).append("\\");
+            stringBuilder.append(splittedPath[i])
+                         .append("\\");
         }
         this.pathDirectory = String.valueOf(stringBuilder);
         this.pathFile = pathFile;
         abstractPrimaryObjects = new ArrayList<>();
-        czmlObjects = new ArrayList<>();
+    }
+
+    public static void setHeader(final Header header) {
+        CzmlFile.header = header;
     }
 
     public void write() throws URISyntaxException, IOException {
         if (abstractPrimaryObjects.isEmpty()) {
             throw new RuntimeException("No objects other than the header have been written.");
-        }
-        else {
+        } else {
             final StringWriter writer = header.getStringWriter();
             final List<AbstractPrimaryObject> noDuplicates = new ArrayList<>();
             noDuplicates.add(abstractPrimaryObjects.get(0));
             for (int i = 1; i < abstractPrimaryObjects.size(); i++) {
                 final AbstractPrimaryObject currentAbstractPrimaryObject = abstractPrimaryObjects.get(i);
-                if (!currentAbstractPrimaryObject.getName().equals(abstractPrimaryObjects.get(i - 1).getName())) {
+                if (!currentAbstractPrimaryObject.getId()
+                                                 .equals(abstractPrimaryObjects.get(i - 1)
+                                                                               .getId())) {
                     noDuplicates.add(currentAbstractPrimaryObject);
                 }
             }
@@ -99,17 +110,12 @@ public class CzmlFile {
         return pathFile;
     }
 
-    public void addObject(final AbstractPrimaryObject object) {
-        abstractPrimaryObjects.add(object);
-    }
-
 //    public void addObject(final CzmlPrimaryObject object) {
 //        czmlObjects.add(object);
 //    }
 
-
-    public static void setHeader(final Header header) {
-        CzmlFile.header = header;
+    public void addObject(final AbstractPrimaryObject object) {
+        abstractPrimaryObjects.add(object);
     }
 
     public void clear() {

@@ -25,15 +25,23 @@ import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.CzmlSecondaryObject;
 
 public class Path implements CzmlSecondaryObject {
 
-    /** .*/
+    /**
+     * .
+     */
     private TimeInterval availability;
-    /** .*/
+    /**
+     * .
+     */
     private PathCesiumWriter writer;
-    /** .*/
+    /**
+     * .
+     */
     private boolean show;
 
     //Optional parameters
-    /** .*/
+    /**
+     * .
+     */
     private double periodToDisplay = 0.0;
 
     public Path(final TimeInterval availability, final PacketCesiumWriter writer, final boolean show) {

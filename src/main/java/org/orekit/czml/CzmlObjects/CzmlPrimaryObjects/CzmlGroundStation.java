@@ -23,20 +23,15 @@ import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.PositionCesiumWriter;
 import cesiumlanguagewriter.TimeInterval;
 import cesiumlanguagewriter.UriCesiumWriter;
+import org.hipparchus.geometry.euclidean.threed.Vector3D;
+import org.orekit.czml.ArchiObjects.CzmlGroundStationBuilder;
+import org.orekit.czml.CzmlEnum.PositionType;
 import org.orekit.czml.CzmlObjects.CzmlAbstractObjects.CzmlModel;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.Billboard;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.Label;
 import org.orekit.czml.CzmlObjects.Position;
-import org.orekit.czml.CzmlEnum.PositionType;
-import org.hipparchus.geometry.euclidean.threed.Vector3D;
-import org.orekit.bodies.GeodeticPoint;
-import org.orekit.bodies.OneAxisEllipsoid;
 import org.orekit.estimation.measurements.GroundStation;
-import org.orekit.frames.Frame;
-import org.orekit.frames.FramesFactory;
 import org.orekit.frames.TopocentricFrame;
-import org.orekit.utils.Constants;
-import org.orekit.utils.IERSConventions;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -44,82 +39,93 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-/** CZML Ground Station
+/**
+ * CZML Ground Station
  * <p>
  * This class groups all the characteristics of a ground station. The ground station will be represented at the surface
  * of the central body with precise cartographic parameters. It can be build from the orekit ground station
  * {@link org.orekit.estimation.measurements.GroundStation}, or from the orekit topocentric frame {@link org.orekit.frames.TopocentricFrame}.
  * </p>
- * @since 1.0
+ *
  * @author Julien LEBLOND
+ * @since 1.0
  */
 
 
 public class CzmlGroundStation extends AbstractPrimaryObject implements CzmlPrimaryObject {
 
-    /** .*/
+    /**
+     * .
+     */
     public static final String DEFAULT_NAME = "Nameless ground station";
-    /** .*/
+    /**
+     * .
+     */
     public static final String DEFAULT_IMAGE = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACvSURBVDhPrZDRDcMgDAU9GqN0lIzijw6SUbJJygUeNQgSqepJTyHG91LVVpwDdfxM3T9TSl1EXZvDwii471fivK73cBFFQNTT/d2KoGpfGOpSIkhUpgUMxq9DFEsWv4IXhlyCnhBFnZcFEEuYqbiUlNwWgMTdrZ3JbQFoEVG53rd8ztG9aPJMnBUQf/VFraBJeWnLS0RfjbKyLJA8FkT5seDYS1Qwyv8t0B/5C2ZmH2/eTGNNBgMmAAAAAElFTkSuQmCC";
-    /** .*/
+    /**
+     * .
+     */
     public static final String DEFAULT_3D_MODEL = "";
-    /** .*/
+    /**
+     * .
+     */
     private List<String> multipleName = new ArrayList<>();
-    /** .*/
+    /**
+     * .
+     */
     private List<String> multipleId = new ArrayList<>();
-    /** .*/
+    /**
+     * .
+     */
     private List<TimeInterval> multipleAvailability = new ArrayList<>();
-    /** .*/
+    /**
+     * .
+     */
     private Vector3D positionOnEarth;
-    /** .*/
+    /**
+     * .
+     */
     private List<Vector3D> multiplePositionOnEarth = new ArrayList<>();
-    /** .*/
+    /**
+     * .
+     */
     private Billboard billboard;
-    /** .*/
+    /**
+     * .
+     */
     private List<Billboard> multipleBillboard = new ArrayList<>();
-    /** .*/
+    /**
+     * .
+     */
     private GroundStation groundStation;
-    /** .*/
+    /**
+     * .
+     */
     private List<GroundStation> multipleGroundStations = new ArrayList<>();
-    /** .*/
+    /**
+     * .
+     */
     private TopocentricFrame topocentricFrame = null;
-    /** .*/
+    /**
+     * .
+     */
     private List<TopocentricFrame> topocentricFrames = new ArrayList<>();
-    /** .*/
+    /**
+     * .
+     */
     private CzmlModel model;
 
     // Intrinsic parameters
-    /** .*/
+    /**
+     * .
+     */
     private Position positionObject;
-    /** .*/
+    /**
+     * .
+     */
     private List<Position> multiplePositionObject = new ArrayList<>();
 
     // Constructors
-
-    public CzmlGroundStation(final String name, final String id, final TimeInterval availability, final Position positionObject, final Billboard billboard) throws URISyntaxException, IOException {
-        this(name, id, availability, positionObject, billboard, DEFAULT_3D_MODEL);
-    }
-
-    public CzmlGroundStation(final String name, final String id, final TimeInterval availability, final Position positionObject, final Billboard billboard, final String modelPath) throws URISyntaxException, IOException {
-        this.setId(id);
-        this.setAvailability(availability);
-        this.setName(name);
-        this.billboard = billboard;
-        final IERSConventions IERS = IERSConventions.IERS_2010;
-        final Frame ITRF = FramesFactory.getITRF(IERS, true);
-        final OneAxisEllipsoid earth = new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS, Constants.WGS84_EARTH_FLATTENING, ITRF);
-        final double latitude = positionObject.getLatitude();
-        final double longitude = positionObject.getLongitude();
-        final GeodeticPoint geodeticPoint = new GeodeticPoint(latitude, longitude, 0);
-        this.topocentricFrame = new TopocentricFrame(earth, geodeticPoint, "Nameless Topocentric Frame");
-        this.groundStation = new org.orekit.estimation.measurements.GroundStation(topocentricFrame);
-        this.positionObject = positionObject;
-        if (modelPath.isEmpty()) {
-            this.model = null;
-        }
-        else {
-            this.model = new CzmlModel(modelPath, 10, 300, 2);
-        }    }
 
     public CzmlGroundStation(final TopocentricFrame topocentricFrame) throws URISyntaxException, IOException {
         this(topocentricFrame, DEFAULT_3D_MODEL);
@@ -134,17 +140,20 @@ public class CzmlGroundStation extends AbstractPrimaryObject implements CzmlPrim
         this.groundStation = new org.orekit.estimation.measurements.GroundStation(topocentricFrame);
         this.billboard = new Billboard(DEFAULT_IMAGE);
         final PositionType positionType = PositionType.CARTOGRAPHIC_RADIANS;
-        final double latitude = topocentricFrame.getPoint().getLatitude();
-        final double longitude = topocentricFrame.getPoint().getLongitude();
-        final double altitude = topocentricFrame.getPoint().getAltitude();
+        final double latitude = topocentricFrame.getPoint()
+                                                .getLatitude();
+        final double longitude = topocentricFrame.getPoint()
+                                                 .getLongitude();
+        final double altitude = topocentricFrame.getPoint()
+                                                .getAltitude();
         this.positionObject = new Position(longitude, latitude, altitude, positionType);
         // If the modelPath is empty
         if (modelPath.isEmpty()) {
             this.model = null;
-        }
-        else {
+        } else {
             this.model = new CzmlModel(modelPath, 10, 300, 2);
-        }    }
+        }
+    }
 
     public CzmlGroundStation(final List<TopocentricFrame> topocentricFrames) throws URISyntaxException, IOException {
         this(topocentricFrames, DEFAULT_3D_MODEL);
@@ -166,8 +175,7 @@ public class CzmlGroundStation extends AbstractPrimaryObject implements CzmlPrim
         }
         if (modelPath.isEmpty()) {
             this.model = null;
-        }
-        else {
+        } else {
             this.model = new CzmlModel(modelPath, 50, 300, 2);
         }
     }
@@ -188,8 +196,7 @@ public class CzmlGroundStation extends AbstractPrimaryObject implements CzmlPrim
                 writePosition(packet);
             }
             cleanObject();
-        }
-        else {
+        } else {
             for (int i = 0; i < getMultipleId().size(); i++) {
                 this.setId(getMultipleId().get(i));
                 this.setName(getMultipleName().get(i));
@@ -258,8 +265,7 @@ public class CzmlGroundStation extends AbstractPrimaryObject implements CzmlPrim
                 billboardWriter.writeScaleProperty(billboard.getScale());
                 billboardWriter.writeShowProperty(billboard.getShow());
             }
-        }
-        else {
+        } else {
             model.generateCZML(packet, OUTPUT);
         }
     }
@@ -273,7 +279,8 @@ public class CzmlGroundStation extends AbstractPrimaryObject implements CzmlPrim
             labelWriter.writeFontProperty("11pt Lucida Console");
             labelWriter.writeHorizontalOriginProperty(label.getHorizontalOrigin());
             labelWriter.writeVerticalOriginProperty(label.getVerticalOrigin());
-            labelWriter.writeTextProperty(groundStation.getBaseFrame().getName());
+            labelWriter.writeTextProperty(groundStation.getBaseFrame()
+                                                       .getName());
             labelWriter.writeShowProperty(label.getShow());
         }
     }
@@ -305,8 +312,7 @@ public class CzmlGroundStation extends AbstractPrimaryObject implements CzmlPrim
     public List<TopocentricFrame> getMultipleTopocentricFrames() {
         if (topocentricFrames.isEmpty()) {
             throw new RuntimeException("The ground station was not build with several topocentric frames");
-        }
-        else {
+        } else {
             return topocentricFrames;
         }
     }
@@ -347,4 +353,7 @@ public class CzmlGroundStation extends AbstractPrimaryObject implements CzmlPrim
         return multiplePositionOnEarth;
     }
 
+    public CzmlGroundStationBuilder builder(final TopocentricFrame topocentricFrameInput) {
+        return new CzmlGroundStationBuilder(topocentricFrameInput);
+    }
 }

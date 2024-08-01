@@ -21,11 +21,12 @@ import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
 import org.orekit.attitudes.LofOffset;
 import org.orekit.bodies.OneAxisEllipsoid;
-import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Header;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.FieldOfObservation;
+import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Header;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Satellite;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.Clock;
 import org.orekit.czml.Outputs.CzmlFile;
+import org.orekit.czml.Outputs.CzmlFileBuilder;
 import org.orekit.data.DataContext;
 import org.orekit.data.DataProvider;
 import org.orekit.data.DirectoryCrawler;
@@ -38,12 +39,13 @@ import org.orekit.frames.Frame;
 import org.orekit.frames.FramesFactory;
 import org.orekit.frames.LOFType;
 import org.orekit.frames.Transform;
-//import org.orekit.geometry.fov.CircularFieldOfView;
 import org.orekit.geometry.fov.DoubleDihedraFieldOfView;
 import org.orekit.geometry.fov.FieldOfView;
 import org.orekit.orbits.KeplerianOrbit;
 import org.orekit.orbits.OrbitType;
 import org.orekit.orbits.PositionAngleType;
+import org.orekit.propagation.BoundedPropagator;
+import org.orekit.propagation.EphemerisGenerator;
 import org.orekit.propagation.SpacecraftState;
 import org.orekit.propagation.numerical.NumericalPropagator;
 import org.orekit.time.AbsoluteDate;
@@ -66,20 +68,20 @@ public class FieldOfObservationSatellite {
             final File home = new File(System.getProperty("user.home"));
             final File orekitDir = new File(home, "orekit-data");
             final DataProvider provider = new DirectoryCrawler(orekitDir);
-            DataContext.getDefault().getDataProvidersManager().addProvider(provider);
+            DataContext.getDefault()
+                       .getDataProvidersManager()
+                       .addProvider(provider);
         } catch (OrekitException oe) {
             System.err.println(oe.getLocalizedMessage());
         }
 
         // Paths
-        final String root = System.getProperty("user.dir").replace("\\", "/");
+        final String root = System.getProperty("user.dir")
+                                  .replace("\\", "/");
         final String outputPath = root + "/Output";
         final String outputName = "Output.czml";
         final String output = outputPath + "/" + outputName;
         final String IssModel = root + "/src/main/resources/ISSModel.glb";
-
-        // File created
-        final CzmlFile file = new CzmlFile(output);
 
         // Creation of the clock.
         final TimeScale UTC = TimeScalesFactory.getUTC();
@@ -90,7 +92,6 @@ public class FieldOfObservationSatellite {
         final Clock clock = new Clock(startDate, finalDate, UTC, stepBetweenEachInstant);
 
         final Header header = new Header("Setup of a satellite with a line of sight", clock);
-        file.addObject(header);
 
         // Creation of the model of the earth.
         final IERSConventions IERS = IERSConventions.IERS_2010;
@@ -121,24 +122,39 @@ public class FieldOfObservationSatellite {
         propagator.addForceModel(holmesFeatherstone);
         propagator.setInitialState(initialState);
 
+        final EphemerisGenerator generator = propagator.getEphemerisGenerator();
+
         final LofOffset lofOffset = new LofOffset(EME2000, LOFType.TNW);
         propagator.setAttitudeProvider(lofOffset);
 
+        propagator.propagate(startDate, finalDate);
+        final BoundedPropagator boundedPropagator = generator.getGeneratedEphemeris();
+
         // Creation of the satellite
-        final Satellite satellite = new Satellite(propagator, finalDate, IssModel, Color.RED);
-        satellite.displayOnlyOnePeriod();
-        satellite.displaySatelliteAttitude();
-        file.addObject(satellite);
+        final Satellite satellite = Satellite.builder(boundedPropagator, finalDate)
+                                             .withModelPath(IssModel)
+                                             .withColor(Color.RED)
+                                             .displayOnlyOnePeriod()
+                                             .displayAttitude()
+                                             .build();
+
 
         // Creation of the field of observation of the satellite, it describes the area the satellite see
-        final Transform initialInertToBody = initialState.getFrame().getTransformTo(earth.getBodyFrame(), initialState.getDate());
-        final Transform initialFovBody = new Transform(initialState.getDate(), initialState.toTransform().getInverse(), initialInertToBody);
+        final Transform initialInertToBody = initialState.getFrame()
+                                                         .getTransformTo(earth.getBodyFrame(), initialState.getDate());
+        final Transform initialFovBody = new Transform(initialState.getDate(), initialState.toTransform()
+                                                                                           .getInverse(), initialInertToBody);
         // A circular field of view
         //final FieldOfView fov = new CircularFieldOfView(Vector3D.PLUS_J, FastMath.toRadians(50), 2);
         // A rectangular field of view
         final FieldOfView fov = new DoubleDihedraFieldOfView(Vector3D.PLUS_J, Vector3D.PLUS_I, FastMath.toRadians(20), Vector3D.PLUS_K, FastMath.toRadians(20), 2);
         final FieldOfObservation fieldOfObservation = new FieldOfObservation(satellite, fov, initialFovBody);
-        file.addObject(fieldOfObservation);
+
+        // Creation of the file
+        final CzmlFile file = new CzmlFileBuilder(output).withHeader(header)
+                                                         .withSatellite(satellite)
+                                                         .withFieldOfObservation(fieldOfObservation)
+                                                         .build();
 
         // Writing in the file
         file.write();

@@ -21,21 +21,26 @@ import cesiumlanguagewriter.CesiumOutputStream;
 import cesiumlanguagewriter.PolylineCesiumWriter;
 import cesiumlanguagewriter.TimeInterval;
 
-/** CZML Show
-
+/**
+ * CZML Show
+ *
  * <p>
  * This class represents the show objects that will allows other primary objects to be displayed or not in a given time interval.
  * </p>
  *
- * @since 1.0
  * @author Julien LEBLOND.
+ * @since 1.0
  */
 
 public class CzmlShow {
 
-    /** .*/
+    /**
+     * .
+     */
     private boolean toShow;
-    /** .*/
+    /**
+     * .
+     */
     private TimeInterval availability;
 
     public CzmlShow(final boolean toShow, final TimeInterval availability) {
@@ -47,12 +52,12 @@ public class CzmlShow {
         return availability;
     }
 
-    public boolean getShow() {
-        return toShow;
-    }
-
     public void setAvailability(final TimeInterval availability) {
         this.availability = availability;
+    }
+
+    public boolean getShow() {
+        return toShow;
     }
 
     public void setShow(final boolean toShow_temp) {
@@ -61,7 +66,7 @@ public class CzmlShow {
 
     public void write(final PolylineCesiumWriter polylineWriter, final CesiumOutputStream output) {
 
-        try (BooleanCesiumWriter showWriter =  polylineWriter.getShowWriter()) {
+        try (BooleanCesiumWriter showWriter = polylineWriter.getShowWriter()) {
             showWriter.open(output);
             showWriter.writeInterval(availability);
             showWriter.writeBoolean(toShow);

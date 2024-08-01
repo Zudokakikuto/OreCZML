@@ -52,71 +52,135 @@ import java.util.TreeMap;
 
 public class InterSatVisu extends AbstractPrimaryObject implements CzmlPrimaryObject {
 
-    /** .*/
+    /**
+     * .
+     */
     public static final String DEFAULT_ID = "INTER_SAT_VISU/";
-    /** .*/
+    /**
+     * .
+     */
     public static final String DEFAULT_NAME = "Visualisation inter-satellite of : ";
-    /** .*/
+    /**
+     * .
+     */
     public static final String DEFAULT_H_POSITION = "#position";
-    /** .*/
+    /**
+     * .
+     */
     public static final String DEFAULT_CONSTELLATION_ID = "INTER_CONSTELLATION_VISU/";
-    /** .*/
+    /**
+     * .
+     */
     public static final String DEFAULT_CONSTELLATION_NAME = "Visualisation inter-constellation of : ";
 
-    /** .*/
+    /**
+     * .
+     */
     private Satellite satellite1;
-    /** .*/
+    /**
+     * .
+     */
     private Satellite satellite2;
-    /** .*/
+    /**
+     * .
+     */
     private BoundedPropagator boundedPropagatorFirstSat;
-    /** .*/
+    /**
+     * .
+     */
     private BoundedPropagator boundedPropagatorSecondSat;
-    /** .*/
+    /**
+     * .
+     */
     private Propagator propagatorFirstSat;
-    /** .*/
+    /**
+     * .
+     */
     private Propagator propagatorSecondSat;
-    /** .*/
+    /**
+     * .
+     */
     private OneAxisEllipsoid body;
-    /** .*/
+    /**
+     * .
+     */
     private SpacecraftState initialState;
-    /** .*/
+    /**
+     * .
+     */
     private List<AbsoluteDate> datesWhenVisu = new ArrayList<>();
-    /** .*/
+    /**
+     * .
+     */
     private List<AbsoluteDate> datesWhenNotVisu = new ArrayList<>();
-    /** .*/
+    /**
+     * .
+     */
     private AbsoluteDate startDate;
-    /** .*/
+    /**
+     * .
+     */
     private AbsoluteDate stopDate;
-    /** .*/
+    /**
+     * .
+     */
     private List<TimeInterval> timeIntervalsOfVisu = new ArrayList<>();
-    /** .*/
+    /**
+     * .
+     */
     private Polyline polyline;
-    /** .*/
+    /**
+     * .
+     */
     private Iterable<Reference> references;
-    /** .*/
+    /**
+     * .
+     */
     private List<Boolean> booleanShowList = new ArrayList<>();
-    /** .*/
+    /**
+     * .
+     */
     private List<CzmlShow> showList = new ArrayList<>();
     // Constellation parameters
-    /** .*/
+    /**
+     * .
+     */
     private List<Satellite> allConstellationSatellites = new ArrayList<>();
-    /** .*/
+    /**
+     * .
+     */
     private List<String> allIdsSatellites = new ArrayList<>();
-    /** .*/
-    private List<Propagator> allPropagators = new ArrayList<>();
-    /** .*/
+    /**
+     * .
+     */
+    private List<BoundedPropagator> allPropagators = new ArrayList<>();
+    /**
+     * .
+     */
     private List<Polyline> polylines = new ArrayList<>();
-    /** .*/
+    /**
+     * .
+     */
     private List<List<TimeInterval>> allTimeIntervalsOfVisu = new ArrayList<>();
-    /** .*/
+    /**
+     * .
+     */
     private List<List<Boolean>> allBooleanShowList = new ArrayList<>();
-    /** .*/
+    /**
+     * .
+     */
     private List<List<CzmlShow>> allShowList = new ArrayList<>();
-    /** .*/
+    /**
+     * .
+     */
     private List<Iterable<Reference>> allReferences = new ArrayList<>();
-    /** .*/
+    /**
+     * .
+     */
     private List<Orbit> allOrbits = new ArrayList<>();
-    /** .*/
+    /**
+     * .
+     */
     private List<List<Satellite>> pairsOfSatellites = new ArrayList<>();
 
     public InterSatVisu(final Satellite satellite1Input, final Satellite satellite2Input, final boolean toPropagate) {
@@ -128,7 +192,8 @@ public class InterSatVisu extends AbstractPrimaryObject implements CzmlPrimaryOb
         this.setAvailability(minimumInterval);
         final Reference referenceFirstSatellite = new Reference(satellite1Input.getId() + DEFAULT_H_POSITION);
         final Reference referenceSecondSatellite = new Reference(satellite2Input.getId() + DEFAULT_H_POSITION);
-        final Reference[] referenceList = Arrays.asList(referenceFirstSatellite, referenceSecondSatellite).toArray(new Reference[0]);
+        final Reference[] referenceList = Arrays.asList(referenceFirstSatellite, referenceSecondSatellite)
+                                                .toArray(new Reference[0]);
         this.references = convertToIterable(referenceList);
         this.boundedPropagatorFirstSat = satellite1Input.getBoundedPropagator();
         this.boundedPropagatorSecondSat = satellite2Input.getBoundedPropagator();
@@ -136,7 +201,8 @@ public class InterSatVisu extends AbstractPrimaryObject implements CzmlPrimaryOb
         this.propagatorSecondSat = satellite2Input.getSatellitePropagator();
         final Frame ITRF = FramesFactory.getITRF(IERSConventions.IERS_2010, true);
         this.body = new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS, Constants.WGS84_EARTH_FLATTENING, ITRF);
-        this.initialState = satellite1Input.getAllSpaceCraftStates().get(0);
+        this.initialState = satellite1Input.getAllSpaceCraftStates()
+                                           .get(0);
         if (toPropagate) {
             this.propagationInterSat();
         }
@@ -145,7 +211,7 @@ public class InterSatVisu extends AbstractPrimaryObject implements CzmlPrimaryOb
         this.showList = this.buildShowList(timeIntervalsOfVisu, booleanShowList);
     }
 
-    public InterSatVisu(final List<Propagator> allPropagators, final AbsoluteDate finalDate) throws URISyntaxException, IOException {
+    public InterSatVisu(final List<BoundedPropagator> allPropagators, final AbsoluteDate finalDate) throws URISyntaxException, IOException {
         this(new Constellation(allPropagators, finalDate));
     }
 
@@ -157,8 +223,10 @@ public class InterSatVisu extends AbstractPrimaryObject implements CzmlPrimaryOb
         this.setAvailability(Header.MASTER_CLOCK.getAvailability());
         this.allConstellationSatellites = constellationPropagators.getAllSatellites();
         this.allIdsSatellites = constellationPropagators.getAllIds();
-        this.startDate = julianDateToAbsoluteDate(Header.MASTER_CLOCK.getAvailability().getStart(), Header.TIME_SCALE);
-        this.stopDate = julianDateToAbsoluteDate(Header.MASTER_CLOCK.getAvailability().getStop(), Header.TIME_SCALE);
+        this.startDate = julianDateToAbsoluteDate(Header.MASTER_CLOCK.getAvailability()
+                                                                     .getStart(), Header.TIME_SCALE);
+        this.stopDate = julianDateToAbsoluteDate(Header.MASTER_CLOCK.getAvailability()
+                                                                    .getStop(), Header.TIME_SCALE);
 
         final Frame ITRF = FramesFactory.getITRF(IERSConventions.IERS_2010, true);
         this.body = new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS, Constants.WGS84_EARTH_FLATTENING, ITRF);
@@ -178,7 +246,8 @@ public class InterSatVisu extends AbstractPrimaryObject implements CzmlPrimaryOb
                 final Satellite secondSatellite = allConstellationSatellites.get(j);
                 final String currentIdSecondSatellite = allIdsSatellites.get(j);
                 final Reference secondReferenceSatellite = new Reference(currentIdSecondSatellite + DEFAULT_H_POSITION);
-                final Reference[] referenceList = Arrays.asList(firstReferenceSatellite, secondReferenceSatellite).toArray(new Reference[0]);
+                final Reference[] referenceList = Arrays.asList(firstReferenceSatellite, secondReferenceSatellite)
+                                                        .toArray(new Reference[0]);
                 allReferences.add(convertToIterable(referenceList));
                 polylines.add(new Polyline(firstReferenceSatellite, secondReferenceSatellite));
                 currentPairOfSatellites.add(firstSatellite);
@@ -193,6 +262,11 @@ public class InterSatVisu extends AbstractPrimaryObject implements CzmlPrimaryOb
             final List<Boolean> currentBooleans = allBooleanShowList.get(i);
             allShowList.add(this.buildShowList(currentTimeIntervals, currentBooleans));
         }
+    }
+
+    private static Iterable<Reference> convertToIterable(final Reference[] array) {
+        return () -> Arrays.stream(array)
+                           .iterator();
     }
 
     @Override
@@ -214,8 +288,10 @@ public class InterSatVisu extends AbstractPrimaryObject implements CzmlPrimaryOb
                 try (PacketCesiumWriter packet = STREAM.openPacket(OUTPUT)) {
                     final List<CzmlShow> currentShowList = allShowList.get(i);
                     if (!(currentShowList == null)) {
-                        final Satellite currentFirstSatellite = pairsOfSatellites.get(i).get(0);
-                        final Satellite currentSecondSatellite = pairsOfSatellites.get(i).get(1);
+                        final Satellite currentFirstSatellite = pairsOfSatellites.get(i)
+                                                                                 .get(0);
+                        final Satellite currentSecondSatellite = pairsOfSatellites.get(i)
+                                                                                  .get(1);
                         packet.writeId(DEFAULT_ID + currentFirstSatellite.getId() + "/" + currentSecondSatellite.getId());
                         packet.writeName(DEFAULT_CONSTELLATION_NAME + currentFirstSatellite.getName() + " " + currentSecondSatellite.getName());
                         final TimeInterval minimumInterval = this.findMinimumAvailability(currentFirstSatellite, currentSecondSatellite);
@@ -318,20 +394,27 @@ public class InterSatVisu extends AbstractPrimaryObject implements CzmlPrimaryOb
         return allConstellationSatellites;
     }
 
-    public List<Propagator> getAllPropagators() {
+    public List<BoundedPropagator> getAllPropagators() {
         return allPropagators;
     }
 
     private TimeInterval findMinimumAvailability(final Satellite satellite1Input, final Satellite satellite2Input) {
-        final double durationAvailabilityFirstSat = satellite1Input.getAvailability().getStart().secondsDifference(satellite1Input.getAvailability().getStop());
-        final double durationAvailabilitySecondSat = satellite2Input.getAvailability().getStart().secondsDifference(satellite2Input.getAvailability().getStop());
+        final double durationAvailabilityFirstSat = satellite1Input.getAvailability()
+                                                                   .getStart()
+                                                                   .secondsDifference(satellite1Input.getAvailability()
+                                                                                                     .getStop());
+        final double durationAvailabilitySecondSat = satellite2Input.getAvailability()
+                                                                    .getStart()
+                                                                    .secondsDifference(satellite2Input.getAvailability()
+                                                                                                      .getStop());
         final TimeInterval minimumInterval;
         if (durationAvailabilityFirstSat < durationAvailabilitySecondSat) {
-            this.startDate = julianDateToAbsoluteDate(satellite1Input.getAvailability().getStart(), Header.TIME_SCALE);
+            this.startDate = julianDateToAbsoluteDate(satellite1Input.getAvailability()
+                                                                     .getStart(), Header.TIME_SCALE);
             minimumInterval = satellite1Input.getAvailability();
-        }
-        else {
-            this.startDate = julianDateToAbsoluteDate(satellite2Input.getAvailability().getStart(), Header.TIME_SCALE);
+        } else {
+            this.startDate = julianDateToAbsoluteDate(satellite2Input.getAvailability()
+                                                                     .getStart(), Header.TIME_SCALE);
             minimumInterval = satellite2Input.getAvailability();
         }
         return minimumInterval;
@@ -343,8 +426,7 @@ public class InterSatVisu extends AbstractPrimaryObject implements CzmlPrimaryOb
             if (detected >= 0) {
                 this.datesWhenNotVisu.add(spacecraftState.getDate());
                 this.booleanShowList.add(true);
-            }
-            else if (detected < 0) {
+            } else if (detected < 0) {
                 this.datesWhenVisu.add(spacecraftState.getDate());
                 this.booleanShowList.add(false);
             }
@@ -352,8 +434,8 @@ public class InterSatVisu extends AbstractPrimaryObject implements CzmlPrimaryOb
         });
 
         final Propagator propagatorFirstSatTemp = getPropagatorFirstSat();
-        propagatorFirstSatTemp.resetInitialState(this.getInitialState());
-        final TimeInterval availabilityOfTheSatellite = this.getSatellite1().getAvailability();
+        final TimeInterval availabilityOfTheSatellite = this.getSatellite1()
+                                                            .getAvailability();
         final AbsoluteDate startDateTemp = julianDateToAbsoluteDate(availabilityOfTheSatellite.getStart(), Header.TIME_SCALE);
         final AbsoluteDate stopDateTemp = julianDateToAbsoluteDate(availabilityOfTheSatellite.getStop(), Header.TIME_SCALE);
         propagatorFirstSatTemp.addEventDetector(detector);
@@ -366,13 +448,14 @@ public class InterSatVisu extends AbstractPrimaryObject implements CzmlPrimaryOb
         final List<EphemerisGenerator> generators = new ArrayList<>();
 
         for (int i = 0; i < allOrbits.size(); i++) {
-            final Propagator currentPropagator = allPropagators.get(i);
-            final Orbit currentInitialOrbit = allOrbits.get(i);
-            currentPropagator.resetInitialState(new SpacecraftState(currentInitialOrbit));
+            final BoundedPropagator currentPropagator = allPropagators.get(i);
             generators.add(currentPropagator.getEphemerisGenerator());
         }
 
-        final PropagatorsParallelizer parallelizer = new PropagatorsParallelizer(allPropagators, interpolators -> { });
+        final List<Propagator> propagators = new ArrayList<>(allPropagators);
+
+        final PropagatorsParallelizer parallelizer = new PropagatorsParallelizer(propagators, interpolators -> {
+        });
         parallelizer.propagate(startDate, stopDate);
 
         // Get the ephemeris
@@ -391,7 +474,8 @@ public class InterSatVisu extends AbstractPrimaryObject implements CzmlPrimaryOb
 
                 // Build detector
                 final InterSatViewHandler handler = new InterSatViewHandler();
-                final InterSatDirectViewDetector detector = new InterSatDirectViewDetector(body, second).withHandler(handler).withMaxCheck(60.);
+                final InterSatDirectViewDetector detector = new InterSatDirectViewDetector(body, second).withHandler(handler)
+                                                                                                        .withMaxCheck(60.);
 
                 // Add to main
                 main.addEventDetector(detector);
@@ -417,8 +501,11 @@ public class InterSatVisu extends AbstractPrimaryObject implements CzmlPrimaryOb
                     //System.out.println("\t" + span.getData() + ": " + span.getStart() + " → " + span.getEnd());
                     AbsoluteDate stopTime = span.getEnd();
                     final AbsoluteDate startTime = span.getStart();
-                    if (span.getEnd().isAfter(julianDateToAbsoluteDate(Header.MASTER_CLOCK.getAvailability().getStop(), Header.TIME_SCALE))) {
-                        stopTime = julianDateToAbsoluteDate(Header.MASTER_CLOCK.getAvailability().getStop(), Header.TIME_SCALE);
+                    if (span.getEnd()
+                            .isAfter(julianDateToAbsoluteDate(Header.MASTER_CLOCK.getAvailability()
+                                                                                 .getStop(), Header.TIME_SCALE))) {
+                        stopTime = julianDateToAbsoluteDate(Header.MASTER_CLOCK.getAvailability()
+                                                                               .getStop(), Header.TIME_SCALE);
                     }
                     tempBooleansList.add(span.getData());
                     tempTimeIntervals.add(new TimeInterval(absoluteDateToJulianDate(startTime), absoluteDateToJulianDate(stopTime)));
@@ -452,7 +539,8 @@ public class InterSatVisu extends AbstractPrimaryObject implements CzmlPrimaryOb
 
             final List<TimeInterval> toReturn = new ArrayList<>();
             if (!seenAtTheBeginning) {
-                toReturn.add(new TimeInterval(Header.MASTER_CLOCK.getAvailability().getStart(), absoluteDateToJulianDate(datesWhenVisuInput.get(0))));
+                toReturn.add(new TimeInterval(Header.MASTER_CLOCK.getAvailability()
+                                                                 .getStart(), absoluteDateToJulianDate(datesWhenVisuInput.get(0))));
                 if (booleanShowList != null) {
                     this.booleanShowList.add(true);
                 }
@@ -461,7 +549,8 @@ public class InterSatVisu extends AbstractPrimaryObject implements CzmlPrimaryOb
                     toReturn.add(new TimeInterval(absoluteDateToJulianDate(datesWhenNotVisuInput.get(i)), absoluteDateToJulianDate(datesWhenVisuInput.get(i + 1))));
                 }
             } else {
-                toReturn.add(new TimeInterval(Header.MASTER_CLOCK.getAvailability().getStart(), absoluteDateToJulianDate(datesWhenNotVisuInput.get(0))));
+                toReturn.add(new TimeInterval(Header.MASTER_CLOCK.getAvailability()
+                                                                 .getStart(), absoluteDateToJulianDate(datesWhenNotVisuInput.get(0))));
                 if (booleanShowList != null) {
                     this.booleanShowList.add(false);
                 }
@@ -473,10 +562,12 @@ public class InterSatVisu extends AbstractPrimaryObject implements CzmlPrimaryOb
 
             if (datesWhenVisuInput.size() > datesWhenNotVisuInput.size()) {
                 final JulianDate finalDate = absoluteDateToJulianDate(datesWhenVisuInput.get(datesWhenVisuInput.size() - 1));
-                toReturn.add(new TimeInterval(finalDate, Header.MASTER_CLOCK.getAvailability().getStop()));
+                toReturn.add(new TimeInterval(finalDate, Header.MASTER_CLOCK.getAvailability()
+                                                                            .getStop()));
             } else if (datesWhenVisuInput.size() < datesWhenNotVisuInput.size()) {
                 final JulianDate finalDate = absoluteDateToJulianDate(datesWhenNotVisuInput.get(datesWhenNotVisuInput.size() - 1));
-                toReturn.add(new TimeInterval(finalDate, Header.MASTER_CLOCK.getAvailability().getStop()));
+                toReturn.add(new TimeInterval(finalDate, Header.MASTER_CLOCK.getAvailability()
+                                                                            .getStop()));
             }
             return toReturn;
         }
@@ -494,7 +585,7 @@ public class InterSatVisu extends AbstractPrimaryObject implements CzmlPrimaryOb
         return toReturn;
     }
 
-    private List<List<Satellite>> reorganiseSatelliteList (final List<List<Satellite>> inputList) {
+    private List<List<Satellite>> reorganiseSatelliteList(final List<List<Satellite>> inputList) {
         final List<List<Satellite>> toReturn = new ArrayList<>();
         for (List<Satellite> satellites : inputList) {
             List<Satellite> tempPairOfSatellite = new ArrayList<>();
@@ -512,7 +603,9 @@ public class InterSatVisu extends AbstractPrimaryObject implements CzmlPrimaryOb
 
     private static class InterSatViewHandler implements EventHandler {
 
-        /** .*/
+        /**
+         * .
+         */
         private TimeSpanMap<Boolean> viewMap;
 
         InterSatViewHandler() {
@@ -532,10 +625,6 @@ public class InterSatVisu extends AbstractPrimaryObject implements CzmlPrimaryOb
             return Action.CONTINUE;
         }
 
-    }
-
-    private static Iterable<Reference> convertToIterable(final Reference[] array) {
-        return () -> Arrays.stream(array).iterator();
     }
 
 }

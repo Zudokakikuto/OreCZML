@@ -14,26 +14,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.orekit.czml.CzmlEnum;
+package org.orekit.czml.ArchiObjects;
 
-public enum ModelType {
+import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.CzmlGroundStation;
+import org.orekit.frames.TopocentricFrame;
 
-    /**
-     * The type to reference the model as a 2D model.
-     */
-    MODEL_2D,
-    /**
-     * The type to reference the model as a 3D model.
-     */
-    MODEL_3D,
-    /**
-     * An empty model.
-     */
-    EMPTY_MODEL;
+import java.io.IOException;
+import java.net.URISyntaxException;
+
+public class CzmlGroundStationBuilder {
+
 
     /**
-     * Builder.
+     * .
      */
-    ModelType() {
+    private TopocentricFrame topocentricFrame;
+
+    // Optional arguments
+    /**
+     * .
+     */
+    private String modelPath;
+
+    public CzmlGroundStationBuilder(final TopocentricFrame topocentricFrameInput) {
+        this.topocentricFrame = topocentricFrameInput;
     }
+
+    public CzmlGroundStationBuilder withModel(final String modelPathInput) {
+        this.modelPath = modelPathInput;
+        return this;
+    }
+
+    public CzmlGroundStation build() throws URISyntaxException, IOException {
+        return new CzmlGroundStation(topocentricFrame, modelPath);
+    }
+
 }

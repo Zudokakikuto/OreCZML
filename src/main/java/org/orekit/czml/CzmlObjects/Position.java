@@ -24,65 +24,95 @@ import cesiumlanguagewriter.Motion1;
 import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.PositionCesiumWriter;
 import cesiumlanguagewriter.TimeInterval;
-import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.TimePosition;
-import org.orekit.czml.CzmlEnum.PositionType;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.hipparchus.util.FastMath;
+import org.orekit.czml.CzmlEnum.PositionType;
+import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.TimePosition;
 
-/** Position
-
+/**
+ * Position
+ *
  * <p>
  * The position object is used to represent a position of any object except the satellite (see {@link TimePosition} for more information).
  * The position object can be build in many ways, following all the position type that exists : {@link PositionType}.
  * </p>
  *
- * @since 1.0
  * @author Julien LEBLOND.
+ * @since 1.0
  */
 
 public class Position {
 
-    /** .*/
+    /**
+     * .
+     */
     public static final String DEFAULT_ERROR_LATITUDE = "Latitude is not defined";
-    /** .*/
+    /**
+     * .
+     */
     public static final String DEFAULT_ERROR_LONGITUDE = "Longitude is not defined";
 
     // Cartographic :
-    /** .*/
-    private double height = 0.0;
+    /**
+     * .
+     */
+    private final String ReferenceFrame;
 
     // Cartographic radians
-    /** .*/
-    private double longitude = 0.0;
-    /** .*/
-    private double latitude = 0.0;
+    /**
+     * .
+     */
+    private final PositionType positionType;
+    /**
+     * .
+     */
+    private double height = 0.0;
     // Cartographic degrees
-    /** .*/
-    private double longitudeDeg = 0.0;
-    /** .*/
-    private double latitudeDeg = 0.0;
+    /**
+     * .
+     */
+    private double longitude = 0.0;
+    /**
+     * .
+     */
+    private double latitude = 0.0;
 
     // Cartesian :
 
     // Cartesian3Value:
-    /** .*/
+    /**
+     * .
+     */
+    private double longitudeDeg = 0.0;
+    /**
+     * .
+     */
+    private double latitudeDeg = 0.0;
+    /**
+     * .
+     */
     private double x = 0.0;
-    /** .*/
-    private double y = 0.0;
-    /** .*/
-    private double z = 0.0;
     // Cartesian3VelocityValue
-    /** .*/
+    /**
+     * .
+     */
+    private double y = 0.0;
+    /**
+     * .
+     */
+    private double z = 0.0;
+    /**
+     * .
+     */
     private double vx = 0.0;
-    /** .*/
+    /**
+     * .
+     */
     private double vy = 0.0;
-    /** .*/
+    /**
+     * .
+     */
     private double vz = 0.0;
-    /** .*/
-    private final String ReferenceFrame;
-
-    /** .*/
-    private final PositionType positionType;
 
     // Builder
 
@@ -103,8 +133,7 @@ public class Position {
             this.longitudeDeg = param1;
             this.latitudeDeg = param2;
             this.height = param3;
-        }
-        else {
+        } else {
             throw new RuntimeException("Position Type is not defined");
         }
 
@@ -114,12 +143,15 @@ public class Position {
 
     // Functions
 
-    /** This method do not write a reference frame nor an interpolation degree/algorithm for the position.
+    /**
+     * This method do not write a reference frame nor an interpolation degree/algorithm for the position.
+     *
      * @param packetWriter : packet to write in the CZML
-     * @param output : Output that will contain the string
-     * @param availability : when the position is displayed on Cesium*/
+     * @param output       : Output that will contain the string
+     * @param availability : when the position is displayed on Cesium
+     */
     public void write(final PacketCesiumWriter packetWriter, final CesiumOutputStream output, final TimeInterval availability) {
-        try (PositionCesiumWriter positionWriter =  packetWriter.getPositionWriter()) {
+        try (PositionCesiumWriter positionWriter = packetWriter.getPositionWriter()) {
             positionWriter.open(output);
             positionWriter.writeInterval(availability);
 
@@ -140,13 +172,16 @@ public class Position {
         }
     }
 
-    /** This method allows the writing of a referenceFrame and of an interpolation algorithm and the degree of interpolation.
-     * @param packetWriter : packet to write in the CZML
-     * @param output : Output that will contain the string
-     * @param availability : when the position is displayed on Cesium
-     * @param referenceFrame : the frame where the position is referenced */
+    /**
+     * This method allows the writing of a referenceFrame and of an interpolation algorithm and the degree of interpolation.
+     *
+     * @param packetWriter   : packet to write in the CZML
+     * @param output         : Output that will contain the string
+     * @param availability   : when the position is displayed on Cesium
+     * @param referenceFrame : the frame where the position is referenced
+     */
     public void write(final PacketCesiumWriter packetWriter, final CesiumOutputStream output, final TimeInterval availability, final String referenceFrame) {
-        try (PositionCesiumWriter positionWriter =  packetWriter.getPositionWriter()) {
+        try (PositionCesiumWriter positionWriter = packetWriter.getPositionWriter()) {
             positionWriter.open(output);
             positionWriter.writeInterval(availability);
             positionWriter.writeReferenceFrame(referenceFrame);
@@ -177,8 +212,7 @@ public class Position {
             return latitude;
         } else if (latitudeDeg != 0.0) {
             return latitudeDeg * (FastMath.PI / 180);
-        }
-        else {
+        } else {
             throw new RuntimeException(DEFAULT_ERROR_LATITUDE);
         }
     }
@@ -188,8 +222,7 @@ public class Position {
             return longitude;
         } else if (longitudeDeg != 0.0) {
             return longitudeDeg * (FastMath.PI / 180);
-        }
-        else {
+        } else {
             throw new RuntimeException(DEFAULT_ERROR_LONGITUDE);
         }
     }
@@ -197,8 +230,7 @@ public class Position {
     public String getReferenceFrame() {
         if (ReferenceFrame != null) {
             return ReferenceFrame;
-        }
-        else {
+        } else {
             throw new RuntimeException("No reference frame defined");
         }
     }
@@ -206,19 +238,17 @@ public class Position {
     public double getHeight() {
         if (height != 0.0) {
             return height;
-        }
-        else {
+        } else {
             throw new RuntimeException("Height is not defined");
         }
     }
 
     public double getLatitudeDeg() {
         if (latitude != 0.0) {
-            return latitude * ( 180 / FastMath.PI);
+            return latitude * (180 / FastMath.PI);
         } else if (latitudeDeg != 0.0) {
             return latitudeDeg;
-        }
-        else {
+        } else {
             throw new RuntimeException(DEFAULT_ERROR_LATITUDE);
         }
     }
@@ -236,8 +266,7 @@ public class Position {
     public double getX() {
         if (x != 0.0) {
             return x;
-        }
-        else {
+        } else {
             throw new RuntimeException("x is not defined");
         }
     }
@@ -245,8 +274,7 @@ public class Position {
     public double getY() {
         if (y != 0.0) {
             return y;
-        }
-        else {
+        } else {
             throw new RuntimeException("y is not defined");
         }
     }
@@ -254,8 +282,7 @@ public class Position {
     public double getZ() {
         if (z != 0.0) {
             return z;
-        }
-        else {
+        } else {
             throw new RuntimeException("z is not defined");
         }
     }
@@ -263,8 +290,7 @@ public class Position {
     public double getVx() {
         if (vx != 0.0) {
             return vx;
-        }
-        else {
+        } else {
             throw new RuntimeException("vx is not defined");
         }
     }
@@ -272,8 +298,7 @@ public class Position {
     public double getVy() {
         if (vy != 0.0) {
             return vy;
-        }
-        else {
+        } else {
             throw new RuntimeException("vy is not defined");
         }
     }
@@ -281,8 +306,7 @@ public class Position {
     public double getVz() {
         if (vz != 0.0) {
             return vz;
-        }
-        else {
+        } else {
             throw new RuntimeException("vz is not defined");
         }
     }

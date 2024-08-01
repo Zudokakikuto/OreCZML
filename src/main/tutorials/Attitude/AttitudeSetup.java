@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 package Attitude;
+
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
@@ -23,6 +24,7 @@ import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Header;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Satellite;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.Clock;
 import org.orekit.czml.Outputs.CzmlFile;
+import org.orekit.czml.Outputs.CzmlFileBuilder;
 import org.orekit.data.DataContext;
 import org.orekit.data.DataProvider;
 import org.orekit.data.DirectoryCrawler;
@@ -37,6 +39,8 @@ import org.orekit.frames.LOFType;
 import org.orekit.orbits.KeplerianOrbit;
 import org.orekit.orbits.OrbitType;
 import org.orekit.orbits.PositionAngleType;
+import org.orekit.propagation.BoundedPropagator;
+import org.orekit.propagation.EphemerisGenerator;
 import org.orekit.propagation.SpacecraftState;
 import org.orekit.propagation.numerical.NumericalPropagator;
 import org.orekit.time.AbsoluteDate;
@@ -58,20 +62,20 @@ public class AttitudeSetup {
             final File home = new File(System.getProperty("user.home"));
             final File orekitDir = new File(home, "orekit-data");
             final DataProvider provider = new DirectoryCrawler(orekitDir);
-            DataContext.getDefault().getDataProvidersManager().addProvider(provider);
+            DataContext.getDefault()
+                       .getDataProvidersManager()
+                       .addProvider(provider);
         } catch (OrekitException oe) {
             System.err.println(oe.getLocalizedMessage());
         }
 
         // Paths
-        final String root = System.getProperty("user.dir").replace("\\", "/");
+        final String root = System.getProperty("user.dir")
+                                  .replace("\\", "/");
         final String outputPath = root + "/Output";
         final String outputName = "Output.czml";
         final String output = outputPath + "/" + outputName;
         final String IssModel = root + "/src/main/resources/ISSModel.glb";
-
-        // File created
-        final CzmlFile file = new CzmlFile(output);
 
         // Creation of the clock.
         final TimeScale UTC = TimeScalesFactory.getUTC();
@@ -82,7 +86,6 @@ public class AttitudeSetup {
         final Clock clock = new Clock(startDate, finalDate, UTC, stepBetweenEachInstant);
 
         final Header header = new Header("Setup of the attitude of a satellite", clock);
-        file.addObject(header);
 
         //// Build of a satellite with a propagator
         // Build of a LEO orbit
@@ -108,14 +111,26 @@ public class AttitudeSetup {
         propagator.addForceModel(holmesFeatherstone);
         propagator.setInitialState(initialState);
 
+        final EphemerisGenerator generator = propagator.getEphemerisGenerator();
+
         final LofOffset lofOffset = new LofOffset(EME2000, LOFType.TNW);
         propagator.setAttitudeProvider(lofOffset);
 
+        propagator.propagate(startDate, finalDate);
+        final BoundedPropagator boundedPropagator = generator.getGeneratedEphemeris();
+
         // Creation of the satellite
-        final Satellite satellite = new Satellite(propagator, finalDate, IssModel, Color.RED);
-        satellite.displayOnlyOnePeriod();
-        satellite.displaySatelliteAttitude();
-        file.addObject(satellite);
+        final Satellite satellite = Satellite.builder(boundedPropagator, finalDate)
+                                             .withModelPath(IssModel)
+                                             .withColor(Color.RED)
+                                             .displayOnlyOnePeriod()
+                                             .displayAttitude()
+                                             .build();
+
+        // Creation of the file
+        final CzmlFile file = new CzmlFileBuilder(output).withHeader(header)
+                                                         .withSatellite(satellite)
+                                                         .build();
 
         // Writing in the file
         file.write();

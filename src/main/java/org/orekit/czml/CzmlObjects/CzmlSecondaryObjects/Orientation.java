@@ -25,7 +25,6 @@ import cesiumlanguagewriter.TimeInterval;
 import cesiumlanguagewriter.UnitQuaternion;
 import org.hipparchus.geometry.euclidean.threed.Rotation;
 import org.hipparchus.geometry.euclidean.threed.RotationConvention;
-
 import org.orekit.attitudes.Attitude;
 import org.orekit.frames.Frame;
 import org.orekit.frames.FramesFactory;
@@ -36,32 +35,51 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-/** Orientation class.
+/**
+ * Orientation class.
  *
  * <p> This class ams at representing and writing in the czml file the orientation of an object knowing its Orekit Attitude. </p>
  *
- * @since 2.0.0
  * @author Julien LEBLOND
+ * @since 2.0.0
  */
 public class Orientation implements CzmlSecondaryObject {
 
-    /** .*/
+    /**
+     * .
+     */
     private UnitQuaternion unitQuaternion;
-    /** .*/
+    /**
+     * .
+     */
     private List<UnitQuaternion> multipleQuaternions = new ArrayList<>();
-    /** .*/
+    /**
+     * .
+     */
     private List<JulianDate> julianDates = new ArrayList<>();
-    /** .*/
+    /**
+     * .
+     */
     private TimeInterval interval;
-    /** .*/
+    /**
+     * .
+     */
     private CesiumInterpolationAlgorithm interpolationAlgorithm;
-    /** .*/
+    /**
+     * .
+     */
     private int interpolationDegree;
-    /** .*/
+    /**
+     * .
+     */
     private boolean multipleAttitudes;
-    /** .*/
+    /**
+     * .
+     */
     private List<Attitude> attitudes = new ArrayList<>();
-    /** .*/
+    /**
+     * .
+     */
     private Attitude singleAttitude;
 
     public Orientation(final Attitude attitude, final Frame objectFrame) {
@@ -92,9 +110,7 @@ public class Orientation implements CzmlSecondaryObject {
             this.unitQuaternion = new UnitQuaternion(Q1, Q2, Q3, Q0);
             this.interpolationAlgorithm = CesiumInterpolationAlgorithm.LAGRANGE;
             this.interpolationDegree = 5;
-        }
-
-        else {
+        } else {
             this.multipleAttitudes = false;
             singleAttitude = attitude;
             final Rotation objectRotation = attitude.getRotation();
@@ -124,8 +140,10 @@ public class Orientation implements CzmlSecondaryObject {
         if (!invertToITRF) {
             this.multipleAttitudes = true;
             this.attitudes = attitudes;
-            final JulianDate startDate = absoluteDateToJulianDate(attitudes.get(0).getDate());
-            final JulianDate finalDate = absoluteDateToJulianDate(attitudes.get(attitudes.size() - 1).getDate());
+            final JulianDate startDate = absoluteDateToJulianDate(attitudes.get(0)
+                                                                           .getDate());
+            final JulianDate finalDate = absoluteDateToJulianDate(attitudes.get(attitudes.size() - 1)
+                                                                           .getDate());
             final Frame ITRF = FramesFactory.getITRF(IERSConventions.IERS_2010, true);
             this.interval = new TimeInterval(startDate, finalDate);
 
@@ -157,13 +175,13 @@ public class Orientation implements CzmlSecondaryObject {
             }
             this.interpolationAlgorithm = CesiumInterpolationAlgorithm.LAGRANGE;
             this.interpolationDegree = 5;
-        }
-
-        else {
+        } else {
             this.multipleAttitudes = true;
             this.attitudes = attitudes;
-            final JulianDate startDate = absoluteDateToJulianDate(attitudes.get(0).getDate());
-            final JulianDate finalDate = absoluteDateToJulianDate(attitudes.get(attitudes.size() - 1).getDate());
+            final JulianDate startDate = absoluteDateToJulianDate(attitudes.get(0)
+                                                                           .getDate());
+            final JulianDate finalDate = absoluteDateToJulianDate(attitudes.get(attitudes.size() - 1)
+                                                                           .getDate());
             this.interval = new TimeInterval(startDate, finalDate);
 
             for (final Attitude currentAttitude : attitudes) {
@@ -178,8 +196,7 @@ public class Orientation implements CzmlSecondaryObject {
                     final double currentQ3 = objectRotation.getQ3();
                     final UnitQuaternion currentUnitQuaternion = new UnitQuaternion(currentQ0, currentQ1, currentQ2, currentQ3);
                     multipleQuaternions.add(currentUnitQuaternion);
-                }
-                else {
+                } else {
                     final double currentQ0 = objectRotation.getQ0();
                     final double currentQ1 = objectRotation.getQ1();
                     final double currentQ2 = objectRotation.getQ2();
@@ -202,9 +219,7 @@ public class Orientation implements CzmlSecondaryObject {
                 orientationWriter.writeInterpolationDegree(getInterpolationDegree());
                 orientationWriter.writeInterpolationAlgorithm(getInterpolationAlgorithm());
             }
-        }
-
-        else {
+        } else {
             try (OrientationCesiumWriter orientationWriter = packetWriter.getOrientationWriter()) {
                 orientationWriter.open(output);
                 orientationWriter.writeInterval(getInterval());
@@ -232,8 +247,7 @@ public class Orientation implements CzmlSecondaryObject {
     public Attitude getSingleAttitude() {
         if (singleAttitude == null) {
             throw new RuntimeException("Attitudes were created in multiples, can't return a single attitude, use getAttitudes instead.");
-        }
-        else {
+        } else {
             return singleAttitude;
         }
     }
@@ -241,8 +255,7 @@ public class Orientation implements CzmlSecondaryObject {
     public List<Attitude> getAttitudes() {
         if (attitudes.isEmpty()) {
             throw new RuntimeException("Attitude is build singularily, can't return multiple attitudes, use getSingleAttitude instead.");
-        }
-        else {
+        } else {
             return attitudes;
         }
     }

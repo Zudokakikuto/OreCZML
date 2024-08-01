@@ -24,9 +24,9 @@ import cesiumlanguagewriter.ModelCesiumWriter;
 import cesiumlanguagewriter.NearFarScalar;
 import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.TimeInterval;
+import org.orekit.czml.CzmlEnum.ModelType;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Header;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.Billboard;
-import org.orekit.czml.CzmlEnum.ModelType;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -38,61 +38,96 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
-/** 3D/2D Models
+/**
+ * 3D/2D Models
  *
  * <p> This class describes the 3D and 2D models that will be loaded into the CZML file. </p>
  *
  * <p> 3D and 2D models can only be loaded with a local reference/path so the program need to copy the file inputted. This way
  * it will be able to reference a local path.</p>
  *
+ * @author Julien LEBLOND
  * @since 1.0
- * @author Julien LEBLOND*/
+ */
 
 public class CzmlModel {
-    /** The default string to reference in local.*/
+    /**
+     * The default string to reference in local.
+     */
     public static final String DEFAULT_SLASH_LOCAL = "./";
-    /** .*/
+    /**
+     * .
+     */
     public static final String DEFAULT_MODEL_NAME = "satellite.png";
-
-    /** The URI of the model.*/
-    private URI uri;
-    /** The scale of the model, change the width/height for 2D or all the geometrical parameters for 3D.*/
-    private double scale;
-    /** The minimum pixel size of the display.*/
-    private double minimumPixelSize;
-    /** The maximum pixel size of the display.*/
-    private double maximumScale;
-    /** A boolean to show or not the model.*/
+    /**
+     * A boolean to show or not the model.
+     */
     private final boolean show;
-    /** The time interval when the model is displayed.*/
+    /**
+     * The URI of the model.
+     */
+    private URI uri;
+    /**
+     * The scale of the model, change the width/height for 2D or all the geometrical parameters for 3D.
+     */
+    private double scale;
+    /**
+     * The minimum pixel size of the display.
+     */
+    private double minimumPixelSize;
+    /**
+     * The maximum pixel size of the display.
+     */
+    private double maximumScale;
+    /**
+     * The time interval when the model is displayed.
+     */
     private TimeInterval availability;
-    /** The absolute path of the file for 2D or 3D model.*/
+    /**
+     * The absolute path of the file for 2D or 3D model.
+     */
     private String absolutePath;
-    /** The relative path of the file created in : OreCZML/JavaScript/public/.*/
+    /**
+     * The relative path of the file created in : OreCZML/JavaScript/public/.
+     */
     private String relativePath;
-    /** The name of the object loaded.*/
+    /**
+     * The name of the object loaded.
+     */
     private String nameOfObject;
-    /** The type of the mode, either 2D or 3D.*/
+    /**
+     * The type of the mode, either 2D or 3D.
+     */
     private ModelType modelType;
-    /** Used only for 2D models, a billboard to display the 2D image.*/
+    /**
+     * Used only for 2D models, a billboard to display the 2D image.
+     */
     private Billboard billboard;
-    /** The string representing the extension of the file used. This is used to determine the type of the file.*/
+    /**
+     * The string representing the extension of the file used. This is used to determine the type of the file.
+     */
     private String extension;
-    /** The duplicated file in local at the relative path.*/
+    /**
+     * The duplicated file in local at the relative path.
+     */
     private File duplicatedLocalFile;
 
-    /** Builder for the model of the satellite, default parameters entered.
+    /**
+     * Builder for the model of the satellite, default parameters entered.
+     *
      * @param absolutePathToObject : The string leading to the absolute path of the object
      */
     public CzmlModel(final String absolutePathToObject) throws URISyntaxException, IOException {
         this(absolutePathToObject, 5000000, 400, 1);
     }
 
-    /** This builder builds the model object with the absolute path of the file given by the user.
-     * @param absolutePathToObject : The string leading to the absolute path of the object
-     * @param maximumScale : The minimum scale for the object
+    /**
+     * This builder builds the model object with the absolute path of the file given by the user.
+     *
+     * @param absolutePathToObject  : The string leading to the absolute path of the object
+     * @param maximumScale          : The minimum scale for the object
      * @param minimumPixelSizeInput : The minimum of pixels display for the object
-     * @param scale : The scale of the 3D model
+     * @param scale                 : The scale of the 3D model
      */
     public CzmlModel(final String absolutePathToObject, final double maximumScale, final double minimumPixelSizeInput, final double scale) throws URISyntaxException, IOException {
         this.modelType = getModelTypeFromString(absolutePathToObject);
@@ -106,8 +141,7 @@ public class CzmlModel {
             this.minimumPixelSize = minimumPixelSizeInput;
             this.maximumScale = maximumScale;
             this.scale = scale;
-        }
-        else if (this.modelType == ModelType.MODEL_2D) {
+        } else if (this.modelType == ModelType.MODEL_2D) {
             this.absolutePath = absolutePathToObject;
             duplicateFile(absolutePathToObject);
             final BufferedImage image = ImageIO.read(duplicatedLocalFile);
@@ -117,8 +151,7 @@ public class CzmlModel {
             this.billboard = new Billboard(uri.toString(), nearFarScalar);
             this.availability = Header.MASTER_CLOCK.getAvailability();
             this.show = true;
-        }
-        else {
+        } else {
             this.absolutePath = Header.DEFAULT_RESOURCES + "\\" + DEFAULT_MODEL_NAME;
             final GregorianDate startGregorianDate = new GregorianDate(1900, 1, 1, 0, 0, 0.0);
             this.availability = Header.MASTER_CLOCK.getAvailability();
@@ -132,9 +165,12 @@ public class CzmlModel {
         }
     }
 
-    /** The generation function for the CZML file for models.
+    /**
+     * The generation function for the CZML file for models.
+     *
      * @param packet : The packet where the model will be written.
-     * @param output : The output that will write the strings.*/
+     * @param output : The output that will write the strings.
+     */
     public void generateCZML(final PacketCesiumWriter packet, final CesiumOutputStream output) {
         if (modelType == ModelType.MODEL_3D) {
             try (ModelCesiumWriter modelWriter = packet.getModelWriter()) {
@@ -148,45 +184,67 @@ public class CzmlModel {
                 modelWriter.writeIncrementallyLoadTexturesProperty(true);
                 modelWriter.writeShowProperty(true);
             }
-        }
-        else if (modelType == ModelType.MODEL_2D) {
-            this.getBillboard().write(packet, output);
-        }
-        else if (modelType == ModelType.EMPTY_MODEL) {
-            this.getBillboard().write(packet, output);
-        }
-        else {
+        } else if (modelType == ModelType.MODEL_2D) {
+            this.getBillboard()
+                .write(packet, output);
+        } else if (modelType == ModelType.EMPTY_MODEL) {
+            this.getBillboard()
+                .write(packet, output);
+        } else {
             throw new RuntimeException("Model Type not recognized");
         }
     }
 
-    /** This getter returns the billboard of the model if one exists.
-     * @return : The billboard used.*/
+    /**
+     * This getter returns the billboard of the model if one exists.
+     *
+     * @return : The billboard used.
+     */
     public Billboard getBillboard() {
         return billboard;
     }
-    /** This getter returns the model type of the model.
-     * @return : The model type of the object.*/
+
+    /**
+     * This getter returns the model type of the model.
+     *
+     * @return : The model type of the object.
+     */
     public ModelType getModelType() {
         return modelType;
     }
-    /** This getter returns the billboard of the model.
-     * @return : The absolute path of the object.*/
+
+    /**
+     * This getter returns the billboard of the model.
+     *
+     * @return : The absolute path of the object.
+     */
     public String getAbsolutePath() {
         return absolutePath;
     }
-    /** This getter returns the name of the object.
-     * @return : The name of the object.*/
+
+    /**
+     * This getter returns the name of the object.
+     *
+     * @return : The name of the object.
+     */
     public String getNameOfObject() {
         return nameOfObject;
     }
-    /** This getter returns the availability of the packet.
-     * @return : The availability used.*/
+
+    /**
+     * This getter returns the availability of the packet.
+     *
+     * @return : The availability used.
+     */
     public TimeInterval getAvailability() {
         return availability;
     }
-    /** This getter returns the relative path of the object.
-     * @return : The relative path used.*/
+
+    /**
+     * This getter returns the relative path of the object.
+     *
+     * @return : The relative path used.
+     */
     public String getRelativePath() {
         return relativePath;
     }
@@ -211,8 +269,11 @@ public class CzmlModel {
         return uri;
     }
 
-    /** CZML writer only understands relative path, so we will need to duplicate the file to use it to write and then delete it.
-     * @param absolutePathInputted : The absolute Path of the object*/
+    /**
+     * CZML writer only understands relative path, so we will need to duplicate the file to use it to write and then delete it.
+     *
+     * @param absolutePathInputted : The absolute Path of the object
+     */
     private void duplicateFile(final String absolutePathInputted) throws IOException {
 
         this.nameOfObject = getNameOfObjectFromPath(absolutePathInputted);
@@ -225,12 +286,15 @@ public class CzmlModel {
         final File absoluteFile = new File(absolutePath);
         final File relativeFile = new File(relativePath);
         this.duplicatedLocalFile = relativeFile;
-        final Path absolutePathOfFile = absoluteFile.getAbsoluteFile().toPath();
+        final Path absolutePathOfFile = absoluteFile.getAbsoluteFile()
+                                                    .toPath();
         final Path relativePathOfFile = relativeFile.toPath();
         Files.copy(absolutePathOfFile, relativePathOfFile, StandardCopyOption.REPLACE_EXISTING);
     }
 
-    /** This function returns the type of the model from an absolutePath of the file.
+    /**
+     * This function returns the type of the model from an absolutePath of the file.
+     *
      * @param absolutePathOfObject : The absolute path of the model.
      * @return : The model type of the file.
      */
@@ -244,7 +308,9 @@ public class CzmlModel {
         return checkFromExtension(extension);
     }
 
-    /** This function returns the name of the object from the absolute path of the file.
+    /**
+     * This function returns the name of the object from the absolute path of the file.
+     *
      * @param absolutePathInputted :
      * @return : The string of the name of the file.
      */
@@ -254,22 +320,23 @@ public class CzmlModel {
         return absolutePathSplitted[absolutePathSplitted.length - 1];
     }
 
-    /** This function returns the type of model from the extension of the file.
+    /**
+     * This function returns the type of model from the extension of the file.
+     *
      * @param extensionInput : The string representing the extension of the file
-     * @return : The model type of the file.*/
+     * @return : The model type of the file.
+     */
     private ModelType checkFromExtension(final String extensionInput) {
         // 3D Models supported
-        if (    extensionInput.equals("3ds") || extensionInput.equals("3mf") || extensionInput.equals("dae")  || extensionInput.equals("fbx") ||
-                extensionInput.equals("glb") || extensionInput.equals("max") || extensionInput.equals("obj")  || extensionInput.equals("skp") ||
-                extensionInput.equals("stl") || extensionInput.equals("stp") || extensionInput.equals("vrml") || extensionInput.equals("x3d") ) {
+        if (extensionInput.equals("3ds") || extensionInput.equals("3mf") || extensionInput.equals("dae") || extensionInput.equals("fbx") ||
+                extensionInput.equals("glb") || extensionInput.equals("max") || extensionInput.equals("obj") || extensionInput.equals("skp") ||
+                extensionInput.equals("stl") || extensionInput.equals("stp") || extensionInput.equals("vrml") || extensionInput.equals("x3d")) {
             return ModelType.MODEL_3D;
-        }
-        else if ( extensionInput.equals("avif") || extensionInput.equals("bpm")  || extensionInput.equals("cgm") || extensionInput.equals("gif") ||
-                  extensionInput.equals("heif") || extensionInput.equals("jpeg") || extensionInput.equals("png") || extensionInput.equals("svg") ||
-                  extensionInput.equals("tiff") || extensionInput.equals("webp")) {
+        } else if (extensionInput.equals("avif") || extensionInput.equals("bpm") || extensionInput.equals("cgm") || extensionInput.equals("gif") ||
+                extensionInput.equals("heif") || extensionInput.equals("jpeg") || extensionInput.equals("png") || extensionInput.equals("svg") ||
+                extensionInput.equals("tiff") || extensionInput.equals("webp")) {
             return ModelType.MODEL_2D;
-        }
-        else {
+        } else {
             throw new RuntimeException("The extension of the file for the model is not supported");
         }
     }
