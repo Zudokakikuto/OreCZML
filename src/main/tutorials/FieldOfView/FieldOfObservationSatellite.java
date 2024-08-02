@@ -14,19 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package Attitude;
+package FieldOfView;
 
-import org.hipparchus.geometry.euclidean.threed.Rotation;
-import org.hipparchus.geometry.euclidean.threed.RotationConvention;
-import org.hipparchus.geometry.euclidean.threed.RotationOrder;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
-import org.orekit.attitudes.Attitude;
 import org.orekit.attitudes.LofOffset;
 import org.orekit.bodies.OneAxisEllipsoid;
-import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.AttitudePointing;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.FieldOfObservation;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Header;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Satellite;
@@ -43,7 +38,6 @@ import org.orekit.forces.gravity.potential.GravityFieldFactory;
 import org.orekit.forces.gravity.potential.NormalizedSphericalHarmonicsProvider;
 import org.orekit.frames.Frame;
 import org.orekit.frames.FramesFactory;
-import org.orekit.frames.LOF;
 import org.orekit.frames.LOFType;
 import org.orekit.frames.Transform;
 import org.orekit.geometry.fov.DoubleDihedraFieldOfView;
@@ -58,17 +52,15 @@ import org.orekit.propagation.numerical.NumericalPropagator;
 import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScale;
 import org.orekit.time.TimeScalesFactory;
-import org.orekit.utils.AngularCoordinates;
 import org.orekit.utils.Constants;
 import org.orekit.utils.IERSConventions;
-import org.orekit.utils.PVCoordinatesProvider;
 
 import java.awt.Color;
 import java.io.File;
 
-public class CompensationOrbitAttitude {
+public class FieldOfObservationSatellite {
 
-    private CompensationOrbitAttitude() {
+    private FieldOfObservationSatellite() {
         // empty
     }
 
@@ -94,29 +86,30 @@ public class CompensationOrbitAttitude {
 
         // Creation of the clock.
         final TimeScale UTC = TimeScalesFactory.getUTC();
-        final double durationOfSimulation = 24 * 3600; // in seconds;
+        final double durationOfSimulation = 10 * 3600; // in seconds;
         final double stepBetweenEachInstant = 60.0; // in seconds
         final AbsoluteDate startDate = new AbsoluteDate(2024, 3, 15, 0, 0, 0.0, UTC);
         final AbsoluteDate finalDate = startDate.shiftedBy(durationOfSimulation);
         final Clock clock = new Clock(startDate, finalDate, UTC, stepBetweenEachInstant);
 
-        final Header header = new Header("Setup of an sun synchronous orbit with a sinusoidal attitude", clock);
+        final Header header = new Header("Setup of a satellite with a line of sight", clock);
 
         // Creation of the model of the earth.
         final IERSConventions IERS = IERSConventions.IERS_2010;
         final Frame ITRF = FramesFactory.getITRF(IERS, true);
         final OneAxisEllipsoid earth = new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS, Constants.WGS84_EARTH_FLATTENING, ITRF);
 
+        //// Build of a satellite with a propagator
         // Build of a LEO orbit
         final Frame EME2000 = FramesFactory.getEME2000();
-        final KeplerianOrbit initialOrbit = new KeplerianOrbit(7200000, 0, FastMath.toRadians(98.7), 0, FastMath.toRadians(90), FastMath.toRadians(0), PositionAngleType.MEAN, EME2000, startDate, Constants.WGS84_EARTH_MU);
+        final KeplerianOrbit initialOrbit = new KeplerianOrbit(7878000, 0, FastMath.toRadians(20), 0, FastMath.toRadians(0), FastMath.toRadians(0), PositionAngleType.MEAN, EME2000, startDate, Constants.WGS84_EARTH_MU);
 
         final SpacecraftState initialState = new SpacecraftState(initialOrbit);
 
         // Build of the propagator
         final double positionTolerance = 10.0;
         final double minStep = 0.001;
-        final double maxStep = 1000;
+        final double maxStep = 1000.0;
 
         final double[][] tolerances = NumericalPropagator.tolerances(positionTolerance, initialOrbit, OrbitType.CARTESIAN);
         final AdaptiveStepsizeIntegrator integrator = new DormandPrince853Integrator(minStep, maxStep, tolerances[0], tolerances[1]);
@@ -132,119 +125,40 @@ public class CompensationOrbitAttitude {
 
         final EphemerisGenerator generator = propagator.getEphemerisGenerator();
 
-        final SinusoidalLof sinusoidalLof = new SinusoidalLof(EME2000, LOFType.VNC, Vector3D.PLUS_I, 3600, FastMath.toRadians(45.0), initialState.getDate());
-        propagator.setAttitudeProvider(sinusoidalLof);
+        final LofOffset lofOffset = new LofOffset(EME2000, LOFType.TNW);
+        propagator.setAttitudeProvider(lofOffset);
 
         propagator.propagate(startDate, finalDate);
         final BoundedPropagator boundedPropagator = generator.getGeneratedEphemeris();
 
         // Creation of the satellite
-        final Satellite satellite = Satellite.builder(boundedPropagator, finalDate)
+        final Satellite satellite = Satellite.builder(boundedPropagator)
                                              .withModelPath(IssModel)
                                              .withColor(Color.RED)
                                              .displayOnlyOnePeriod()
                                              .displayAttitude()
-                                             .displayReferenceSystem()
                                              .build();
 
-        final AttitudePointing pointing = AttitudePointing.builder(satellite, earth, Vector3D.MINUS_K)
-                                                          .withColor(Color.ORANGE)
-                                                          .displayPointingPath()
-                                                          .displayPeriodPointingPath()
-                                                          .build();
 
         // Creation of the field of observation of the satellite, it describes the area the satellite see
         final Transform initialInertToBody = initialState.getFrame()
                                                          .getTransformTo(earth.getBodyFrame(), initialState.getDate());
         final Transform initialFovBody = new Transform(initialState.getDate(), initialState.toTransform()
                                                                                            .getInverse(), initialInertToBody);
-        final FieldOfView fov = new DoubleDihedraFieldOfView(Vector3D.MINUS_K, Vector3D.PLUS_I, FastMath.toRadians(20), Vector3D.PLUS_J, FastMath.toRadians(20), 2);
+        // A circular field of view
+        //final FieldOfView fov = new CircularFieldOfView(Vector3D.PLUS_J, FastMath.toRadians(50), 2);
+        // A rectangular field of view
+        final FieldOfView fov = new DoubleDihedraFieldOfView(Vector3D.PLUS_J, Vector3D.PLUS_I, FastMath.toRadians(20), Vector3D.PLUS_K, FastMath.toRadians(20), 2);
         final FieldOfObservation fieldOfObservation = new FieldOfObservation(satellite, fov, initialFovBody);
 
         // Creation of the file
         final CzmlFile file = new CzmlFileBuilder(output).withHeader(header)
                                                          .withSatellite(satellite)
-                                                         .withAttitudePointing(pointing)
                                                          .withFieldOfObservation(fieldOfObservation)
                                                          .build();
 
         // Writing in the file
         file.write();
     }
-
-    protected static class SinusoidalLof extends LofOffset {
-
-        /**
-         * .
-         */
-        private final Rotation offset = new Rotation(RotationOrder.XYZ, RotationConvention.VECTOR_OPERATOR, 0, 0, 0).revert();
-        /**
-         * .
-         */
-
-        private final double period;
-        /**
-         * .
-         */
-
-        private final AbsoluteDate initialDate;
-        /**
-         * .
-         */
-        private Frame inertialFrame;
-        /**
-         * .
-         */
-
-        private Vector3D axis;
-        /**
-         * .
-         */
-
-        private double maxAngle;
-        /**
-         * .
-         */
-
-        private LOF lof;
-
-        public SinusoidalLof(final Frame inertialFrame, final LOF lof, final Vector3D axis, final double period, final double maxAngle, final AbsoluteDate initialDate) {
-            super(inertialFrame, lof);
-            this.period = period;
-            this.inertialFrame = inertialFrame;
-            this.initialDate = initialDate;
-            this.maxAngle = maxAngle;
-            this.lof = lof;
-            this.axis = axis;
-        }
-
-        public SinusoidalLof(final Frame inertialFrame, final LOF lof, final Vector3D axis, final double period, final double maxAngle, final AbsoluteDate initialDate, final RotationOrder order, final double alpha1, final double alpha2, final double alpha3) {
-            super(inertialFrame, lof, order, alpha1, alpha2, alpha3);
-            this.inertialFrame = inertialFrame;
-            this.period = period;
-            this.initialDate = initialDate;
-            this.maxAngle = maxAngle;
-            this.lof = lof;
-            this.axis = axis;
-        }
-
-        @Override
-        public Attitude getAttitude(final PVCoordinatesProvider pvProv, final AbsoluteDate date, final Frame frame) {
-            final double deltaT = date.durationFrom(initialDate);
-            final double alpha = maxAngle * FastMath.sin(2 * FastMath.PI / period * deltaT);
-
-            final Attitude lofAttitude = super.getAttitude(pvProv, date, inertialFrame);
-
-            final Rotation rotationLof = lofAttitude.getRotation();
-            final Rotation additionnalRotation = new Rotation(axis, alpha, RotationConvention.VECTOR_OPERATOR);
-
-            final Rotation finalRotation = additionnalRotation.compose(rotationLof, RotationConvention.VECTOR_OPERATOR);
-            final AngularCoordinates angularCoordinates = new AngularCoordinates(finalRotation);
-
-            return new Attitude(date, inertialFrame, angularCoordinates);
-        }
-    }
 }
-
-
 

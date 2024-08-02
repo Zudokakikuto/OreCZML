@@ -31,7 +31,6 @@ import org.orekit.czml.ArchiObjects.CovarianceDisplayBuilder;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.CzmlEllipsoid;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.Orientation;
 import org.orekit.czml.CzmlObjects.Position;
-
 import org.orekit.frames.LOF;
 import org.orekit.propagation.SpacecraftState;
 import org.orekit.propagation.StateCovariance;

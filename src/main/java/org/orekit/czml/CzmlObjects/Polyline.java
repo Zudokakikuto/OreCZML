@@ -27,6 +27,8 @@ import cesiumlanguagewriter.PositionListCesiumWriter;
 import cesiumlanguagewriter.Reference;
 import cesiumlanguagewriter.SolidColorMaterialCesiumWriter;
 import cesiumlanguagewriter.TimeInterval;
+import org.orekit.czml.ArchiObjects.NonVectorPolylineBuilder;
+import org.orekit.czml.ArchiObjects.VectorPolylineBuilder;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Header;
 
 import java.awt.Color;
@@ -65,6 +67,34 @@ public class Polyline {
     /**
      * .
      */
+    public static final double DEFAULT_WIDTH = 1;
+    /**
+     * .
+     */
+    public static final CesiumArcType DEFAULT_ARC_TYPE = CesiumArcType.NONE;
+    /**
+     * .
+     */
+    public static final boolean DEFAULT_SHOW = true;
+    /**
+     * .
+     */
+    public static final TimeInterval DEFAULT_AVAILABILITY = Header.MASTER_CLOCK.getAvailability();
+    /**
+     * .
+     */
+    public static final Reference DEFAULT_REFERENCE = null;
+    /**
+     * .
+     */
+    public static final double DEFAULT_NEAR_DISTANCE = 1;
+    /**
+     * .
+     */
+    public static final double DEFAULT_FAR_DISTANCE = 100000000;
+    /**
+     * .
+     */
     private final double width;
     /**
      * .
@@ -89,6 +119,8 @@ public class Polyline {
     /**
      * .
      */
+    private List<Cartesian> cartesians = new ArrayList<>();
+    /** .*/
     private Cartesian firstPosition;
     /**
      * .
@@ -115,57 +147,23 @@ public class Polyline {
     // NON-VECTOR BUILDERS
 
     /**
-     * This builder allows the construction of a polyline to be used as a non-vector.
-     *
-     * @param availability : A time interval to represents when the packet will need to be displayed
-     * @param width        : The width of the polyline
-     * @param color        : The color of the polyline in r,g,b or r,g,b,a
-     * @param show         : A boolean to know if the polyline must be displayed
-     */
-    public Polyline(final TimeInterval availability, final double width, final Color color, final boolean show) {
-        this.availability = availability;
-        this.width = width;
-        this.color = color;
-        this.show = show;
-        this.arcType = CesiumArcType.NONE;
-    }
-
-    /**
      * This builder allows the construction of a polyline to be used as a non-vector. It has no parameters.
      */
     public Polyline() {
-        this(new Color(0, 255, 255, 255));
+        this(DEFAULT_REFERENCE, DEFAULT_REFERENCE, DEFAULT_AVAILABILITY, DEFAULT_COLOR, DEFAULT_WIDTH, DEFAULT_SHOW, DEFAULT_ARC_TYPE, DEFAULT_NEAR_DISTANCE, DEFAULT_FAR_DISTANCE);
     }
 
-    public Polyline(final Color color) {
-        this.color = color;
-        this.width = 1;
-        this.arcType = CesiumArcType.NONE;
-        this.show = true;
-        this.availability = Header.MASTER_CLOCK.getAvailability();
-    }
-
-    public Polyline(final Reference firstReference, final Reference secondReference) {
-        this(firstReference, secondReference, DEFAULT_COLOR);
-    }
-
-    /**
-     * This builder allows the construction of a polyline to be used as a non-vector.
-     *
-     * @param firstReference  : The first reference of the position of the object to use to build
-     * @param secondReference : The second reference of the position of the other object to use to build
-     * @param color           : the color of the polyline
-     */
-    public Polyline(final Reference firstReference, final Reference secondReference, final Color color) {
-        this.color = color;
-        this.width = 2;
-        this.show = true;
-        this.arcType = CesiumArcType.NONE;
-        this.arrow = true;
+    public Polyline(final Reference firstReference, final Reference secondReference, final TimeInterval availability, final Color color, final double width, final boolean show, final CesiumArcType arcType, final double nearDistance, final double farDistance) {
         this.firstReference = firstReference;
         this.secondReference = secondReference;
-        this.nearDistance = 1;
-        this.farDistance = 100000000;
+        this.availability = availability;
+        this.color = color;
+        this.width = width;
+        this.show = show;
+        this.arrow = true;
+        this.arcType = arcType;
+        this.nearDistance = nearDistance;
+        this.farDistance = farDistance;
     }
 
     // VECTOR BUILDERS
@@ -174,11 +172,9 @@ public class Polyline {
      * This builder allows the construction of a polyline to be used as a vector.
      *
      * @param cartesians   : A list of cartesians with size 2, containing the first and the second position of the polyline
-     * @param availability : A timeInterval representing the time interval when the polyline must be displayed, usually, each time step
-     * @param color        : the color of the polyline
      */
-    public Polyline(final List<Cartesian> cartesians, final TimeInterval availability, final Color color) {
-        this(cartesians, availability, color, 1, 100000000);
+    public Polyline(final List<Cartesian> cartesians) {
+        this(cartesians, DEFAULT_AVAILABILITY, DEFAULT_COLOR, DEFAULT_NEAR_DISTANCE, DEFAULT_FAR_DISTANCE);
     }
 
     /**
@@ -191,6 +187,7 @@ public class Polyline {
      * @param farDistance  : The fairest distance where the polyline is displayed
      */
     public Polyline(final List<Cartesian> cartesians, final TimeInterval availability, final Color color, final double nearDistance, final double farDistance) {
+        this.cartesians = cartesians;
         if (cartesians.size() != 2) {
             throw new RuntimeException("The size of the cartesian positions inputted in the Polyline must be 2");
         } else {
@@ -205,6 +202,16 @@ public class Polyline {
             this.nearDistance = nearDistance;
             this.farDistance = farDistance;
         }
+    }
+
+    // Buiders
+
+    public static NonVectorPolylineBuilder nonVectorBuilder() {
+        return new NonVectorPolylineBuilder();
+    }
+
+    public static VectorPolylineBuilder vectorBuilder(final List<Cartesian> cartesians) {
+        return new VectorPolylineBuilder(cartesians);
     }
 
     private static Iterable<Reference> convertToIterable(final Reference[] array) {
@@ -316,6 +323,9 @@ public class Polyline {
         }
     }
 
+    //// Private functions
+    // Write position
+
     /**
      * This function aims at writing a polyline built as a non-vector to be displayed as a line of visibility.
      *
@@ -343,9 +353,6 @@ public class Polyline {
             }
         }
     }
-
-    //// Private functions
-    // Write position
 
     /**
      * This function aims at writing a polyline defined with references.
@@ -388,6 +395,8 @@ public class Polyline {
         }
     }
 
+    // Write show
+
     /**
      * This function aims at writing the position of the polyline built as a non-vector to display an attitude in the FIXED frame.
      *
@@ -404,8 +413,6 @@ public class Polyline {
             positionWriter.writeCartesian(tempCartesians);
         }
     }
-
-    // Write show
 
     /**
      * This function aims at writing the position of the polyline built as a non-vector to display a line of visibility.
@@ -480,4 +487,5 @@ public class Polyline {
             }
         }
     }
+
 }

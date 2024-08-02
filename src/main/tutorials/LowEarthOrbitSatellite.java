@@ -112,7 +112,7 @@ public class LowEarthOrbitSatellite {
         final BoundedPropagator boundedPropagator = generator.getGeneratedEphemeris();
 
         // Build the LEO Satellite
-        final Satellite leoSatellite = new Satellite(boundedPropagator, finalDate);
+        final Satellite leoSatellite = new Satellite(boundedPropagator);
 
         // Creation of the file
         final CzmlFile file = new CzmlFileBuilder(output).withHeader(header)

@@ -149,7 +149,11 @@ public class AttitudePointing extends AbstractPrimaryObject implements CzmlPrima
         this.pointOnBody = new AbstractPointOnBody(julianDates, projectedAttitudes, body);
         final Reference satelliteReference = new Reference(satellite.getId() + DEFAULT_H_POSITION);
         final Reference groundReference = new Reference(pointOnBody.getId() + DEFAULT_H_POSITION);
-        this.attitudePointingPolyline = new Polyline(satelliteReference, groundReference, color);
+        this.attitudePointingPolyline = Polyline.nonVectorBuilder()
+                                                .withFirstReference(satelliteReference)
+                                                .withSecondReference(groundReference)
+                                                .withColor(color)
+                                                .build();
     }
 
     public static AttitudePointingBuilder builder(final Satellite satelliteInput, final OneAxisEllipsoid bodyInput, final Vector3D directionInput) {

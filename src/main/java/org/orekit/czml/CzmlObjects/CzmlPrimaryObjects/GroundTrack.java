@@ -170,8 +170,7 @@ public class GroundTrack extends AbstractPrimaryObject implements CzmlPrimaryObj
             cleanObject();
         } else {
             OUTPUT.setPrettyFormatting(true);
-            for (int i = 0; i < allGroundTracks.size(); i++) {
-                final GroundTrack currentGroundTrack = allGroundTracks.get(i);
+            for (final GroundTrack currentGroundTrack : allGroundTracks) {
                 try (PacketCesiumWriter packet = STREAM.openPacket(OUTPUT)) {
                     packet.writeId(currentGroundTrack.getId());
                     packet.writeName(currentGroundTrack.getName());
@@ -193,7 +192,9 @@ public class GroundTrack extends AbstractPrimaryObject implements CzmlPrimaryObj
                         final CzmlShow show = new CzmlShow(true, Header.MASTER_CLOCK.getAvailability());
                         final List<CzmlShow> shows = new ArrayList<>();
                         shows.add(show);
-                        final Polyline polylineInput = new Polyline(currentGroundTrack.getColor());
+                        final Polyline polylineInput = Polyline.nonVectorBuilder()
+                                                               .withColor(currentGroundTrack.getColor())
+                                                               .build();
                         polylineInput.writePolylineOfVisibility(packet, OUTPUT, referenceIterable, shows);
                     }
                 }
@@ -202,12 +203,12 @@ public class GroundTrack extends AbstractPrimaryObject implements CzmlPrimaryObj
         }
     }
 
+    // Getters
+
     @Override
     public StringWriter getStringWriter() {
         return STRING_WRITER;
     }
-
-    // Getters
 
     @Override
     public void cleanObject() {
@@ -288,5 +289,6 @@ public class GroundTrack extends AbstractPrimaryObject implements CzmlPrimaryObj
             }
         }
     }
+
 }
 

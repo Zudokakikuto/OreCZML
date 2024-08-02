@@ -85,7 +85,9 @@ public class LineOfVisibility extends AbstractPrimaryObject implements CzmlPrima
      * .
      */
     private Iterable<Reference> references;
-    /** .*/
+    /**
+     * .
+     */
     private Satellite satellite;
     /**
      * .
@@ -144,6 +146,11 @@ public class LineOfVisibility extends AbstractPrimaryObject implements CzmlPrima
         return new LineOfVisibilityBuilder(topocentricFrameInput, satelliteInput);
     }
 
+    private static Iterable<Reference> convertToIterable(final Reference[] array) {
+        return () -> Arrays.stream(array)
+                           .iterator();
+    }
+
     // Overrides
     @Override
     public void writeCzmlBlock() {
@@ -162,12 +169,14 @@ public class LineOfVisibility extends AbstractPrimaryObject implements CzmlPrima
         }        //cleanObject();
     }
 
+    // GETS
+
     @Override
     public StringWriter getStringWriter() {
         return STRING_WRITER;
     }
 
-    // GETS
+    // Multiples
 
     @Override
     public void cleanObject() {
@@ -181,9 +190,6 @@ public class LineOfVisibility extends AbstractPrimaryObject implements CzmlPrima
         this.angleOfAperture = 0.0;
         this.allVisibilityCones = new ArrayList<>();
     }
-
-    // Multiples
-
 
     public double getAngleOfAperture() {
         return angleOfAperture;
@@ -205,19 +211,14 @@ public class LineOfVisibility extends AbstractPrimaryObject implements CzmlPrima
         return references;
     }
 
+    // Intern methods
+
     public List<VisibilityCone> getAllVisibilityCones() {
         return allVisibilityCones;
     }
 
-    // Intern methods
-
     public List<TimeInterval> getTimeIntervals() {
         return timeIntervals;
-    }
-
-    private static Iterable<Reference> convertToIterable(final Reference[] array) {
-        return () -> Arrays.stream(array)
-                           .iterator();
     }
 
     private void buildSingleTimeIntervalsAndVisu(final TopocentricFrame topocentricFrame, final Satellite satellite_input) {
@@ -257,8 +258,7 @@ public class LineOfVisibility extends AbstractPrimaryObject implements CzmlPrima
                                                                          .getStop(), timeScale))) {
                 if (visuListTemp.get(visuListTemp.size() - 1)) {
                     visuListTemp.add(false);
-                }
-                else {
+                } else {
                     visuListTemp.add(true);
                 }
                 final JulianDate startDate = absoluteDateToJulianDate(span.getStart());
@@ -278,7 +278,7 @@ public class LineOfVisibility extends AbstractPrimaryObject implements CzmlPrima
         if (timeIntervalsTemp.size() > 1) {
 
             final JulianDate firstStopDate = timeIntervalsTemp.get(0)
-                                                          .getStart();
+                                                              .getStart();
             final TimeInterval firstTimeInterval = new TimeInterval(firstStartDate, firstStopDate);
 
             if (enVisu > 0) {

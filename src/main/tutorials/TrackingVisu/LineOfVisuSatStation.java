@@ -129,7 +129,7 @@ public class LineOfVisuSatStation {
         final CzmlGroundStation toulouseStation = new CzmlGroundStation(topocentricToulouse, groundStationModel);
 
         // Creation of the satellite
-        final Satellite satellite = Satellite.builder(boundedPropagator, finalDate)
+        final Satellite satellite = Satellite.builder(boundedPropagator)
                                              .displayOnlyOnePeriod()
                                              .build();
 

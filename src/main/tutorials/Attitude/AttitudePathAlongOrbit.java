@@ -221,7 +221,7 @@ public class AttitudePathAlongOrbit {
         propagator.propagate(startDate, finalDate);
         final BoundedPropagator boundedPropagator = generator.getGeneratedEphemeris();
 
-        final Satellite satellite = Satellite.builder(boundedPropagator, finalDate)
+        final Satellite satellite = Satellite.builder(boundedPropagator)
                                              .withModelPath(IssModel)
                                              .withColor(Color.PINK)
                                              .displayOnlyOnePeriod()

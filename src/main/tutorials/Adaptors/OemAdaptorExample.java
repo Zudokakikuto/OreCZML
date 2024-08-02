@@ -92,7 +92,7 @@ public class OemAdaptorExample {
         file.addObject(header);
 
         // Creation of the satellite
-        final Satellite satellite = Satellite.builder(oemBoundedPropagator, finalDate)
+        final Satellite satellite = Satellite.builder(oemBoundedPropagator)
                                              .displayOnlyOnePeriod()
                                              .build();
         file.addObject(satellite);

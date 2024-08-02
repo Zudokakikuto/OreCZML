@@ -120,7 +120,7 @@ public class AttitudeSetup {
         final BoundedPropagator boundedPropagator = generator.getGeneratedEphemeris();
 
         // Creation of the satellite
-        final Satellite satellite = Satellite.builder(boundedPropagator, finalDate)
+        final Satellite satellite = Satellite.builder(boundedPropagator)
                                              .withModelPath(IssModel)
                                              .withColor(Color.RED)
                                              .displayOnlyOnePeriod()

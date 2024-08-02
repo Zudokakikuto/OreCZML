@@ -207,7 +207,10 @@ public class InterSatVisu extends AbstractPrimaryObject implements CzmlPrimaryOb
             this.propagationInterSat();
         }
         this.timeIntervalsOfVisu = this.buildShowIntervals(datesWhenVisu, datesWhenNotVisu);
-        this.polyline = new Polyline(referenceFirstSatellite, referenceSecondSatellite);
+        this.polyline = Polyline.nonVectorBuilder()
+                                .withFirstReference(referenceFirstSatellite)
+                                .withSecondReference(referenceSecondSatellite)
+                                .build();
         this.showList = this.buildShowList(timeIntervalsOfVisu, booleanShowList);
     }
 
@@ -249,7 +252,10 @@ public class InterSatVisu extends AbstractPrimaryObject implements CzmlPrimaryOb
                 final Reference[] referenceList = Arrays.asList(firstReferenceSatellite, secondReferenceSatellite)
                                                         .toArray(new Reference[0]);
                 allReferences.add(convertToIterable(referenceList));
-                polylines.add(new Polyline(firstReferenceSatellite, secondReferenceSatellite));
+                polylines.add(Polyline.nonVectorBuilder()
+                                      .withFirstReference(firstReferenceSatellite)
+                                      .withSecondReference(secondReferenceSatellite)
+                                      .build());
                 currentPairOfSatellites.add(firstSatellite);
                 currentPairOfSatellites.add(secondSatellite);
             }

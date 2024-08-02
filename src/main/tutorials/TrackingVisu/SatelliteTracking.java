@@ -121,7 +121,7 @@ public class SatelliteTracking {
         final BoundedPropagator boundedPropagator = generator.getGeneratedEphemeris();
 
         // Build of the satellite
-        final Satellite satellite = Satellite.builder(boundedPropagator, finalDate)
+        final Satellite satellite = Satellite.builder(boundedPropagator)
                                              .displayOnlyOnePeriod()
                                              .build();
 

@@ -43,7 +43,7 @@ public class SatelliteBuilder {
     /**
      * .
      */
-    private final AbsoluteDate finalDate;
+    private AbsoluteDate finalDate;
     /**
      * .
      */
@@ -71,11 +71,10 @@ public class SatelliteBuilder {
      */
     private boolean displayReferenceSystem = false;
 
-    public SatelliteBuilder(final BoundedPropagator propagator, final AbsoluteDate finalDate) {
+    public SatelliteBuilder(final BoundedPropagator propagator) {
         this.propagator = propagator;
-        this.finalDate = finalDate;
-        this.startDate = propagator.getInitialState()
-                                   .getDate();
+        this.finalDate = propagator.getMaxDate();
+        this.startDate = propagator.getMinDate();
     }
 
     public SatelliteBuilder withModelPath(final String modelPathInput) throws URISyntaxException, IOException {
@@ -90,6 +89,11 @@ public class SatelliteBuilder {
 
     public SatelliteBuilder withStartDate(final AbsoluteDate startDateInput) {
         this.startDate = startDateInput;
+        return this;
+    }
+
+    public SatelliteBuilder withFinalDate(final AbsoluteDate stopDateInput) {
+        this.finalDate = stopDateInput;
         return this;
     }
 

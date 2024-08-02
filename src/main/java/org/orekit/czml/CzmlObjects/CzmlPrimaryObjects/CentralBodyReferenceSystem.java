@@ -96,9 +96,24 @@ public class CentralBodyReferenceSystem extends AbstractPrimaryObject implements
         vectorToZ.add(centralCartesian);
         vectorToZ.add(plusZCartesian);
 
-        final Polyline XPolyline = new Polyline(vectorToX, getAvailability(), color1, 1, 1e9);
-        final Polyline YPolyline = new Polyline(vectorToY, getAvailability(), color2, 1, 1e9);
-        final Polyline ZPolyline = new Polyline(vectorToZ, getAvailability(), color3, 1, 1e9);
+        final Polyline XPolyline = Polyline.vectorBuilder(vectorToX)
+                                           .withAvailability(getAvailability())
+                                           .withColor(color1)
+                                           .withNearDistance(1)
+                                           .withFarDistance(1e9)
+                                           .build();
+        final Polyline YPolyline = Polyline.vectorBuilder(vectorToY)
+                                           .withAvailability(getAvailability())
+                                           .withColor(color2)
+                                           .withNearDistance(1)
+                                           .withFarDistance(1e9)
+                                           .build();
+        final Polyline ZPolyline = Polyline.vectorBuilder(vectorToZ)
+                                           .withAvailability(getAvailability())
+                                           .withColor(color3)
+                                           .withNearDistance(1)
+                                           .withFarDistance(1e9)
+                                           .build();
         this.polylines.add(XPolyline);
         this.polylines.add(YPolyline);
         this.polylines.add(ZPolyline);

@@ -167,7 +167,11 @@ public class FieldOfObservation extends AbstractPrimaryObject implements CzmlPri
 
             for (int i = 0; i < footprintsInTime.size(); i++) {
                 try (PacketCesiumWriter packet = STREAM.openPacket(OUTPUT)) {
-                    final Polyline currentPolyline = new Polyline(referenceSatellite, groundReferences.get(i), polylineColor);
+                    final Polyline currentPolyline = Polyline.nonVectorBuilder()
+                                                             .withFirstReference(referenceSatellite)
+                                                             .withSecondReference(groundReferences.get(i))
+                                                             .withColor(polylineColor)
+                                                             .build();
                     currentPolyline.setArcType(CesiumArcType.NONE);
                     packet.writeId(currentPolyline.toString());
                     packet.writeName("Line of the Line of observation : " + currentPolyline);
@@ -181,7 +185,11 @@ public class FieldOfObservation extends AbstractPrimaryObject implements CzmlPri
                 final Reference currentPointReference = new Reference(currentPoint.getId() + DEFAULT_H_POSITION);
                 final Reference secondPointReference = new Reference(nextPoint.getId() + DEFAULT_H_POSITION);
                 try (PacketCesiumWriter packet = STREAM.openPacket(OUTPUT)) {
-                    final Polyline currentPolyline = new Polyline(currentPointReference, secondPointReference, polylineColor);
+                    final Polyline currentPolyline = Polyline.nonVectorBuilder()
+                                                             .withFirstReference(currentPointReference)
+                                                             .withSecondReference(secondPointReference)
+                                                             .withColor(polylineColor)
+                                                             .build();
                     currentPolyline.setArcType(CesiumArcType.NONE);
                     packet.writeId(currentPolyline.toString());
                     packet.writeName("Outline of the line of observation : " + currentPolyline);
@@ -193,7 +201,11 @@ public class FieldOfObservation extends AbstractPrimaryObject implements CzmlPri
             final Reference lastPointReference = new Reference(lastPoint.getId() + DEFAULT_H_POSITION);
             final Reference firstPointReference = new Reference(firstPoint.getId() + DEFAULT_H_POSITION);
             try (PacketCesiumWriter packet = STREAM.openPacket(OUTPUT)) {
-                final Polyline currentPolyline = new Polyline(lastPointReference, firstPointReference, polylineColor);
+                final Polyline currentPolyline = Polyline.nonVectorBuilder()
+                                                         .withFirstReference(lastPointReference)
+                                                         .withSecondReference(firstPointReference)
+                                                         .withColor(polylineColor)
+                                                         .build();
                 currentPolyline.setArcType(CesiumArcType.NONE);
                 packet.writeId(currentPolyline.toString());
                 packet.writeName("Outline of the last line of observation : " + currentPolyline);

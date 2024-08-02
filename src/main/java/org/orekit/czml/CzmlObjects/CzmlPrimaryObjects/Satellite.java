@@ -406,9 +406,8 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
 //        this.period = orbitTemp.get(0).getKeplerianPeriod();
 //    }
 
-    public Satellite(final BoundedPropagator propagator, final AbsoluteDate finalDate) throws URISyntaxException, IOException {
-        this(propagator, propagator.getInitialState()
-                                   .getDate(), finalDate, DEFAULT_MODEL_PATH, DEFAULT_COLOR);
+    public Satellite(final BoundedPropagator propagator) throws URISyntaxException, IOException {
+        this(propagator, propagator.getMinDate(), propagator.getMaxDate(), DEFAULT_MODEL_PATH, DEFAULT_COLOR);
     }
 
     public Satellite(final BoundedPropagator propagator, final AbsoluteDate startDateInput, final AbsoluteDate finalDateInput, final String modelPath, final Color color) throws URISyntaxException, IOException {
@@ -448,8 +447,8 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
                                          .getKeplerianPeriod();
     }
 
-    public static SatelliteBuilder builder(final BoundedPropagator propagator, final AbsoluteDate finalDate) {
-        return new SatelliteBuilder(propagator, finalDate);
+    public static SatelliteBuilder builder(final BoundedPropagator propagator) {
+        return new SatelliteBuilder(propagator);
     }
 
     // Overrides
@@ -636,16 +635,16 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
         optionalRotation = inputRotation;
     }
 
-    public void setAllSpaceCraftStates(final List<SpacecraftState> allSpaceCraftStatesInput) {
-        this.allSpaceCraftStates = allSpaceCraftStatesInput;
-    }
-
     public void resetSpacecraftStates() {
         this.allSpaceCraftStates = new ArrayList<>();
     }
 
     public List<SpacecraftState> getAllSpaceCraftStates() {
         return allSpaceCraftStates;
+    }
+
+    public void setAllSpaceCraftStates(final List<SpacecraftState> allSpaceCraftStatesInput) {
+        this.allSpaceCraftStates = allSpaceCraftStatesInput;
     }
 
     public void displayOnlyOnePeriod() {

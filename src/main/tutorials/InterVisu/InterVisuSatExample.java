@@ -127,12 +127,12 @@ public class InterVisuSatExample {
         final BoundedPropagator secondBoundedPropagator = secondGenerator.getGeneratedEphemeris();
 
         // Creation of the satellites
-        final Satellite firstSatellite = Satellite.builder(firstBoundedPropagator, finalDate)
+        final Satellite firstSatellite = Satellite.builder(firstBoundedPropagator)
                                                   .withColor(Color.MAGENTA)
                                                   .displayOnlyOnePeriod()
                                                   .build();
 
-        final Satellite secondSatellite = Satellite.builder(secondBoundedPropagator, finalDate)
+        final Satellite secondSatellite = Satellite.builder(secondBoundedPropagator)
                                                    .withColor(Color.GREEN)
                                                    .displayOnlyOnePeriod()
                                                    .build();

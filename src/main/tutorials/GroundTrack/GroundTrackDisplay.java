@@ -114,7 +114,7 @@ public class GroundTrackDisplay {
         final BoundedPropagator boundedPropagator = generator.getGeneratedEphemeris();
 
         // Creation of the satellite
-        final Satellite satellite = Satellite.builder(boundedPropagator, finalDate)
+        final Satellite satellite = Satellite.builder(boundedPropagator)
                                              .build();
 
         // Creation of the model of the earth.

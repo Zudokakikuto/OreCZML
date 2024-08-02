@@ -112,7 +112,7 @@ public class ModelLoading {
         final BoundedPropagator boundedPropagator = generator.getGeneratedEphemeris();
 
         // Build of the satellite
-        final Satellite satellite = Satellite.builder(boundedPropagator, finalDate)
+        final Satellite satellite = Satellite.builder(boundedPropagator)
                                              .withModelPath(IssModel)
                                              .displayOnlyOnePeriod()
                                              .displayReferenceSystem()

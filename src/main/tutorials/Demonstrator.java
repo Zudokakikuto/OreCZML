@@ -160,7 +160,7 @@ public class Demonstrator {
         final BoundedPropagator boundedPropagator = generator.getGeneratedEphemeris();
 
         // Creation of the satellite
-        final Satellite satellite = Satellite.builder(boundedPropagator, finalDate)
+        final Satellite satellite = Satellite.builder(boundedPropagator)
                                              .withModelPath(IssModel)
                                              .withColor(Color.RED)
                                              .displayOnlyOnePeriod()
@@ -180,6 +180,7 @@ public class Demonstrator {
                                                                                            .getInverse(), initialInertToBody);
         // A circular field of view
         //final FieldOfView fov = new CircularFieldOfView(Vector3D.PLUS_J, FastMath.toRadians(50), 2);
+
         // A rectangular field of view
         final FieldOfView fov = new DoubleDihedraFieldOfView(Vector3D.PLUS_J, Vector3D.PLUS_I, FastMath.toRadians(20), Vector3D.PLUS_K, FastMath.toRadians(5), 2);
         final FieldOfObservation fieldOfObservation = FieldOfObservation.builder(satellite, fov, initialFovBody)

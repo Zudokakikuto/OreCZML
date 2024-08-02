@@ -223,7 +223,8 @@ public class Constellation extends AbstractPrimaryObject implements CzmlPrimaryO
     private void defineMultipleArgument(final AbsoluteDate finalDate, final String model3DPath, final List<Color> colorList) throws URISyntaxException, IOException {
         for (int i = 0; i < allPropagators.size(); i++) {
             final BoundedPropagator propagator = allPropagators.get(i);
-            final Satellite currentSatellite = Satellite.builder(propagator, finalDate)
+            final Satellite currentSatellite = Satellite.builder(propagator)
+                                                        .withFinalDate(finalDate)
                                                         .withModelPath(model3DPath)
                                                         .withColor(colorList.get(i))
                                                         .build();
