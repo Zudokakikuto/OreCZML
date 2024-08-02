@@ -20,7 +20,10 @@ import cesiumlanguagewriter.JulianDate;
 import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.TimeInterval;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
+import org.orekit.attitudes.Attitude;
+import org.orekit.attitudes.AttitudeProvider;
 import org.orekit.czml.CzmlObjects.CzmlAbstractObjects.CzmlModel;
+import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.Orientation;
 import org.orekit.forces.maneuvers.Maneuver;
 import org.orekit.propagation.BoundedPropagator;
 import org.orekit.propagation.SpacecraftState;
@@ -41,7 +44,8 @@ public class ManeuverSequence extends AbstractPrimaryObject implements CzmlPrima
      * .
      */
     public static final String DEFAULT_NAME = "Maneuvers : ";
-
+    /** .*/
+    public static final String DEFAULT_PATH_MODEL = Header.DEFAULT_RESOURCES + "/maneuver_model.glb";
     /**
      * .
      */
@@ -54,6 +58,10 @@ public class ManeuverSequence extends AbstractPrimaryObject implements CzmlPrima
      * .
      */
     private List<SpacecraftState> states;
+    /** .*/
+    private List<List<Attitude>> attitudesManeuvers = new ArrayList<>();
+    /** .*/
+    private List<TimeInterval> availabilitiesManeuvers = new ArrayList<>();
     /**
      * .
      */
@@ -62,16 +70,18 @@ public class ManeuverSequence extends AbstractPrimaryObject implements CzmlPrima
      * .
      */
     private CzmlModel model;
+    /** .*/
+    private List<Orientation> orientations = new ArrayList<>();
     /**
      * .
      */
     private boolean shouldAnimate = false;
-    /**
-     * .
-     */
-    private List<Vector3D> accelerations = new ArrayList<>();
 
-    public ManeuverSequence(final List<Maneuver> maneuversInput, final Satellite satellite, final double timeShiftInput) {
+    public ManeuverSequence(final List<Maneuver> maneuversInput, final Satellite satellite, final double timeShift) throws URISyntaxException, IOException {
+        this(maneuversInput, satellite, timeShift, DEFAULT_PATH_MODEL);
+    }
+
+    public ManeuverSequence(final List<Maneuver> maneuversInput, final Satellite satellite, final double timeShiftInput, final String pathModel) throws URISyntaxException, IOException {
         this.maneuvers = maneuversInput;
         this.propagator = satellite.getBoundedPropagator();
         this.timeShift = timeShiftInput;
@@ -85,40 +95,27 @@ public class ManeuverSequence extends AbstractPrimaryObject implements CzmlPrima
         final JulianDate startDate = absoluteDateToJulianDate(propagator.getMinDate());
         final JulianDate stopDate = absoluteDateToJulianDate(propagator.getMaxDate());
         this.setAvailability(new TimeInterval(startDate, stopDate));
-        SpacecraftState currentState = allStates.get(0);
-        while (currentState.getDate()
-                           .isBefore(allStates.get(allStates.size() - 1)
-                                              .getDate())) {
-            states.add(currentState);
-            currentState = currentState.shiftedBy(timeShiftInput);
-        }
-
-        int indiceManeuver = 0;
-        for (int i = 0; i < states.size() - 1; i++) {
-            final SpacecraftState state = states.get(i);
-            final SpacecraftState nextState = states.get(i + 1);
-            final Maneuver currentManeuver = maneuvers.get(indiceManeuver);
-            final Vector3D currentAcceleration = currentManeuver.acceleration(state, currentManeuver.getParameters(state.getDate()));
-            final Vector3D nextAcceleration = currentManeuver.acceleration(nextState, currentManeuver.getParameters(nextState.getDate()));
-            if (currentAcceleration.getNorm() > 0) {
-                if (nextAcceleration.getNorm() < 0) {
-                    indiceManeuver = indiceManeuver + 1;
-                }
-                accelerations.add(currentAcceleration);
-            }
-        }
+        this.states = generateAllDiscreteStates(allStates, timeShiftInput);
+        this.attitudesManeuvers = generateAllAttitudesManeuvers(states, maneuvers);
+        this.model = new CzmlModel(pathModel);
+        this.orientations = generateOrientationManeuvers(attitudesManeuvers);
+        this.availabilitiesManeuvers = generateAvailabilitiesManeuvers(attitudesManeuvers);
     }
 
     @Override
     public void writeCzmlBlock() throws URISyntaxException, IOException {
         OUTPUT.setPrettyFormatting(true);
         for (int i = 0; i < maneuvers.size(); i++) {
-            final Maneuver currentManeuver = maneuvers.get(i);
+            final Orientation currentOrientation = orientations.get(i);
+            final TimeInterval currentAvailability = availabilitiesManeuvers.get(i);
             try (PacketCesiumWriter packet = STREAM.openPacket(OUTPUT)) {
                 packet.writeId(getId());
                 packet.writeName(getName());
-                packet.writeAvailability(getAvailability());
+                packet.writeAvailability(currentAvailability);
 
+                currentOrientation.write(packet, OUTPUT);
+
+                model.generateCZML(packet, OUTPUT);
             }
         }
     }
@@ -131,5 +128,67 @@ public class ManeuverSequence extends AbstractPrimaryObject implements CzmlPrima
     @Override
     public void cleanObject() {
 
+    }
+
+
+    private List<SpacecraftState> generateAllDiscreteStates(final List<SpacecraftState> allStates, final double timeShiftInput) {
+        final List<SpacecraftState> statesTemp = new ArrayList<>();
+        SpacecraftState currentState = allStates.get(0);
+        while (currentState.getDate()
+                           .isBefore(allStates.get(allStates.size() - 1)
+                                              .getDate())) {
+            statesTemp.add(currentState);
+            currentState = currentState.shiftedBy(timeShiftInput);
+        }
+        return statesTemp;
+    }
+
+    private List<List<Attitude>> generateAllAttitudesManeuvers(final List<SpacecraftState> statesInput, final List<Maneuver> maneuversInput) {
+        final List<List<Attitude>> toReturn = new ArrayList<>();
+        final List<Attitude> tempToReturn = new ArrayList<>();
+        for (int i = 0; i < statesInput.size() - 1; i++) {
+
+            final SpacecraftState state = statesInput.get(i);
+            final SpacecraftState nextState = statesInput.get(i + 1);
+
+            for (int j = 0; j < maneuversInput.size(); j++) {
+
+                final Maneuver currentManeuver = maneuversInput.get(j);
+                final AttitudeProvider attitudeOverride = currentManeuver.getAttitudeOverride();
+
+                final Vector3D currentAcceleration = currentManeuver.acceleration(state, currentManeuver.getParameters(state.getDate()));
+                final Vector3D nextAcceleration = currentManeuver.acceleration(nextState, currentManeuver.getParameters(nextState.getDate()));
+
+                if (currentAcceleration.getNorm() > 0) {
+                    tempToReturn.add(attitudeOverride.getAttitude(state.getOrbit(), state.getDate(), state.getFrame()));
+                }
+
+                if (currentAcceleration.getNorm() > 0 && nextAcceleration.getNorm() < 0) {
+                    break;
+                }
+            }
+            toReturn.add(tempToReturn);
+        }
+        return toReturn;
+    }
+
+    private List<Orientation> generateOrientationManeuvers(final List<List<Attitude>> allAttitudeByManeuver) {
+        final List<Orientation> toReturn = new ArrayList<>();
+        for (final List<Attitude> attitudesGivenManeuver : allAttitudeByManeuver) {
+            toReturn.add(new Orientation(attitudesGivenManeuver, propagator.getFrame()));
+        }
+        return toReturn;
+    }
+
+    private List<TimeInterval> generateAvailabilitiesManeuvers(final List<List<Attitude>> allAttitudeByManeuver) {
+        final List<TimeInterval> toReturn = new ArrayList<>();
+        for (final List<Attitude> currentListOfAttitude : allAttitudeByManeuver) {
+            final JulianDate startDate = absoluteDateToJulianDate(currentListOfAttitude.get(0)
+                                                                                       .getDate());
+            final JulianDate stopDate = absoluteDateToJulianDate(currentListOfAttitude.get(currentListOfAttitude.size() - 1)
+                                                                                      .getDate());
+            toReturn.add(new TimeInterval(startDate, stopDate));
+        }
+        return toReturn;
     }
 }

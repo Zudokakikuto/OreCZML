@@ -26,6 +26,7 @@ import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.GroundTrack;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Header;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.InterSatVisu;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.LineOfVisibility;
+import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.ManeuverSequence;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Satellite;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.SatelliteReferenceSystem;
 import org.orekit.frames.TopocentricFrame;
@@ -89,6 +90,8 @@ public class CzmlFileBuilder {
      * .
      */
     private List<FieldOfObservation> fields = new ArrayList<>();
+    /** .*/
+    private List<ManeuverSequence> maneuverSequences = new ArrayList<>();
     /**
      * .
      */
@@ -249,6 +252,18 @@ public class CzmlFileBuilder {
 
     public CzmlFileBuilder withInterSatVisu(final List<InterSatVisu> visuInputs) {
         this.visus.addAll(visuInputs);
+        return this;
+    }
+
+
+    // Maneuver sequence
+    public CzmlFileBuilder withManeuverSequence(final ManeuverSequence maneuverSequenceInput) {
+        this.maneuverSequences.add(maneuverSequenceInput);
+        return this;
+    }
+
+    public CzmlFileBuilder withManeuverSequence(final List<ManeuverSequence> maneuverSequencesInput) {
+        this.maneuverSequences.addAll(maneuverSequencesInput);
         return this;
     }
 
