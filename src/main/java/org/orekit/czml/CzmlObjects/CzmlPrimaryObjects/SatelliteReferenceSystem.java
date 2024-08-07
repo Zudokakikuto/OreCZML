@@ -68,7 +68,7 @@ public class SatelliteReferenceSystem extends AbstractPrimaryObject implements C
     // Builders
 
     SatelliteReferenceSystem(final Satellite satellite) throws URISyntaxException, IOException {
-        this(satellite, 0.02, 1000000, 200);
+        this(satellite, 0.02, 200000, 250);
     }
 
     SatelliteReferenceSystem(final Satellite satellite, final double scale, final double maximumScale, final double minimumPixelSize) throws URISyntaxException, IOException {

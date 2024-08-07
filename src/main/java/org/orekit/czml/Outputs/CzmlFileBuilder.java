@@ -311,6 +311,7 @@ public class CzmlFileBuilder {
         this.addFieldOfObservation(toReturn);
         this.addLineOfVisibility(toReturn);
         this.addInterSatVisu(toReturn);
+        this.addManeuverSequence(toReturn);
         this.addGroundTrack(toReturn);
         this.addSatelliteReferenceSystem(toReturn);
         this.addCentralBodyReferenceSystem(toReturn);
@@ -363,6 +364,12 @@ public class CzmlFileBuilder {
     private void addInterSatVisu(final CzmlFile file) {
         for (InterSatVisu visu : visus) {
             file.addObject(visu);
+        }
+    }
+
+    private void addManeuverSequence(final CzmlFile file) {
+        for (ManeuverSequence maneuverSequence : maneuverSequences) {
+            file.addObject(maneuverSequence);
         }
     }
 

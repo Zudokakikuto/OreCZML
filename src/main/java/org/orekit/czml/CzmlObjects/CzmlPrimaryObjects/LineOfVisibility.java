@@ -166,7 +166,8 @@ public class LineOfVisibility extends AbstractPrimaryObject implements CzmlPrima
             packet.writeName(this.getName());
             packet.writeAvailability(this.getTimeIntervals());
             this.writePolyline(packet);
-        }        //cleanObject();
+        }
+        cleanObject();
     }
 
     // GETS
@@ -223,8 +224,6 @@ public class LineOfVisibility extends AbstractPrimaryObject implements CzmlPrima
 
     private void buildSingleTimeIntervalsAndVisu(final TopocentricFrame topocentricFrame, final Satellite satellite_input) {
 
-        final List<Boolean> visuListTemp = new ArrayList<>();
-        final List<TimeInterval> timeIntervalsTemp = new ArrayList<>();
 
         final BoundedPropagator boundedPropagator = satellite_input.getBoundedPropagator();
         final GregorianDate firstGregorianDate = new GregorianDate(1, 1, 1, 0, 0, 0.0);
@@ -244,9 +243,9 @@ public class LineOfVisibility extends AbstractPrimaryObject implements CzmlPrima
         final double enVisu = visuDetector.g(initialState);
 
         if (enVisu > 0) {
-            visuListTemp.add(true);
+            visuList.add(true);
         } else {
-            visuListTemp.add(false);
+            visuList.add(false);
         }
 
         boundedPropagator.addEventDetector(visuDetector);
@@ -256,40 +255,40 @@ public class LineOfVisibility extends AbstractPrimaryObject implements CzmlPrima
             if (span.getEnd()
                     .isAfter(julianDateToAbsoluteDate(Header.MASTER_CLOCK.getAvailability()
                                                                          .getStop(), timeScale))) {
-                if (visuListTemp.get(visuListTemp.size() - 1)) {
-                    visuListTemp.add(false);
+                if (visuList.get(visuList.size() - 1)) {
+                    visuList.add(false);
                 } else {
-                    visuListTemp.add(true);
+                    visuList.add(true);
                 }
                 final JulianDate startDate = absoluteDateToJulianDate(span.getStart());
                 final JulianDate stopDate = Header.MASTER_CLOCK.getAvailability()
                                                                .getStop();
                 final TimeInterval currentTimeInterval = new TimeInterval(startDate, stopDate);
-                timeIntervalsTemp.add(currentTimeInterval);
+                timeIntervals.add(currentTimeInterval);
             } else {
-                visuListTemp.add(span.getData());
+                visuList.add(span.getData());
                 final JulianDate startDate = absoluteDateToJulianDate(span.getStart());
                 final JulianDate stopDate = absoluteDateToJulianDate(span.getEnd());
                 final TimeInterval currentTimeInterval = new TimeInterval(startDate, stopDate);
-                timeIntervalsTemp.add(currentTimeInterval);
+                timeIntervals.add(currentTimeInterval);
             }
         }
 
-        if (timeIntervalsTemp.size() > 1) {
+        if (timeIntervals.size() > 1) {
 
-            final JulianDate firstStopDate = timeIntervalsTemp.get(0)
+            final JulianDate firstStopDate = timeIntervals.get(0)
                                                               .getStart();
             final TimeInterval firstTimeInterval = new TimeInterval(firstStartDate, firstStopDate);
 
             if (enVisu > 0) {
-                timeIntervalsTemp.add(0, firstTimeInterval);
+                timeIntervals.add(0, firstTimeInterval);
             } else {
-                timeIntervalsTemp.add(0, firstTimeInterval);
+                timeIntervals.add(0, firstTimeInterval);
             }
         }
-        if (timeIntervalsTemp.size() == 1) {
+        if (timeIntervals.size() == 1) {
             System.out.println(DEFAULT_NOT_SEEN + topocentricFrame.getName() + DEFAULT_NOT_SEEN_2);
-            timeIntervalsTemp.add(new TimeInterval(firstStartDate, lastDate));
+            timeIntervals.add(new TimeInterval(firstStartDate, lastDate));
         }
 
         boundedPropagator.clearEventsDetectors();
