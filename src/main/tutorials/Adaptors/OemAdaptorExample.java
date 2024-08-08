@@ -46,9 +46,9 @@ public class OemAdaptorExample {
 
     public static void main(final String[] args) throws Exception {
         try {
-            final File home = new File(System.getProperty("user.home"));
-            final File orekitDir = new File(home, "orekit-data");
-            final DataProvider provider = new DirectoryCrawler(orekitDir);
+            final File         home      = new File(System.getProperty("user.home"));
+            final File         orekitDir = new File(home, "orekit-data");
+            final DataProvider provider  = new DirectoryCrawler(orekitDir);
             DataContext.getDefault()
                        .getDataProvidersManager()
                        .addProvider(provider);
@@ -61,31 +61,31 @@ public class OemAdaptorExample {
                                   .replace("\\", "/");
         final String outputPath = root + "/Output";
         final String outputName = "Output.czml";
-        final String output = outputPath + "/" + outputName;
-        final String OemPath = root + "/src/main/resources/OemTest.xml";
+        final String output     = outputPath + "/" + outputName;
+        final String OemPath    = root + "/src/main/resources/OemTest.xml";
 
         // File created
         final CzmlFile file = new CzmlFile(output);
 
         // Creation of the Oem
-        final DataSource dataSource = new DataSource(OemPath);
+        final DataSource    dataSource    = new DataSource(OemPath);
         final ParserBuilder parserBuilder = new ParserBuilder();
-        final OemParser oemParser = parserBuilder.buildOemParser();
-        final Oem oem = oemParser.parse(dataSource);
+        final OemParser     oemParser     = parserBuilder.buildOemParser();
+        final Oem           oem           = oemParser.parse(dataSource);
 
         // Creation of oem
-        final OemAdaptor adaptor = new OemAdaptor(oem);
-        final Propagator oemPropagator = adaptor.buildPropagator();
-        final AbsoluteDate startDate = adaptor.buildStartDate();
-        final AbsoluteDate finalDate = adaptor.buildFinalDate();
-        final EphemerisGenerator generator = oemPropagator.getEphemerisGenerator();
+        final OemAdaptor         adaptor       = new OemAdaptor(oem);
+        final Propagator         oemPropagator = adaptor.buildPropagator();
+        final AbsoluteDate       startDate     = adaptor.buildStartDate();
+        final AbsoluteDate       finalDate     = adaptor.buildFinalDate();
+        final EphemerisGenerator generator     = oemPropagator.getEphemerisGenerator();
         oemPropagator.propagate(startDate, finalDate);
         final BoundedPropagator oemBoundedPropagator = generator.getGeneratedEphemeris();
 
         // Creation of the clock
-        final TimeScale UTC = TimeScalesFactory.getUTC();
-        final double stepBetweenEachInstant = 60.0; // in seconds
-        final Clock clock = new Clock(startDate, finalDate, UTC, stepBetweenEachInstant);
+        final TimeScale UTC                    = TimeScalesFactory.getUTC();
+        final double    stepBetweenEachInstant = 60.0; // in seconds
+        final Clock     clock                  = new Clock(startDate, finalDate, UTC, stepBetweenEachInstant);
 
         // Creation of the header
         final Header header = new Header("Oem Adaptor Example", clock);

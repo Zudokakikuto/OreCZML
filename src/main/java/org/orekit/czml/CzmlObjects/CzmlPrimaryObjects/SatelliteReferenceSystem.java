@@ -24,46 +24,46 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
 
+/**
+ * Satellite reference system class
+ *
+ * <p> The reference system of the satellite and its axis. </p>
+ *
+ * @author Julien LEBLOND.
+ * @since 1.0.0
+ */
+
 public class SatelliteReferenceSystem extends AbstractPrimaryObject implements CzmlPrimaryObject {
 
-    /**
-     * .
-     */
+    /** The default ID for the reference system. */
     public static final String DEFAULT_ID = "REFERENCE SYSTEM/";
-    /**
-     * .
-     */
+
+    /** The default name for the reference system. */
     public static final String DEFAULT_NAME = "Reference system of : ";
-    /**
-     * .
-     */
+
+    /** This allows to create the reference of the position of an object. */
     public static final String DEFAULT_H_POSITION = "#position";
-    /**
-     * .
-     */
+
+    /** This allows to create the reference of the orientation of an object. */
     public static final String DEFAULT_H_ORIENTATION = "#orientation";
-    /**
-     * .
-     */
-    public static final String PATH_TO_REFERENCE_SYSTEM = Header.DEFAULT_RESOURCES + "/referenceSystem.glb";
+
+    /** The default 3D model used to represent the satellite reference system. */
+    public static final String PATH_TO_REFERENCE_SYSTEM = Header.DEFAULT_RESOURCES + "/Default3DModels/referenceSystem.glb";
+
 
     // Intrinsic parameters
-    /**
-     * .
-     */
+    /** The reference in position of the satellite. */
     private Reference referencePosition;
-    /**
-     * .
-     */
+
+    /** The reference in orientation of the satellite. */
     private Reference referenceOrientation;
-    /**
-     * .
-     */
+
+    /** The satellite which the system will be around. */
     private Satellite satellite;
-    /**
-     * .
-     */
+
+    /** The model loaded to represents the system. */
     private CzmlModel referenceSystemModel;
+
 
     // Builders
 
@@ -71,12 +71,13 @@ public class SatelliteReferenceSystem extends AbstractPrimaryObject implements C
         this(satellite, 0.02, 200000, 250);
     }
 
-    SatelliteReferenceSystem(final Satellite satellite, final double scale, final double maximumScale, final double minimumPixelSize) throws URISyntaxException, IOException {
+    SatelliteReferenceSystem(final Satellite satellite, final double scale, final double maximumScale,
+                             final double minimumPixelSize) throws URISyntaxException, IOException {
         this.satellite = satellite;
         this.setId(DEFAULT_ID + satellite.getId());
         this.setName(DEFAULT_NAME + satellite.getName());
         this.setAvailability(satellite.getAvailability());
-        this.referencePosition = new Reference(satellite.getId() + DEFAULT_H_POSITION);
+        this.referencePosition    = new Reference(satellite.getId() + DEFAULT_H_POSITION);
         this.referenceOrientation = new Reference(satellite.getId() + DEFAULT_H_ORIENTATION);
         this.referenceSystemModel = new CzmlModel(PATH_TO_REFERENCE_SYSTEM, maximumScale, minimumPixelSize, scale);
     }
@@ -103,9 +104,9 @@ public class SatelliteReferenceSystem extends AbstractPrimaryObject implements C
 
     @Override
     public void cleanObject() {
-        referencePosition = null;
+        referencePosition    = null;
         referenceOrientation = null;
-        satellite = null;
+        satellite            = null;
         referenceSystemModel = null;
         setAvailability(null);
         setName("");

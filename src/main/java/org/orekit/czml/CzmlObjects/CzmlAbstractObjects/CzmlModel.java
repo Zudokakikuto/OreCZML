@@ -51,65 +51,49 @@ import java.nio.file.StandardCopyOption;
  */
 
 public class CzmlModel {
-    /**
-     * The default string to reference in local.
-     */
+    /** The default string to reference in local. */
     public static final String DEFAULT_SLASH_LOCAL = "./";
-    /**
-     * .
-     */
+
+    /** . */
     public static final String DEFAULT_MODEL_NAME = "satellite.png";
-    /**
-     * A boolean to show or not the model.
-     */
+
+    /** A boolean to show or not the model. */
     private final boolean show;
-    /**
-     * The URI of the model.
-     */
+
+    /** The URI of the model. */
     private URI uri;
-    /**
-     * The scale of the model, change the width/height for 2D or all the geometrical parameters for 3D.
-     */
+
+    /** The scale of the model, change the width/height for 2D or all the geometrical parameters for 3D. */
     private double scale;
-    /**
-     * The minimum pixel size of the display.
-     */
+
+    /** The minimum pixel size of the display. */
     private double minimumPixelSize;
-    /**
-     * The maximum pixel size of the display.
-     */
+
+    /** The maximum pixel size of the display. */
     private double maximumScale;
-    /**
-     * The time interval when the model is displayed.
-     */
+
+    /** The time interval when the model is displayed. */
     private TimeInterval availability;
-    /**
-     * The absolute path of the file for 2D or 3D model.
-     */
+
+    /** The absolute path of the file for 2D or 3D model. */
     private String absolutePath;
-    /**
-     * The relative path of the file created in : OreCZML/JavaScript/public/.
-     */
+
+    /** The relative path of the file created in : OreCZML/JavaScript/public/. */
     private String relativePath;
-    /**
-     * The name of the object loaded.
-     */
+
+    /** The name of the object loaded. */
     private String nameOfObject;
-    /**
-     * The type of the mode, either 2D or 3D.
-     */
+
+    /** The type of the mode, either 2D or 3D. */
     private ModelType modelType;
-    /**
-     * Used only for 2D models, a billboard to display the 2D image.
-     */
+
+    /** Used only for 2D models, a billboard to display the 2D image. */
     private Billboard billboard;
-    /**
-     * The string representing the extension of the file used. This is used to determine the type of the file.
-     */
+
+    /** The string representing the extension of the file used. This is used to determine the type of the file. */
     private String extension;
-    /**
-     * The duplicated file in local at the relative path.
-     */
+
+    /** The duplicated file in local at the relative path. */
     private File duplicatedLocalFile;
 
     /**
@@ -129,39 +113,43 @@ public class CzmlModel {
      * @param minimumPixelSizeInput : The minimum of pixels display for the object
      * @param scale                 : The scale of the 3D model
      */
-    public CzmlModel(final String absolutePathToObject, final double maximumScale, final double minimumPixelSizeInput, final double scale) throws URISyntaxException, IOException {
+    public CzmlModel(final String absolutePathToObject, final double maximumScale, final double minimumPixelSizeInput,
+                     final double scale) throws URISyntaxException, IOException {
         this.modelType = getModelTypeFromString(absolutePathToObject);
 
         if (this.modelType == ModelType.MODEL_3D) {
             this.absolutePath = absolutePathToObject;
             this.duplicateFile(absolutePathToObject);
-            this.availability = Header.MASTER_CLOCK.getAvailability();
-            this.uri = new URI(DEFAULT_SLASH_LOCAL + nameOfObject);
-            this.show = true;
+            this.availability     = Header.getMasterClock()
+                                          .getAvailability();
+            this.uri              = new URI(DEFAULT_SLASH_LOCAL + nameOfObject);
+            this.show             = true;
             this.minimumPixelSize = minimumPixelSizeInput;
-            this.maximumScale = maximumScale;
-            this.scale = scale;
+            this.maximumScale     = maximumScale;
+            this.scale            = scale;
         } else if (this.modelType == ModelType.MODEL_2D) {
             this.absolutePath = absolutePathToObject;
             duplicateFile(absolutePathToObject);
-            final BufferedImage image = ImageIO.read(duplicatedLocalFile);
-            final int height = image.getHeight();
+            final BufferedImage image         = ImageIO.read(duplicatedLocalFile);
+            final int           height        = image.getHeight();
             final NearFarScalar nearFarScalar = new NearFarScalar(1, (double) 80 / height, 1e9, (double) 80 / height);
-            this.uri = new URI(DEFAULT_SLASH_LOCAL + nameOfObject);
-            this.billboard = new Billboard(uri.toString(), nearFarScalar);
-            this.availability = Header.MASTER_CLOCK.getAvailability();
-            this.show = true;
+            this.uri          = new URI(DEFAULT_SLASH_LOCAL + nameOfObject);
+            this.billboard    = new Billboard(uri.toString(), nearFarScalar);
+            this.availability = Header.getMasterClock()
+                                      .getAvailability();
+            this.show         = true;
         } else {
             this.absolutePath = Header.DEFAULT_RESOURCES + "\\" + DEFAULT_MODEL_NAME;
             final GregorianDate startGregorianDate = new GregorianDate(1900, 1, 1, 0, 0, 0.0);
-            this.availability = Header.MASTER_CLOCK.getAvailability();
+            this.availability = Header.getMasterClock()
+                                      .getAvailability();
             duplicateFile(absolutePath);
-            final BufferedImage image = ImageIO.read(duplicatedLocalFile);
-            final int height = image.getHeight();
+            final BufferedImage image         = ImageIO.read(duplicatedLocalFile);
+            final int           height        = image.getHeight();
             final NearFarScalar nearFarScalar = new NearFarScalar(1, (double) 80 / height, 1e9, (double) 80 / height);
-            this.uri = new URI(DEFAULT_SLASH_LOCAL + nameOfObject);
+            this.uri       = new URI(DEFAULT_SLASH_LOCAL + nameOfObject);
             this.billboard = new Billboard(uri.toString(), nearFarScalar);
-            this.show = true;
+            this.show      = true;
         }
     }
 
@@ -176,7 +164,8 @@ public class CzmlModel {
             try (ModelCesiumWriter modelWriter = packet.getModelWriter()) {
                 modelWriter.open(output);
                 final CesiumResourceBehavior cesiumResourceBehavior = CesiumResourceBehavior.LINK_TO;
-                final CesiumResource cesiumResource = new CesiumResource(getUri(), cesiumResourceBehavior);
+                final CesiumResource cesiumResource = new CesiumResource(getUri(),
+                        cesiumResourceBehavior);
                 modelWriter.writeGltfProperty(cesiumResource);
                 modelWriter.writeScaleProperty(getScale());
                 modelWriter.writeMaximumScaleProperty(getMaximumScale());
@@ -269,6 +258,14 @@ public class CzmlModel {
         return uri;
     }
 
+    public boolean isShow() {
+        return show;
+    }
+
+    public File getDuplicatedLocalFile() {
+        return duplicatedLocalFile;
+    }
+
     /**
      * CZML writer only understands relative path, so we will need to duplicate the file to use it to write and then delete it.
      *
@@ -302,7 +299,7 @@ public class CzmlModel {
         if (absolutePathOfObject.isEmpty()) {
             return ModelType.EMPTY_MODEL;
         }
-        final String name = getNameOfObjectFromPath(absolutePathOfObject);
+        final String   name         = getNameOfObjectFromPath(absolutePathOfObject);
         final String[] nameSplitted = name.split("\\.");
         this.extension = nameSplitted[1];
         return checkFromExtension(extension);
@@ -315,7 +312,7 @@ public class CzmlModel {
      * @return : The string of the name of the file.
      */
     private String getNameOfObjectFromPath(final String absolutePathInputted) {
-        final String replacedPath = absolutePathInputted.replace("\\", "/");
+        final String   replacedPath         = absolutePathInputted.replace("\\", "/");
         final String[] absolutePathSplitted = replacedPath.split("/");
         return absolutePathSplitted[absolutePathSplitted.length - 1];
     }
@@ -328,12 +325,17 @@ public class CzmlModel {
      */
     private ModelType checkFromExtension(final String extensionInput) {
         // 3D Models supported
-        if (extensionInput.equals("3ds") || extensionInput.equals("3mf") || extensionInput.equals("dae") || extensionInput.equals("fbx") ||
-                extensionInput.equals("glb") || extensionInput.equals("max") || extensionInput.equals("obj") || extensionInput.equals("skp") ||
-                extensionInput.equals("stl") || extensionInput.equals("stp") || extensionInput.equals("vrml") || extensionInput.equals("x3d")) {
+        if (extensionInput.equals("3ds") || extensionInput.equals("3mf") || extensionInput.equals(
+                "dae") || extensionInput.equals("fbx") ||
+                extensionInput.equals("glb") || extensionInput.equals("max") || extensionInput.equals(
+                "obj") || extensionInput.equals("skp") ||
+                extensionInput.equals("stl") || extensionInput.equals("stp") || extensionInput.equals(
+                "vrml") || extensionInput.equals("x3d")) {
             return ModelType.MODEL_3D;
-        } else if (extensionInput.equals("avif") || extensionInput.equals("bpm") || extensionInput.equals("cgm") || extensionInput.equals("gif") ||
-                extensionInput.equals("heif") || extensionInput.equals("jpeg") || extensionInput.equals("png") || extensionInput.equals("svg") ||
+        } else if (extensionInput.equals("avif") || extensionInput.equals("bpm") || extensionInput.equals(
+                "cgm") || extensionInput.equals("gif") ||
+                extensionInput.equals("heif") || extensionInput.equals("jpeg") || extensionInput.equals(
+                "png") || extensionInput.equals("svg") ||
                 extensionInput.equals("tiff") || extensionInput.equals("webp")) {
             return ModelType.MODEL_2D;
         } else {

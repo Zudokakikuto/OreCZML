@@ -25,28 +25,21 @@ import java.net.URISyntaxException;
 
 public class LineOfVisibilityBuilder {
 
-    /**
-     * .
-     */
+    /** . */
     public static final double DEFAULT_ANGLE_OF_APERTURE = 80.0;
 
-    /**
-     * .
-     */
+    /** . */
     private TopocentricFrame topocentricFrame;
-    /**
-     * .
-     */
+
+    /** . */
     private Satellite satellite;
 
     // Optional parameters
-    /**
-     * .
-     */
+    /** . */
     private double angleOfAperture = DEFAULT_ANGLE_OF_APERTURE;
 
     public LineOfVisibilityBuilder(final TopocentricFrame topocentricFrameInput, final Satellite satelliteInput) {
-        this.satellite = satelliteInput;
+        this.satellite        = satelliteInput;
         this.topocentricFrame = topocentricFrameInput;
     }
 

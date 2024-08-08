@@ -55,9 +55,9 @@ public class ModelLoading {
 
     public static void main(final String[] args) throws Exception {
         try {
-            final File home = new File(System.getProperty("user.home"));
-            final File orekitDir = new File(home, "orekit-data");
-            final DataProvider provider = new DirectoryCrawler(orekitDir);
+            final File         home      = new File(System.getProperty("user.home"));
+            final File         orekitDir = new File(home, "orekit-data");
+            final DataProvider provider  = new DirectoryCrawler(orekitDir);
             DataContext.getDefault()
                        .getDataProvidersManager()
                        .addProvider(provider);
@@ -70,16 +70,16 @@ public class ModelLoading {
                                   .replace("\\", "/");
         final String outputPath = root + "/Output";
         final String outputName = "Output.czml";
-        final String output = outputPath + "/" + outputName;
-        final String IssModel = root + "/src/main/resources/ISSModel.glb";
+        final String output     = outputPath + "/" + outputName;
+        final String IssModel   = root + "/src/main/resources/Default3DModels/ISSModel.glb";
 
         // Creation of the clock.
-        final TimeScale UTC = TimeScalesFactory.getUTC();
-        final double durationOfSimulation = 10 * 3600; // in seconds;
-        final double stepBetweenEachInstant = 30.0; // in seconds
-        final AbsoluteDate startDate = new AbsoluteDate(2024, 3, 15, 0, 0, 0.0, UTC);
-        final AbsoluteDate finalDate = startDate.shiftedBy(durationOfSimulation);
-        final Clock clock = new Clock(startDate, finalDate, UTC, stepBetweenEachInstant);
+        final TimeScale    UTC                    = TimeScalesFactory.getUTC();
+        final double       durationOfSimulation   = 10 * 3600; // in seconds;
+        final double       stepBetweenEachInstant = 30.0; // in seconds
+        final AbsoluteDate startDate              = new AbsoluteDate(2024, 3, 15, 0, 0, 0.0, UTC);
+        final AbsoluteDate finalDate              = startDate.shiftedBy(durationOfSimulation);
+        final Clock        clock                  = new Clock(startDate, finalDate, UTC, stepBetweenEachInstant);
 
         // Build of the header
         final Header header = new Header("3D Model Loading", clock);
@@ -87,18 +87,24 @@ public class ModelLoading {
         //// Creation of the satellite
         // Creation of the orbit
         final Frame EME2000 = FramesFactory.getEME2000();
-        final KeplerianOrbit initialOrbit = new KeplerianOrbit(7878000, 0, FastMath.toRadians(20), 0, FastMath.toRadians(90), FastMath.toRadians(0), PositionAngleType.MEAN, EME2000, startDate, Constants.WGS84_EARTH_MU);
+        final KeplerianOrbit initialOrbit = new KeplerianOrbit(7878000, 0, FastMath.toRadians(20), 0,
+                FastMath.toRadians(90), FastMath.toRadians(0), PositionAngleType.MEAN, EME2000, startDate,
+                Constants.WGS84_EARTH_MU);
 
         final SpacecraftState initialState = new SpacecraftState(initialOrbit);
 
         final double positionTolerance = 10.0;
-        final double minStep = 0.001;
-        final double maxStep = 1000;
-        final NormalizedSphericalHarmonicsProvider provider = GravityFieldFactory.getNormalizedProvider(10, 10);
-        final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(EME2000, provider);
+        final double minStep           = 0.001;
+        final double maxStep           = 1000;
+        final NormalizedSphericalHarmonicsProvider provider = GravityFieldFactory.getNormalizedProvider(10,
+                10);
+        final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(EME2000,
+                provider);
 
-        final double[][] tolerances = NumericalPropagator.tolerances(positionTolerance, initialOrbit, OrbitType.CARTESIAN);
-        final AdaptiveStepsizeIntegrator integrator = new DormandPrince853Integrator(minStep, maxStep, tolerances[0], tolerances[1]);
+        final double[][] tolerances = NumericalPropagator.tolerances(positionTolerance, initialOrbit,
+                OrbitType.CARTESIAN);
+        final AdaptiveStepsizeIntegrator integrator = new DormandPrince853Integrator(minStep, maxStep, tolerances[0],
+                tolerances[1]);
 
         final NumericalPropagator propagator = new NumericalPropagator(integrator);
 

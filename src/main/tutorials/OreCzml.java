@@ -31,9 +31,9 @@ public class OreCzml {
     public static void main(final String[] args) throws Exception {
 
         try {
-            final File home = new File(System.getProperty("user.home"));
-            final File orekitDir = new File(home, "orekit-data");
-            final DataProvider provider = new DirectoryCrawler(orekitDir);
+            final File         home      = new File(System.getProperty("user.home"));
+            final File         orekitDir = new File(home, "orekit-data");
+            final DataProvider provider  = new DirectoryCrawler(orekitDir);
             DataContext.getDefault()
                        .getDataProvidersManager()
                        .addProvider(provider);

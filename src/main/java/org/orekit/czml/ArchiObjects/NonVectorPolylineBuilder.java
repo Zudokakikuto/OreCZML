@@ -26,74 +26,56 @@ import java.awt.Color;
 
 public class NonVectorPolylineBuilder {
 
-    /**
-     * .
-     */
+    /** . */
     public static final Color DEFAULT_COLOR = new Color(0, 255, 255, 255);
-    /**
-     * .
-     */
+
+    /** . */
     public static final double DEFAULT_WIDTH = 1;
-    /**
-     * .
-     */
+
+    /** . */
     public static final CesiumArcType DEFAULT_ARC_TYPE = CesiumArcType.NONE;
-    /**
-     * .
-     */
+
+    /** . */
     public static final boolean DEFAULT_SHOW = true;
-    /**
-     * .
-     */
-    public static final TimeInterval DEFAULT_AVAILABILITY = Header.MASTER_CLOCK.getAvailability();
-    /**
-     * .
-     */
+
+    /** . */
+    public static final TimeInterval DEFAULT_AVAILABILITY = Header.getMasterClock()
+                                                                  .getAvailability();
+
+    /** . */
     public static final Reference DEFAULT_REFERENCE = null;
-    /**
-     * .
-     */
+
+    /** . */
     public static final double DEFAULT_NEAR_DISTANCE = 1;
-    /**
-     * .
-     */
+
+    /** . */
     public static final double DEFAULT_FAR_DISTANCE = 100000000;
 
-    /**
-     * .
-     */
+    /** . */
     private Color color = DEFAULT_COLOR;
-    /**
-     * .
-     */
+
+    /** . */
     private double width = DEFAULT_WIDTH;
-    /**
-     * .
-     */
+
+    /** . */
     private CesiumArcType arcType = DEFAULT_ARC_TYPE;
-    /**
-     * .
-     */
+
+    /** . */
     private boolean show = DEFAULT_SHOW;
-    /**
-     * .
-     */
+
+    /** . */
     private TimeInterval availability = DEFAULT_AVAILABILITY;
-    /**
-     * .
-     */
+
+    /** . */
     private Reference firstReference = DEFAULT_REFERENCE;
-    /**
-     * .
-     */
+
+    /** . */
     private Reference secondReference = DEFAULT_REFERENCE;
-    /**
-     * .
-     */
+
+    /** . */
     private double nearDistance = DEFAULT_NEAR_DISTANCE;
-    /**
-     * .
-     */
+
+    /** . */
     private double farDistance = DEFAULT_FAR_DISTANCE;
 
     public NonVectorPolylineBuilder() {
@@ -145,6 +127,7 @@ public class NonVectorPolylineBuilder {
     }
 
     public Polyline build() {
-        return new Polyline(firstReference, secondReference, availability, color, width, show, arcType, nearDistance, farDistance);
+        return new Polyline(firstReference, secondReference, availability, color, width, show, arcType, nearDistance,
+                farDistance);
     }
 }

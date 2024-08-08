@@ -29,47 +29,37 @@ import org.orekit.utils.IERSConventions;
 import java.awt.Color;
 
 public class FieldOfObservationBuilder {
-    /**
-     * .
-     */
+    /** . */
     public static final Color DEFAULT_COLOR = Color.CYAN;
-    /**
-     * .
-     */
+
+    /** . */
     public static final double DEFAULT_ANGULAR_STEP = FastMath.toRadians(36);
 
-    /**
-     * .
-     */
+    /** . */
     private Satellite satellite;
-    /**
-     * .
-     */
+
+    /** . */
     private FieldOfView fieldOfView;
-    /**
-     * .
-     */
+
+    /** . */
     private Transform fovToBody;
 
     // Optional argument
-    /**
-     * .
-     */
+    /** . */
     private Color color = DEFAULT_COLOR;
-    /**
-     * .
-     */
+
+    /** . */
     private OneAxisEllipsoid body = new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS,
-                                                         Constants.WGS84_EARTH_FLATTENING, FramesFactory.getITRF(IERSConventions.IERS_2010, true));
-    /**
-     * .
-     */
+            Constants.WGS84_EARTH_FLATTENING, FramesFactory.getITRF(IERSConventions.IERS_2010, true));
+
+    /** . */
     private double angularStep = DEFAULT_ANGULAR_STEP;
 
-    public FieldOfObservationBuilder(final Satellite satelliteInput, final FieldOfView fieldOfViewInput, final Transform fovToBodyInput) {
-        this.satellite = satelliteInput;
+    public FieldOfObservationBuilder(final Satellite satelliteInput, final FieldOfView fieldOfViewInput,
+                                     final Transform fovToBodyInput) {
+        this.satellite   = satelliteInput;
         this.fieldOfView = fieldOfViewInput;
-        this.fovToBody = fovToBodyInput;
+        this.fovToBody   = fovToBodyInput;
     }
 
     public FieldOfObservationBuilder withColor(final Color colorInput) {

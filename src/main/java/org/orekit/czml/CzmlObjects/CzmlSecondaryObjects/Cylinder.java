@@ -36,69 +36,60 @@ import org.orekit.utils.Constants;
 import java.awt.Color;
 
 public class Cylinder implements CzmlSecondaryObject {
-    /**
-     * .
-     */
-    private final double lenght;
-    /**
-     * .
-     */
+    /** . */
+    private final double length;
+
+    /** . */
     private final double topRadius;
-    /**
-     * .
-     */
+
+    /** . */
     private final double bottomRadius;
-    /**
-     * .
-     */
+
+    /** . */
     private final Position position;
-    /**
-     * .
-     */
-    private final TimeInterval availability;
-    /**
-     * .
-     */
+
+
+    /** . */
     private final CesiumHeightReference heightReference;
-    /**
-     * .
-     */
+
+    /** . */
     private Color color;
-    /**
-     * .
-     */
+
+    /** . */
     private boolean show = false;
 
-    public Cylinder(final double lenght, final double topRadius, final double bottomRadius, final Color color, final Position position, final TimeInterval availability, final CesiumHeightReference heightReference) {
-        this.lenght = lenght;
-        this.topRadius = topRadius;
-        this.bottomRadius = bottomRadius;
-        this.color = color;
-        this.position = position;
-        this.show = true;
-        this.availability = availability;
+
+    public Cylinder(final double length, final double topRadius, final double bottomRadius, final Color color,
+                    final Position position, final TimeInterval availability,
+                    final CesiumHeightReference heightReference) {
+        this.length          = length;
+        this.topRadius       = topRadius;
+        this.bottomRadius    = bottomRadius;
+        this.color           = color;
+        this.position        = position;
+        this.show            = true;
         this.heightReference = heightReference;
     }
 
-    public Cylinder(final CzmlGroundStation InputGroundStation, final Satellite satellite, final double angleOfAperture) {
+    public Cylinder(final CzmlGroundStation InputGroundStation, final Satellite satellite,
+                    final double angleOfAperture) {
         final Color color_temp = new Color(255, 255, 255, 50);
 
         final Vector3D positionInCartesian = InputGroundStation.getPositions();
 
-        final double x = positionInCartesian.getX();
-        final double y = positionInCartesian.getY();
-        final double z = positionInCartesian.getZ();
+        final double       x            = positionInCartesian.getX();
+        final double       y            = positionInCartesian.getY();
+        final double       z            = positionInCartesian.getZ();
         final PositionType positionType = PositionType.CARTESIAN_POSITION;
 
-        this.lenght = satellite.getOrbits()
-                               .get(0)
-                               .getA() / 2;
-        this.topRadius = lenght * FastMath.tan(angleOfAperture);
-        this.bottomRadius = 10.0;
-        this.position = new Position(x, y, z, positionType);
-        this.color = color_temp;
-        this.show = true;
-        this.availability = satellite.getAvailability();
+        this.length          = satellite.getOrbits()
+                                        .get(0)
+                                        .getA() / 2;
+        this.topRadius       = length * FastMath.tan(angleOfAperture);
+        this.bottomRadius    = 10.0;
+        this.position        = new Position(x, y, z, positionType);
+        this.color           = color_temp;
+        this.show            = true;
         this.heightReference = CesiumHeightReference.CLAMP_TO_GROUND;
     }
 
@@ -114,12 +105,11 @@ public class Cylinder implements CzmlSecondaryObject {
                                            .getZ();
         final PositionType positionType = PositionType.CARTESIAN_POSITION;
 
-        this.lenght = Constants.WGS84_EARTH_EQUATORIAL_RADIUS;
-        this.topRadius = lenght * FastMath.tan(angleOfAperture);
-        this.bottomRadius = 0.0;
-        this.position = new Position(x, y, z, positionType);
-        this.color = color_temp;
-        this.availability = InputGroundStation.getAvailability();
+        this.length          = Constants.WGS84_EARTH_EQUATORIAL_RADIUS;
+        this.topRadius       = length * FastMath.tan(angleOfAperture);
+        this.bottomRadius    = 0.0;
+        this.position        = new Position(x, y, z, positionType);
+        this.color           = color_temp;
         this.heightReference = CesiumHeightReference.CLAMP_TO_GROUND;
     }
 
@@ -135,13 +125,11 @@ public class Cylinder implements CzmlSecondaryObject {
 
         final PositionType positionType = PositionType.CARTESIAN_POSITION;
 
-        this.lenght = Constants.WGS84_EARTH_EQUATORIAL_RADIUS;
-        this.topRadius = lenght * FastMath.tan(angleOfAperture);
-        this.bottomRadius = 0.0;
-        this.position = new Position(x, y, z, positionType);
-        this.availability = header.getClock()
-                                  .getAvailability();
-        this.color = color_temp;
+        this.length          = Constants.WGS84_EARTH_EQUATORIAL_RADIUS;
+        this.topRadius       = length * FastMath.tan(angleOfAperture);
+        this.bottomRadius    = 0.0;
+        this.position        = new Position(x, y, z, positionType);
+        this.color           = color_temp;
         this.heightReference = CesiumHeightReference.CLAMP_TO_GROUND;
     }
 
@@ -153,7 +141,7 @@ public class Cylinder implements CzmlSecondaryObject {
             cylinderWriter.open(output);
             cylinderWriter.writeBottomRadiusProperty(this.bottomRadius);
             cylinderWriter.writeTopRadiusProperty(this.topRadius);
-            cylinderWriter.writeLengthProperty(this.lenght);
+            cylinderWriter.writeLengthProperty(this.length);
 
             final MaterialCesiumWriter materialWriter = cylinderWriter.getMaterialWriter();
             materialWriter.open(output);
@@ -190,8 +178,8 @@ public class Cylinder implements CzmlSecondaryObject {
         return position;
     }
 
-    public double getLenght() {
-        return lenght;
+    public double getLength() {
+        return length;
     }
 
     public double getTopRadius() {

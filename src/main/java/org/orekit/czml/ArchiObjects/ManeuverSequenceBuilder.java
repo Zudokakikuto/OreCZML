@@ -14,35 +14,43 @@ import java.util.List;
 
 public class ManeuverSequenceBuilder {
 
-    /** .*/
-    public static final double DEFAULT_TIME_SHIFT = Header.MASTER_CLOCK.getMultiplier();
-    /** .*/
-    public static final String DEFAULT_PATH_MODEL = Header.DEFAULT_RESOURCES + "/maneuver_model.glb";
+    /** . */
+    public static final double DEFAULT_TIME_SHIFT = Header.getMasterClock()
+                                                          .getMultiplier();
+    /** . */
+    public static final String DEFAULT_PATH_MODEL = Header.DEFAULT_RESOURCES + "/Default3DModels/maneuver_model.glb";
 
-    /** .*/
-    private Satellite satellite;
-    /** .*/
+    /** . */
+    private Satellite         satellite;
+    /** . */
     private AttitudesSequence sequence;
-    /** .*/
+
+    /** . */
     private LOF lof;
-    /** .*/
+
+    /** . */
     private List<Maneuver> maneuvers;
-    /** .*/
+
+    /** . */
     private Vector3D direction;
+
     // Optional parameters
-    /** .*/
+    /** . */
     private double timeShift = DEFAULT_TIME_SHIFT;
-    /** .*/
+
+    /** . */
     private String pathModel = DEFAULT_PATH_MODEL;
-    /** .*/
+
+    /** . */
     private boolean showTrust = false;
 
-    public ManeuverSequenceBuilder(final AttitudesSequence sequenceInput, final List<Maneuver> maneuversInput, final Satellite satelliteInput, final Vector3D directionInput, final LOF lofInput) {
-        this.sequence = sequenceInput;
+    public ManeuverSequenceBuilder(final AttitudesSequence sequenceInput, final List<Maneuver> maneuversInput,
+                                   final Satellite satelliteInput, final Vector3D directionInput, final LOF lofInput) {
+        this.sequence  = sequenceInput;
         this.satellite = satelliteInput;
         this.maneuvers = maneuversInput;
         this.direction = directionInput;
-        this.lof = lofInput;
+        this.lof       = lofInput;
     }
 
     public ManeuverSequenceBuilder withTimeShift(final double timeShiftInput) {

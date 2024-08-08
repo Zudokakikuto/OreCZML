@@ -41,106 +41,107 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Attitude pointing class
+ *
+ * <p>
+ * The attitude pointing represents a line that will go towards the central body to project the attitude of the satellite at the surface.
+ * A given direction will be needed to know which axis the object will project.
+ * </p>
+ *
+ * @author Julien LEBLOND.
+ * @since 1.0.0
+ */
+
 public class AttitudePointing extends AbstractPrimaryObject implements CzmlPrimaryObject {
 
-    /**
-     * .
-     */
-    public static final String DEFAULT_NAME = "Attitude pointing of : ";
-    /**
-     * .
-     */
+    /** The default ID of the attitude pointing object. */
     public static final String DEFAULT_ID = "ATTITUDE_POINTING/";
-    /**
-     * .
-     */
+
+    /** The default name of the attitude pointing object. */
+    public static final String DEFAULT_NAME = "Attitude pointing of : ";
+
+    /** This can be used to create a reference in position of an object. */
     public static final String DEFAULT_H_POSITION = "#position";
-    /**
-     * .
-     */
+
+    /** The default color of the line. */
     public static final Color DEFAULT_COLOR = Color.GREEN;
-    /**
-     * .
-     */
+
+    /** The satellite which attitude will be pointed. */
     private final Satellite satellite;
-    /**
-     * .
-     */
+
+    /** The list of the attitude of the satellite. */
     private final List<Attitude> satelliteAttitudes;
-    /**
-     * .
-     */
+
+    /** The list of the position in cartesian of the satellite. */
     private final List<Cartesian> satelliteCartesians;
-    /**
-     * .
-     */
+
+    /** The orientation of the satellite. */
     private Orientation satelliteOrientation;
-    /**
-     * .
-     */
-    private boolean displayPeriodPointingPath = false;
-    /**
-     * .
-     */
+
+    /** The line to be displayed. */
     private Polyline attitudePointingPolyline;
-    /**
-     * .
-     */
+
+    /** The central body around which the satellite is orbiting. */
     private OneAxisEllipsoid body;
-    /**
-     * .
-     */
-    private List<Line> lines = new ArrayList<>();
-    /**
-     * .
-     */
+
+    /** The list of the projected attitude that gives points on the body. */
     private List<GeodeticPoint> projectedAttitudes = new ArrayList<>();
-    /**
-     * .
-     */
+
+    /** The list of the julian dates when the line should be displayed. */
     private List<JulianDate> julianDates;
-    /**
-     * .
-     */
+
+    /** The abstract point on body build from the projected attitudes. */
     private AbstractPointOnBody pointOnBody;
-    /**
-     * .
-     */
+
+    /** To display or not the path of the attitude pointing. */
     private boolean displayPointingPath = false;
 
+    /** To display or not the path with a period. */
+    private boolean displayPeriodPointingPath = false;
+
+    /** The period in second of the path if displayed. */
+    private double periodPointingPath = 0.0;
+
+
     public AttitudePointing(final Satellite satellite, final OneAxisEllipsoid body, final Vector3D direction) {
-        this(satellite, body, direction, Header.MASTER_CLOCK.getAvailability(), DEFAULT_COLOR, false);
+        this(satellite, body, direction, Header.getMasterClock()
+                                               .getAvailability(), DEFAULT_COLOR, false);
     }
 
-    public AttitudePointing(final Satellite satellite, final OneAxisEllipsoid body, final Vector3D direction, final TimeInterval availability, final Color color, final boolean alwaysDisplayOnGround) {
+    public AttitudePointing(final Satellite satellite, final OneAxisEllipsoid body, final Vector3D direction,
+                            final TimeInterval availability, final Color color, final boolean alwaysDisplayOnGround) {
         this.setId(DEFAULT_ID + satellite.getId());
         this.satellite = satellite;
         this.setName(DEFAULT_NAME + satellite.getName());
         this.setAvailability(availability);
         this.satelliteOrientation = satellite.getOrientation();
-        this.satelliteAttitudes = satellite.getAttitudes();
-        this.satelliteCartesians = satellite.getCartesianArraylist();
-        this.julianDates = satelliteOrientation.getJulianDates();
-        this.body = body;
-        final Frame currentFrame = satellite.getFrame();
-        final List<SpacecraftState> states = satellite.getAllSpaceCraftStates();
+        this.satelliteAttitudes   = satellite.getAttitudes();
+        this.satelliteCartesians  = satellite.getCartesianArraylist();
+        this.julianDates          = satelliteOrientation.getJulianDates();
+        this.body                 = body;
+        final Frame                 currentFrame = satellite.getFrame();
+        final List<SpacecraftState> states       = satellite.getAllSpaceCraftStates();
 
         for (int i = 0; i < satelliteAttitudes.size(); i++) {
-            final SpacecraftState state = states.get(i);
-            final Cartesian currentCartesian = satelliteCartesians.get(i);
-            final Vector3D currentSatellitePosition = state.getPosition();
-            final Attitude currentAttitude = state.getAttitude();
-            final Rotation currentRotation = currentAttitude.getRotation();
-            final AbsoluteDate currentDate = state.getDate();
-            final Vector3D origin = new Vector3D(currentCartesian.getX(), currentCartesian.getY(), currentCartesian.getZ());
-            final Vector3D inputDirection = currentRotation.applyInverseTo(direction);
+            final SpacecraftState state                    = states.get(i);
+            final Cartesian       currentCartesian         = satelliteCartesians.get(i);
+            final Vector3D        currentSatellitePosition = state.getPosition();
+            final Attitude        currentAttitude          = state.getAttitude();
+            final Rotation        currentRotation          = currentAttitude.getRotation();
+            final AbsoluteDate    currentDate              = state.getDate();
+            final Vector3D origin = new Vector3D(currentCartesian.getX(),
+                    currentCartesian.getY(), currentCartesian.getZ());
+            final Vector3D inputDirection  = currentRotation.applyInverseTo(direction);
             final Vector3D closestToGround = body.projectToGround(origin, currentDate, currentFrame);
-            final Line currentLine = Line.fromDirection(origin, inputDirection, 1.0);
-            lines.add(currentLine);
-            final GeodeticPoint intersectionGeodetic = body.getIntersectionPoint(currentLine, closestToGround, currentFrame, currentDate);
+            final Line     currentLine     = Line.fromDirection(origin, inputDirection, 1.0);
+            final GeodeticPoint intersectionGeodetic = body.getIntersectionPoint(currentLine, closestToGround,
+                    currentFrame, currentDate);
             if (alwaysDisplayOnGround && intersectionGeodetic == null) {
-                final Vector3D projectedVector3D = body.projectToGround(currentSatellitePosition, currentDate, satellite.getFrame());
-                final GeodeticPoint substitutePoint = body.transform(projectedVector3D, state.getFrame(), currentDate);
+                final Vector3D projectedVector3D = body.projectToGround(currentSatellitePosition, currentDate,
+                        satellite.getFrame());
+                final GeodeticPoint substitutePoint = body.transform(projectedVector3D, state.getFrame(),
+                        currentDate);
                 projectedAttitudes.add(substitutePoint);
             } else {
                 projectedAttitudes.add(intersectionGeodetic);
@@ -148,7 +149,7 @@ public class AttitudePointing extends AbstractPrimaryObject implements CzmlPrima
         }
         this.pointOnBody = new AbstractPointOnBody(julianDates, projectedAttitudes, body);
         final Reference satelliteReference = new Reference(satellite.getId() + DEFAULT_H_POSITION);
-        final Reference groundReference = new Reference(pointOnBody.getId() + DEFAULT_H_POSITION);
+        final Reference groundReference    = new Reference(pointOnBody.getId() + DEFAULT_H_POSITION);
         this.attitudePointingPolyline = Polyline.nonVectorBuilder()
                                                 .withFirstReference(satelliteReference)
                                                 .withSecondReference(groundReference)
@@ -156,14 +157,17 @@ public class AttitudePointing extends AbstractPrimaryObject implements CzmlPrima
                                                 .build();
     }
 
-    public static AttitudePointingBuilder builder(final Satellite satelliteInput, final OneAxisEllipsoid bodyInput, final Vector3D directionInput) {
+    public static AttitudePointingBuilder builder(final Satellite satelliteInput, final OneAxisEllipsoid bodyInput,
+                                                  final Vector3D directionInput) {
         return new AttitudePointingBuilder(satelliteInput, bodyInput, directionInput);
     }
 
+    /** This method allows to display the path of the attitude pointing. */
     public void displayPointingPath() {
         this.displayPointingPath = true;
     }
 
+    /** This method allows to display the path with a given period. */
     public void displayPeriodPointingPath() {
         this.displayPeriodPointingPath = true;
         if (!displayPointingPath) {
@@ -177,6 +181,9 @@ public class AttitudePointing extends AbstractPrimaryObject implements CzmlPrima
             this.pointOnBody.setDisplayPath(true);
             if (displayPeriodPointingPath) {
                 this.pointOnBody.setDisplayPeriodPointingPath(true, satellite.getPeriod());
+                if (periodPointingPath != 0.0) {
+                    this.pointOnBody.setPeriodForPath(periodPointingPath);
+                }
             }
         }
         OUTPUT.setPrettyFormatting(true);
@@ -196,13 +203,12 @@ public class AttitudePointing extends AbstractPrimaryObject implements CzmlPrima
 
     @Override
     public void cleanObject() {
-        satelliteOrientation = null;
+        satelliteOrientation     = null;
         attitudePointingPolyline = null;
-        body = null;
-        lines = new ArrayList<>();
-        projectedAttitudes = new ArrayList<>();
-        julianDates = new ArrayList<>();
-        pointOnBody = null;
+        body                     = null;
+        projectedAttitudes       = new ArrayList<>();
+        julianDates              = new ArrayList<>();
+        pointOnBody              = null;
     }
 
     public Satellite getSatellite() {
@@ -239,6 +245,25 @@ public class AttitudePointing extends AbstractPrimaryObject implements CzmlPrima
 
     public List<Attitude> getSatelliteAttitudes() {
         return satelliteAttitudes;
+    }
+
+    public boolean isDisplayPointingPath() {
+        return displayPointingPath;
+    }
+
+    public boolean isDisplayPeriodPointingPath() {
+        return displayPeriodPointingPath;
+    }
+
+    public void setDisplayPeriodPointingPath(final double periodPointingPathInput) {
+        if (!displayPeriodPointingPath) {
+            throw new RuntimeException("First use the .displayPeriodPointingPath() to set the period pointing path.");
+        }
+        this.periodPointingPath = periodPointingPathInput;
+    }
+
+    public double getPeriodPointingPath() {
+        return periodPointingPath;
     }
 }
 

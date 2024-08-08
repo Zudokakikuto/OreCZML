@@ -41,57 +41,55 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Ground track class
+ *
+ * <p> The ground track class aims at displaying the ground track of a satellite orbiting. </p>
+ *
+ * @author Julien LEBLOND
+ * @since 1.0.0
+ */
+
 public class GroundTrack extends AbstractPrimaryObject implements CzmlPrimaryObject {
 
-    /**
-     * .
-     */
+    /** The default ID of the ground track object. */
     public static final String DEFAULT_ID = "GROUND_TRACK/";
-    /**
-     * .
-     */
+
+    /** The default name of the ground track object. */
     public static final String DEFAULT_NAME = "Ground track of : ";
-    /**
-     * .
-     */
+
+    /** This allows to get the reference of an object. */
     public static final String DEFAULT_H_POSITION = "#position";
-    /**
-     * .
-     */
+
+    /** The default of a ground track of a constellation. */
     public static final String DEFAULT_CONSTELLATION_ID = "GROUND_TRACK_OF_CONSTELLATION/";
-    /**
-     * .
-     */
-    public static final String DEFAULT_CONSTELLATION_NUMBEROFSAT = " satellites";
-    /**
-     * .
-     */
+
+
+    /** The default string to defines the number of satellites. */
+    public static final String DEFAULT_CONSTELLATION_NUMBER_OF_SAT = " satellites";
+
+    /** The default color of the ground track on the body. */
     public static final Color DEFAULT_COLOR = new Color(255, 255, 255);
 
-    /**
-     * .
-     */
+
+    /** The satellite which the ground track is computed. */
     private Satellite satellite;
-    /**
-     * .
-     */
+
+    /** To display or not the link between the satellite and the ground station. */
     private Boolean displayLinkSatellite = false;
-    /**
-     * .
-     */
-    private List<Cartesian> initialCartesiansSatellite;
-    /**
-     * .
-     */
+
+    /** The list of cartesian that defines the positions of the satellite. */
+    private List<Cartesian> cartesiansSatellite;
+
+    /** A time position object that defines the position in time of the ground track. */
     private TimePosition clampedPositionOnBody;
-    /**
-     * .
-     */
+
+    /** The color of the ground track. */
     private Color color;
-    /**
-     * .
-     */
+
+    /** The list of all the ground track when several are computed. */
     private List<GroundTrack> allGroundTracks = new ArrayList<>();
+
 
     // Constructors
     public GroundTrack(final Satellite satellite, final BodyShape body) {
@@ -102,17 +100,21 @@ public class GroundTrack extends AbstractPrimaryObject implements CzmlPrimaryObj
         this.satellite = satellite;
         this.setId(DEFAULT_ID + satellite.getId());
         this.setName(DEFAULT_NAME + satellite.getName());
-        this.setAvailability(Header.MASTER_CLOCK.getAvailability());
-        this.color = color;
-        initialCartesiansSatellite = satellite.getCartesianArraylist();
-        final List<AbsoluteDate> allSatelliteDates = satellite.getAbsoluteDateList();
-        final List<Cartesian> projectedCartesianList = new ArrayList<>();
-        for (int i = 0; i < initialCartesiansSatellite.size(); i++) {
-            final Cartesian currentCartesian = initialCartesiansSatellite.get(i);
-            final Vector3D currentVector3D = new Vector3D(currentCartesian.getX(), currentCartesian.getY(), currentCartesian.getZ());
+        this.setAvailability(Header.getMasterClock()
+                                   .getAvailability());
+        this.color          = color;
+        cartesiansSatellite = satellite.getCartesianArraylist();
+        final List<AbsoluteDate> allSatelliteDates      = satellite.getAbsoluteDateList();
+        final List<Cartesian>    projectedCartesianList = new ArrayList<>();
+        for (int i = 0; i < cartesiansSatellite.size(); i++) {
+            final Cartesian currentCartesian = cartesiansSatellite.get(i);
+            final Vector3D currentVector3D = new Vector3D(currentCartesian.getX(), currentCartesian.getY(),
+                    currentCartesian.getZ());
             final Frame bodyFrame = body.getBodyFrame();
-            final Vector3D projectedVector3D = body.projectToGround(currentVector3D, allSatelliteDates.get(i), bodyFrame);
-            final Cartesian projectedCartesian = new Cartesian(projectedVector3D.getX(), projectedVector3D.getY(), projectedVector3D.getZ());
+            final Vector3D projectedVector3D = body.projectToGround(currentVector3D, allSatelliteDates.get(i),
+                    bodyFrame);
+            final Cartesian projectedCartesian = new Cartesian(projectedVector3D.getX(), projectedVector3D.getY(),
+                    projectedVector3D.getZ());
             projectedCartesianList.add(projectedCartesian);
         }
         this.clampedPositionOnBody = new TimePosition(projectedCartesianList, satellite.getTimeList());
@@ -124,13 +126,13 @@ public class GroundTrack extends AbstractPrimaryObject implements CzmlPrimaryObj
 
     public GroundTrack(final Constellation constellation, final BodyShape body, final Color color) {
         final List<Satellite> allSatellites = constellation.getAllSatellites();
-        this.color = color;
+        this.color           = color;
         this.allGroundTracks = new ArrayList<>();
         this.setId(DEFAULT_CONSTELLATION_ID + constellation.getId());
-        this.setName(DEFAULT_NAME + constellation.getTotalOfSatellite() + DEFAULT_CONSTELLATION_NUMBEROFSAT);
-        this.setAvailability(Header.MASTER_CLOCK.getAvailability());
-        for (int i = 0; i < allSatellites.size(); i++) {
-            final Satellite currentSat = allSatellites.get(i);
+        this.setName(DEFAULT_NAME + constellation.getTotalOfSatellite() + DEFAULT_CONSTELLATION_NUMBER_OF_SAT);
+        this.setAvailability(Header.getMasterClock()
+                                   .getAvailability());
+        for (final Satellite currentSat : allSatellites) {
             final GroundTrack currentGroundTrack = new GroundTrack(currentSat, body, currentSat.getColor());
             allGroundTracks.add(currentGroundTrack);
         }
@@ -140,6 +142,8 @@ public class GroundTrack extends AbstractPrimaryObject implements CzmlPrimaryObj
         return () -> Arrays.stream(array)
                            .iterator();
     }
+
+    // Getters
 
     // Overrides
     @Override
@@ -160,7 +164,8 @@ public class GroundTrack extends AbstractPrimaryObject implements CzmlPrimaryObj
                     final Reference[] referenceList = Arrays.asList(groundTrackReference, satelliteReference)
                                                             .toArray(new Reference[0]);
                     final Iterable<Reference> referenceIterable = convertToIterable(referenceList);
-                    final CzmlShow show = new CzmlShow(true, Header.MASTER_CLOCK.getAvailability());
+                    final CzmlShow show = new CzmlShow(true, Header.getMasterClock()
+                                                                   .getAvailability());
                     final List<CzmlShow> shows = new ArrayList<>();
                     shows.add(show);
                     final Polyline polylineInput = new Polyline();
@@ -176,20 +181,22 @@ public class GroundTrack extends AbstractPrimaryObject implements CzmlPrimaryObj
                     packet.writeName(currentGroundTrack.getName());
                     packet.writeAvailability(currentGroundTrack.getAvailability());
 
-                    this.satellite = currentGroundTrack.getSatellite();
+                    this.satellite             = currentGroundTrack.getSatellite();
                     this.clampedPositionOnBody = currentGroundTrack.clampedPositionOnBody;
-                    this.color = currentGroundTrack.getColor();
+                    this.color                 = currentGroundTrack.getColor();
 
                     writePosition(packet);
                     writeCzmlPath(packet);
                     if (displayLinkSatellite) {
-                        final Reference groundTrackReference = new Reference(currentGroundTrack.getId() + DEFAULT_H_POSITION);
+                        final Reference groundTrackReference = new Reference(
+                                currentGroundTrack.getId() + DEFAULT_H_POSITION);
                         final Reference satelliteReference = new Reference(currentGroundTrack.getSatellite()
                                                                                              .getId() + DEFAULT_H_POSITION);
                         final Reference[] referenceList = Arrays.asList(groundTrackReference, satelliteReference)
                                                                 .toArray(new Reference[0]);
                         final Iterable<Reference> referenceIterable = convertToIterable(referenceList);
-                        final CzmlShow show = new CzmlShow(true, Header.MASTER_CLOCK.getAvailability());
+                        final CzmlShow show = new CzmlShow(true, Header.getMasterClock()
+                                                                       .getAvailability());
                         final List<CzmlShow> shows = new ArrayList<>();
                         shows.add(show);
                         final Polyline polylineInput = Polyline.nonVectorBuilder()
@@ -203,22 +210,22 @@ public class GroundTrack extends AbstractPrimaryObject implements CzmlPrimaryObj
         }
     }
 
-    // Getters
-
     @Override
     public StringWriter getStringWriter() {
         return STRING_WRITER;
     }
+
+    // GETTERS
 
     @Override
     public void cleanObject() {
         this.setId("");
         this.setName("");
         this.setAvailability(null);
-        this.satellite = null;
-        this.initialCartesiansSatellite = new ArrayList<>();
+        this.satellite             = null;
+        this.cartesiansSatellite   = new ArrayList<>();
         this.clampedPositionOnBody = null;
-        this.allGroundTracks = new ArrayList<>();
+        this.allGroundTracks       = new ArrayList<>();
     }
 
     public Satellite getSatellite() {
@@ -229,8 +236,8 @@ public class GroundTrack extends AbstractPrimaryObject implements CzmlPrimaryObj
         return clampedPositionOnBody;
     }
 
-    public List<Cartesian> getInitialCartesiansSatellite() {
-        return initialCartesiansSatellite;
+    public List<Cartesian> getCartesiansSatellite() {
+        return cartesiansSatellite;
     }
 
     public Color getColor() {
@@ -239,13 +246,20 @@ public class GroundTrack extends AbstractPrimaryObject implements CzmlPrimaryObj
 
     public List<GroundTrack> getAllGroundTracks() {
         if (allGroundTracks.isEmpty()) {
-            throw new RuntimeException("The ground tracks are empty, either the file is already written or the ground track is not build with a constellation");
+            throw new RuntimeException(
+                    "The ground tracks are empty, either the file is already written or the ground track is not build with a constellation");
         }
         return allGroundTracks;
     }
 
     public void displayLinkSatellite() {
         displayLinkSatellite = true;
+    }
+
+    // Private functions
+
+    public Boolean getDisplayLinkSatellite() {
+        return displayLinkSatellite;
     }
 
     private void writePosition(final PacketCesiumWriter packet) {

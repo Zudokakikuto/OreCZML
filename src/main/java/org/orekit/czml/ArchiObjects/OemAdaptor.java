@@ -29,21 +29,16 @@ import java.util.List;
 
 public class OemAdaptor extends AbstractAdaptor<Oem> {
 
-    /**
-     * .
-     */
+    /** . */
     private Oem oem;
-    /**
-     * .
-     */
+
+    /** . */
     private Propagator initialPropagator;
-    /**
-     * .
-     */
+
+    /** . */
     private AbsoluteDate finalDate;
-    /**
-     * .
-     */
+
+    /** . */
     private AbsoluteDate startDate;
 
     public OemAdaptor(final Oem oemInput) {

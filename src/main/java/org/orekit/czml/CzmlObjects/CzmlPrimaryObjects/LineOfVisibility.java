@@ -49,74 +49,62 @@ import java.util.List;
  * </p>
  *
  * @author Julien LEBLOND.
- * @since 1.0
+ * @since 1.0.0
  */
 
 public class LineOfVisibility extends AbstractPrimaryObject implements CzmlPrimaryObject {
 
-    /**
-     * .
-     */
+    /** The default angle of aperture of the station. */
     public static final double DEFAULT_ANGLE_OF_APERTURE = 80.0;
-    /**
-     * .
-     */
+
+    /** The first default string for the name. */
     public static final String DEFAULT_LINE_BETWEEN = "Line between ";
-    /**
-     * .
-     */
+
+    /** The second default string for the name. */
     public static final String DEFAULT_AND = " and ";
-    /**
-     * .
-     */
+
+    /** This allows to create a reference based on the position of an object. */
     public static final String DEFAULT_H_POSITION = "#position";
-    /**
-     * .
-     */
+
+    /** This first string displays when the given satellite is not visible by the given station. */
     public static final String DEFAULT_NOT_SEEN = "The satellite is not visible by ";
-    /**
-     * .
-     */
+
+    /** This second string displays when the given satellite is not visible by the given station. */
     public static final String DEFAULT_NOT_SEEN_2 = " for the given time interval";
 
 
     // Intrinsic parameters
-    /**
-     * .
-     */
+    /** The references of the satellites and the station. */
     private Iterable<Reference> references;
-    /**
-     * .
-     */
+
+    /** The satellite observed. */
     private Satellite satellite;
-    /**
-     * .
-     */
+
+    /** A list of CzmlShow that contains all the information of visulisation of the satellite by the station. */
     private List<CzmlShow> showList;
-    /**
-     * .
-     */
+
+    /** A list of time intervals that represents when the satellite is visible or not. */
     private List<TimeInterval> timeIntervals;
-    /**
-     * .
-     */
+
+    /** The list of boolean to display or not the line if the satellite is visible or not. */
     private List<Boolean> visuList;
-    /**
-     * .
-     */
+
+    /** The angle of aperture of the station. */
     private double angleOfAperture;
-    /**
-     * .
-     */
+
+    /** All the visibility cones of the station. */
     private List<VisibilityCone> allVisibilityCones = new ArrayList<>();
+
 
     // Constructors
 
-    public LineOfVisibility(final TopocentricFrame topocentricFrame, final Satellite satellite) throws URISyntaxException, IOException {
+    public LineOfVisibility(final TopocentricFrame topocentricFrame,
+                            final Satellite satellite) throws URISyntaxException, IOException {
         this(topocentricFrame, satellite, DEFAULT_ANGLE_OF_APERTURE);
     }
 
-    public LineOfVisibility(final TopocentricFrame topocentricFrame, final Satellite satellite, final double angleOfAperture) throws URISyntaxException, IOException {
+    public LineOfVisibility(final TopocentricFrame topocentricFrame, final Satellite satellite,
+                            final double angleOfAperture) throws URISyntaxException, IOException {
         this.angleOfAperture = angleOfAperture;
 
         this.setId(topocentricFrame.getName() + "/" + satellite.getId());
@@ -133,8 +121,8 @@ public class LineOfVisibility extends AbstractPrimaryObject implements CzmlPrima
         this.references = convertToIterable(referenceList);
 
         this.timeIntervals = new ArrayList<>();
-        this.visuList = new ArrayList<>();
-        this.showList = new ArrayList<>();
+        this.visuList      = new ArrayList<>();
+        this.showList      = new ArrayList<>();
 
         buildSingleTimeIntervalsAndVisu(topocentricFrame, satellite);
         buildShowList();
@@ -142,7 +130,8 @@ public class LineOfVisibility extends AbstractPrimaryObject implements CzmlPrima
 
     // Builder
 
-    public static LineOfVisibilityBuilder builder(final TopocentricFrame topocentricFrameInput, final Satellite satelliteInput) {
+    public static LineOfVisibilityBuilder builder(final TopocentricFrame topocentricFrameInput,
+                                                  final Satellite satelliteInput) {
         return new LineOfVisibilityBuilder(topocentricFrameInput, satelliteInput);
     }
 
@@ -170,25 +159,26 @@ public class LineOfVisibility extends AbstractPrimaryObject implements CzmlPrima
         cleanObject();
     }
 
-    // GETS
+    // Multiples
 
     @Override
     public StringWriter getStringWriter() {
         return STRING_WRITER;
     }
 
-    // Multiples
+
+    // GETTERS
 
     @Override
     public void cleanObject() {
         this.setId("");
         this.setName("");
-        this.references = null;
-        this.satellite = null;
-        this.showList = new ArrayList<>();
-        this.timeIntervals = new ArrayList<>();
-        this.visuList = new ArrayList<>();
-        this.angleOfAperture = 0.0;
+        this.references         = null;
+        this.satellite          = null;
+        this.showList           = new ArrayList<>();
+        this.timeIntervals      = new ArrayList<>();
+        this.visuList           = new ArrayList<>();
+        this.angleOfAperture    = 0.0;
         this.allVisibilityCones = new ArrayList<>();
     }
 
@@ -212,35 +202,36 @@ public class LineOfVisibility extends AbstractPrimaryObject implements CzmlPrima
         return references;
     }
 
-    // Intern methods
-
     public List<VisibilityCone> getAllVisibilityCones() {
         return allVisibilityCones;
     }
+
+    // Private functions
 
     public List<TimeInterval> getTimeIntervals() {
         return timeIntervals;
     }
 
-    private void buildSingleTimeIntervalsAndVisu(final TopocentricFrame topocentricFrame, final Satellite satellite_input) {
+    private void buildSingleTimeIntervalsAndVisu(final TopocentricFrame topocentricFrame,
+                                                 final Satellite satellite_input) {
 
 
-        final BoundedPropagator boundedPropagator = satellite_input.getBoundedPropagator();
-        final GregorianDate firstGregorianDate = new GregorianDate(1, 1, 1, 0, 0, 0.0);
-        final JulianDate firstStartDate = new JulianDate(firstGregorianDate);
+        final BoundedPropagator propagator         = (BoundedPropagator) satellite_input.getSatellitePropagator();
+        final GregorianDate     firstGregorianDate = new GregorianDate(1, 1, 1, 0, 0, 0.0);
+        final JulianDate        firstStartDate     = new JulianDate(firstGregorianDate);
         final JulianDate lastDate = absoluteDateToJulianDate(satellite_input.getOrbits()
                                                                             .get(satellite_input.getOrbits()
                                                                                                 .size() - 1)
-                                                                            .getDate());
-        final TimeScale timeScale = Header.TIME_SCALE;
+                                                                            .getDate(), Header.getTimeScale());
+        final TimeScale timeScale = Header.getTimeScale();
 
-        final SpacecraftState initialState = boundedPropagator.getInitialState();
+        final SpacecraftState initialState = propagator.getInitialState();
 
         final TimeSpanMap<Boolean> visuMap = new TimeSpanMap<>(null);
         // Add the first boolean false that represent the visibility out of the scope of the simulation.
-        visuMap.addValidBetween(false, initialState.getDate(), boundedPropagator.getMaxDate());
+        visuMap.addValidBetween(false, initialState.getDate(), propagator.getMaxDate());
         final ElevationDetector visuDetector = this.detectionVisu(topocentricFrame, visuMap);
-        final double enVisu = visuDetector.g(initialState);
+        final double            enVisu       = visuDetector.g(initialState);
 
         if (enVisu > 0) {
             visuList.add(true);
@@ -248,27 +239,30 @@ public class LineOfVisibility extends AbstractPrimaryObject implements CzmlPrima
             visuList.add(false);
         }
 
-        boundedPropagator.addEventDetector(visuDetector);
-        boundedPropagator.propagate(boundedPropagator.getMinDate(), boundedPropagator.getMaxDate());
+        propagator.addEventDetector(visuDetector);
+        propagator.propagate(propagator.getMinDate(), propagator.getMaxDate());
 
         for (TimeSpanMap.Span<Boolean> span = visuMap.getFirstNonNullSpan(); span != null; span = span.next()) {
             if (span.getEnd()
-                    .isAfter(julianDateToAbsoluteDate(Header.MASTER_CLOCK.getAvailability()
-                                                                         .getStop(), timeScale))) {
+                    .isAfter(julianDateToAbsoluteDate(Header.getMasterClock()
+                                                            .getAvailability()
+                                                            .getStop(), timeScale))) {
                 if (visuList.get(visuList.size() - 1)) {
                     visuList.add(false);
                 } else {
                     visuList.add(true);
                 }
-                final JulianDate startDate = absoluteDateToJulianDate(span.getStart());
-                final JulianDate stopDate = Header.MASTER_CLOCK.getAvailability()
-                                                               .getStop();
+                final JulianDate startDate = absoluteDateToJulianDate(span.getStart(), Header.getTimeScale());
+                final JulianDate stopDate = Header.getMasterClock()
+                                                  .getAvailability()
+                                                  .getStop();
                 final TimeInterval currentTimeInterval = new TimeInterval(startDate, stopDate);
                 timeIntervals.add(currentTimeInterval);
             } else {
                 visuList.add(span.getData());
-                final JulianDate startDate = absoluteDateToJulianDate(span.getStart());
-                final JulianDate stopDate = absoluteDateToJulianDate(span.getEnd());
+                final JulianDate startDate = absoluteDateToJulianDate(span.getStart(),
+                        Header.getTimeScale());
+                final JulianDate   stopDate            = absoluteDateToJulianDate(span.getEnd(), Header.getTimeScale());
                 final TimeInterval currentTimeInterval = new TimeInterval(startDate, stopDate);
                 timeIntervals.add(currentTimeInterval);
             }
@@ -277,7 +271,7 @@ public class LineOfVisibility extends AbstractPrimaryObject implements CzmlPrima
         if (timeIntervals.size() > 1) {
 
             final JulianDate firstStopDate = timeIntervals.get(0)
-                                                              .getStart();
+                                                          .getStart();
             final TimeInterval firstTimeInterval = new TimeInterval(firstStartDate, firstStopDate);
 
             if (enVisu > 0) {
@@ -291,11 +285,12 @@ public class LineOfVisibility extends AbstractPrimaryObject implements CzmlPrima
             timeIntervals.add(new TimeInterval(firstStartDate, lastDate));
         }
 
-        boundedPropagator.clearEventsDetectors();
-        satellite_input.setBoundedPropagator(boundedPropagator);
+        propagator.clearEventsDetectors();
+        satellite_input.setPropagator(propagator);
     }
 
-    private ElevationDetector detectionVisu(final TopocentricFrame topocentricFrame, final TimeSpanMap<Boolean> visuMap) {
+    private ElevationDetector detectionVisu(final TopocentricFrame topocentricFrame,
+                                            final TimeSpanMap<Boolean> visuMap) {
         return new ElevationDetector(30, 0.001, topocentricFrame)
                 .withConstantElevation(FastMath.toRadians(90.0 - angleOfAperture))
                 .withHandler((spacecraftState, detector, increasing) -> {

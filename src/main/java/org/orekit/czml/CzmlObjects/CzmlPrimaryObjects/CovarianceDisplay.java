@@ -34,7 +34,6 @@ import org.orekit.czml.CzmlObjects.Position;
 import org.orekit.frames.LOF;
 import org.orekit.propagation.SpacecraftState;
 import org.orekit.propagation.StateCovariance;
-import org.orekit.time.TimeScale;
 import org.orekit.utils.AngularCoordinates;
 
 import java.awt.Color;
@@ -55,86 +54,60 @@ import java.util.List;
 public class CovarianceDisplay extends AbstractPrimaryObject implements CzmlPrimaryObject {
 
     // STATICS
-    /**
-     * The default string to call the ID of the covariance.
-     */
+    /** The default string to call the ID of the covariance. */
     public static final String DEFAULT_ID = "COV/";
-    /**
-     * The default string to call the name of the covariance.
-     */
+
+    /** The default string to call the name of the covariance. */
     public static final String DEFAULT_NAME = "Covariance of ";
-    /**
-     * The default string to call the reference position of an object.
-     */
+
+    /** The default string to call the reference position of an object. */
     public static final String DEFAULT_H_POSITION = "#position";
 
+
     // Parameters
-    /**
-     * The reference frame of the covariance, here the inertial one is used by default.
-     */
+    /** The reference frame of the covariance, here the inertial one is used by default. */
     private final String referenceFrame = "INERTIAL";
-    /**
-     * The orientation used as a reference to keep the ellipsoid in the good orientation.
-     */
+
+    /** The orientation used as a reference to keep the ellipsoid in the good orientation. */
     private final Reference orientationReference = null;
-    /**
-     * A list of all the State Covariance object {@link org.orekit.propagation.StateCovariance}.
-     */
-    private List<StateCovariance> covarianceList = new ArrayList<>();
-    /**
-     * The position of the covariance.
-     */
-    private Position position;
-    /**
-     * The ellipsoid used to represents the covariance.
-     */
+
+    /** A list of all the State Covariance object {@link org.orekit.propagation.StateCovariance}. */
+    private List<StateCovariance> covarianceList;
+    /** The position of the covariance. */
+    private Position              position;
+
+    /** The ellipsoid used to represents the covariance. */
     private CzmlEllipsoid czmlEllipsoid;
-    /**
-     * The position used as a reference to keep the ellipsoid at the same place as the satellite.
-     */
-    private Reference positionReference = null;
-    /**
-     * .
-     */
-    private Attitude attitude;
+
+    /** The position used as a reference to keep the ellipsoid at the same place as the satellite. */
+    private Reference positionReference;
+
 
     // Intrinsic parameters
-    /**
-     * .
-     */
+    /** The list of all the spacecraft states of the satellite. */
     private List<SpacecraftState> allSpaceCraftStates = new ArrayList<>();
-    /**
-     * The satellite which the ellipsoid will be around.
-     */
+
+    /** The satellite which the ellipsoid will be around. */
     private Satellite satellite;
-    /**
-     * A list of all the ellipsoids computed in time, gathered in a list.
-     */
+
+    /** A list of all the ellipsoids computed in time, gathered in a list. */
     private List<CzmlEllipsoid> ellipsoidList;
-    /**
-     * All the julian dates of each step of computation in a list.
-     */
+
+    /** All the julian dates of each step of computation in a list. */
     private List<JulianDate> julianDates;
-    /**
-     * .
-     */
+
+    /** The dimensions of the ellipsoids in time in cartesian. */
     private List<Cartesian> dimensionsOfEllipsoids = new ArrayList<>();
-    /**
-     * A list of all the attitudes of the satellite used to orientate the covariance when the reference orientation si not used.
-     */
+
+    /** A list of all the attitudes of the satellite used to orientate the covariance when the reference orientation si not used. */
     private List<Attitude> attitudes = new ArrayList<>();
-    /**
-     * A list containing all the cartesian in time of the satellite.
-     */
+
+    /** A list containing all the cartesian in time of the satellite. */
     private List<Cartesian> satelliteCartesianList = new ArrayList<>();
-    /**
-     * .
-     */
-    private TimeScale timeScale = null;
-    /**
-     * .
-     */
+
+    /** When a single ellipsoid is computed, this argument will be used. */
     private CzmlEllipsoid uniqueEllipsoid;
+
 
     // Constructors
 
@@ -152,9 +125,10 @@ public class CovarianceDisplay extends AbstractPrimaryObject implements CzmlPrim
         this.setId(DEFAULT_ID + satellite.getId());
         this.setName(DEFAULT_NAME + satellite.getName());
         this.satelliteCartesianList = satellite.getCartesianArraylist();
-        this.julianDates = absoluteDatelistToJulianDateList(satellite.getAbsoluteDateList());
-        this.positionReference = new Reference(satellite.getId() + DEFAULT_H_POSITION);
-        this.covarianceList = covariances;
+        this.julianDates            = absoluteDatelistToJulianDateList(satellite.getAbsoluteDateList(),
+                Header.getTimeScale());
+        this.positionReference      = new Reference(satellite.getId() + DEFAULT_H_POSITION);
+        this.covarianceList         = covariances;
 
         this.postComputation(Color.green, lof);
     }
@@ -167,26 +141,27 @@ public class CovarianceDisplay extends AbstractPrimaryObject implements CzmlPrim
      * @param lof         : The lof of the satellite
      * @param color       : The color of the ellipsoid.
      */
-    public CovarianceDisplay(final Satellite satellite, final List<StateCovariance> covariances, final LOF lof, final Color color) {
-        this.satellite = satellite;
+    public CovarianceDisplay(final Satellite satellite, final List<StateCovariance> covariances, final LOF lof,
+                             final Color color) {
+        this.satellite           = satellite;
         this.allSpaceCraftStates = satellite.getAllSpaceCraftStates();
         this.setId(DEFAULT_ID + satellite.getId());
         this.setName(DEFAULT_NAME + satellite.getName());
-        this.julianDates = absoluteDatelistToJulianDateList(satellite.getAbsoluteDateList());
+        this.julianDates       = absoluteDatelistToJulianDateList(satellite.getAbsoluteDateList(),
+                Header.getTimeScale());
         this.positionReference = new Reference(satellite.getId() + DEFAULT_H_POSITION);
-        this.covarianceList = covariances;
+        this.covarianceList    = covariances;
         this.postComputation(color, lof);
     }
 
     // Builders
 
-    public static CovarianceDisplayBuilder builder(final Satellite satelliteInput, final List<StateCovariance> covariancesInput, final LOF lofInput) {
+    public static CovarianceDisplayBuilder builder(final Satellite satelliteInput,
+                                                   final List<StateCovariance> covariancesInput, final LOF lofInput) {
         return new CovarianceDisplayBuilder(satelliteInput, covariancesInput, lofInput);
     }
 
-    /**
-     * The generation function for the CZML file for the covariance display.
-     */
+    /** The generation function for the CZML file for the covariance display. */
     public void writeCzmlBlock() {
         if (julianDates.isEmpty()) {
             OUTPUT.setPrettyFormatting(true);
@@ -194,7 +169,8 @@ public class CovarianceDisplay extends AbstractPrimaryObject implements CzmlPrim
                 packet.writeId(getId());
                 packet.writeName(getName());
 
-                position.write(packet, OUTPUT, Header.MASTER_CLOCK.getAvailability(), referenceFrame);
+                position.write(packet, OUTPUT, Header.getMasterClock()
+                                                     .getAvailability(), referenceFrame);
 
                 czmlEllipsoid.write(packet, OUTPUT);
             }
@@ -302,10 +278,6 @@ public class CovarianceDisplay extends AbstractPrimaryObject implements CzmlPrim
         return czmlEllipsoid;
     }
 
-    public Attitude getAttitude() {
-        return attitude;
-    }
-
     public List<SpacecraftState> getAllSpaceCraftStates() {
         return allSpaceCraftStates;
     }
@@ -318,19 +290,13 @@ public class CovarianceDisplay extends AbstractPrimaryObject implements CzmlPrim
         return dimensionsOfEllipsoids;
     }
 
-    public TimeScale getTimeScale() {
-        return timeScale;
-    }
-
     public CzmlEllipsoid getUniqueEllipsoid() {
         return uniqueEllipsoid;
     }
 
     // Overrides
 
-    /**
-     * This function returns the string writer of the covariance display.
-     */
+    /** This function returns the string writer of the covariance display. */
     @Override
     public StringWriter getStringWriter() {
         return null;
@@ -338,19 +304,16 @@ public class CovarianceDisplay extends AbstractPrimaryObject implements CzmlPrim
 
     // Functions
 
-    /**
-     * This function cleans all the private attributes to be used for another object.
-     */
+    /** This function cleans all the private attributes to be used for another object. */
     @Override
     public void cleanObject() {
         this.setId("");
         this.setName("");
-        this.position = null;
-        this.czmlEllipsoid = null;
-        this.satellite = null;
-        this.ellipsoidList = new ArrayList<>();
-        this.attitude = null;
-        this.attitudes = new ArrayList<>();
+        this.position        = null;
+        this.czmlEllipsoid   = null;
+        this.satellite       = null;
+        this.ellipsoidList   = new ArrayList<>();
+        this.attitudes       = new ArrayList<>();
         this.uniqueEllipsoid = null;
     }
 
@@ -361,12 +324,12 @@ public class CovarianceDisplay extends AbstractPrimaryObject implements CzmlPrim
             final RealMatrix realMatrix = covariance.getMatrix()
                                                     .getSubMatrix(0, 2, 0, 2);
 
-            final EigenDecompositionNonSymmetric decomposition = new EigenDecompositionNonSymmetric(realMatrix);
-            final RealMatrix matrixEigenVectors = decomposition.getV();
-            final RealMatrix copyOfEigenVectors = matrixEigenVectors.copy();
+            final EigenDecompositionNonSymmetric decomposition      = new EigenDecompositionNonSymmetric(realMatrix);
+            final RealMatrix                     matrixEigenVectors = decomposition.getV();
+            final RealMatrix                     copyOfEigenVectors = matrixEigenVectors.copy();
             final double[][] dataEigenValues = decomposition.getD()
                                                             .getData();
-            boolean inverted = false;
+            boolean  inverted = false;
             Rotation currentRotation;
             try {
                 currentRotation = new Rotation(matrixEigenVectors.getData(), 0.01);
@@ -376,9 +339,9 @@ public class CovarianceDisplay extends AbstractPrimaryObject implements CzmlPrim
             // We will need to invert the eigen values related to the eigen vectors that we inverted.
             catch (MathIllegalArgumentException e) {
                 inverted = true;
-                final RealVector firstColumnMatrix = matrixEigenVectors.getColumnVector(0);
+                final RealVector firstColumnMatrix  = matrixEigenVectors.getColumnVector(0);
                 final RealVector secondColumnMatrix = matrixEigenVectors.getColumnVector(1);
-                final RealVector thirdColumnMatrix = matrixEigenVectors.getColumnVector(2);
+                final RealVector thirdColumnMatrix  = matrixEigenVectors.getColumnVector(2);
                 copyOfEigenVectors.setColumnVector(0, firstColumnMatrix);
                 copyOfEigenVectors.setColumnVector(1, thirdColumnMatrix);
                 copyOfEigenVectors.setColumnVector(2, secondColumnMatrix);
@@ -386,17 +349,23 @@ public class CovarianceDisplay extends AbstractPrimaryObject implements CzmlPrim
             }
 
             if (inverted) {
-                dimensionsOfEllipsoids.add(new Cartesian(FastMath.sqrt(dataEigenValues[0][0]), FastMath.sqrt(dataEigenValues[2][2]), FastMath.sqrt(dataEigenValues[1][1])));
+                dimensionsOfEllipsoids.add(
+                        new Cartesian(FastMath.sqrt(dataEigenValues[0][0]), FastMath.sqrt(dataEigenValues[2][2]),
+                                FastMath.sqrt(dataEigenValues[1][1])));
             } else {
-                dimensionsOfEllipsoids.add(new Cartesian(FastMath.sqrt(dataEigenValues[0][0]), FastMath.sqrt(dataEigenValues[1][1]), FastMath.sqrt(dataEigenValues[2][2])));
+                dimensionsOfEllipsoids.add(
+                        new Cartesian(FastMath.sqrt(dataEigenValues[0][0]), FastMath.sqrt(dataEigenValues[1][1]),
+                                FastMath.sqrt(dataEigenValues[2][2])));
             }
 
-            final Rotation rotationFromLOF = lofInput.rotationFromInertial(covariance.getDate(), allSpaceCraftStates.get(i)
-                                                                                                                    .getPVCoordinates());
+            final Rotation rotationFromLOF = lofInput.rotationFromInertial(covariance.getDate(),
+                    allSpaceCraftStates.get(i)
+                                       .getPVCoordinates());
             final AngularCoordinates angularCoordinatesRotated = new AngularCoordinates(rotationFromLOF);
             final Attitude currentAttitudeCovariance = new Attitude(allSpaceCraftStates.get(i)
-                                                                                       .getDate(), allSpaceCraftStates.get(0)
-                                                                                                                      .getFrame(), angularCoordinatesRotated);
+                                                                                       .getDate(),
+                    allSpaceCraftStates.get(0)
+                                       .getFrame(), angularCoordinatesRotated);
             attitudes.add(currentAttitudeCovariance);
         }
 

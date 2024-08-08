@@ -20,32 +20,41 @@ import cesiumlanguagewriter.Cartesian;
 import cesiumlanguagewriter.TimeInterval;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Header;
 import org.orekit.czml.CzmlObjects.Polyline;
-import org.orekit.forces.maneuvers.Control3DVectorCostType;
 
 import java.awt.Color;
 import java.util.List;
 
 public class VectorPolylineBuilder {
 
-    /** .*/
+    /** . */
     public static final Color DEFAULT_COLOR = new Color(0, 255, 255, 255);
-    /** .*/
-    public static final TimeInterval DEFAULT_AVAILABILITY = Header.MASTER_CLOCK.getAvailability();
-    /** .*/
+
+    /** . */
+    public static final TimeInterval DEFAULT_AVAILABILITY = Header.getMasterClock()
+                                                                  .getAvailability();
+
+    /** . */
     public static final double DEFAULT_NEAR_DISTANCE = 1;
-    /** .*/
+
+    /** . */
     public static final double DEFAULT_FAR_DISTANCE = 100000000;
 
-    /** .*/
+
+    /** . */
     private List<Cartesian> cartesianList;
-    /** .*/
+
+    /** . */
     private TimeInterval availability = DEFAULT_AVAILABILITY;
-    /** .*/
+
+    /** . */
     private Color color = DEFAULT_COLOR;
-    /** .*/
+
+    /** . */
     private double nearDistance = DEFAULT_NEAR_DISTANCE;
-    /** .*/
+
+    /** . */
     private double farDistance = DEFAULT_FAR_DISTANCE;
+
 
     public VectorPolylineBuilder(final List<Cartesian> cartesiansInput) {
         this.cartesianList = cartesiansInput;

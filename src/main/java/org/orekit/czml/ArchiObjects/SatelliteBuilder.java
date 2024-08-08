@@ -26,55 +26,42 @@ import java.net.URISyntaxException;
 
 public class SatelliteBuilder {
 
-    /**
-     * .
-     */
+    /** . */
     public static final String DEFAULT_MODEL_PATH = "";
-    /**
-     * .
-     */
+
+    /** . */
     public static final Color DEFAULT_COLOR = new Color(255, 255, 255);
 
     // Optional parameters
-    /**
-     * .
-     */
+    /** . */
     private final BoundedPropagator propagator;
-    /**
-     * .
-     */
+
+    /** . */
     private AbsoluteDate finalDate;
-    /**
-     * .
-     */
+
+    /** . */
     private AbsoluteDate startDate;
-    /**
-     * .
-     */
+
+    /** . */
     private String modelPath = DEFAULT_MODEL_PATH;
-    /**
-     * .
-     */
+
+    /** . */
     private Color color = DEFAULT_COLOR;
-    /**
-     * .
-     */
+
+    /** . */
     private boolean displayOnlyOnePeriod = false;
 
     // Intrinsic parameters
-    /**
-     * .
-     */
+    /** . */
     private boolean displayAttitude = false;
-    /**
-     * .
-     */
+
+    /** . */
     private boolean displayReferenceSystem = false;
 
     public SatelliteBuilder(final BoundedPropagator propagator) {
         this.propagator = propagator;
-        this.finalDate = propagator.getMaxDate();
-        this.startDate = propagator.getMinDate();
+        this.finalDate  = propagator.getMaxDate();
+        this.startDate  = propagator.getMinDate();
     }
 
     public SatelliteBuilder withModelPath(final String modelPathInput) throws URISyntaxException, IOException {

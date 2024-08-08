@@ -72,9 +72,9 @@ public class YawCompensationFov {
 
     public static void main(final String[] args) throws Exception {
         try {
-            final File home = new File(System.getProperty("user.home"));
-            final File orekitDir = new File(home, "orekit-data");
-            final DataProvider provider = new DirectoryCrawler(orekitDir);
+            final File         home      = new File(System.getProperty("user.home"));
+            final File         orekitDir = new File(home, "orekit-data");
+            final DataProvider provider  = new DirectoryCrawler(orekitDir);
             DataContext.getDefault()
                        .getDataProvidersManager()
                        .addProvider(provider);
@@ -87,56 +87,71 @@ public class YawCompensationFov {
                                   .replace("\\", "/");
         final String outputPath = root + "/Output";
         final String outputName = "Output.czml";
-        final String output = outputPath + "/" + outputName;
-        final String IssModel = root + "/src/main/resources/ISSModel.glb";
+        final String output     = outputPath + "/" + outputName;
+        final String IssModel   = root + "/src/main/resources/Default3DModels/ISSModel.glb";
 
         // Creation of the clock.
-        final TimeScale UTC = TimeScalesFactory.getUTC();
-        final double durationOfSimulation = 10 * 3600; // in seconds;
-        final double stepBetweenEachInstant = 60.0; // in seconds
-        final AbsoluteDate startDate = new AbsoluteDate(2024, 3, 15, 0, 0, 0.0, UTC);
-        final AbsoluteDate finalDate = startDate.shiftedBy(durationOfSimulation);
-        final Clock clock = new Clock(startDate, finalDate, UTC, stepBetweenEachInstant);
+        final TimeScale    UTC                    = TimeScalesFactory.getUTC();
+        final double       durationOfSimulation   = 10 * 3600; // in seconds;
+        final double       stepBetweenEachInstant = 60.0; // in seconds
+        final AbsoluteDate startDate              = new AbsoluteDate(2024, 3, 15, 0, 0, 0.0, UTC);
+        final AbsoluteDate finalDate              = startDate.shiftedBy(durationOfSimulation);
+        final Clock        clock                  = new Clock(startDate, finalDate, UTC, stepBetweenEachInstant);
 
         final Header header = new Header("Yaw compensation with 3 satellites with the same fov", clock);
 
         // Creation of the model of the earth.
         final IERSConventions IERS = IERSConventions.IERS_2010;
-        final Frame ITRF = FramesFactory.getITRF(IERS, true);
-        final OneAxisEllipsoid earth = new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS, Constants.WGS84_EARTH_FLATTENING, ITRF);
+        final Frame           ITRF = FramesFactory.getITRF(IERS, true);
+        final OneAxisEllipsoid earth = new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS,
+                Constants.WGS84_EARTH_FLATTENING, ITRF);
 
         // Creation of the model of the sun
         final PVCoordinatesProvider sunModel = CelestialBodyFactory.getSun();
 
         // Build of a LEO orbit
         final Frame EME2000 = FramesFactory.getEME2000();
-        final KeplerianOrbit firstOrbit = new KeplerianOrbit(7200000, 0, FastMath.toRadians(98), 0, FastMath.toRadians(0), FastMath.toRadians(0), PositionAngleType.MEAN, EME2000, startDate, Constants.WGS84_EARTH_MU);
-        final KeplerianOrbit secondOrbit = new KeplerianOrbit(7200000, 0, FastMath.toRadians(98), 0, FastMath.toRadians(20), FastMath.toRadians(0), PositionAngleType.MEAN, EME2000, startDate, Constants.WGS84_EARTH_MU);
-        final KeplerianOrbit thirdOrbit = new KeplerianOrbit(7200000, 0, FastMath.toRadians(98), 0, FastMath.toRadians(0), FastMath.toRadians(40), PositionAngleType.MEAN, EME2000, startDate, Constants.WGS84_EARTH_MU);
+        final KeplerianOrbit firstOrbit = new KeplerianOrbit(7200000, 0, FastMath.toRadians(98), 0,
+                FastMath.toRadians(0), FastMath.toRadians(0), PositionAngleType.MEAN, EME2000, startDate,
+                Constants.WGS84_EARTH_MU);
+        final KeplerianOrbit secondOrbit = new KeplerianOrbit(7200000, 0, FastMath.toRadians(98), 0,
+                FastMath.toRadians(20), FastMath.toRadians(0), PositionAngleType.MEAN, EME2000, startDate,
+                Constants.WGS84_EARTH_MU);
+        final KeplerianOrbit thirdOrbit = new KeplerianOrbit(7200000, 0, FastMath.toRadians(98), 0,
+                FastMath.toRadians(0), FastMath.toRadians(40), PositionAngleType.MEAN, EME2000, startDate,
+                Constants.WGS84_EARTH_MU);
 
-        final SpacecraftState firstState = new SpacecraftState(firstOrbit);
+        final SpacecraftState firstState  = new SpacecraftState(firstOrbit);
         final SpacecraftState secondState = new SpacecraftState(secondOrbit);
-        final SpacecraftState thirdState = new SpacecraftState(thirdOrbit);
+        final SpacecraftState thirdState  = new SpacecraftState(thirdOrbit);
 
         // Build of the 3 bounded propagators
         final double positionTolerance = 10.0;
-        final double minStep = 0.001;
-        final double maxStep = 1000;
+        final double minStep           = 0.001;
+        final double maxStep           = 1000;
 
-        final double[][] tolerances1 = NumericalPropagator.tolerances(positionTolerance, firstOrbit, OrbitType.CARTESIAN);
-        final double[][] tolerances2 = NumericalPropagator.tolerances(positionTolerance, secondOrbit, OrbitType.CARTESIAN);
-        final double[][] tolerances3 = NumericalPropagator.tolerances(positionTolerance, thirdOrbit, OrbitType.CARTESIAN);
+        final double[][] tolerances1 = NumericalPropagator.tolerances(positionTolerance, firstOrbit,
+                OrbitType.CARTESIAN);
+        final double[][] tolerances2 = NumericalPropagator.tolerances(positionTolerance, secondOrbit,
+                OrbitType.CARTESIAN);
+        final double[][] tolerances3 = NumericalPropagator.tolerances(positionTolerance, thirdOrbit,
+                OrbitType.CARTESIAN);
 
-        final AdaptiveStepsizeIntegrator integrator1 = new DormandPrince853Integrator(minStep, maxStep, tolerances1[0], tolerances1[1]);
-        final AdaptiveStepsizeIntegrator integrator2 = new DormandPrince853Integrator(minStep, maxStep, tolerances2[0], tolerances2[1]);
-        final AdaptiveStepsizeIntegrator integrator3 = new DormandPrince853Integrator(minStep, maxStep, tolerances3[0], tolerances3[1]);
+        final AdaptiveStepsizeIntegrator integrator1 = new DormandPrince853Integrator(minStep, maxStep, tolerances1[0],
+                tolerances1[1]);
+        final AdaptiveStepsizeIntegrator integrator2 = new DormandPrince853Integrator(minStep, maxStep, tolerances2[0],
+                tolerances2[1]);
+        final AdaptiveStepsizeIntegrator integrator3 = new DormandPrince853Integrator(minStep, maxStep, tolerances3[0],
+                tolerances3[1]);
 
         final NumericalPropagator propagator1 = new NumericalPropagator(integrator1);
         final NumericalPropagator propagator2 = new NumericalPropagator(integrator2);
         final NumericalPropagator propagator3 = new NumericalPropagator(integrator3);
 
-        final NormalizedSphericalHarmonicsProvider provider = GravityFieldFactory.getNormalizedProvider(10, 10);
-        final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(EME2000, provider);
+        final NormalizedSphericalHarmonicsProvider provider = GravityFieldFactory.getNormalizedProvider(10,
+                10);
+        final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(EME2000,
+                provider);
 
         propagator1.setOrbitType(OrbitType.CARTESIAN);
         propagator1.addForceModel(holmesFeatherstone);
@@ -202,9 +217,11 @@ public class YawCompensationFov {
                                                         .getTransformTo(earth.getBodyFrame(), firstState.getDate());
 
         final Transform initialFovBody1 = new Transform(firstState.getDate(), firstState.toTransform()
-                                                                                        .getInverse(), initialInertToBody1);
+                                                                                        .getInverse(),
+                initialInertToBody1);
 
-        final FieldOfView fov1 = new DoubleDihedraFieldOfView(Vector3D.PLUS_K, Vector3D.PLUS_I, FastMath.toRadians(20), Vector3D.PLUS_J, FastMath.toRadians(5), 2);
+        final FieldOfView fov1 = new DoubleDihedraFieldOfView(Vector3D.PLUS_K, Vector3D.PLUS_I, FastMath.toRadians(20),
+                Vector3D.PLUS_J, FastMath.toRadians(5), 2);
         final FieldOfObservation fieldOfObservation1 = FieldOfObservation.builder(satellite1, fov1, initialFovBody1)
                                                                          .withColor(Color.GREEN)
                                                                          .build();
@@ -213,9 +230,11 @@ public class YawCompensationFov {
                                                          .getTransformTo(earth.getBodyFrame(), secondState.getDate());
 
         final Transform initialFovBody2 = new Transform(secondState.getDate(), secondState.toTransform()
-                                                                                          .getInverse(), initialInertToBody2);
+                                                                                          .getInverse(),
+                initialInertToBody2);
 
-        final FieldOfView fov2 = new DoubleDihedraFieldOfView(Vector3D.PLUS_K, Vector3D.PLUS_I, FastMath.toRadians(20), Vector3D.PLUS_J, FastMath.toRadians(5), 2);
+        final FieldOfView fov2 = new DoubleDihedraFieldOfView(Vector3D.PLUS_K, Vector3D.PLUS_I, FastMath.toRadians(20),
+                Vector3D.PLUS_J, FastMath.toRadians(5), 2);
         final FieldOfObservation fieldOfObservation2 = FieldOfObservation.builder(satellite2, fov2, initialFovBody2)
                                                                          .withColor(Color.GREEN)
                                                                          .build();
@@ -224,9 +243,11 @@ public class YawCompensationFov {
                                                         .getTransformTo(earth.getBodyFrame(), thirdState.getDate());
 
         final Transform initialFovBody3 = new Transform(thirdState.getDate(), thirdState.toTransform()
-                                                                                        .getInverse(), initialInertToBody3);
+                                                                                        .getInverse(),
+                initialInertToBody3);
 
-        final FieldOfView fov3 = new DoubleDihedraFieldOfView(Vector3D.PLUS_K, Vector3D.PLUS_I, FastMath.toRadians(20), Vector3D.PLUS_J, FastMath.toRadians(5), 2);
+        final FieldOfView fov3 = new DoubleDihedraFieldOfView(Vector3D.PLUS_K, Vector3D.PLUS_I, FastMath.toRadians(20),
+                Vector3D.PLUS_J, FastMath.toRadians(5), 2);
         final FieldOfObservation fieldOfObservation3 = FieldOfObservation.builder(satellite3, fov3, initialFovBody3)
                                                                          .withColor(Color.GREEN)
                                                                          .build();

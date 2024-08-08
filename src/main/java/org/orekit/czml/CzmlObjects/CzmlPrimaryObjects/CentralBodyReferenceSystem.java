@@ -44,41 +44,36 @@ import java.util.List;
  */
 
 public class CentralBodyReferenceSystem extends AbstractPrimaryObject implements CzmlPrimaryObject {
-    /**
-     * .
-     */
+    /** The default ID for the central body reference system. */
     public static final String DEFAULT_ID = "CENTRAL_BODY_REFERENCE_SYSTEM";
-    /**
-     * .
-     */
+
+    /** The default name for the central body reference system. */
     public static final String DEFAULT_NAME = "Reference system of the central body";
-    /**
-     * .
-     */
+
+    /** Default color for the X axis. */
     public static final Color DEFAULT_RED = new Color(255, 10, 10);
-    /**
-     * .
-     */
+
+    /** Default color for the Y axis. */
     public static final Color DEFAULT_GREEN = new Color(10, 255, 10);
-    /**
-     * .
-     */
+
+    /** Default color for the Z axis. */
     public static final Color DEFAULT_BLUE = new Color(10, 10, 255);
 
-    /**
-     * .
-     */
+
+    /** The list of lines that defines the system. */
     private List<Polyline> polylines = new ArrayList<>();
 
 
-    public CentralBodyReferenceSystem(final OneAxisEllipsoid body, final String id, final String name, final Color color1,
+    public CentralBodyReferenceSystem(final OneAxisEllipsoid body, final String id, final String name,
+                                      final Color color1,
                                       final Color color2, final Color color3) {
         this.setId(id);
         this.setName(name);
-        this.setAvailability(Header.MASTER_CLOCK.getAvailability());
+        this.setAvailability(Header.getMasterClock()
+                                   .getAvailability());
 
         final Cartesian centralCartesian = new Cartesian(0.1, 0.1, 0.1);
-        final double depth = body.getEquatorialRadius() * 3;
+        final double    depth            = body.getEquatorialRadius() * 3;
 
         final Cartesian plusXCartesian = new Cartesian(depth, 0, 0);
         final Cartesian plusYCartesian = new Cartesian(0, depth, 0);
@@ -87,6 +82,7 @@ public class CentralBodyReferenceSystem extends AbstractPrimaryObject implements
         final List<Cartesian> vectorToX = new ArrayList<>();
         final List<Cartesian> vectorToY = new ArrayList<>();
         final List<Cartesian> vectorToZ = new ArrayList<>();
+
         vectorToX.add(centralCartesian);
         vectorToX.add(plusXCartesian);
 
@@ -102,43 +98,53 @@ public class CentralBodyReferenceSystem extends AbstractPrimaryObject implements
                                            .withNearDistance(1)
                                            .withFarDistance(1e9)
                                            .build();
+
         final Polyline YPolyline = Polyline.vectorBuilder(vectorToY)
                                            .withAvailability(getAvailability())
                                            .withColor(color2)
                                            .withNearDistance(1)
                                            .withFarDistance(1e9)
                                            .build();
+
         final Polyline ZPolyline = Polyline.vectorBuilder(vectorToZ)
                                            .withAvailability(getAvailability())
                                            .withColor(color3)
                                            .withNearDistance(1)
                                            .withFarDistance(1e9)
                                            .build();
+
         this.polylines.add(XPolyline);
         this.polylines.add(YPolyline);
         this.polylines.add(ZPolyline);
     }
 
+    // This constructor build a central body reference system on the earth with basic parameters.
     public CentralBodyReferenceSystem() {
         this(new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS,
-                                  Constants.WGS84_EARTH_FLATTENING,
-                                  FramesFactory.getITRF(IERSConventions.IERS_2010, true)),
-             DEFAULT_ID,
-             DEFAULT_NAME,
-             DEFAULT_RED,
-             DEFAULT_GREEN,
-             DEFAULT_GREEN);
+                        Constants.WGS84_EARTH_FLATTENING,
+                        FramesFactory.getITRF(IERSConventions.IERS_2010, true)),
+                DEFAULT_ID,
+                DEFAULT_NAME,
+                DEFAULT_RED,
+                DEFAULT_GREEN,
+                DEFAULT_GREEN);
     }
 
+    // This constructor build a central body reference system on the earth with personalized colors for each axis.
     public CentralBodyReferenceSystem(final Color color1, final Color color2, final Color color3) {
         this(new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS,
-                                  Constants.WGS84_EARTH_FLATTENING,
-                                  FramesFactory.getITRF(IERSConventions.IERS_2010, true)),
-             DEFAULT_ID,
-             DEFAULT_NAME,
-             color1,
-             color2,
-             color3);
+                        Constants.WGS84_EARTH_FLATTENING,
+                        FramesFactory.getITRF(IERSConventions.IERS_2010, true)),
+                DEFAULT_ID,
+                DEFAULT_NAME,
+                color1,
+                color2,
+                color3);
+    }
+
+    public CentralBodyReferenceSystem(final OneAxisEllipsoid body, final Color color1, final Color color2,
+                                      final Color color3) {
+        this(body, DEFAULT_ID, DEFAULT_NAME, color1, color2, color3);
     }
 
 
@@ -172,5 +178,9 @@ public class CentralBodyReferenceSystem extends AbstractPrimaryObject implements
         setId("");
         setName("");
         polylines = new ArrayList<>();
+    }
+
+    public List<Polyline> getPolylines() {
+        return polylines;
     }
 }

@@ -23,7 +23,6 @@ import cesiumlanguagewriter.JulianDate;
 import cesiumlanguagewriter.TimeInterval;
 import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScale;
-import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.Constants;
 
 import java.io.IOException;
@@ -42,45 +41,55 @@ import java.util.List;
  * @author Julien LEBLOND
  * @since 1.0
  */
+
 public interface CzmlPrimaryObject {
 
-    /**
-     * .
-     */
+    /** The string writer that allows to write inside the CzmLFile. */
     StringWriter STRING_WRITER = new StringWriter();
-    /**
-     * .
-     */
+
+    /** The output stream of cesium that will contain the strings to write into the CzmLFile. */
     CesiumOutputStream OUTPUT = new CesiumOutputStream(STRING_WRITER);
-    /**
-     * .
-     */
+
+    /** The stream that convert all the strings into understandable string for the CzmlFile. */
     CesiumStreamWriter STREAM = new CesiumStreamWriter();
 
-    default double absoluteDateToJulianDateDelta(AbsoluteDate date) {
+
+    /**
+     * Gives the delta of time between the Julian Epoch and the current absolute date.
+     *
+     * @param date : The absolute date to get the delta from
+     * @return : The delta of time between the Julian Epoch and the current absolute date.
+     */
+    default double absoluteDateToJulianDateOriginDelta(AbsoluteDate date) {
         final double dt_s = date.durationFrom(AbsoluteDate.JULIAN_EPOCH);
         return dt_s / Constants.JULIAN_DAY;
     }
 
-    default JulianDate absoluteDateToJulianDate(AbsoluteDate date) {
+    /**
+     * Converts an absolute date to a julian date.
+     *
+     * @param date      : The absolute date to convert
+     * @param timeScale : The timescale in which the absolute date is expressed
+     * @return : The julian date from the conversion
+     */
+    default JulianDate absoluteDateToJulianDate(AbsoluteDate date, TimeScale timeScale) {
 
-        final TimeScale UTC = TimeScalesFactory.getUTC();
-        final int year = date.getComponents(UTC)
+        final int year = date.getComponents(timeScale)
                              .getDate()
                              .getYear();
-        final int month = date.getComponents(UTC)
+        final int month = date.getComponents(timeScale)
                               .getDate()
                               .getMonth();
-        final int day = date.getComponents(UTC)
+        final int day = date.getComponents(timeScale)
                             .getDate()
                             .getDay();
-        final int hour = date.getComponents(UTC)
+        final int hour = date.getComponents(timeScale)
                              .getTime()
                              .getHour();
-        final int min = date.getComponents(UTC)
+        final int min = date.getComponents(timeScale)
                             .getTime()
                             .getMinute();
-        final double sec = date.getComponents(UTC)
+        final double sec = date.getComponents(timeScale)
                                .getTime()
                                .getSecond();
 
@@ -88,18 +97,39 @@ public interface CzmlPrimaryObject {
         return new JulianDate(gregorianDate);
     }
 
-    default List<JulianDate> absoluteDatelistToJulianDateList(List<AbsoluteDate> absoluteDates) {
+    /**
+     * Converts a list of absolute date into a list of julian dates.
+     *
+     * @param timeScale     : The timescale in which the absolute dates are expressed
+     * @param absoluteDates : The list of absolute dates to convert
+     * @return : A list of julian dates from the conversion
+     */
+    default List<JulianDate> absoluteDatelistToJulianDateList(List<AbsoluteDate> absoluteDates, TimeScale timeScale) {
         final List<JulianDate> toReturn = new ArrayList<>();
         for (AbsoluteDate absoluteDate : absoluteDates) {
-            toReturn.add(absoluteDateToJulianDate(absoluteDate));
+            toReturn.add(absoluteDateToJulianDate(absoluteDate, timeScale));
         }
         return toReturn;
     }
 
+    /**
+     * Converts a julian date to an absolute date, given the timescale.
+     *
+     * @param julianDate : The julian date to convert
+     * @param timeScale  : The timescale in which the absolute date must be expressed.
+     * @return : The absolute date from the conversion in the timescale.
+     */
     default AbsoluteDate julianDateToAbsoluteDate(JulianDate julianDate, TimeScale timeScale) {
         return AbsoluteDate.createJDDate(julianDate.getDay(), julianDate.getSecondsOfDay(), timeScale);
     }
 
+    /**
+     * Convert a list of julian date into a list a absolute date, given the timescale.
+     *
+     * @param julianDates : The list of julian dates to convert
+     * @param timeScale   : The timescale in which the absolute date will be expressed
+     * @return : A list of absolute date from the conversion
+     */
     default List<AbsoluteDate> julianDateListToAbsoluteDateList(List<JulianDate> julianDates, TimeScale timeScale) {
         final List<AbsoluteDate> toReturn = new ArrayList<>();
         for (JulianDate julianDate : julianDates) {
@@ -108,6 +138,12 @@ public interface CzmlPrimaryObject {
         return toReturn;
     }
 
+    /**
+     * Converts a list of julianDate to a list of TimeInterval.
+     *
+     * @param julianDates : The list of julian dates to convert, the list cannot contain only one element.
+     * @return : A list of TimeInterval that correspond to each interval between each date.
+     */
     default List<TimeInterval> julienDateListToTimeIntervals(List<JulianDate> julianDates) {
 
         final List<TimeInterval> toReturn = new ArrayList<>();
@@ -116,8 +152,8 @@ public interface CzmlPrimaryObject {
         toReturn.add(new TimeInterval(firstJulianDate, julianDates.get(0)));
 
         for (int i = 0; i < julianDates.size() - 1; i++) {
-            final JulianDate currentJulianDate = julianDates.get(i);
-            final JulianDate nextJulianDate = julianDates.get(i + 1);
+            final JulianDate   currentJulianDate   = julianDates.get(i);
+            final JulianDate   nextJulianDate      = julianDates.get(i + 1);
             final TimeInterval currentTimeInterval = new TimeInterval(currentJulianDate, nextJulianDate);
             toReturn.add(currentTimeInterval);
         }
@@ -175,9 +211,12 @@ public interface CzmlPrimaryObject {
         return toReturn;
     }
 
+    /** The classic method that write the object into the CzmlFile. */
     void writeCzmlBlock() throws URISyntaxException, IOException;
 
+    /** The classic method that returns the string writer of the object. */
     StringWriter getStringWriter();
 
+    /** The classic method that clean all the arguments of the object. */
     void cleanObject();
 }

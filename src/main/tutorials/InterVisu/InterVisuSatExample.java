@@ -58,9 +58,9 @@ public class InterVisuSatExample {
 
     public static void main(final String[] args) throws Exception {
         try {
-            final File home = new File(System.getProperty("user.home"));
-            final File orekitDir = new File(home, "orekit-data");
-            final DataProvider provider = new DirectoryCrawler(orekitDir);
+            final File         home      = new File(System.getProperty("user.home"));
+            final File         orekitDir = new File(home, "orekit-data");
+            final DataProvider provider  = new DirectoryCrawler(orekitDir);
             DataContext.getDefault()
                        .getDataProvidersManager()
                        .addProvider(provider);
@@ -73,43 +73,53 @@ public class InterVisuSatExample {
                                   .replace("\\", "/");
         final String outputPath = root + "/Output";
         final String outputName = "Output.czml";
-        final String output = outputPath + "/" + outputName;
+        final String output     = outputPath + "/" + outputName;
 
         // Creation of the clock.
-        final TimeScale UTC = TimeScalesFactory.getUTC();
-        final double durationOfSimulation = 32 * 3600; // in seconds;
-        final double stepBetweenEachInstant = 60.0; // in seconds
-        final AbsoluteDate startDate = new AbsoluteDate(2024, 3, 15, 0, 0, 0.0, UTC);
-        final AbsoluteDate finalDate = startDate.shiftedBy(durationOfSimulation);
-        final Clock clock = new Clock(startDate, finalDate, UTC, stepBetweenEachInstant);
+        final TimeScale    UTC                    = TimeScalesFactory.getUTC();
+        final double       durationOfSimulation   = 32 * 3600; // in seconds;
+        final double       stepBetweenEachInstant = 60.0; // in seconds
+        final AbsoluteDate startDate              = new AbsoluteDate(2024, 3, 15, 0, 0, 0.0, UTC);
+        final AbsoluteDate finalDate              = startDate.shiftedBy(durationOfSimulation);
+        final Clock        clock                  = new Clock(startDate, finalDate, UTC, stepBetweenEachInstant);
 
         final Header header = new Header("Setup of the visualisation inter-satellites", clock);
 
         //// Build of the first satellite with an orbit with 20 degree inclination
         // Build of a LEO orbit
         final Frame EME2000 = FramesFactory.getEME2000();
-        final KeplerianOrbit firstOrbit = new KeplerianOrbit(7878000, 0, FastMath.toRadians(0), FastMath.toRadians(0), FastMath.toRadians(0), FastMath.toRadians(0), PositionAngleType.MEAN, EME2000, startDate, Constants.WGS84_EARTH_MU);
+        final KeplerianOrbit firstOrbit = new KeplerianOrbit(7878000, 0, FastMath.toRadians(0), FastMath.toRadians(0),
+                FastMath.toRadians(0), FastMath.toRadians(0), PositionAngleType.MEAN, EME2000, startDate,
+                Constants.WGS84_EARTH_MU);
         final SpacecraftState firstState = new SpacecraftState(firstOrbit);
 
         //// Build of the first satellite with an orbit with 40 degree inclination and omega of 90 degrees
         // Build of a LEO orbit
-        final KeplerianOrbit secondOrbit = new KeplerianOrbit(7078000, 0, FastMath.toRadians(20), FastMath.toRadians(45), FastMath.toRadians(0), FastMath.toRadians(0), PositionAngleType.MEAN, EME2000, startDate, Constants.WGS84_EARTH_MU);
+        final KeplerianOrbit secondOrbit = new KeplerianOrbit(7078000, 0, FastMath.toRadians(20),
+                FastMath.toRadians(45), FastMath.toRadians(0), FastMath.toRadians(0), PositionAngleType.MEAN, EME2000,
+                startDate, Constants.WGS84_EARTH_MU);
         final SpacecraftState secondState = new SpacecraftState(secondOrbit);
 
         // Build of the propagator
         final double positionTolerance = 10.0;
-        final double minStep = 0.001;
-        final double maxStep = 1000;
+        final double minStep           = 0.001;
+        final double maxStep           = 1000;
 
-        final double[][] tolerances1 = NumericalPropagator.tolerances(positionTolerance, firstOrbit, OrbitType.CARTESIAN);
-        final double[][] tolerances2 = NumericalPropagator.tolerances(positionTolerance, secondOrbit, OrbitType.CARTESIAN);
-        final AdaptiveStepsizeIntegrator integrator1 = new DormandPrince853Integrator(minStep, maxStep, tolerances1[0], tolerances1[1]);
-        final AdaptiveStepsizeIntegrator integrator2 = new DormandPrince853Integrator(minStep, maxStep, tolerances2[0], tolerances2[1]);
+        final double[][] tolerances1 = NumericalPropagator.tolerances(positionTolerance, firstOrbit,
+                OrbitType.CARTESIAN);
+        final double[][] tolerances2 = NumericalPropagator.tolerances(positionTolerance, secondOrbit,
+                OrbitType.CARTESIAN);
+        final AdaptiveStepsizeIntegrator integrator1 = new DormandPrince853Integrator(minStep, maxStep, tolerances1[0],
+                tolerances1[1]);
+        final AdaptiveStepsizeIntegrator integrator2 = new DormandPrince853Integrator(minStep, maxStep, tolerances2[0],
+                tolerances2[1]);
 
-        final NormalizedSphericalHarmonicsProvider provider = GravityFieldFactory.getNormalizedProvider(10, 10);
-        final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(EME2000, provider);
+        final NormalizedSphericalHarmonicsProvider provider = GravityFieldFactory.getNormalizedProvider(10,
+                10);
+        final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(EME2000,
+                provider);
 
-        final NumericalPropagator firstPropagator = new NumericalPropagator(integrator1);
+        final NumericalPropagator firstPropagator  = new NumericalPropagator(integrator1);
         final NumericalPropagator secondPropagator = new NumericalPropagator(integrator2);
 
         firstPropagator.setOrbitType(OrbitType.CARTESIAN);

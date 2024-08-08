@@ -35,14 +35,10 @@ import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.Orientation;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.TimePosition;
 import org.orekit.czml.CzmlObjects.Path;
 import org.orekit.frames.Frame;
-import org.orekit.frames.LOFType;
-import org.orekit.orbits.KeplerianOrbit;
 import org.orekit.orbits.Orbit;
-import org.orekit.orbits.OrbitType;
 import org.orekit.propagation.BoundedPropagator;
 import org.orekit.propagation.Propagator;
 import org.orekit.propagation.SpacecraftState;
-import org.orekit.propagation.sampling.OrekitFixedStepHandler;
 import org.orekit.time.AbsoluteDate;
 
 import java.awt.Color;
@@ -65,121 +61,81 @@ import java.util.List;
  * but each builder is overloaded with a path to the 3D model to charge your own 2D or 3D model.</p>
  *
  * @author Julien LEBLOND
- * @since 1.0
+ * @since 1.0.0
  */
 
 public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObject {
 
-    /**
-     * .
-     */
+    /** The default model path, empty. */
     public static final String DEFAULT_MODEL_PATH = "";
 
-    /**
-     * .
-     */
+    /** The default name of the satellite. */
     public static final String DEFAULT_NAME = "Satellite";
-    /**
-     * .
-     */
+
+    /** The default description of the satellite. */
     public static final String DEFAULT_DESCRIPTION = "A satellite";
-    /**
-     * .
-     */
+
+    /** The default orbit color of the satellite. */
     public static final Color DEFAULT_COLOR = new Color(255, 255, 255);
 
     // Optional parameters
-    /**
-     * .
-     */
+    /** To display or not only one period. By default, display all the path. */
     private boolean displayOnlyOnePeriod = false;
-    /**
-     * .
-     */
+
+    /** To display or not the attitude of the satellite. By default, the satellite is oriented in TNW in the local orbital frame. */
     private boolean displayAttitude = false;
-    /**
-     * .
-     */
+
+    /** To display or not the satellite reference system. */
     private boolean displayReferenceSystem = false;
 
     // Orekit arguments
-    /**
-     * .
-     */
-    private List<Vector3D> vector3DS;
-    /**
-     * .
-     */
+    /** The list of the attitudes of the satellite. */
     private List<Attitude> attitudes = new ArrayList<>();
-    /**
-     * .
-     */
+
+    /** The list of the spacecraft states of the satellite. */
     private List<SpacecraftState> allSpaceCraftStates = new ArrayList<>();
-    /**
-     * .
-     */
+
+    /** The final date of propagation. */
     private AbsoluteDate finalDate;
-    /**
-     * .
-     */
+
+    /** The optional rotation applied to the attitude of the satellite. */
     private Rotation optionalRotation;
-    /**
-     * .
-     */
+
+    /** The frame in which the satellite is computed. */
     private Frame frame;
 
     // Writing arguments
-    /**
-     * .
-     */
+    /** The period of the orbit. */
     private double period;
-    /**
-     * .
-     */
+
+    /** The description of the satellite. */
     private String description;
-    /**
-     * .
-     */
+
+    /** The orientation in the local orbital frame of the satellite. */
     private Orientation orientation;
-    /**
-     * .
-     */
+
+    /** The image, if one is charged, of the satellite. By default, a basic image of a satellite will be used. */
     private Billboard billboard = null;
-    /**
-     * .
-     */
+
+    /** The propagator of the satellite. */
     private Propagator satellitePropagator;
-    /**
-     * .
-     */
-    private BoundedPropagator boundedPropagator;
-    /**
-     * .
-     */
+
+    /** The satellite reference system object. */
     private SatelliteReferenceSystem satelliteReferenceSystem = null;
-    /**
-     * .
-     */
+
+    /** The color of the orbit. */
     private Color color;
-    /**
-     * .
-     */
+
+    /** If the satellite already has an attitude defined or not. */
     private boolean oriented = false;
-    /**
-     * .
-     */
-    private OrbitType orbitType;
-    /**
-     * .
-     */
+
+    /** The path ot the model to be used. */
     private String modelPath;
-    /**
-     * .
-     */
+
+    /** The CzmlModel for the display of the model. */
     private CzmlModel model;
-    /**
-     * .
-     */
+
+    /** The type of the model. */
     private ModelType modelType;
 
     //// Constructors
@@ -407,46 +363,49 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
 //        this.period = orbitTemp.get(0).getKeplerianPeriod();
 //    }
 
+    // CONSTRUCTORS
+
     public Satellite(final BoundedPropagator propagator) throws URISyntaxException, IOException {
         this(propagator, propagator.getMinDate(), propagator.getMaxDate(), DEFAULT_MODEL_PATH, DEFAULT_COLOR);
     }
 
-    public Satellite(final BoundedPropagator propagator, final AbsoluteDate startDateInput, final AbsoluteDate finalDateInput, final String modelPath, final Color color) throws URISyntaxException, IOException {
+    public Satellite(final BoundedPropagator propagator, final AbsoluteDate startDateInput,
+                     final AbsoluteDate finalDateInput, final String modelPath,
+                     final Color color) throws URISyntaxException, IOException {
 
         if (propagator.getInitialState()
                       .getOrbit() == null) {
-            throw new RuntimeException("The propagator has no initial state, please setup the propagator before building" +
-                                               "the satellite");
+            throw new RuntimeException(
+                    "The propagator has no initial state, please setup the propagator before building" +
+                            "the satellite");
         } else {
             this.setId(propagator.getInitialState()
                                  .getOrbit()
                                  .toString());
             this.setName(DEFAULT_NAME);
-            this.setAvailability(Header.MASTER_CLOCK.getAvailability());
+            this.setAvailability(Header.getMasterClock()
+                                       .getAvailability());
             this.satellitePropagator = propagator;
-            this.description = DEFAULT_DESCRIPTION;
-            this.frame = propagator.getFrame();
-            this.color = color;
-            this.finalDate = finalDateInput;
-            this.orbitType = propagator.getInitialState()
-                                       .getOrbit()
-                                       .getType();
-
+            this.description         = DEFAULT_DESCRIPTION;
+            this.frame               = propagator.getFrame();
+            this.color               = color;
+            this.finalDate           = finalDateInput;
 
             // Setup propagator
-            this.vector3DS = multiplexerSetup(propagator);
+            multiplexerSetup(propagator);
 
             // Propagation
             propagator.propagate(startDateInput, this.finalDate);
-            this.boundedPropagator = propagator;
         }
         this.modelPath = modelPath;
-        this.model = new CzmlModel(modelPath);
+        this.model     = new CzmlModel(modelPath);
         this.modelType = model.getModelType();
-        this.period = allSpaceCraftStates.get(0)
-                                         .getOrbit()
-                                         .getKeplerianPeriod();
+        this.period    = allSpaceCraftStates.get(0)
+                                            .getOrbit()
+                                            .getKeplerianPeriod();
     }
+
+    // Builder
 
     public static SatelliteBuilder builder(final BoundedPropagator propagator) {
         return new SatelliteBuilder(propagator);
@@ -463,29 +422,25 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
         this.setId("");
         this.setName("");
         this.setAvailability(null);
-        this.description = "";
-        this.modelPath = "";
-        this.model = null;
-        this.vector3DS = new ArrayList<>();
-        this.frame = null;
-        this.billboard = null;
-        this.attitudes = new ArrayList<>();
-        this.allSpaceCraftStates = new ArrayList<>();
-        this.oriented = false;
-        this.displayAttitude = false;
-        this.orientation = null;
-        this.optionalRotation = null;
-        this.displayOnlyOnePeriod = false;
-        this.color = null;
-        this.displayReferenceSystem = false;
+        this.description              = "";
+        this.modelPath                = "";
+        this.model                    = null;
+        this.frame                    = null;
+        this.billboard                = null;
+        this.attitudes                = new ArrayList<>();
+        this.allSpaceCraftStates      = new ArrayList<>();
+        this.oriented                 = false;
+        this.displayAttitude          = false;
+        this.orientation              = null;
+        this.optionalRotation         = null;
+        this.displayOnlyOnePeriod     = false;
+        this.color                    = null;
+        this.displayReferenceSystem   = false;
         this.satelliteReferenceSystem = null;
-        this.satellitePropagator = null;
-        this.modelType = null;
-        this.period = 0.0;
-        this.orbitType = null;
+        this.satellitePropagator      = null;
+        this.modelType                = null;
+        this.period                   = 0.0;
     }
-
-    // GETS
 
     @Override
     public void writeCzmlBlock() throws URISyntaxException, IOException {
@@ -509,6 +464,8 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
         }
     }
 
+    // GETTERS
+
     public String getDescription() {
         return description;
     }
@@ -525,7 +482,7 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
         final List<Double> toReturn = new ArrayList<>();
         for (SpacecraftState allSpaceCraftState : allSpaceCraftStates) {
             final AbsoluteDate currentDate = allSpaceCraftState.getDate();
-            final Double tempDouble = absoluteDateToJulianDateDelta(currentDate);
+            final Double       tempDouble  = absoluteDateToJulianDateOriginDelta(currentDate);
             toReturn.add(tempDouble);
         }
         return toReturn;
@@ -535,13 +492,8 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
         return attitudes;
     }
 
-    // SETS
     public void setAttitudes(final List<Attitude> attitudes) {
         this.attitudes = attitudes;
-    }
-
-    public List<Vector3D> getVector3DS() {
-        return vector3DS;
     }
 
     public List<Orbit> getOrbits() {
@@ -593,12 +545,13 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
         if (orientation != null) {
             return orientation;
         } else {
-            throw new RuntimeException("The satellite did not display the orientation, please use the displaySatelliteAttitude() method first");
+            throw new RuntimeException(
+                    "The satellite did not display the orientation, please use the displaySatelliteAttitude() method first");
         }
     }
 
     protected void setOrientation(final Orientation orientation) {
-        oriented = true;
+        oriented         = true;
         this.orientation = orientation;
     }
 
@@ -618,18 +571,23 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
         return displayOnlyOnePeriod;
     }
 
+
+    // SETTERS
+
     public double getPeriod() {
         return period;
     }
 
-    public BoundedPropagator getBoundedPropagator() {
-        return boundedPropagator;
+    public List<SpacecraftState> getAllSpaceCraftStates() {
+        return allSpaceCraftStates;
     }
 
-    // User functions
+    public void setAllSpaceCraftStates(final List<SpacecraftState> allSpaceCraftStatesInput) {
+        this.allSpaceCraftStates = allSpaceCraftStatesInput;
+    }
 
-    public void setBoundedPropagator(final BoundedPropagator boundedPropagator) {
-        this.boundedPropagator = boundedPropagator;
+    public void setPropagator(final BoundedPropagator boundedPropagator) {
+        this.satellitePropagator = boundedPropagator;
     }
 
     public void setOptionalRotation(final Rotation inputRotation) {
@@ -640,13 +598,7 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
         this.allSpaceCraftStates = new ArrayList<>();
     }
 
-    public List<SpacecraftState> getAllSpaceCraftStates() {
-        return allSpaceCraftStates;
-    }
-
-    public void setAllSpaceCraftStates(final List<SpacecraftState> allSpaceCraftStatesInput) {
-        this.allSpaceCraftStates = allSpaceCraftStatesInput;
-    }
+    // User functions
 
     public void displayOnlyOnePeriod() {
         displayOnlyOnePeriod = true;
@@ -658,12 +610,13 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
     }
 
     public void displaySatelliteReferenceSystem() throws URISyntaxException, IOException {
-        this.displayReferenceSystem = true;
+        this.displayReferenceSystem   = true;
         this.satelliteReferenceSystem = new SatelliteReferenceSystem(this);
     }
 
 
-    // Functions
+    // Private functions
+
     private void czmlDisplay(final PacketCesiumWriter packet) throws URISyntaxException, IOException {
 
         if (getModelType() == ModelType.MODEL_2D || getModelType() == ModelType.EMPTY_MODEL) {
@@ -741,21 +694,15 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
         }
     }
 
-    private List<Vector3D> multiplexerSetup(final Propagator propagator) {
-        final List<Vector3D> toReturn = new ArrayList<>();
-
+    private void multiplexerSetup(final Propagator propagator) {
         propagator.getMultiplexer()
-                  .add(Header.MASTER_CLOCK.getMultiplier(), new OrekitFixedStepHandler() {
-                      @Override
-                      public void handleStep(final SpacecraftState currentState) {
-                          final KeplerianOrbit o = new KeplerianOrbit(currentState.getOrbit());
-                          toReturn.add(o.getPosition());
-                          allSpaceCraftStates.add(currentState);
-                          final Attitude currentSpaceCraftAttitude = currentState.getAttitude();
-                          attitudes.add(currentSpaceCraftAttitude);
-                      }
-                  });
-        return toReturn;
+                  .add(Header.getMasterClock()
+                             .getMultiplier(),
+                          currentState -> {
+                              allSpaceCraftStates.add(currentState);
+                              final Attitude currentSpaceCraftAttitude = currentState.getAttitude();
+                              attitudes.add(currentSpaceCraftAttitude);
+                          });
     }
 
     private void orientationSetup() {

@@ -43,116 +43,107 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Maneuver sequence class
+ *
+ * <p> The maneuver sequence class depicts the maneuvers done by a single satellite. It can only manage one direction at a time for the maneuvers for the moment. </p>
+ *
+ * @author Julien LEBLOND
+ * @since 1.0.0
+ */
+
 public class ManeuverSequence extends AbstractPrimaryObject implements CzmlPrimaryObject {
 
-    /**
-     * .
-     */
+    /** A basic default ID for maneuvers. */
     public static final String DEFAULT_ID = "MANEUVER/";
-    /**
-     * .
-     */
-    public static final String DEFAULT_NAME = "Maneuvers : ";
-    /**
-     * .
-     */
-    public static final String DEFAULT_PATH_MODEL = Header.DEFAULT_RESOURCES + "/maneuver_model.glb";
-    /**
-     * .
-     */
-    public static final String DEFAULT_H_POSITION = "#position";
-    /**
-     * .
-     */
-    private List<Maneuver> maneuvers;
-    /**
-     * .
-     */
-    private BoundedPropagator propagator;
-    /**
-     * .
-     */
-    private List<SpacecraftState> states = new ArrayList<>();
-    /**
-     * .
-     */
-    private List<List<Attitude>> attitudesManeuvers = new ArrayList<>();
-    /**
-     * .
-     */
-    private List<TimeInterval> availabilitiesManeuvers = new ArrayList<>();
-    /**
-     * .
-     */
-    private double timeShift;
-    /**
-     * .
-     */
-    private CzmlModel model;
-    /**
-     * .
-     */
-    private Reference satellitePositionReference;
-    /**
-     * .
-     */
-    private Vector3D accelerationDirection;
-    /**
-     * .
-     */
-    private List<Orientation> orientations;
-    /**
-     * .
-     */
-    private List<List<Attitude>> attitudesWithManeuver = new ArrayList<>();
-    /**
-     * .
-     */
-    private AttitudesSequence sequence;
-    /**
-     * .
-     */
-    private LOF lof;
-    /** .*/
-    private boolean showTrust;
-    /**
-     * .
-     */
-    private boolean shouldAnimate = false;
 
-    public ManeuverSequence(final AttitudesSequence sequence, final List<Maneuver> maneuversInput, final Satellite satellite, final Vector3D accelerationDirection, final LOF lofInput) throws URISyntaxException, IOException {
-        this(sequence, maneuversInput, satellite, accelerationDirection, lofInput, false, Header.MASTER_CLOCK.getMultiplier(), DEFAULT_PATH_MODEL);
+    /** A basic default name for maneuvers. */
+    public static final String DEFAULT_NAME = "Maneuvers : ";
+
+    /** The default 3D model representing an arrow, this can depict the acceleration or the thrust. */
+    public static final String DEFAULT_PATH_MODEL = Header.DEFAULT_RESOURCES + "/Default3DModels/maneuver_model.glb";
+
+    /** This allows to reference the position of an object. */
+    public static final String DEFAULT_H_POSITION = "#position";
+
+    /** The list of maneuvers, can be a list of only one maneuver. */
+    private List<Maneuver> maneuvers;
+
+    /** The bounded propagator extracted from the satellite. */
+    private BoundedPropagator propagator;
+
+    /** The list of spacecraft state of the satellite. */
+    private List<SpacecraftState> states;
+
+    /** The availabilities of the maneuvers, when to display them. */
+    private List<TimeInterval> availabilitiesManeuvers;
+
+    /** The model to represents the acceleration or the thrust. */
+    private CzmlModel model;
+
+    /** The reference in position of the satellite. */
+    private Reference satellitePositionReference;
+
+    /** The direction of the arrow. (By default it is the acceleration). */
+    private Vector3D arrowDirection;
+
+    /** The orientation objects that allows to write the attitude in the CzmlFile. */
+    private List<Orientation> orientations;
+
+    /** The attitudes of the maneuvers, each sublist is attributed at each maneuver. */
+    private List<List<Attitude>> attitudesWithManeuver = new ArrayList<>();
+
+    /** The sequence of attitudes if the satellite. */
+    private AttitudesSequence sequence;
+
+    /** The local orbital frame used for the satellite. */
+    private LOF lof;
+
+    /** To show the acceleration (false), or the thrust (true) with the arrow. */
+    private boolean showTrust;
+
+
+    public ManeuverSequence(final AttitudesSequence sequence, final List<Maneuver> maneuversInput,
+                            final Satellite satellite, final Vector3D accelerationDirection,
+                            final LOF lofInput) throws URISyntaxException, IOException {
+        this(sequence, maneuversInput, satellite, accelerationDirection, lofInput, false, Header.getMasterClock()
+                                                                                                .getMultiplier(),
+                DEFAULT_PATH_MODEL);
     }
 
-    public ManeuverSequence(final AttitudesSequence sequenceInput, final List<Maneuver> maneuversInput, final Satellite satellite, final Vector3D accelerationDirection, final LOF lofInput, final boolean showTrustInput, final double timeShiftInput, final String pathModel) throws URISyntaxException, IOException {
-        this.maneuvers = maneuversInput;
-        this.propagator = satellite.getBoundedPropagator();
-        this.timeShift = timeShiftInput;
-        this.states = satellite.getAllSpaceCraftStates();
-        this.accelerationDirection = accelerationDirection;
-        this.lof = lofInput;
-        this.sequence = sequenceInput;
-        this.showTrust = showTrustInput;
+    public ManeuverSequence(final AttitudesSequence sequenceInput, final List<Maneuver> maneuversInput,
+                            final Satellite satellite, final Vector3D accelerationDirection, final LOF lofInput,
+                            final boolean showTrustInput, final double timeShiftInput,
+                            final String pathModel) throws URISyntaxException, IOException {
+        this.maneuvers      = maneuversInput;
+        this.propagator     = (BoundedPropagator) satellite.getSatellitePropagator();
+        this.states         = satellite.getAllSpaceCraftStates();
+        this.arrowDirection = accelerationDirection;
+        this.lof            = lofInput;
+        this.sequence       = sequenceInput;
+        this.showTrust      = showTrustInput;
         int length = maneuversInput.size();
         if (length > 10) {
             length = 10;
         }
         this.setId(DEFAULT_ID + maneuversInput.subList(0, length));
         this.setName(DEFAULT_NAME + length + ", applied to :" + propagator.toString());
-        final JulianDate startDate = absoluteDateToJulianDate(propagator.getMinDate());
-        final JulianDate stopDate = absoluteDateToJulianDate(propagator.getMaxDate());
+        final JulianDate startDate = absoluteDateToJulianDate(propagator.getMinDate(), Header.getTimeScale());
+        final JulianDate stopDate  = absoluteDateToJulianDate(propagator.getMaxDate(), Header.getTimeScale());
         this.setAvailability(new TimeInterval(startDate, stopDate));
         this.satellitePositionReference = new Reference(satellite.getId() + DEFAULT_H_POSITION);
 
-        this.attitudesWithManeuver = generateAllAttitudesManeuvers(states, maneuversInput);
-        this.model = new CzmlModel(pathModel, 500000, 40, 5E-05);
+        this.attitudesWithManeuver   = generateAllAttitudesManeuvers(states, maneuversInput);
+        this.model                   = new CzmlModel(pathModel, 500000, 40, 5E-05);
         this.availabilitiesManeuvers = generateAvailabilitiesManeuvers(maneuvers);
-        this.orientations = generateOrientationManeuvers(attitudesWithManeuver);
+        this.orientations            = generateOrientationManeuvers(attitudesWithManeuver);
     }
 
     // Builder
 
-    public static ManeuverSequenceBuilder builder(final AttitudesSequence sequenceInput, final List<Maneuver> maneuversInput, final Satellite satellite, final Vector3D accelerationDirection, final LOF lofInput) {
+    public static ManeuverSequenceBuilder builder(final AttitudesSequence sequenceInput,
+                                                  final List<Maneuver> maneuversInput, final Satellite satellite,
+                                                  final Vector3D accelerationDirection, final LOF lofInput) {
         return new ManeuverSequenceBuilder(sequenceInput, maneuversInput, satellite, accelerationDirection, lofInput);
     }
 
@@ -160,8 +151,8 @@ public class ManeuverSequence extends AbstractPrimaryObject implements CzmlPrima
     public void writeCzmlBlock() throws URISyntaxException, IOException {
         OUTPUT.setPrettyFormatting(true);
         for (int i = 0; i < maneuvers.size(); i++) {
-            final Maneuver currentManeuver = maneuvers.get(i);
-            final Orientation currentOrientation = orientations.get(i);
+            final Maneuver     currentManeuver     = maneuvers.get(i);
+            final Orientation  currentOrientation  = orientations.get(i);
             final TimeInterval currentAvailability = availabilitiesManeuvers.get(i);
             try (PacketCesiumWriter packet = STREAM.openPacket(OUTPUT)) {
                 packet.writeId(DEFAULT_ID + currentManeuver);
@@ -187,7 +178,61 @@ public class ManeuverSequence extends AbstractPrimaryObject implements CzmlPrima
     }
 
 
-    private List<List<Attitude>> generateAllAttitudesManeuvers(final List<SpacecraftState> statesInput, final List<Maneuver> maneuversInput) {
+    // GETTERS
+
+    public List<Maneuver> getManeuvers() {
+        return maneuvers;
+    }
+
+    public BoundedPropagator getPropagator() {
+        return propagator;
+    }
+
+    public List<SpacecraftState> getStates() {
+        return states;
+    }
+
+    public List<TimeInterval> getAvailabilitiesManeuvers() {
+        return availabilitiesManeuvers;
+    }
+
+    public CzmlModel getModel() {
+        return model;
+    }
+
+    public Reference getSatellitePositionReference() {
+        return satellitePositionReference;
+    }
+
+    public Vector3D getArrowDirection() {
+        return arrowDirection;
+    }
+
+    public List<Orientation> getOrientations() {
+        return orientations;
+    }
+
+    public List<List<Attitude>> getAttitudesWithManeuver() {
+        return attitudesWithManeuver;
+    }
+
+    public AttitudesSequence getSequence() {
+        return sequence;
+    }
+
+    public LOF getLof() {
+        return lof;
+    }
+
+    public boolean isShowTrust() {
+        return showTrust;
+    }
+
+
+    // Private functions
+
+    private List<List<Attitude>> generateAllAttitudesManeuvers(final List<SpacecraftState> statesInput,
+                                                               final List<Maneuver> maneuversInput) {
         final List<List<Attitude>> toReturn = new ArrayList<>();
 
         // Iteration for each maneuver
@@ -201,21 +246,28 @@ public class ManeuverSequence extends AbstractPrimaryObject implements CzmlPrima
         final List<TimeInterval> toReturn = new ArrayList<>();
         for (final Maneuver currentManeuver : maneuverList) {
             final AbstractManeuverTriggers currentTrigger = (AbstractManeuverTriggers) currentManeuver.getManeuverTriggers();
-            final TimeSpanMap<Boolean> map = currentTrigger.getFirings();
+            final TimeSpanMap<Boolean>     map            = currentTrigger.getFirings();
             for (TimeSpanMap.Span<Boolean> span = map.getFirstNonNullSpan(); span != null; span = span.next()) {
                 if (span.getData()) {
                     if (span.getEnd()
-                            .isAfter(julianDateToAbsoluteDate(Header.MASTER_CLOCK.getAvailability()
-                                                                                 .getStop(), Header.TIME_SCALE))) {
-                        toReturn.add(new TimeInterval(absoluteDateToJulianDate(span.getStart()), Header.MASTER_CLOCK.getAvailability()
-                                                                                                                    .getStop()));
+                            .isAfter(julianDateToAbsoluteDate(Header.getMasterClock()
+                                                                    .getAvailability()
+                                                                    .getStop(), Header.getTimeScale()))) {
+                        toReturn.add(new TimeInterval(absoluteDateToJulianDate(span.getStart(), Header.getTimeScale()),
+                                Header.getMasterClock()
+                                      .getAvailability()
+                                      .getStop()));
                     } else if (span.getStart()
-                                   .isBefore(julianDateToAbsoluteDate(Header.MASTER_CLOCK.getAvailability()
-                                                                                         .getStart(), Header.TIME_SCALE))) {
-                        toReturn.add(new TimeInterval(Header.MASTER_CLOCK.getAvailability()
-                                                                         .getStart(), absoluteDateToJulianDate(span.getEnd())));
+                                   .isBefore(julianDateToAbsoluteDate(Header.getMasterClock()
+                                                                            .getAvailability()
+                                                                            .getStart(), Header.getTimeScale()))) {
+                        toReturn.add(new TimeInterval(Header.getMasterClock()
+                                                            .getAvailability()
+                                                            .getStart(),
+                                absoluteDateToJulianDate(span.getEnd(), Header.getTimeScale())));
                     } else {
-                        toReturn.add(new TimeInterval(absoluteDateToJulianDate(span.getStart()), absoluteDateToJulianDate(span.getEnd())));
+                        toReturn.add(new TimeInterval(absoluteDateToJulianDate(span.getStart(), Header.getTimeScale()),
+                                absoluteDateToJulianDate(span.getEnd(), Header.getTimeScale())));
                     }
                 }
             }
@@ -233,12 +285,13 @@ public class ManeuverSequence extends AbstractPrimaryObject implements CzmlPrima
         return toReturn;
     }
 
-    private List<Attitude> generateAttitudeForOneManeuver(final List<SpacecraftState> statesInput, final Maneuver currentManeuver) {
-        final ManeuverTriggers currentTrigger = currentManeuver.getManeuverTriggers();
-        boolean firstFiringDateFound = false;
-        AbsoluteDate dateFinalTime = null;
-        SpacecraftState previousState = null;
-        AbsoluteDate firstFiringDate;
+    private List<Attitude> generateAttitudeForOneManeuver(final List<SpacecraftState> statesInput,
+                                                          final Maneuver currentManeuver) {
+        final ManeuverTriggers currentTrigger       = currentManeuver.getManeuverTriggers();
+        boolean                firstFiringDateFound = false;
+        AbsoluteDate           dateFinalTime        = null;
+        SpacecraftState        previousState        = null;
+        AbsoluteDate           firstFiringDate;
 
         final List<Attitude> toReturn = new ArrayList<>();
 
@@ -249,15 +302,15 @@ public class ManeuverSequence extends AbstractPrimaryObject implements CzmlPrima
                 previousState = statesInput.get(j - 1);
             }
             final double[] maneuversParameters = currentManeuver.getParameters();
-            final double finalLocalTime = maneuversParameters[maneuversParameters.length - 1];
+            final double   finalLocalTime      = maneuversParameters[maneuversParameters.length - 1];
 
             // If the maneuver is firing
             if (currentTrigger.isFiring(state.getDate(), currentManeuver.getParameters())) {
                 // If this is the first time the firing occurs for the maneuver then we will save it
                 if (!firstFiringDateFound) {
                     firstFiringDateFound = true;
-                    firstFiringDate = state.getDate();
-                    dateFinalTime = firstFiringDate.shiftedBy(finalLocalTime);
+                    firstFiringDate      = state.getDate();
+                    dateFinalTime        = firstFiringDate.shiftedBy(finalLocalTime);
                 }
                 definitionOfAttitudes(state, toReturn);
             }
@@ -268,9 +321,12 @@ public class ManeuverSequence extends AbstractPrimaryObject implements CzmlPrima
             // displayed before the end of the maneuver.
             if (firstFiringDateFound) {
                 assert previousState != null;
-                if (currentTrigger.isFiring(previousState.getDate(), currentManeuver.getParameters()) && !(currentTrigger.isFiring(state.getDate(), currentManeuver.getParameters()))) {
+                if (currentTrigger.isFiring(previousState.getDate(),
+                        currentManeuver.getParameters()) && !(currentTrigger.isFiring(state.getDate(),
+                        currentManeuver.getParameters()))) {
                     assert dateFinalTime != null;
-                    if (previousState.getDate().isBefore(dateFinalTime)) {
+                    if (previousState.getDate()
+                                     .isBefore(dateFinalTime)) {
 
                         definitionOfAttitudes(state, toReturn);
                     }
@@ -285,23 +341,27 @@ public class ManeuverSequence extends AbstractPrimaryObject implements CzmlPrima
         // The default direction of thrust of the 3D model is PLUS_J, so we will need to make sure when the
         // direction of thrust asked is PLUS_J in Local Orbital Frame, we will need just to retrieve the
         // attitude from the sequence.
-        if (accelerationDirection != Vector3D.PLUS_J) {
+        if (arrowDirection != Vector3D.PLUS_J) {
 
             final Attitude currentAttitude = sequence.getAttitude(state.getOrbit(), state.getDate(), state.getFrame());
             final Rotation currentRotation = currentAttitude.getRotation();
             // We need the acceleration direction to NOT be PLUS_J else way we can't compute the following rotation :
-            final Rotation rotationFromXtoDirection = new Rotation(Vector3D.PLUS_J, accelerationDirection.negate());
+            final Rotation rotationFromXtoDirection = new Rotation(Vector3D.PLUS_J, arrowDirection.negate());
             // If we want to display the thrust and not the acceleration, we need to rotate the vector by 180°
             if (showTrust) {
-                final Rotation showTrustRotation = new Rotation(accelerationDirection, accelerationDirection.negate());
-                final Rotation tempRotation = rotationFromXtoDirection.compose(currentRotation, RotationConvention.VECTOR_OPERATOR);
-                final Rotation finalRotation = showTrustRotation.compose(tempRotation, RotationConvention.VECTOR_OPERATOR);
-                final Attitude finalAttitude = new Attitude(state.getDate(), state.getFrame(), finalRotation, Vector3D.ZERO, Vector3D.ZERO);
+                final Rotation showTrustRotation = new Rotation(arrowDirection, arrowDirection.negate());
+                final Rotation tempRotation = rotationFromXtoDirection.compose(currentRotation,
+                        RotationConvention.VECTOR_OPERATOR);
+                final Rotation finalRotation = showTrustRotation.compose(tempRotation,
+                        RotationConvention.VECTOR_OPERATOR);
+                final Attitude finalAttitude = new Attitude(state.getDate(), state.getFrame(), finalRotation,
+                        Vector3D.ZERO, Vector3D.ZERO);
                 toReturn.add(finalAttitude);
-            }
-            else {
-                final Rotation finalRotation = rotationFromXtoDirection.compose(currentRotation, RotationConvention.VECTOR_OPERATOR);
-                final Attitude finalAttitude = new Attitude(state.getDate(), state.getFrame(), finalRotation, Vector3D.ZERO, Vector3D.ZERO);
+            } else {
+                final Rotation finalRotation = rotationFromXtoDirection.compose(currentRotation,
+                        RotationConvention.VECTOR_OPERATOR);
+                final Attitude finalAttitude = new Attitude(state.getDate(), state.getFrame(), finalRotation,
+                        Vector3D.ZERO, Vector3D.ZERO);
                 toReturn.add(finalAttitude);
             }
         }
@@ -313,13 +373,15 @@ public class ManeuverSequence extends AbstractPrimaryObject implements CzmlPrima
             // Rotation of PLUS_J of 180°
             if (showTrust) {
                 final Rotation rotationFromXtoDirection = new Rotation(Vector3D.PLUS_J, Vector3D.MINUS_J);
-                final Rotation finalRotation = rotationFromXtoDirection.compose(currentRotation, RotationConvention.VECTOR_OPERATOR);
-                final Attitude finalAttitude = new Attitude(state.getDate(), state.getFrame(), finalRotation, Vector3D.ZERO, Vector3D.ZERO);
+                final Rotation finalRotation = rotationFromXtoDirection.compose(currentRotation,
+                        RotationConvention.VECTOR_OPERATOR);
+                final Attitude finalAttitude = new Attitude(state.getDate(), state.getFrame(), finalRotation,
+                        Vector3D.ZERO, Vector3D.ZERO);
                 toReturn.add(finalAttitude);
-            }
-            else {
+            } else {
                 // No need to compute the direction rotation here
-                final Attitude finalAttitude = new Attitude(state.getDate(), state.getFrame(), currentRotation, Vector3D.ZERO, Vector3D.ZERO);
+                final Attitude finalAttitude = new Attitude(state.getDate(), state.getFrame(), currentRotation,
+                        Vector3D.ZERO, Vector3D.ZERO);
                 toReturn.add(finalAttitude);
             }
         }

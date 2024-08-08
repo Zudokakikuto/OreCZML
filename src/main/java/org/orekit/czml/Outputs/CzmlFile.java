@@ -41,33 +41,28 @@ import java.util.List;
  */
 public class CzmlFile {
 
-    /**
-     * .
-     */
+    /** . */
     private static Header header;
-    /**
-     * .
-     */
+
+    /** . */
     private final List<AbstractPrimaryObject> abstractPrimaryObjects;
-    /**
-     * .
-     */
+
+    /** . */
     private String pathFile = "";
-    /**
-     * .
-     */
+
+    /** . */
     private String pathDirectory = "";
 
 
     public CzmlFile(final String pathFile) {
-        final String[] splittedPath = pathFile.split("/");
+        final String[]      splittedPath  = pathFile.split("/");
         final StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < splittedPath.length - 1; i++) {
             stringBuilder.append(splittedPath[i])
                          .append("\\");
         }
-        this.pathDirectory = String.valueOf(stringBuilder);
-        this.pathFile = pathFile;
+        this.pathDirectory     = String.valueOf(stringBuilder);
+        this.pathFile          = pathFile;
         abstractPrimaryObjects = new ArrayList<>();
     }
 
@@ -79,7 +74,7 @@ public class CzmlFile {
         if (abstractPrimaryObjects.isEmpty()) {
             throw new RuntimeException("No objects other than the header have been written.");
         } else {
-            final StringWriter writer = header.getStringWriter();
+            final StringWriter                writer       = header.getStringWriter();
             final List<AbstractPrimaryObject> noDuplicates = new ArrayList<>();
             noDuplicates.add(abstractPrimaryObjects.get(0));
             for (int i = 1; i < abstractPrimaryObjects.size(); i++) {
@@ -110,16 +105,12 @@ public class CzmlFile {
         return pathFile;
     }
 
-//    public void addObject(final CzmlPrimaryObject object) {
-//        czmlObjects.add(object);
-//    }
-
     public void addObject(final AbstractPrimaryObject object) {
         abstractPrimaryObjects.add(object);
     }
 
     public void clear() {
         this.pathDirectory = null;
-        this.pathFile = null;
+        this.pathFile      = null;
     }
 }

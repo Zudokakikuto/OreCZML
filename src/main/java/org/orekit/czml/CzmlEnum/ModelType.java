@@ -18,22 +18,14 @@ package org.orekit.czml.CzmlEnum;
 
 public enum ModelType {
 
-    /**
-     * The type to reference the model as a 2D model.
-     */
+    /** The type to reference the model as a 2D model. */
     MODEL_2D,
-    /**
-     * The type to reference the model as a 3D model.
-     */
+    /** The type to reference the model as a 3D model. */
     MODEL_3D,
-    /**
-     * An empty model.
-     */
+    /** An empty model. */
     EMPTY_MODEL;
 
-    /**
-     * Builder.
-     */
+    /** Builder. */
     ModelType() {
     }
 }

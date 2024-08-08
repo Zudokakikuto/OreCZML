@@ -43,98 +43,103 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Field of observation class
+ *
+ * <p> The field of observation defines the field of view of a satellite projected on a body. The field of observation
+ * follows the attitude of the satellite. </p>
+ *
+ * @author Julien LEBLOND
+ * @since 1.0.0
+ */
+
 public class FieldOfObservation extends AbstractPrimaryObject implements CzmlPrimaryObject {
 
-    /**
-     * .
-     */
-    public static final String DEFAULT_ID = "LINE_OBSERVATION/";
-    /**
-     * .
-     */
-    public static final String DEFAULT_NAME = "Line of observation of : ";
-    /**
-     * .
-     */
+    /** The default ID of the field of observation. */
+    public static final String DEFAULT_ID = "FIELD_OF_OBSERVATION/";
+
+    /** The default name of the field of observation. */
+    public static final String DEFAULT_NAME = "Field of observation of : ";
+
+    /** The default angular step of the field of observation. */
     public static final double DEFAULT_ANGULAR_STEP = FastMath.toRadians(36);
-    /**
-     * .
-     */
+
+    /** This allows the reference the position of an object. */
     public static final String DEFAULT_H_POSITION = "#position";
-    /**
-     * .
-     */
+
+    /** The default color of the lines defining the field of view. */
     public static final Color DEFAULT_COLOR = Color.CYAN;
 
-    /**
-     * .
-     */
+
+    /** The reference of position of the satellite. */
     private Reference referenceSatellite;
-    /**
-     * .
-     */
+
+    /** The list of reference the defines the point on the ground that will move in time. */
     private List<Reference> groundReferences = new ArrayList<>();
+
     /**
-     * .
+     * The list of list of geodetic points that represents the point on the body that will evolve in time. Each list is attributed
+     * to a specific point, then the sublist represents all the points on the body in time for this given point.
      */
     private List<List<GeodeticPoint>> initialFootprint;
-    /**
-     * .
-     */
+
+    /** The list of the footprints in time. */
     private List<List<List<GeodeticPoint>>> footprintsInTime = new ArrayList<>();
-    /**
-     * .
-     */
+
+    /** The list of all the abstract point on body that represents the limits of the field of view projected on the body. */
     private List<AbstractPointOnBody> allPoints = new ArrayList<>();
-    /**
-     * .
-     */
+
+    /** The color of the polylines. */
     private Color polylineColor;
-    /**
-     * .
-     */
+
+    /** The transform inputted that represents the fov of the object and how it looks at the body. */
     private Transform initialFovToBody;
-    /**
-     * .
-     */
+
+    /** A boolean that trigger if at least the fov is projected one time to the body. */
     private boolean noDetection;
-    /**
-     * .
-     */
+
+    /** The body to which the fov will be projected. */
     private OneAxisEllipsoid body;
-    /**
-     * .
-     */
+
+    /** The julian dates when the field of observation will be displayed. */
     private List<JulianDate> julianDates;
+
     /**
-     * .
+     * The list of list of list of position in cartesian of the point on the body. The first separate the cartesian for each
+     * julian date. Then the sub list separates the cartesian for each abstract point on earth for a given julian date. Then the sub-sub list
+     * defines the points in time for the given point for the given julian date.
      */
     private List<List<List<Cartesian>>> cartesianListFootprint = new ArrayList<>();
 
     @DefaultDataContext
-    public FieldOfObservation(final Satellite satellite, final FieldOfView fieldOfView, final Transform fovToBodyInput) {
+    public FieldOfObservation(final Satellite satellite, final FieldOfView fieldOfView,
+                              final Transform fovToBodyInput) {
         this(satellite, fieldOfView, fovToBodyInput, new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS,
-                                                                          Constants.WGS84_EARTH_FLATTENING, FramesFactory.getITRF(IERSConventions.IERS_2010, true)),
-             DEFAULT_ANGULAR_STEP,
-             DEFAULT_COLOR);
+                        Constants.WGS84_EARTH_FLATTENING, FramesFactory.getITRF(IERSConventions.IERS_2010, true)),
+                DEFAULT_ANGULAR_STEP,
+                DEFAULT_COLOR);
     }
 
-    public FieldOfObservation(final Satellite satellite, final FieldOfView fov, final Transform initialFovBody, final OneAxisEllipsoid body, final double angularStep, final Color color) {
+    public FieldOfObservation(final Satellite satellite, final FieldOfView fov, final Transform initialFovBody,
+                              final OneAxisEllipsoid body, final double angularStep, final Color color) {
         this.setId(DEFAULT_ID + fov.toString());
         this.setName(DEFAULT_NAME + satellite.getName());
         this.initialFovToBody = initialFovBody;
-        this.polylineColor = color;
-        referenceSatellite = new Reference(satellite.getId() + DEFAULT_H_POSITION);
-        this.body = body;
-        initialFootprint = fov.getFootprint(initialFovBody, body, angularStep);
+        this.polylineColor    = color;
+        referenceSatellite    = new Reference(satellite.getId() + DEFAULT_H_POSITION);
+        this.body             = body;
+        initialFootprint      = fov.getFootprint(initialFovBody, body, angularStep);
         final List<SpacecraftState> allSatelliteSpaceCraftStates = satellite.getAllSpaceCraftStates();
-        this.julianDates = absoluteDatelistToJulianDateList(satellite.getAbsoluteDateList());
+        this.julianDates = absoluteDatelistToJulianDateList(satellite.getAbsoluteDateList(), Header.getTimeScale());
         for (int i = 0; i < julianDates.size(); i++) {
             final SpacecraftState currentState = allSatelliteSpaceCraftStates.get(i);
             final Transform currentInertToBody = currentState.getFrame()
-                                                             .getTransformTo(body.getBodyFrame(), currentState.getDate());
-            final Transform currentFovBody = new Transform(julianDateToAbsoluteDate(julianDates.get(i), Header.TIME_SCALE), currentState.toTransform()
-                                                                                                                                        .getInverse(), currentInertToBody);
+                                                             .getTransformTo(body.getBodyFrame(),
+                                                                     currentState.getDate());
+            final Transform currentFovBody = new Transform(
+                    julianDateToAbsoluteDate(julianDates.get(i), Header.getTimeScale()), currentState.toTransform()
+                                                                                                     .getInverse(),
+                    currentInertToBody);
             final List<List<GeodeticPoint>> currentFootprints = fov.getFootprint(currentFovBody, body, angularStep);
             footprintsInTime.add(currentFootprints);
         }
@@ -144,11 +149,12 @@ public class FieldOfObservation extends AbstractPrimaryObject implements CzmlPri
             noDetection = true;
         } else {
             this.cartesianListFootprint = extractCartesianFromGeodetic(footprintsInTime);
-            this.footprintsInTime = sortingListListList(footprintsInTime);
+            this.footprintsInTime       = sortingListListList(footprintsInTime);
         }
     }
 
-    public static FieldOfObservationBuilder builder(final Satellite satellite, final FieldOfView fieldOfView, final Transform fovToBodyInput) {
+    public static FieldOfObservationBuilder builder(final Satellite satellite, final FieldOfView fieldOfView,
+                                                    final Transform fovToBodyInput) {
         return new FieldOfObservationBuilder(satellite, fieldOfView, fovToBodyInput);
     }
 
@@ -166,51 +172,24 @@ public class FieldOfObservation extends AbstractPrimaryObject implements CzmlPri
             }
 
             for (int i = 0; i < footprintsInTime.size(); i++) {
-                try (PacketCesiumWriter packet = STREAM.openPacket(OUTPUT)) {
-                    final Polyline currentPolyline = Polyline.nonVectorBuilder()
-                                                             .withFirstReference(referenceSatellite)
-                                                             .withSecondReference(groundReferences.get(i))
-                                                             .withColor(polylineColor)
-                                                             .build();
-                    currentPolyline.setArcType(CesiumArcType.NONE);
-                    packet.writeId(currentPolyline.toString());
-                    packet.writeName("Line of the Line of observation : " + currentPolyline);
-                    currentPolyline.writeReferencesPolyline(packet, OUTPUT);
-                }
+                final Reference secondReference = groundReferences.get(i);
+                buildPolyline(polylineColor, referenceSatellite, secondReference, true);
             }
-            // Display outlines of the line of sight
+            // Display outlines of the line of sight (except the last one because of the -1)
             for (int i = 0; i < allPoints.size() - 1; i++) {
                 final AbstractPointOnBody currentPoint = allPoints.get(i);
-                final AbstractPointOnBody nextPoint = allPoints.get(i + 1);
-                final Reference currentPointReference = new Reference(currentPoint.getId() + DEFAULT_H_POSITION);
+                final AbstractPointOnBody nextPoint    = allPoints.get(i + 1);
+                final Reference currentPointReference = new Reference(
+                        currentPoint.getId() + DEFAULT_H_POSITION);
                 final Reference secondPointReference = new Reference(nextPoint.getId() + DEFAULT_H_POSITION);
-                try (PacketCesiumWriter packet = STREAM.openPacket(OUTPUT)) {
-                    final Polyline currentPolyline = Polyline.nonVectorBuilder()
-                                                             .withFirstReference(currentPointReference)
-                                                             .withSecondReference(secondPointReference)
-                                                             .withColor(polylineColor)
-                                                             .build();
-                    currentPolyline.setArcType(CesiumArcType.NONE);
-                    packet.writeId(currentPolyline.toString());
-                    packet.writeName("Outline of the line of observation : " + currentPolyline);
-                    currentPolyline.writeReferencesPolyline(packet, OUTPUT);
-                }
+                buildPolyline(polylineColor, currentPointReference, secondPointReference, false);
             }
-            final AbstractPointOnBody lastPoint = allPoints.get(allPoints.size() - 1);
-            final AbstractPointOnBody firstPoint = allPoints.get(0);
-            final Reference lastPointReference = new Reference(lastPoint.getId() + DEFAULT_H_POSITION);
-            final Reference firstPointReference = new Reference(firstPoint.getId() + DEFAULT_H_POSITION);
-            try (PacketCesiumWriter packet = STREAM.openPacket(OUTPUT)) {
-                final Polyline currentPolyline = Polyline.nonVectorBuilder()
-                                                         .withFirstReference(lastPointReference)
-                                                         .withSecondReference(firstPointReference)
-                                                         .withColor(polylineColor)
-                                                         .build();
-                currentPolyline.setArcType(CesiumArcType.NONE);
-                packet.writeId(currentPolyline.toString());
-                packet.writeName("Outline of the last line of observation : " + currentPolyline);
-                currentPolyline.writeReferencesPolyline(packet, OUTPUT);
-            }
+            // Build of the line between the last and the first point
+            final AbstractPointOnBody lastPoint           = allPoints.get(allPoints.size() - 1);
+            final AbstractPointOnBody firstPoint          = allPoints.get(0);
+            final Reference           lastPointReference  = new Reference(lastPoint.getId() + DEFAULT_H_POSITION);
+            final Reference           firstPointReference = new Reference(firstPoint.getId() + DEFAULT_H_POSITION);
+            buildPolyline(polylineColor, lastPointReference, firstPointReference, false);
         }
     }
 
@@ -221,16 +200,18 @@ public class FieldOfObservation extends AbstractPrimaryObject implements CzmlPri
 
     @Override
     public void cleanObject() {
-        groundReferences = new ArrayList<>();
-        initialFootprint = new ArrayList<>();
-        footprintsInTime = new ArrayList<>();
-        allPoints = new ArrayList<>();
-        julianDates = new ArrayList<>();
+        groundReferences       = new ArrayList<>();
+        initialFootprint       = new ArrayList<>();
+        footprintsInTime       = new ArrayList<>();
+        allPoints              = new ArrayList<>();
+        julianDates            = new ArrayList<>();
         cartesianListFootprint = new ArrayList<>();
-        referenceSatellite = null;
-        body = null;
-        initialFovToBody = null;
+        referenceSatellite     = null;
+        body                   = null;
+        initialFovToBody       = null;
     }
+
+    // GETTERS
 
     public Reference getReferenceSatellite() {
         return referenceSatellite;
@@ -272,7 +253,14 @@ public class FieldOfObservation extends AbstractPrimaryObject implements CzmlPri
         return cartesianListFootprint;
     }
 
-    private List<List<List<Cartesian>>> extractCartesianFromGeodetic(final List<List<List<GeodeticPoint>>> geodeticPoints) {
+    public boolean isNoDetection() {
+        return noDetection;
+    }
+
+    // Private functions
+
+    private List<List<List<Cartesian>>> extractCartesianFromGeodetic(
+            final List<List<List<GeodeticPoint>>> geodeticPoints) {
         final List<List<List<Cartesian>>> toReturn = new ArrayList<>();
         for (int i = 0; i < geodeticPoints.size(); i++) {
             final List<List<Cartesian>> tempToReturn = new ArrayList<>();
@@ -285,9 +273,11 @@ public class FieldOfObservation extends AbstractPrimaryObject implements CzmlPri
                     final GeodeticPoint currentGeodeticPoint = geodeticPoints.get(i)
                                                                              .get(j)
                                                                              .get(k);
-                    final TopocentricFrame currentTopocentricFrame = new TopocentricFrame(body, currentGeodeticPoint, "");
+                    final TopocentricFrame currentTopocentricFrame = new TopocentricFrame(body, currentGeodeticPoint,
+                            "");
                     final Vector3D currentVector3D = currentTopocentricFrame.getCartesianPoint();
-                    final Cartesian currentCartesian = new Cartesian(currentVector3D.getX(), currentVector3D.getY(), currentVector3D.getZ());
+                    final Cartesian currentCartesian = new Cartesian(currentVector3D.getX(),
+                            currentVector3D.getY(), currentVector3D.getZ());
                     tempCartesians.add(currentCartesian);
                 }
                 tempToReturn.add(tempCartesians);
@@ -295,5 +285,25 @@ public class FieldOfObservation extends AbstractPrimaryObject implements CzmlPri
             toReturn.add(tempToReturn);
         }
         return toReturn;
+    }
+
+    private void buildPolyline(final Color polylineColorInput, final Reference firstPointReference,
+                               final Reference secondPointReference, final boolean line) {
+        try (PacketCesiumWriter packet = STREAM.openPacket(OUTPUT)) {
+            final Polyline currentPolyline = Polyline.nonVectorBuilder()
+                                                     .withFirstReference(firstPointReference)
+                                                     .withSecondReference(secondPointReference)
+                                                     .withColor(polylineColorInput)
+                                                     .build();
+
+            currentPolyline.setArcType(CesiumArcType.NONE);
+            packet.writeId(currentPolyline.toString());
+            if (line) {
+                packet.writeName("Line of the Line of observation : " + currentPolyline);
+            } else {
+                packet.writeName("Outline of the line of observation : " + currentPolyline);
+            }
+            currentPolyline.writeReferencesPolyline(packet, OUTPUT);
+        }
     }
 }

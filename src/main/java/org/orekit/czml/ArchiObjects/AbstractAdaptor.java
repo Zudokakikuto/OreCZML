@@ -21,9 +21,7 @@ import org.orekit.propagation.Propagator;
 
 public abstract class AbstractAdaptor<I> extends AbstractPropagator {
 
-    /**
-     * .
-     */
+    /** . */
     private I inputObject;
 
     public abstract Propagator buildPropagator();

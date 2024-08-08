@@ -25,15 +25,11 @@ import java.net.URISyntaxException;
 public class CzmlGroundStationBuilder {
 
 
-    /**
-     * .
-     */
+    /** . */
     private TopocentricFrame topocentricFrame;
 
     // Optional arguments
-    /**
-     * .
-     */
+    /** . */
     private String modelPath;
 
     public CzmlGroundStationBuilder(final TopocentricFrame topocentricFrameInput) {

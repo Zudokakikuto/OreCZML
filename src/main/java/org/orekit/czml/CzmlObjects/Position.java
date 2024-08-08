@@ -43,75 +43,62 @@ import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.TimePosition;
 
 public class Position {
 
-    /**
-     * .
-     */
+    /** The default error displayed with the latitude is not defined. */
     public static final String DEFAULT_ERROR_LATITUDE = "Latitude is not defined";
-    /**
-     * .
-     */
+
+    /** The default error displayed with the longitude is not defined. */
     public static final String DEFAULT_ERROR_LONGITUDE = "Longitude is not defined";
 
-    // Cartographic :
-    /**
-     * .
-     */
+
+    /** The reference frame to use 'INERTIAL' or 'FIXED'. */
     private final String ReferenceFrame;
 
-    // Cartographic radians
-    /**
-     * .
-     */
+    /** The {@link org.orekit.czml.CzmlEnum.PositionType} that defines the type of position the Position object has. */
     private final PositionType positionType;
-    /**
-     * .
-     */
+
+
+
+    //// Cartographic :
+
+    /** The height of the object (used only when longitudes and latitudes are defined). */
     private double height = 0.0;
-    // Cartographic degrees
-    /**
-     * .
-     */
+
+    // Cartographic radians
+    /** The longitude in radians. */
     private double longitude = 0.0;
-    /**
-     * .
-     */
+
+    /** The latitude in radians. */
     private double latitude = 0.0;
 
-    // Cartesian :
+    // Cartographic degrees
+    /** The longitude in  degrees. */
+    private double longitudeDeg = 0.0;
+
+    /** The latitude in degrees. */
+    private double latitudeDeg = 0.0;
+
+
+
+    //// Cartesian :
 
     // Cartesian3Value:
-    /**
-     * .
-     */
-    private double longitudeDeg = 0.0;
-    /**
-     * .
-     */
-    private double latitudeDeg = 0.0;
-    /**
-     * .
-     */
+    /** The cartesian position in the x-axis. */
     private double x = 0.0;
-    // Cartesian3VelocityValue
-    /**
-     * .
-     */
+
+    /** The cartesian position in the y-axis. */
     private double y = 0.0;
-    /**
-     * .
-     */
+
+    /** The cartesian position in the z-axis. */
     private double z = 0.0;
-    /**
-     * .
-     */
+
+    // Cartesian3VelocityValue
+    /** The cartesian velocity in the x-axis. */
     private double vx = 0.0;
-    /**
-     * .
-     */
+
+    /** The cartesian velocity in the y-axis. */
     private double vy = 0.0;
-    /**
-     * .
-     */
+
+    /** The cartesian velocity in the z-axis. */
     private double vz = 0.0;
 
     // Builder
@@ -127,17 +114,17 @@ public class Position {
             this.vz = param3;
         } else if (positionType == PositionType.CARTOGRAPHIC_RADIANS) {
             this.longitude = param1;
-            this.latitude = param2;
-            this.height = param3;
+            this.latitude  = param2;
+            this.height    = param3;
         } else if (positionType == PositionType.CARTOGRAPHIC_DEGREES) {
             this.longitudeDeg = param1;
-            this.latitudeDeg = param2;
-            this.height = param3;
+            this.latitudeDeg  = param2;
+            this.height       = param3;
         } else {
             throw new RuntimeException("Position Type is not defined");
         }
 
-        this.positionType = positionType;
+        this.positionType   = positionType;
         this.ReferenceFrame = "INERTIAL";
     }
 
@@ -150,7 +137,8 @@ public class Position {
      * @param output       : Output that will contain the string
      * @param availability : when the position is displayed on Cesium
      */
-    public void write(final PacketCesiumWriter packetWriter, final CesiumOutputStream output, final TimeInterval availability) {
+    public void write(final PacketCesiumWriter packetWriter, final CesiumOutputStream output,
+                      final TimeInterval availability) {
         try (PositionCesiumWriter positionWriter = packetWriter.getPositionWriter()) {
             positionWriter.open(output);
             positionWriter.writeInterval(availability);
@@ -159,14 +147,15 @@ public class Position {
                 final Cartesian cartesian = new Cartesian(this.x, this.y, this.z);
                 positionWriter.writeCartesian(cartesian);
             } else if (positionType == PositionType.CARTESIAN_VELOCITY) {
-                final Cartesian velocityCartesian = new Cartesian(this.vx, this.vy, this.vz);
-                final Motion1<Cartesian> motionCartesian = new Motion1<>(velocityCartesian);
+                final Cartesian          velocityCartesian = new Cartesian(this.vx, this.vy, this.vz);
+                final Motion1<Cartesian> motionCartesian   = new Motion1<>(velocityCartesian);
                 positionWriter.writeCartesianVelocity(motionCartesian);
             } else if (positionType == PositionType.CARTOGRAPHIC_RADIANS) {
                 final Cartographic cartographicRadians = new Cartographic(this.longitude, this.latitude, this.height);
                 positionWriter.writeCartographicRadians(cartographicRadians);
             } else if (positionType == PositionType.CARTOGRAPHIC_DEGREES) {
-                final Cartographic cartographicDegrees = new Cartographic(this.longitudeDeg, this.latitudeDeg, this.height);
+                final Cartographic cartographicDegrees = new Cartographic(this.longitudeDeg, this.latitudeDeg,
+                        this.height);
                 positionWriter.writeCartographicDegrees(cartographicDegrees);
             }
         }
@@ -180,7 +169,8 @@ public class Position {
      * @param availability   : when the position is displayed on Cesium
      * @param referenceFrame : the frame where the position is referenced
      */
-    public void write(final PacketCesiumWriter packetWriter, final CesiumOutputStream output, final TimeInterval availability, final String referenceFrame) {
+    public void write(final PacketCesiumWriter packetWriter, final CesiumOutputStream output,
+                      final TimeInterval availability, final String referenceFrame) {
         try (PositionCesiumWriter positionWriter = packetWriter.getPositionWriter()) {
             positionWriter.open(output);
             positionWriter.writeInterval(availability);
@@ -192,14 +182,15 @@ public class Position {
                 final Cartesian cartesian = new Cartesian(this.x, this.y, this.z);
                 positionWriter.writeCartesian(cartesian);
             } else if (positionType == PositionType.CARTESIAN_VELOCITY) {
-                final Cartesian velocityCartesian = new Cartesian(this.vx, this.vy, this.vz);
-                final Motion1<Cartesian> motionCartesian = new Motion1<>(velocityCartesian);
+                final Cartesian          velocityCartesian = new Cartesian(this.vx, this.vy, this.vz);
+                final Motion1<Cartesian> motionCartesian   = new Motion1<>(velocityCartesian);
                 positionWriter.writeCartesianVelocity(motionCartesian);
             } else if (positionType == PositionType.CARTOGRAPHIC_RADIANS) {
                 final Cartographic cartographicRadians = new Cartographic(this.longitude, this.latitude, this.height);
                 positionWriter.writeCartographicRadians(cartographicRadians);
             } else if (positionType == PositionType.CARTOGRAPHIC_DEGREES) {
-                final Cartographic cartographicDegrees = new Cartographic(this.longitudeDeg, this.latitudeDeg, this.height);
+                final Cartographic cartographicDegrees = new Cartographic(this.longitudeDeg, this.latitudeDeg,
+                        this.height);
                 positionWriter.writeCartographicDegrees(cartographicDegrees);
             }
         }
@@ -330,14 +321,14 @@ public class Position {
 
         } else if (positionType == PositionType.CARTOGRAPHIC_DEGREES) {
             final double Station_longitude = this.getLongitude();
-            final double Station_latitude = this.getLatitude();
-            final double Station_height = this.getHeight();
+            final double Station_latitude  = this.getLatitude();
+            final double Station_height    = this.getHeight();
             return new Vector3D(Station_longitude, Station_latitude, Station_height);
 
         } else if (positionType == PositionType.CARTOGRAPHIC_RADIANS) {
             final double Station_longitudeDegree = this.getLongitudeDeg();
-            final double Station_latitudeDegree = this.getLatitudeDeg();
-            final double Station_height = this.getHeight();
+            final double Station_latitudeDegree  = this.getLatitudeDeg();
+            final double Station_height          = this.getHeight();
             return new Vector3D(Station_longitudeDegree, Station_latitudeDegree, Station_height);
         } else {
             throw new RuntimeException("PositionType is not defined");

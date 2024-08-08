@@ -19,15 +19,9 @@ package org.orekit.czml.CzmlObjects.CzmlPrimaryObjects;
 import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.TimeInterval;
 import org.hipparchus.util.FastMath;
-import org.orekit.bodies.GeodeticPoint;
-import org.orekit.bodies.OneAxisEllipsoid;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.Cylinder;
 import org.orekit.czml.CzmlObjects.Position;
-import org.orekit.frames.Frame;
-import org.orekit.frames.FramesFactory;
 import org.orekit.frames.TopocentricFrame;
-import org.orekit.utils.Constants;
-import org.orekit.utils.IERSConventions;
 
 import java.awt.Color;
 import java.io.IOException;
@@ -35,7 +29,7 @@ import java.io.StringWriter;
 import java.net.URISyntaxException;
 
 /**
- * Visibility COne
+ * Visibility cone class
  *
  * <p>
  * This class will allows the user to build a visibility cone of a ground station. The visibility cone can have a given
@@ -44,124 +38,97 @@ import java.net.URISyntaxException;
  * </p>
  *
  * @author Julien LEBLOND.
- * @since 1.0
+ * @since 1.0.0
  */
 
 public class VisibilityCone extends AbstractPrimaryObject implements CzmlPrimaryObject {
 
-    /**
-     * .
-     */
+    /** The default angle of aperture of the visibility cone. */
     public static final double DEFAULT_ANGLE_OF_APERTURE = 80.0;
-    /**
-     * .
-     */
+
+    /** The default satellite (null), use this to create a visibility cone not limited by the altitude of a satellite. */
     public static final Satellite DEFAULT_SATELLITE_PARAMETER = null;
-    /**
-     * .
-     */
-    public static final String DEFAULT_NAME_FRAME = "Frame of the station";
-    /**
-     * .
-     */
+
+    /** The default ID of the visibility cone. */
     public static final String DEFAULT_ID_VIS = "VIS/";
-    /**
-     * .
-     */
+
+    /** The first default name of the visibility cone. */
     public static final String DEFAULT_NAME = "Visibility of ";
-    /**
-     * .
-     */
+
+    /** The second default name of the visibility cone. */
     public static final String DEFAULT_LOOKING_AT = " looking at ";
-    /**
-     * .
-     */
+
+    /** The cylinder object that represents the geometry of the visibility cone. */
     private Cylinder cylinder;
-    /**
-     * .
-     */
+
+    /** The position of the visibility cone. */
     private Position position;
-    /**
-     * .
-     */
+
+    /** If the visibility cone has been cleaned or not. */
     private boolean clean = false;
-    /**
-     * .
-     */
-    private double angleOfAperture;
+
 
     // Intrinsic parameters
-    /**
-     * .
-     */
-    private org.orekit.estimation.measurements.GroundStation groundStation;
 
     // Satellite check for line of visibility
-    /**
-     * .
-     */
+    /** . */
     private Satellite satellite;
 
 
-    public VisibilityCone(final String id, final String name, final Cylinder cylinder, final TimeInterval availability) {
+    public VisibilityCone(final String id, final String name, final Cylinder cylinder,
+                          final TimeInterval availability) {
         this(id, name, cylinder, availability, DEFAULT_SATELLITE_PARAMETER);
     }
 
-    public VisibilityCone(final String id, final String name, final Cylinder cylinder, final TimeInterval availability, final Satellite satellite) {
+    public VisibilityCone(final String id, final String name, final Cylinder cylinder, final TimeInterval availability,
+                          final Satellite satellite) {
         this.setId(id);
         this.setName(name);
         this.setAvailability(availability);
-        this.cylinder = cylinder;
-        this.position = cylinder.getPosition();
-
-        final GeodeticPoint geodeticPoint = new GeodeticPoint(position.getLatitude(), position.getLongitude(), position.getHeight());
-        final IERSConventions IERS = IERSConventions.IERS_2010;
-        final Frame ITRF = FramesFactory.getITRF(IERS, true);
-        final OneAxisEllipsoid earth = new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS, Constants.WGS84_EARTH_FLATTENING, ITRF);
-        final TopocentricFrame topocentricFrame = new TopocentricFrame(earth, geodeticPoint, DEFAULT_NAME_FRAME);
-
-        this.groundStation = new org.orekit.estimation.measurements.GroundStation(topocentricFrame);
+        this.cylinder  = cylinder;
+        this.position  = cylinder.getPosition();
         this.satellite = satellite;
     }
 
     public VisibilityCone(final CzmlGroundStation groundStation) {
         this.setId(DEFAULT_ID_VIS + groundStation.getName());
         this.setName(DEFAULT_NAME + groundStation.getName());
-        this.setAvailability(Header.MASTER_CLOCK.getAvailability());
+        this.setAvailability(Header.getMasterClock()
+                                   .getAvailability());
         this.cylinder = new Cylinder(groundStation, FastMath.toRadians(DEFAULT_ANGLE_OF_APERTURE));
         this.position = cylinder.getPosition();
-        this.groundStation = groundStation.getOrekitGroundStation();
     }
 
     public VisibilityCone(final CzmlGroundStation groundStation, final Satellite satellite) {
         this(groundStation, satellite, DEFAULT_ANGLE_OF_APERTURE);
     }
 
-    public VisibilityCone(final CzmlGroundStation groundStation, final Satellite satellite, final double angleOfAperture) {
+    public VisibilityCone(final CzmlGroundStation groundStation, final Satellite satellite,
+                          final double angleOfAperture) {
         this.setId(DEFAULT_ID_VIS + groundStation.getName() + "/" + satellite.getName());
         this.setName(DEFAULT_NAME + groundStation.getName() + DEFAULT_LOOKING_AT + satellite.getName());
-        this.setAvailability(Header.MASTER_CLOCK.getAvailability());
-        this.cylinder = new Cylinder(groundStation, satellite, angleOfAperture);
-        this.position = cylinder.getPosition();
-        this.groundStation = groundStation.getOrekitGroundStation();
+        this.setAvailability(Header.getMasterClock()
+                                   .getAvailability());
+        this.cylinder  = new Cylinder(groundStation, satellite, angleOfAperture);
+        this.position  = cylinder.getPosition();
         this.satellite = satellite;
-        this.angleOfAperture = angleOfAperture;
     }
 
-    public VisibilityCone(final TopocentricFrame topocentricFrame, final Satellite satellite) throws URISyntaxException, IOException {
+    public VisibilityCone(final TopocentricFrame topocentricFrame,
+                          final Satellite satellite) throws URISyntaxException, IOException {
         this(topocentricFrame, satellite, DEFAULT_ANGLE_OF_APERTURE);
     }
 
-    public VisibilityCone(final TopocentricFrame topocentricFrame, final Satellite satellite, final double angleOfAperture) throws URISyntaxException, IOException {
+    public VisibilityCone(final TopocentricFrame topocentricFrame, final Satellite satellite,
+                          final double angleOfAperture) throws URISyntaxException, IOException {
         final CzmlGroundStation groundStation1 = new CzmlGroundStation(topocentricFrame);
         this.setId(DEFAULT_ID_VIS + groundStation1.getName() + "/" + satellite.getName());
         this.setName(DEFAULT_NAME + groundStation1.getName() + DEFAULT_LOOKING_AT + satellite.getName());
-        this.setAvailability(Header.MASTER_CLOCK.getAvailability());
-        this.cylinder = new Cylinder(groundStation1, satellite, angleOfAperture);
-        this.position = cylinder.getPosition();
-        this.groundStation = groundStation1.getOrekitGroundStation();
+        this.setAvailability(Header.getMasterClock()
+                                   .getAvailability());
+        this.cylinder  = new Cylinder(groundStation1, satellite, angleOfAperture);
+        this.position  = cylinder.getPosition();
         this.satellite = satellite;
-        this.angleOfAperture = angleOfAperture;
     }
 
     @Override
@@ -191,11 +158,9 @@ public class VisibilityCone extends AbstractPrimaryObject implements CzmlPrimary
         this.setId("");
         this.setName("");
         this.setAvailability(null);
-        this.position = null;
-        this.cylinder = null;
+        this.position  = null;
+        this.cylinder  = null;
         this.satellite = null;
-        this.groundStation = null;
-        this.angleOfAperture = 0.0;
     }
 
     public Position getPosition() {
@@ -212,10 +177,6 @@ public class VisibilityCone extends AbstractPrimaryObject implements CzmlPrimary
         } else {
             return satellite;
         }
-    }
-
-    public org.orekit.estimation.measurements.GroundStation getGroundStation() {
-        return groundStation;
     }
 
     public void enableClean() {

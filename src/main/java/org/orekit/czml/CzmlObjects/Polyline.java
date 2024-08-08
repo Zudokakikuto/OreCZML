@@ -37,7 +37,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Polyline
+ * Polyline class
  *
  * <p>
  * Polyline objects are line that can be drawn from one position to another in a given amount of time. They can follow
@@ -56,114 +56,96 @@ import java.util.List;
 
 public class Polyline {
 
-    /**
-     * .
-     */
+    /** . */
     public static final String DEFAULT_CANT_CALL = "Can't call a vector function on a non-vector polyline";
-    /**
-     * .
-     */
+
+    /** . */
     public static final Color DEFAULT_COLOR = new Color(0, 255, 255, 255);
-    /**
-     * .
-     */
+
+    /** . */
     public static final double DEFAULT_WIDTH = 1;
-    /**
-     * .
-     */
+
+    /** . */
     public static final CesiumArcType DEFAULT_ARC_TYPE = CesiumArcType.NONE;
-    /**
-     * .
-     */
+
+    /** . */
     public static final boolean DEFAULT_SHOW = true;
-    /**
-     * .
-     */
-    public static final TimeInterval DEFAULT_AVAILABILITY = Header.MASTER_CLOCK.getAvailability();
-    /**
-     * .
-     */
+
+    /** . */
+    public static final TimeInterval DEFAULT_AVAILABILITY = Header.getMasterClock()
+                                                                  .getAvailability();
+
+    /** . */
     public static final Reference DEFAULT_REFERENCE = null;
-    /**
-     * .
-     */
+
+    /** . */
     public static final double DEFAULT_NEAR_DISTANCE = 1;
-    /**
-     * .
-     */
+
+    /** . */
     public static final double DEFAULT_FAR_DISTANCE = 100000000;
-    /**
-     * .
-     */
+
+    /** . */
     private final double width;
-    /**
-     * .
-     */
+
+    /** . */
     private final Color color;
-    /**
-     * .
-     */
-    private TimeInterval availability = null;
-    /**
-     * .
-     */
-    private boolean show = false;
-    /**
-     * .
-     */
-    private CesiumArcType arcType = null;
-    /**
-     * .
-     */
-    private Boolean arrow = false;
-    /**
-     * .
-     */
+
+    /** . */
+    private TimeInterval availability;
+
+    /** . */
+    private boolean show;
+
+    /** . */
+    private CesiumArcType arcType;
+
+    /** . */
+    private Boolean arrow;
+
+    /** . */
     private List<Cartesian> cartesians = new ArrayList<>();
-    /** .*/
+
+    /** . */
     private Cartesian firstPosition;
-    /**
-     * .
-     */
+
+    /** . */
     private Reference firstReference;
-    /**
-     * .
-     */
+
+    /** . */
     private Reference secondReference;
-    /**
-     * .
-     */
+
+    /** . */
     private Cartesian secondPosition;
-    /**
-     * .
-     */
+
+    /** . */
     private double nearDistance;
-    /**
-     * .
-     */
+
+    /** . */
     private double farDistance;
+
 
     // BUILDERS
     // NON-VECTOR BUILDERS
 
-    /**
-     * This builder allows the construction of a polyline to be used as a non-vector. It has no parameters.
-     */
+    /** This builder allows the construction of a polyline to be used as a non-vector. It has no parameters. */
     public Polyline() {
-        this(DEFAULT_REFERENCE, DEFAULT_REFERENCE, DEFAULT_AVAILABILITY, DEFAULT_COLOR, DEFAULT_WIDTH, DEFAULT_SHOW, DEFAULT_ARC_TYPE, DEFAULT_NEAR_DISTANCE, DEFAULT_FAR_DISTANCE);
+        this(DEFAULT_REFERENCE, DEFAULT_REFERENCE, DEFAULT_AVAILABILITY, DEFAULT_COLOR, DEFAULT_WIDTH, DEFAULT_SHOW,
+                DEFAULT_ARC_TYPE, DEFAULT_NEAR_DISTANCE, DEFAULT_FAR_DISTANCE);
     }
 
-    public Polyline(final Reference firstReference, final Reference secondReference, final TimeInterval availability, final Color color, final double width, final boolean show, final CesiumArcType arcType, final double nearDistance, final double farDistance) {
-        this.firstReference = firstReference;
+    public Polyline(final Reference firstReference, final Reference secondReference, final TimeInterval availability,
+                    final Color color, final double width, final boolean show, final CesiumArcType arcType,
+                    final double nearDistance, final double farDistance) {
+        this.firstReference  = firstReference;
         this.secondReference = secondReference;
-        this.availability = availability;
-        this.color = color;
-        this.width = width;
-        this.show = show;
-        this.arrow = true;
-        this.arcType = arcType;
-        this.nearDistance = nearDistance;
-        this.farDistance = farDistance;
+        this.availability    = availability;
+        this.color           = color;
+        this.width           = width;
+        this.show            = show;
+        this.arrow           = true;
+        this.arcType         = arcType;
+        this.nearDistance    = nearDistance;
+        this.farDistance     = farDistance;
     }
 
     // VECTOR BUILDERS
@@ -171,7 +153,7 @@ public class Polyline {
     /**
      * This builder allows the construction of a polyline to be used as a vector.
      *
-     * @param cartesians   : A list of cartesians with size 2, containing the first and the second position of the polyline
+     * @param cartesians : A list of cartesians with size 2, containing the first and the second position of the polyline
      */
     public Polyline(final List<Cartesian> cartesians) {
         this(cartesians, DEFAULT_AVAILABILITY, DEFAULT_COLOR, DEFAULT_NEAR_DISTANCE, DEFAULT_FAR_DISTANCE);
@@ -186,25 +168,26 @@ public class Polyline {
      * @param nearDistance : The nearest distance where the polyline is displayed
      * @param farDistance  : The fairest distance where the polyline is displayed
      */
-    public Polyline(final List<Cartesian> cartesians, final TimeInterval availability, final Color color, final double nearDistance, final double farDistance) {
+    public Polyline(final List<Cartesian> cartesians, final TimeInterval availability, final Color color,
+                    final double nearDistance, final double farDistance) {
         this.cartesians = cartesians;
         if (cartesians.size() != 2) {
             throw new RuntimeException("The size of the cartesian positions inputted in the Polyline must be 2");
         } else {
-            this.width = 2;
-            this.color = color;
-            this.show = true;
-            this.arcType = CesiumArcType.NONE;
-            this.arrow = true;
+            this.width        = 2;
+            this.color        = color;
+            this.show         = true;
+            this.arcType      = CesiumArcType.NONE;
+            this.arrow        = true;
             this.availability = availability;
-            firstPosition = cartesians.get(0);
-            secondPosition = cartesians.get(1);
+            firstPosition     = cartesians.get(0);
+            secondPosition    = cartesians.get(1);
             this.nearDistance = nearDistance;
-            this.farDistance = farDistance;
+            this.farDistance  = farDistance;
         }
     }
 
-    // Buiders
+    // Builders
 
     public static NonVectorPolylineBuilder nonVectorBuilder() {
         return new NonVectorPolylineBuilder();
@@ -214,10 +197,6 @@ public class Polyline {
         return new VectorPolylineBuilder(cartesians);
     }
 
-    private static Iterable<Reference> convertToIterable(final Reference[] array) {
-        return () -> Arrays.stream(array)
-                           .iterator();
-    }
 
     //// FUNCTIONS
     // GETS
@@ -288,6 +267,9 @@ public class Polyline {
         }
     }
 
+    //// Private functions
+    // Write position
+
     /**
      * This functions aims at writing a polyline built as a vector in the Fixed frame.
      *
@@ -323,9 +305,6 @@ public class Polyline {
         }
     }
 
-    //// Private functions
-    // Write position
-
     /**
      * This function aims at writing a polyline built as a non-vector to be displayed as a line of visibility.
      *
@@ -334,7 +313,8 @@ public class Polyline {
      * @param references : The references (example : object_ID#position the reference of the position of the object) that will be used to position each extremity of the polyline that will be displayed
      * @param showList   : A list of Show objects, these objects will be useful to know when to display or not the polyline in time
      */
-    public void writePolylineOfVisibility(final PacketCesiumWriter packet, final CesiumOutputStream output, final Iterable<Reference> references, final List<CzmlShow> showList) {
+    public void writePolylineOfVisibility(final PacketCesiumWriter packet, final CesiumOutputStream output,
+                                          final Iterable<Reference> references, final List<CzmlShow> showList) {
         try (PolylineCesiumWriter polylineWriter = packet.getPolylineWriter()) {
             polylineWriter.open(output);
             polylineWriter.writeWidthProperty(this.getWidth());
@@ -378,13 +358,16 @@ public class Polyline {
         }
     }
 
+    // Write show
+
     /**
      * This function aims at writing the position of the polyline built as a non-vector to display an attitude in the INERTIAL frame.
      *
      * @param polylineWriter : the writer extracted from a packet cesium writer to write parameters of the polyline
      * @param output         : The cesium output stream that write the strings in the file
      */
-    private void writePositionOfVectorInertial(final PolylineCesiumWriter polylineWriter, final CesiumOutputStream output) {
+    private void writePositionOfVectorInertial(final PolylineCesiumWriter polylineWriter,
+                                               final CesiumOutputStream output) {
         try (PositionListCesiumWriter positionWriter = polylineWriter.getPositionsWriter()) {
             positionWriter.open(output);
             final List<Cartesian> tempCartesians = new ArrayList<>();
@@ -395,15 +378,14 @@ public class Polyline {
         }
     }
 
-    // Write show
-
     /**
      * This function aims at writing the position of the polyline built as a non-vector to display an attitude in the FIXED frame.
      *
      * @param polylineWriter : the writer extracted from a packet cesium writer to write parameters of the polyline
      * @param output         : The cesium output stream that write the strings in the file
      */
-    private void writePositionOfVectorFixed(final PolylineCesiumWriter polylineWriter, final CesiumOutputStream output) {
+    private void writePositionOfVectorFixed(final PolylineCesiumWriter polylineWriter,
+                                            final CesiumOutputStream output) {
         try (PositionListCesiumWriter positionWriter = polylineWriter.getPositionsWriter()) {
             positionWriter.open(output);
             positionWriter.writeReferenceFrame("FIXED");
@@ -422,7 +404,8 @@ public class Polyline {
      * @param output         : The cesium output stream that write the strings in the file
      * @param references     : The references (example : object_ID#position the reference of the position of the object) that will be used to position each extremity of the polyline that will be displayed
      */
-    private void writePositionOfVisibility(final PolylineCesiumWriter polylineWriter, final Polyline polylineInput, final CesiumOutputStream output, final Iterable<Reference> references) {
+    private void writePositionOfVisibility(final PolylineCesiumWriter polylineWriter, final Polyline polylineInput,
+                                           final CesiumOutputStream output, final Iterable<Reference> references) {
         polylineWriter.writeArcTypeProperty(polylineInput.getArcType());
 
         try (PositionListCesiumWriter positionWriter = polylineWriter.getPositionsWriter()) {
@@ -438,7 +421,8 @@ public class Polyline {
      * @param output         : The cesium output stream that write the strings in the file
      * @param showList       : A list of Show objects, these objects will be useful to know when to display or not the polyline in time
      */
-    private void writeShowOfVisibility(final PolylineCesiumWriter polylineWriter, final CesiumOutputStream output, final List<CzmlShow> showList) {
+    private void writeShowOfVisibility(final PolylineCesiumWriter polylineWriter, final CesiumOutputStream output,
+                                       final List<CzmlShow> showList) {
         try (BooleanCesiumWriter showWriter = polylineWriter.getShowWriter()) {
             showWriter.open(output);
             output.writeStartSequence();
@@ -476,7 +460,8 @@ public class Polyline {
      */
     private void writeReferences(final PolylineCesiumWriter polylineCesiumWriter, final CesiumOutputStream output) {
         if (firstReference == null || secondReference == null) {
-            throw new RuntimeException("The polyline was not defined with references, so it cannot be written that way.");
+            throw new RuntimeException(
+                    "The polyline was not defined with references, so it cannot be written that way.");
         } else {
             try (PositionListCesiumWriter positionWriter = polylineCesiumWriter.getPositionsWriter()) {
                 positionWriter.open(output);
@@ -486,6 +471,11 @@ public class Polyline {
                 positionWriter.writeReferences(listOfReferences);
             }
         }
+    }
+
+    private static Iterable<Reference> convertToIterable(final Reference[] array) {
+        return () -> Arrays.stream(array)
+                           .iterator();
     }
 
 }

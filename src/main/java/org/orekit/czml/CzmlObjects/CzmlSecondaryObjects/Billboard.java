@@ -26,67 +26,62 @@ import cesiumlanguagewriter.UriCesiumWriter;
 
 import java.awt.Color;
 
+/**
+ * Billboard class.
+ *
+ * <p> This class aims at  .</p>
+
+ * @author Julien LEBLOND
+ * @since 1.0.0
+ */
+
 public class Billboard implements CzmlSecondaryObject {
 
-    /**
-     * .
-     */
+    /** . */
     public static final double DEFAULT_SCALE = 1.5;
-    /**
-     * .
-     */
+
+    /** . */
     private final boolean show;
-    /**
-     * .
-     */
+
+    /** . */
     private final String imageStr;
-    /**
-     * .
-     */
+
+    /** . */
     private final CesiumHorizontalOrigin cesiumHorizontalOrigin;
-    /**
-     * .
-     */
+
+    /** . */
     private final CesiumResourceBehavior cesiumResourceBehavior;
-    /**
-     * .
-     */
+
+    /** . */
     private final int red;
-    /**
-     * .
-     */
+
+    /** . */
     private final int blue;
-    /**
-     * .
-     */
+
+    /** . */
     private final int green;
-    /**
-     * .
-     */
+
+    /** . */
     private final int alpha;
-    /**
-     * .
-     */
+
+    /** . */
     private double scale = DEFAULT_SCALE;
-    /**
-     * .
-     */
-    private BillboardCesiumWriter writer;
-    /**
-     * .
-     */
+
+    /** . */
     private NearFarScalar nearFarScalar;
 
-    public Billboard(final CesiumResourceBehavior cesiumResourceBehavior, final CesiumHorizontalOrigin cesiumHorizontalOrigin, final String imageStr, final boolean show, final double scale, final Color color) {
-        this.scale = scale;
-        this.show = show;
+    public Billboard(final CesiumResourceBehavior cesiumResourceBehavior,
+                     final CesiumHorizontalOrigin cesiumHorizontalOrigin, final String imageStr, final boolean show,
+                     final double scale, final Color color) {
+        this.scale                  = scale;
+        this.show                   = show;
         this.cesiumHorizontalOrigin = cesiumHorizontalOrigin;
-        this.imageStr = imageStr;
+        this.imageStr               = imageStr;
         this.cesiumResourceBehavior = cesiumResourceBehavior;
-        this.red = color.getRed();
-        this.green = color.getGreen();
-        this.blue = color.getBlue();
-        this.alpha = color.getAlpha();
+        this.red                    = color.getRed();
+        this.green                  = color.getGreen();
+        this.blue                   = color.getBlue();
+        this.alpha                  = color.getAlpha();
     }
 
     public Billboard(final String imageStr) {
@@ -94,27 +89,27 @@ public class Billboard implements CzmlSecondaryObject {
     }
 
     public Billboard(final String imageStr, final double scale) {
-        this.scale = scale;
-        this.show = true;
-        this.imageStr = imageStr;
+        this.scale                  = scale;
+        this.show                   = true;
+        this.imageStr               = imageStr;
         this.cesiumHorizontalOrigin = CesiumHorizontalOrigin.CENTER;
         this.cesiumResourceBehavior = CesiumResourceBehavior.LINK_TO;
-        this.red = 0;
-        this.green = 255;
-        this.blue = 255;
-        this.alpha = 195;
+        this.red                    = 0;
+        this.green                  = 255;
+        this.blue                   = 255;
+        this.alpha                  = 195;
     }
 
     public Billboard(final String imageStr, final NearFarScalar nearFarScalar) {
-        this.nearFarScalar = nearFarScalar;
-        this.show = true;
-        this.imageStr = imageStr;
+        this.nearFarScalar          = nearFarScalar;
+        this.show                   = true;
+        this.imageStr               = imageStr;
         this.cesiumHorizontalOrigin = CesiumHorizontalOrigin.CENTER;
         this.cesiumResourceBehavior = CesiumResourceBehavior.LINK_TO;
-        this.red = 0;
-        this.green = 255;
-        this.blue = 255;
-        this.alpha = 195;
+        this.red                    = 0;
+        this.green                  = 255;
+        this.blue                   = 255;
+        this.alpha                  = 195;
     }
 
     @Override

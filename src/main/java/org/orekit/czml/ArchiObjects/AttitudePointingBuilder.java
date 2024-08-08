@@ -27,52 +27,42 @@ import java.awt.Color;
 
 public class AttitudePointingBuilder {
 
-    /**
-     * .
-     */
+    /** . */
     public static final Color DEFAULT_COLOR = Color.GREEN;
-    /**
-     * .
-     */
-    public static final TimeInterval DEFAULT_AVAILABILITY = Header.MASTER_CLOCK.getAvailability();
-    /**
-     * .
-     */
-    private Satellite satellite;
-    /**
-     * .
-     */
+
+    /** . */
+    public static final TimeInterval DEFAULT_AVAILABILITY = Header.getMasterClock()
+                                                                  .getAvailability();
+    /** . */
+    private             Satellite    satellite;
+
+    /** . */
     private OneAxisEllipsoid body;
-    /**
-     * .
-     */
+
+    /** . */
     private Vector3D direction;
 
+
     // Optional arguments
-    /**
-     * .
-     */
+    /** . */
     private TimeInterval availability = DEFAULT_AVAILABILITY;
-    /**
-     * .
-     */
+
+    /** . */
     private Color color = DEFAULT_COLOR;
-    /**
-     * .
-     */
+
+    /** . */
     private Boolean displayOnGround = false;
-    /**
-     * .
-     */
+
+    /** . */
     private Boolean displayPointingPath = false;
-    /**
-     * .
-     */
+
+    /** . */
     private Boolean displayPeriodPointingPath = false;
 
-    public AttitudePointingBuilder(final Satellite satelliteInput, final OneAxisEllipsoid bodyInput, final Vector3D directionInput) {
+    public AttitudePointingBuilder(final Satellite satelliteInput, final OneAxisEllipsoid bodyInput,
+                                   final Vector3D directionInput) {
         this.satellite = satelliteInput;
-        this.body = bodyInput;
+        this.body      = bodyInput;
         this.direction = directionInput;
     }
 
@@ -102,7 +92,8 @@ public class AttitudePointingBuilder {
     }
 
     public AttitudePointing build() {
-        final AttitudePointing toReturn = new AttitudePointing(satellite, body, direction, availability, color, displayOnGround);
+        final AttitudePointing toReturn = new AttitudePointing(satellite, body, direction, availability, color,
+                displayOnGround);
         return this.checkAttributes(toReturn);
     }
 

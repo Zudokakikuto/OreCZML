@@ -31,46 +31,35 @@ import java.util.List;
 
 public class CzmlEllipsoid implements CzmlSecondaryObject {
 
-    /**
-     * .
-     */
+    /** . */
     private final TimeInterval availability;
-    /**
-     * .
-     */
+
+    /** . */
     private final Color color;
-    /**
-     * .
-     */
+
+    /** . */
     private final int slicePartition;
-    /**
-     * .
-     */
+
+    /** . */
     private final int stackPartition;
-    /**
-     * .
-     */
-    private boolean fill = false;
-    /**
-     * .
-     */
+
+    /** . */
+    private boolean fill;
+    /** . */
     private boolean outline = true;
-    /**
-     * .
-     */
+
+    /** . */
     private Cartesian cartesian;
-    /**
-     * .
-     */
+
+    /** . */
     private List<JulianDate> allJulianDates = new ArrayList<>();
-    /**
-     * .
-     */
+
+    /** . */
     private List<Cartesian> allCartesians = new ArrayList<>();
-    /**
-     * .
-     */
+
+    /** . */
     private boolean multipleEllipsoids = true;
+
 
     // Builders
 
@@ -83,25 +72,28 @@ public class CzmlEllipsoid implements CzmlSecondaryObject {
         this(availability, cartesian, false, true, 24, 36, color);
     }
 
-    public CzmlEllipsoid(final TimeInterval availability, final Cartesian cartesian, final int slicePartition, final int stackPartition) {
+    public CzmlEllipsoid(final TimeInterval availability, final Cartesian cartesian, final int slicePartition,
+                         final int stackPartition) {
         this(availability, cartesian, slicePartition, stackPartition, new Color(255, 255, 0, 255));
     }
 
-    public CzmlEllipsoid(final TimeInterval availability, final Cartesian cartesian, final int slicePartition, final int stackPartition, final Color color) {
-        this.cartesian = cartesian;
-        this.availability = availability;
-        this.fill = false;
-        this.color = color;
+    public CzmlEllipsoid(final TimeInterval availability, final Cartesian cartesian, final int slicePartition,
+                         final int stackPartition, final Color color) {
+        this.cartesian      = cartesian;
+        this.availability   = availability;
+        this.fill           = false;
+        this.color          = color;
         this.slicePartition = slicePartition;
         this.stackPartition = stackPartition;
     }
 
-    public CzmlEllipsoid(final TimeInterval availability, final Cartesian cartesian, final boolean fill, final boolean outline, final int slicePartition, final int stackPartition, final Color color) {
-        this.cartesian = cartesian;
-        this.availability = availability;
-        this.fill = fill;
-        this.outline = outline;
-        this.color = color;
+    public CzmlEllipsoid(final TimeInterval availability, final Cartesian cartesian, final boolean fill,
+                         final boolean outline, final int slicePartition, final int stackPartition, final Color color) {
+        this.cartesian      = cartesian;
+        this.availability   = availability;
+        this.fill           = fill;
+        this.outline        = outline;
+        this.color          = color;
         this.slicePartition = slicePartition;
         this.stackPartition = stackPartition;
     }
@@ -115,11 +107,13 @@ public class CzmlEllipsoid implements CzmlSecondaryObject {
         this(julianDates, dimensions, false, true, 24, 36, color);
     }
 
-    public CzmlEllipsoid(final List<JulianDate> julianDates, final List<Cartesian> dimensions, final int slicePartition, final int stackPartition) {
+    public CzmlEllipsoid(final List<JulianDate> julianDates, final List<Cartesian> dimensions, final int slicePartition,
+                         final int stackPartition) {
         this(julianDates, dimensions, slicePartition, stackPartition, new Color(255, 255, 0, 255));
     }
 
-    public CzmlEllipsoid(final List<JulianDate> julianDates, final List<Cartesian> dimensions, final int slicePartition, final int stackPartition, final Color color) {
+    public CzmlEllipsoid(final List<JulianDate> julianDates, final List<Cartesian> dimensions, final int slicePartition,
+                         final int stackPartition, final Color color) {
         this(julianDates, dimensions, false, true, slicePartition, stackPartition, color);
     }
 
@@ -134,15 +128,17 @@ public class CzmlEllipsoid implements CzmlSecondaryObject {
      * @param slicePartition : the number of slice of the ellipsoid (number of lines in the orthogonal direction)
      * @param stackPartition : the number of stack of the ellipsoid (number of line in the vertical direction)
      */
-    public CzmlEllipsoid(final List<JulianDate> julianDates, final List<Cartesian> dimensions, final boolean fill, final boolean outline, final int slicePartition, final int stackPartition, final Color color) {
-        this.fill = fill;
-        this.outline = outline;
-        this.color = color;
-        this.availability = Header.MASTER_CLOCK.getAvailability();
-        this.slicePartition = slicePartition;
-        this.stackPartition = stackPartition;
-        this.allJulianDates = julianDates;
-        this.allCartesians = dimensions;
+    public CzmlEllipsoid(final List<JulianDate> julianDates, final List<Cartesian> dimensions, final boolean fill,
+                         final boolean outline, final int slicePartition, final int stackPartition, final Color color) {
+        this.fill               = fill;
+        this.outline            = outline;
+        this.color              = color;
+        this.availability       = Header.getMasterClock()
+                                        .getAvailability();
+        this.slicePartition     = slicePartition;
+        this.stackPartition     = stackPartition;
+        this.allJulianDates     = julianDates;
+        this.allCartesians      = dimensions;
         this.multipleEllipsoids = false;
     }
 

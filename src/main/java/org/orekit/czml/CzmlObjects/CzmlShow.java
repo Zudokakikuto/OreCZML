@@ -22,29 +22,27 @@ import cesiumlanguagewriter.PolylineCesiumWriter;
 import cesiumlanguagewriter.TimeInterval;
 
 /**
- * CZML Show
+ * CZML Show class
  *
  * <p>
  * This class represents the show objects that will allows other primary objects to be displayed or not in a given time interval.
  * </p>
  *
  * @author Julien LEBLOND.
- * @since 1.0
+ * @since 1.0.0
  */
 
 public class CzmlShow {
 
-    /**
-     * .
-     */
+    /** To show or not the object. */
     private boolean toShow;
-    /**
-     * .
-     */
+
+    /** When the object should be displayed or not. */
     private TimeInterval availability;
 
+
     public CzmlShow(final boolean toShow, final TimeInterval availability) {
-        this.toShow = toShow;
+        this.toShow       = toShow;
         this.availability = availability;
     }
 

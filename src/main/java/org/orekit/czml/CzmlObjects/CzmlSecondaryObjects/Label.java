@@ -26,53 +26,46 @@ import java.awt.Color;
 
 public class Label implements CzmlSecondaryObject {
 
-    /**
-     * .
-     */
+    /** . */
     private final Color color;
-    /**
-     * .
-     */
+
+    /** . */
     private final CesiumHorizontalOrigin horizontalOrigin;
-    /**
-     * .
-     */
+
+    /** . */
     private final boolean show;
-    /**
-     * .
-     */
+
+    /** . */
     private final CesiumLabelStyle labelStyle;
-    /**
-     * .
-     */
+
+    /** . */
     private final String text;
-    /**
-     * .
-     */
+
+    /** . */
     private final CesiumVerticalOrigin verticalOrigin;
 
 
     public Label(final Object object) {
-        final int red = 0;
-        final int blue = 255;
+        final int red   = 0;
+        final int blue  = 255;
         final int green = 255;
         final int alpha = 255;
-        this.color = new Color(red, blue, green, alpha);
+        this.color            = new Color(red, blue, green, alpha);
         this.horizontalOrigin = CesiumHorizontalOrigin.LEFT;
-        this.verticalOrigin = CesiumVerticalOrigin.CENTER;
-        this.labelStyle = CesiumLabelStyle.FILL_AND_OUTLINE;
-        this.text = object.toString();
-        this.show = true;
+        this.verticalOrigin   = CesiumVerticalOrigin.CENTER;
+        this.labelStyle       = CesiumLabelStyle.FILL_AND_OUTLINE;
+        this.text             = object.toString();
+        this.show             = true;
     }
 
     public Label(final String text, final Color color, final CesiumHorizontalOrigin horizontalOrigin,
                  final CesiumVerticalOrigin verticalOrigin, final CesiumLabelStyle labelStyle, final boolean show) {
-        this.color = color;
+        this.color            = color;
         this.horizontalOrigin = horizontalOrigin;
-        this.verticalOrigin = verticalOrigin;
-        this.text = text;
-        this.labelStyle = labelStyle;
-        this.show = show;
+        this.verticalOrigin   = verticalOrigin;
+        this.text             = text;
+        this.labelStyle       = labelStyle;
+        this.show             = show;
     }
 
     @Override

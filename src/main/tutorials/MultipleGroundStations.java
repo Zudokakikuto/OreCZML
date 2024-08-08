@@ -48,9 +48,9 @@ public class MultipleGroundStations {
 
     public static void main(final String[] args) throws Exception {
         try {
-            final File home = new File(System.getProperty("user.home"));
-            final File orekitDir = new File(home, "orekit-data");
-            final DataProvider provider = new DirectoryCrawler(orekitDir);
+            final File         home      = new File(System.getProperty("user.home"));
+            final File         orekitDir = new File(home, "orekit-data");
+            final DataProvider provider  = new DirectoryCrawler(orekitDir);
             DataContext.getDefault()
                        .getDataProvidersManager()
                        .addProvider(provider);
@@ -63,30 +63,33 @@ public class MultipleGroundStations {
                                   .replace("\\", "/");
         final String outputPath = root + "/Output";
         final String outputName = "Output.czml";
-        final String output = outputPath + "/" + outputName;
+        final String output     = outputPath + "/" + outputName;
 
         // Creation of the clock.
-        final TimeScale UTC = TimeScalesFactory.getUTC();
-        final double durationOfSimulation = 5 * 3600; // in seconds;
-        final double stepBetweenEachInstant = 60.0; // in seconds
-        final AbsoluteDate startDate = new AbsoluteDate(2024, 3, 15, 0, 0, 0.0, UTC);
-        final AbsoluteDate finalDate = startDate.shiftedBy(durationOfSimulation);
-        final Clock clock = new Clock(startDate, finalDate, UTC, stepBetweenEachInstant);
+        final TimeScale    UTC                    = TimeScalesFactory.getUTC();
+        final double       durationOfSimulation   = 5 * 3600; // in seconds;
+        final double       stepBetweenEachInstant = 60.0; // in seconds
+        final AbsoluteDate startDate              = new AbsoluteDate(2024, 3, 15, 0, 0, 0.0, UTC);
+        final AbsoluteDate finalDate              = startDate.shiftedBy(durationOfSimulation);
+        final Clock        clock                  = new Clock(startDate, finalDate, UTC, stepBetweenEachInstant);
 
         // Creation of the header.
         final Header header = new Header("Multiple Ground Stations", clock);
 
         // Creation of the model of the earth.
         final IERSConventions IERS = IERSConventions.IERS_2010;
-        final Frame ITRF = FramesFactory.getITRF(IERS, true);
-        final OneAxisEllipsoid earth = new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS, Constants.WGS84_EARTH_FLATTENING, ITRF);
+        final Frame           ITRF = FramesFactory.getITRF(IERS, true);
+        final OneAxisEllipsoid earth = new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS,
+                Constants.WGS84_EARTH_FLATTENING, ITRF);
 
         // Creation of a topocentric frame around Toulouse.
-        final GeodeticPoint toulouseFrame = new GeodeticPoint(FastMath.toRadians(43.6047), FastMath.toRadians(1.4442), 10);
+        final GeodeticPoint toulouseFrame = new GeodeticPoint(FastMath.toRadians(43.6047),
+                FastMath.toRadians(1.4442), 10);
         final TopocentricFrame topocentricToulouse = new TopocentricFrame(earth, toulouseFrame, "Toulouse Frame");
 
         // Creation of another topocentric frame around Las Vegas.
-        final GeodeticPoint lasVegasFrame = new GeodeticPoint(FastMath.toRadians(36.1716), FastMath.toRadians(-115.1391), 10);
+        final GeodeticPoint lasVegasFrame = new GeodeticPoint(FastMath.toRadians(36.1716),
+                FastMath.toRadians(-115.1391), 10);
         final TopocentricFrame topocentricLasVegas = new TopocentricFrame(earth, lasVegasFrame, "Las Vegas Frame");
 
         // Creation of all the ground stations

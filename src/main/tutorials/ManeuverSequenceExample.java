@@ -74,9 +74,9 @@ public class ManeuverSequenceExample {
 
     public static void main(final String[] args) throws Exception {
         try {
-            final File home = new File(System.getProperty("user.home"));
-            final File orekitDir = new File(home, "orekit-data");
-            final DataProvider provider = new DirectoryCrawler(orekitDir);
+            final File         home      = new File(System.getProperty("user.home"));
+            final File         orekitDir = new File(home, "orekit-data");
+            final DataProvider provider  = new DirectoryCrawler(orekitDir);
             DataContext.getDefault()
                        .getDataProvidersManager()
                        .addProvider(provider);
@@ -89,16 +89,16 @@ public class ManeuverSequenceExample {
                                   .replace("\\", "/");
         final String outputPath = root + "/Output";
         final String outputName = "Output.czml";
-        final String output = outputPath + "/" + outputName;
-        final String IssModel = root + "/src/main/resources/ISSModel.glb";
+        final String output     = outputPath + "/" + outputName;
+        final String IssModel   = root + "/src/main/resources/Default3DModels/ISSModel.glb";
 
         // Creation of the clock.
-        final TimeScale UTC = TimeScalesFactory.getUTC();
-        final double durationOfSimulation = 36 * 3600; // in seconds;
-        final double stepBetweenEachInstant = 30.0; // in seconds
-        final AbsoluteDate startDate = new AbsoluteDate(2024, 3, 15, 0, 0, 0.0, UTC);
-        final AbsoluteDate finalDate = startDate.shiftedBy(durationOfSimulation);
-        final Clock clock = new Clock(startDate, finalDate, UTC, stepBetweenEachInstant);
+        final TimeScale    UTC                    = TimeScalesFactory.getUTC();
+        final double       durationOfSimulation   = 36 * 3600; // in seconds;
+        final double       stepBetweenEachInstant = 30.0; // in seconds
+        final AbsoluteDate startDate              = new AbsoluteDate(2024, 3, 15, 0, 0, 0.0, UTC);
+        final AbsoluteDate finalDate              = startDate.shiftedBy(durationOfSimulation);
+        final Clock        clock                  = new Clock(startDate, finalDate, UTC, stepBetweenEachInstant);
 
         // Build of the header
         final Header header = new Header("Example of sequence of maneuvers", clock);
@@ -110,18 +110,24 @@ public class ManeuverSequenceExample {
         // build of the propagator
 
         final Frame EME2000 = FramesFactory.getEME2000();
-        final KeplerianOrbit initialOrbit = new KeplerianOrbit(7878000, 0, FastMath.toRadians(20), 0, FastMath.toRadians(90), FastMath.toRadians(0), PositionAngleType.MEAN, EME2000, startDate, Constants.WGS84_EARTH_MU);
+        final KeplerianOrbit initialOrbit = new KeplerianOrbit(7878000, 0, FastMath.toRadians(20), 0,
+                FastMath.toRadians(90), FastMath.toRadians(0), PositionAngleType.MEAN, EME2000, startDate,
+                Constants.WGS84_EARTH_MU);
 
         final SpacecraftState initialState = new SpacecraftState(initialOrbit);
 
         final double positionTolerance = 10.0;
-        final double minStep = 0.001;
-        final double maxStep = 1000;
-        final NormalizedSphericalHarmonicsProvider provider = GravityFieldFactory.getNormalizedProvider(10, 10);
-        final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(EME2000, provider);
+        final double minStep           = 0.001;
+        final double maxStep           = 1000;
+        final NormalizedSphericalHarmonicsProvider provider = GravityFieldFactory.getNormalizedProvider(10,
+                10);
+        final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(EME2000,
+                provider);
 
-        final double[][] tolerances = NumericalPropagator.tolerances(positionTolerance, initialOrbit, OrbitType.CARTESIAN);
-        final AdaptiveStepsizeIntegrator integrator = new DormandPrince853Integrator(minStep, maxStep, tolerances[0], tolerances[1]);
+        final double[][] tolerances = NumericalPropagator.tolerances(positionTolerance, initialOrbit,
+                OrbitType.CARTESIAN);
+        final AdaptiveStepsizeIntegrator integrator = new DormandPrince853Integrator(minStep, maxStep, tolerances[0],
+                tolerances[1]);
 
         final NumericalPropagator propagator = new NumericalPropagator(integrator);
 
@@ -129,28 +135,36 @@ public class ManeuverSequenceExample {
         // Attitude providers
         final LofOffset lofTNW = new LofOffset(EME2000, LOFType.TNW);
         final CelestialBodyPointed bodyPointed = new CelestialBodyPointed(CelestialBodyFactory.getEarth()
-                                                                                              .getBodyOrientedFrame(), CelestialBodyFactory.getSun(), Vector3D.PLUS_J, Vector3D.PLUS_I, Vector3D.PLUS_K);
+                                                                                              .getBodyOrientedFrame(),
+                CelestialBodyFactory.getSun(), Vector3D.PLUS_J, Vector3D.PLUS_I, Vector3D.PLUS_K);
 
         // Firing dates
         final AbsoluteDate firingDateLOF = new AbsoluteDate(2024, 3, 15, 5, 0, 0.0, clock.getTimeScale());
-        final double duration = 3600;
+        final double       duration      = 3600;
 
         //// Attitude sequence to modelize the maneuver
         final AttitudesSequence sequence = new AttitudesSequence();
 
         // Event detector for the attitude sequence
         final EventDetector detectorFiringDate = new DateDetector(firingDateLOF).withHandler(new ContinueOnEvent());
-        final EventDetector detectorStopFiringDate = new DateDetector(firingDateLOF.shiftedBy(duration)).withHandler(new ContinueOnEvent());
+        final EventDetector detectorStopFiringDate = new DateDetector(firingDateLOF.shiftedBy(duration)).withHandler(
+                new ContinueOnEvent());
 
-        final EventDetector secondFiringDate = new DateDetector(startDate.shiftedBy(17 * 3600.0)).withHandler(new ContinueOnEvent());
-        final EventDetector secondStopFiringDate = new DateDetector(startDate.shiftedBy(18 * 3600)).withHandler(new ContinueOnEvent());
+        final EventDetector secondFiringDate = new DateDetector(startDate.shiftedBy(17 * 3600.0)).withHandler(
+                new ContinueOnEvent());
+        final EventDetector secondStopFiringDate = new DateDetector(startDate.shiftedBy(18 * 3600)).withHandler(
+                new ContinueOnEvent());
 
         // Switches for attitude sequence
-        sequence.addSwitchingCondition(bodyPointed, lofTNW, detectorFiringDate, true, false, 200.0, AngularDerivativesFilter.USE_R, null);
-        sequence.addSwitchingCondition(lofTNW, bodyPointed, detectorStopFiringDate, true, false, 200.0, AngularDerivativesFilter.USE_R, null);
+        sequence.addSwitchingCondition(bodyPointed, lofTNW, detectorFiringDate, true, false, 200.0,
+                AngularDerivativesFilter.USE_R, null);
+        sequence.addSwitchingCondition(lofTNW, bodyPointed, detectorStopFiringDate, true, false, 200.0,
+                AngularDerivativesFilter.USE_R, null);
 
-        sequence.addSwitchingCondition(bodyPointed, lofTNW, secondFiringDate, true, false, 200.0, AngularDerivativesFilter.USE_R, null);
-        sequence.addSwitchingCondition(lofTNW, bodyPointed, secondStopFiringDate, true, false, 200.0, AngularDerivativesFilter.USE_R, null);
+        sequence.addSwitchingCondition(bodyPointed, lofTNW, secondFiringDate, true, false, 200.0,
+                AngularDerivativesFilter.USE_R, null);
+        sequence.addSwitchingCondition(lofTNW, bodyPointed, secondStopFiringDate, true, false, 200.0,
+                AngularDerivativesFilter.USE_R, null);
 
         sequence.resetActiveProvider(bodyPointed);
 
@@ -161,18 +175,21 @@ public class ManeuverSequenceExample {
         // Trigger for the maneuver
         // It MUST BE an AbstractManeuverTrigger and NOT an ManeuverTrigger !
         final ManeuverTriggers firstTriggers = new DateBasedManeuverTriggers(firingDateLOF, duration);
-        final ManeuverTriggers secondTriggers = new DateBasedManeuverTriggers(startDate.shiftedBy(17 * 3600.0), duration);
+        final ManeuverTriggers secondTriggers = new DateBasedManeuverTriggers(startDate.shiftedBy(17 * 3600.0),
+                duration);
 
         // Propulsion model
-        final double thrust = 400;
-        final double isp = 380;
+        final double   thrust                = 400;
+        final double   isp                   = 380;
         final Vector3D accelerationDirection = Vector3D.PLUS_K;
-        final PropulsionModel firstPropulsionModel = new BasicConstantThrustPropulsionModel(thrust, isp, accelerationDirection, "first thrust");
-        final PropulsionModel secondPropulsionModel = new BasicConstantThrustPropulsionModel(thrust, isp, accelerationDirection, "second thrust");
+        final PropulsionModel firstPropulsionModel = new BasicConstantThrustPropulsionModel(thrust, isp,
+                accelerationDirection, "first thrust");
+        final PropulsionModel secondPropulsionModel = new BasicConstantThrustPropulsionModel(thrust, isp,
+                accelerationDirection, "second thrust");
 
 
         // Maneuver
-        final Maneuver firstManeuver = new Maneuver(sequence, firstTriggers, firstPropulsionModel);
+        final Maneuver firstManeuver  = new Maneuver(sequence, firstTriggers, firstPropulsionModel);
         final Maneuver secondManeuver = new Maneuver(sequence, secondTriggers, secondPropulsionModel);
         maneuvers.add(firstManeuver);
         maneuvers.add(secondManeuver);
@@ -197,7 +214,10 @@ public class ManeuverSequenceExample {
                                              .build();
 
         // Creation of the display of the maneuvers
-        final ManeuverSequence maneuverSequence = ManeuverSequence.builder(sequence, maneuvers, satellite, accelerationDirection, LOFType.TNW).withTimeShift(stepBetweenEachInstant).build();
+        final ManeuverSequence maneuverSequence = ManeuverSequence.builder(sequence, maneuvers, satellite,
+                                                                          accelerationDirection, LOFType.TNW)
+                                                                  .withTimeShift(stepBetweenEachInstant)
+                                                                  .build();
 
         // Creation of the file
         final CzmlFile file = new CzmlFileBuilder(output).withHeader(header)

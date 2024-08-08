@@ -18,21 +18,13 @@ package org.orekit.czml.CzmlEnum;
 
 public enum PositionType {
 
-    /**
-     * .
-     */
+    /** The position in radians in the (longitude, latitude, altitude) reference system. */
     CARTOGRAPHIC_RADIANS,
-    /**
-     * .
-     */
+    /** The position in degrees in the (longitude, latitude, altitude) reference system. */
     CARTOGRAPHIC_DEGREES,
-    /**
-     * .
-     */
+    /** The position in the cartesian position (x,y,z) reference system. */
     CARTESIAN_POSITION,
-    /**
-     * .
-     */
+    /** The position in the cartesian velocity (vx,vy,vz) reference system. */
     CARTESIAN_VELOCITY;
 
     PositionType() {

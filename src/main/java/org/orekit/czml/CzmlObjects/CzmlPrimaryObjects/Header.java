@@ -33,45 +33,35 @@ import java.io.StringWriter;
  * </p>
  *
  * @author Julien LEBLOND
- * @since 1.0
+ * @since 1.0.0
  */
 
 public class Header extends AbstractPrimaryObject implements CzmlPrimaryObject {
 
-    /**
-     * The default id of a CZML file.
-     */
+    /** The default id of a CZML file. */
     public static final String DEFAULT_ID = "document";
-    /**
-     * The default version of a CZML file.
-     */
+
+    /** The default version of a CZML file. */
     public static final String DEFAULT_VERSION = "1.0";
-    /**
-     * .
-     */
+
+    /** The default path to the root folder. */
     public static final String DEFAULT_ROOT = System.getProperty("user.dir")
                                                     .replace("\\", "/");
-    /**
-     * .
-     */
+
+    /** The default path to the resources' folder. */
     public static final String DEFAULT_RESOURCES = DEFAULT_ROOT + "/src/main/resources";
-    /**
-     * .
-     */
-    public static Clock MASTER_CLOCK = null;
-    /**
-     * .
-     */
-    public static TimeScale TIME_SCALE = null;
-    /**
-     * The version of the header.
-     */
-    private String version;
-    /** The clock object to describes all temporal aspects of the scene.*/
-    /**
-     * The minimum step in time between each instant.
-     */
+
+    /** The master clock of the header, can be accessed out of the scope. It supposed the header as been already defined. */
+    private static Clock MASTER_CLOCK;
+
+    /** The timescale of the header, can be access out of the scope. It supposed the header as been already defined. */
+    private static TimeScale TIME_SCALE;
+
+    /** The minimum step in time between each instant. */
     private double stepSimulation;
+
+    /** The version of Cesium.*/
+    private String version;
 
     /**
      * The classic builder, a name and a clock.
@@ -82,10 +72,10 @@ public class Header extends AbstractPrimaryObject implements CzmlPrimaryObject {
     public Header(final String name, final Clock clock) {
         this.setId(DEFAULT_ID);
         this.setName(name);
-        this.version = DEFAULT_VERSION;
         this.stepSimulation = clock.getStep()
                                    .getValue();
-        MASTER_CLOCK = clock;
+        MASTER_CLOCK        = clock;
+        this.version = DEFAULT_VERSION;
         CzmlFile.setHeader(this);
         TIME_SCALE = clock.getTimeScale();
     }
@@ -100,11 +90,19 @@ public class Header extends AbstractPrimaryObject implements CzmlPrimaryObject {
     public Header(final String name, final String version, final Clock clock) {
         this.setId(DEFAULT_ID);
         this.setName(name);
+        MASTER_CLOCK        = clock;
         this.version = version;
-        MASTER_CLOCK = clock;
         this.stepSimulation = clock.getStep()
                                    .getValue();
         CzmlFile.setHeader(this);
+    }
+
+    public static Clock getMasterClock() {
+        return MASTER_CLOCK;
+    }
+
+    public static TimeScale getTimeScale() {
+        return TIME_SCALE;
     }
 
     @Override
@@ -116,6 +114,7 @@ public class Header extends AbstractPrimaryObject implements CzmlPrimaryObject {
             packet.writeId(this.getId());
             packet.writeVersion(DEFAULT_VERSION);
             packet.writeName(this.getName());
+            packet.writeVersion(version);
             try (ClockCesiumWriter clockWriter = packet.getClockWriter()) {
                 MASTER_CLOCK.write(packet, OUTPUT);
             }
@@ -132,7 +131,6 @@ public class Header extends AbstractPrimaryObject implements CzmlPrimaryObject {
         this.setId("");
         this.setName("");
         this.stepSimulation = 0.0;
-        this.version = "";
     }
 
     public Clock getClock() {
@@ -141,5 +139,9 @@ public class Header extends AbstractPrimaryObject implements CzmlPrimaryObject {
 
     public double getStepSimulation() {
         return stepSimulation;
+    }
+
+    public void setStepSimulation(final double stepSimulation) {
+        this.stepSimulation = stepSimulation;
     }
 }

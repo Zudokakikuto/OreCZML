@@ -29,35 +29,29 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 public class CovarianceDisplayBuilder {
-    /**
-     * .
-     */
+    /** . */
     public static final Color DEFAULT_COLOR = new Color(255, 255, 0, 255);
-    /**
-     * .
-     */
+
+    /** . */
     private LOF lof;
-    /**
-     * .
-     */
+
+    /** . */
     private Satellite satellite;
-    /**
-     * .
-     */
+
+    /** . */
     private List<StateCovariance> covariances;
-    /**
-     * .
-     */
+
+    /** . */
     private Color color = DEFAULT_COLOR;
-    /**
-     * .
-     */
+
+    /** . */
     private Oem oem;
 
-    public CovarianceDisplayBuilder(final Satellite satelliteInput, final List<StateCovariance> covariancesInput, final LOF lofInput) {
-        this.satellite = satelliteInput;
+    public CovarianceDisplayBuilder(final Satellite satelliteInput, final List<StateCovariance> covariancesInput,
+                                    final LOF lofInput) {
+        this.satellite   = satelliteInput;
         this.covariances = covariancesInput;
-        this.lof = lofInput;
+        this.lof         = lofInput;
     }
 
     public CovarianceDisplayBuilder withColor(final Color colorInput) {

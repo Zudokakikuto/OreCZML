@@ -37,46 +37,43 @@ import java.util.List;
 
 public class Clock implements CzmlSecondaryObject {
 
-    /**
-     * .
-     */
+    /** . */
     private TimeInterval availability;
-    /**
-     * .
-     */
+
+    /** . */
     private JulianDate currentTime;
-    /**
-     * .
-     */
+
+    /** . */
     private double multiplier;
-    /**
-     * .
-     */
+
+    /** . */
     private ClockRange range;
-    /**
-     * .
-     */
+
+    /** . */
     private ClockStep step;
-    /**
-     * .
-     */
+
+    /** . */
     private TimeScale timeScale;
 
-    public Clock(final AbsoluteDate startDate, final AbsoluteDate stopDate, final TimeScale timeScale, final double step) {
-        this.step = ClockStep.TICK_DEPENDENT;
-        this.availability = new TimeInterval(this.getJulianDate(startDate, timeScale), this.getJulianDate(stopDate, timeScale));
-        this.multiplier = step;
-        this.range = ClockRange.LOOP_STOP;
-        this.currentTime = this.getJulianDate(startDate, timeScale);
-        this.timeScale = timeScale;
+
+    public Clock(final AbsoluteDate startDate, final AbsoluteDate stopDate, final TimeScale timeScale,
+                 final double step) {
+        this.step         = ClockStep.TICK_DEPENDENT;
+        this.availability = new TimeInterval(this.getJulianDate(startDate, timeScale),
+                this.getJulianDate(stopDate, timeScale));
+        this.multiplier   = step;
+        this.range        = ClockRange.LOOP_STOP;
+        this.currentTime  = this.getJulianDate(startDate, timeScale);
+        this.timeScale    = timeScale;
     }
 
-    public Clock(final TimeInterval interval, final JulianDate currentTime, final double multiplier, final ClockRange range, final ClockStep step) {
+    public Clock(final TimeInterval interval, final JulianDate currentTime, final double multiplier,
+                 final ClockRange range, final ClockStep step) {
         this.availability = new TimeInterval(interval.getStart(), interval.getStop());
-        this.currentTime = currentTime;
-        this.multiplier = multiplier;
-        this.range = range;
-        this.step = step;
+        this.currentTime  = currentTime;
+        this.multiplier   = multiplier;
+        this.range        = range;
+        this.step         = step;
     }
 
     public Clock(final Oem oem) {
@@ -101,29 +98,29 @@ public class Clock implements CzmlSecondaryObject {
                             .getTimeScales()
                             .getUTC();
         final JulianDate startJulianDate = this.getJulianDate(startTime, timeScale);
-        final JulianDate stopJulianDate = this.getJulianDate(stopTime, timeScale);
+        final JulianDate stopJulianDate  = this.getJulianDate(stopTime, timeScale);
 
-        final ClockStep clockStep = ClockStep.getFromValue(step_rounded);
-        final double multiplier_temp = step;
+        final ClockStep clockStep       = ClockStep.getFromValue(step_rounded);
+        final double    multiplier_temp = step;
 
-        this.step = clockStep;
+        this.step         = clockStep;
         this.availability = new TimeInterval(startJulianDate, stopJulianDate);
-        this.range = ClockRange.LOOP_STOP;
-        this.multiplier = multiplier_temp;
-        this.currentTime = startJulianDate;
+        this.range        = ClockRange.LOOP_STOP;
+        this.multiplier   = multiplier_temp;
+        this.currentTime  = startJulianDate;
     }
 
     private JulianDate getJulianDate(final AbsoluteDate AbsDate, final TimeScale timeScaleInput) {
-        final DateTimeComponents components = AbsDate.getComponents(timeScaleInput);
-        final DateComponents dateComponents = components.getDate();
-        final TimeComponents timeComponents = components.getTime();
-        final int year = dateComponents.getYear();
-        final int month = dateComponents.getMonth();
-        final int day = dateComponents.getDay();
-        final int hours = timeComponents.getHour();
-        final int mins = timeComponents.getMinute();
-        final double seconds = timeComponents.getSecond();
-        final GregorianDate gregorianDate = new GregorianDate(year, month, day, hours, mins, seconds);
+        final DateTimeComponents components     = AbsDate.getComponents(timeScaleInput);
+        final DateComponents     dateComponents = components.getDate();
+        final TimeComponents     timeComponents = components.getTime();
+        final int                year           = dateComponents.getYear();
+        final int                month          = dateComponents.getMonth();
+        final int                day            = dateComponents.getDay();
+        final int                hours          = timeComponents.getHour();
+        final int                mins           = timeComponents.getMinute();
+        final double             seconds        = timeComponents.getSecond();
+        final GregorianDate      gregorianDate  = new GregorianDate(year, month, day, hours, mins, seconds);
         return new JulianDate(gregorianDate);
     }
 

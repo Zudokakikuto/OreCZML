@@ -23,44 +23,45 @@ import cesiumlanguagewriter.PathCesiumWriter;
 import cesiumlanguagewriter.TimeInterval;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.CzmlSecondaryObject;
 
+/**
+ * Path class
+ *
+ * <p>
+ * This class aims at displaying the path of a given object.
+ * </p>
+ *
+ * @author Julien LEBLOND.
+ * @since 1.0.0
+ */
+
 public class Path implements CzmlSecondaryObject {
 
-    /**
-     * .
-     */
+    /** The availability of the object. */
     private TimeInterval availability;
-    /**
-     * .
-     */
+
+    /** To write the path. */
     private PathCesiumWriter writer;
-    /**
-     * .
-     */
+
+    /** Whether to show or not the path. */
     private boolean show;
 
-    //Optional parameters
-    /**
-     * .
-     */
-    private double periodToDisplay = 0.0;
 
     public Path(final TimeInterval availability, final PacketCesiumWriter writer, final boolean show) {
         this.availability = availability;
-        this.writer = writer.getPathWriter();
-        this.show = show;
+        this.writer       = writer.getPathWriter();
+        this.show         = show;
     }
 
     public Path(final TimeInterval availability, final PacketCesiumWriter writer) {
         this.availability = availability;
-        this.writer = writer.getPathWriter();
-        this.show = true;
+        this.writer       = writer.getPathWriter();
+        this.show         = true;
     }
 
     public Path(final TimeInterval availability, final PacketCesiumWriter writer, final double period) {
-        this.availability = availability;
-        this.writer = writer.getPathWriter();
-        this.show = true;
-        this.periodToDisplay = period;
+        this.availability    = availability;
+        this.writer          = writer.getPathWriter();
+        this.show            = true;
     }
 
     @Override

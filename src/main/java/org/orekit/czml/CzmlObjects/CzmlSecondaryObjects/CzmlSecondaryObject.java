@@ -32,11 +32,11 @@ public interface CzmlSecondaryObject {
     void write(PacketCesiumWriter packetWriter, CesiumOutputStream output);
 
     default double absoluteDateToDouble(AbsoluteDate date) {
-        final DateTimeComponents dtc = date.getComponents(TimeScalesFactory.getUTC());
-        final DateComponents dc = dtc.getDate();
-        final TimeComponents tc = dtc.getTime();
-        final double jd = dc.getMJD();
-        final double fracDay = tc.getSecondsInUTCDay();
+        final DateTimeComponents dtc     = date.getComponents(TimeScalesFactory.getUTC());
+        final DateComponents     dc      = dtc.getDate();
+        final TimeComponents     tc      = dtc.getTime();
+        final double             jd      = dc.getMJD();
+        final double             fracDay = tc.getSecondsInUTCDay();
         return jd + fracDay / 86400 + 2400000.5;
     }
 

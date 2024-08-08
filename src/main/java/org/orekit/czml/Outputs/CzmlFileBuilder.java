@@ -37,69 +37,55 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CzmlFileBuilder {
-    /**
-     * .
-     */
+
+    /** . */
     public static final double DEFAULT_ANGLE_OF_APERTURE = 80.0;
-    /**
-     * .
-     */
+
+    /** . */
     public static final String DEFAULT_MODEL_PATH = "";
 
-    /**
-     * .
-     */
+    /** . */
     private String outputPath;
-    /**
-     * .
-     */
+
+    /** . */
     private Header header;
-    /**
-     * .
-     */
+
+    /** . */
     private List<Satellite> satellites = new ArrayList<>();
-    /**
-     * .
-     */
+
+    /** . */
     private List<Constellation> constellations = new ArrayList<>();
-    /**
-     * .
-     */
+
+    /** . */
     private List<CzmlGroundStation> groundStations = new ArrayList<>();
-    /**
-     * .
-     */
+
+    /** . */
     private List<InterSatVisu> visus = new ArrayList<>();
-    /**
-     * .
-     */
+
+    /** . */
     private List<LineOfVisibility> lines = new ArrayList<>();
-    /**
-     * .
-     */
+
+    /** . */
     private List<GroundTrack> groundTracks = new ArrayList<>();
-    /**
-     * .
-     */
+
+    /** . */
     private List<AttitudePointing> attitudePointings = new ArrayList<>();
-    /**
-     * .
-     */
+
+    /** . */
     private List<CovarianceDisplay> covariances = new ArrayList<>();
-    /**
-     * .
-     */
+
+    /** . */
     private List<FieldOfObservation> fields = new ArrayList<>();
-    /** .*/
+
+    /** . */
     private List<ManeuverSequence> maneuverSequences = new ArrayList<>();
-    /**
-     * .
-     */
+
+    /** . */
     private List<SatelliteReferenceSystem> satelliteSystems = new ArrayList<>();
-    /**
-     * .
-     */
+
+    /** . */
     private CentralBodyReferenceSystem system;
+
 
     public CzmlFileBuilder(final String pathFile) {
         this.outputPath = pathFile;
@@ -185,7 +171,9 @@ public class CzmlFileBuilder {
 
 
     // Line of visibility
-    public CzmlFileBuilder withLineOfVisibility(final TopocentricFrame topocentricFrameInput, final Satellite satelliteInput, final double angleOfAperture) throws URISyntaxException, IOException {
+    public CzmlFileBuilder withLineOfVisibility(final TopocentricFrame topocentricFrameInput,
+                                                final Satellite satelliteInput,
+                                                final double angleOfAperture) throws URISyntaxException, IOException {
         final LineOfVisibility line = LineOfVisibility.builder(topocentricFrameInput, satelliteInput)
                                                       .withAngleOfAperture(angleOfAperture)
                                                       .build();
@@ -193,11 +181,14 @@ public class CzmlFileBuilder {
         return this;
     }
 
-    public CzmlFileBuilder withLineOfVisibility(final TopocentricFrame topocentricFrameInput, final Satellite satelliteInput) throws URISyntaxException, IOException {
+    public CzmlFileBuilder withLineOfVisibility(final TopocentricFrame topocentricFrameInput,
+                                                final Satellite satelliteInput) throws URISyntaxException, IOException {
         return this.withLineOfVisibility(topocentricFrameInput, satelliteInput, DEFAULT_ANGLE_OF_APERTURE);
     }
 
-    public CzmlFileBuilder withLineOfVisibility(final TopocentricFrame topocentricFrameInput, final Constellation constellationInput, final double angleOfAperture) throws URISyntaxException, IOException {
+    public CzmlFileBuilder withLineOfVisibility(final TopocentricFrame topocentricFrameInput,
+                                                final Constellation constellationInput,
+                                                final double angleOfAperture) throws URISyntaxException, IOException {
         final List<Satellite> satellitesOfConstellation = constellationInput.getAllSatellites();
         for (int i = 0; i < constellationInput.getTotalOfSatellite(); i++) {
             final Satellite currentSatellite = satellitesOfConstellation.get(i);
@@ -208,11 +199,14 @@ public class CzmlFileBuilder {
         return this;
     }
 
-    public CzmlFileBuilder withLineOfVisibility(final TopocentricFrame topocentricFrameInput, final Constellation constellationInput) throws URISyntaxException, IOException {
+    public CzmlFileBuilder withLineOfVisibility(final TopocentricFrame topocentricFrameInput,
+                                                final Constellation constellationInput) throws URISyntaxException, IOException {
         return this.withLineOfVisibility(topocentricFrameInput, constellationInput, DEFAULT_ANGLE_OF_APERTURE);
     }
 
-    public CzmlFileBuilder withLineOfVisibility(final List<TopocentricFrame> topocentricFramesInput, final Satellite satelliteInput, final double angleOfAperture) throws URISyntaxException, IOException {
+    public CzmlFileBuilder withLineOfVisibility(final List<TopocentricFrame> topocentricFramesInput,
+                                                final Satellite satelliteInput,
+                                                final double angleOfAperture) throws URISyntaxException, IOException {
         for (final TopocentricFrame currentFrame : topocentricFramesInput) {
             lines.add(LineOfVisibility.builder(currentFrame, satelliteInput)
                                       .withAngleOfAperture(angleOfAperture)
@@ -221,11 +215,14 @@ public class CzmlFileBuilder {
         return this;
     }
 
-    public CzmlFileBuilder withLineOfVisibility(final List<TopocentricFrame> topocentricFramesInput, final Satellite satelliteInput) throws URISyntaxException, IOException {
+    public CzmlFileBuilder withLineOfVisibility(final List<TopocentricFrame> topocentricFramesInput,
+                                                final Satellite satelliteInput) throws URISyntaxException, IOException {
         return this.withLineOfVisibility(topocentricFramesInput, satelliteInput, DEFAULT_ANGLE_OF_APERTURE);
     }
 
-    public CzmlFileBuilder withLineOfVisibility(final List<TopocentricFrame> topocentricFramesInput, final Constellation constellationInput, final double angleOfAperture) throws URISyntaxException, IOException {
+    public CzmlFileBuilder withLineOfVisibility(final List<TopocentricFrame> topocentricFramesInput,
+                                                final Constellation constellationInput,
+                                                final double angleOfAperture) throws URISyntaxException, IOException {
         for (final TopocentricFrame currentFrame : topocentricFramesInput) {
             for (int j = 0; j < constellationInput.getTotalOfSatellite(); j++) {
                 final Satellite currentSatellite = constellationInput.getAllSatellites()
@@ -239,7 +236,8 @@ public class CzmlFileBuilder {
         return this;
     }
 
-    public CzmlFileBuilder withLineOfVisibility(final List<TopocentricFrame> topocentricFramesInput, final Constellation constellationInput) throws URISyntaxException, IOException {
+    public CzmlFileBuilder withLineOfVisibility(final List<TopocentricFrame> topocentricFramesInput,
+                                                final Constellation constellationInput) throws URISyntaxException, IOException {
         return this.withLineOfVisibility(topocentricFramesInput, constellationInput, DEFAULT_ANGLE_OF_APERTURE);
     }
 
