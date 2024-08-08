@@ -214,7 +214,8 @@ public interface CzmlPrimaryObject {
     /** The classic method that write the object into the CzmlFile. */
     void writeCzmlBlock() throws URISyntaxException, IOException;
 
-    /** The classic method that returns the string writer of the object. */
+    /** The classic method that returns the string writer of the object.
+     * @return : The string writer of the object */
     StringWriter getStringWriter();
 
     /** The classic method that clean all the arguments of the object. */

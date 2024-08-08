@@ -135,7 +135,7 @@ public class CovarianceExample {
 
         // Build of the covariance
         final RealMatrix realMatrix = MatrixUtils.createRealDiagonalMatrix(
-                new double[]{20000 * 20000, 1e-6, 1e-6, 1e-6, 1e-6, (36 * 4.848e-6) * (36 * 4.848e-6)});
+                new double[] {20000 * 20000, 1e-6, 1e-6, 1e-6, 1e-6, (36 * 4.848e-6) * (36 * 4.848e-6)});
         final StateCovariance stateCovariance = new StateCovariance(realMatrix, startDate, EME2000,
                 OrbitType.EQUINOCTIAL, PositionAngleType.MEAN);
         final List<StateCovariance> allCovariances = covariancePropagation(satellite, propagator, stateCovariance);
@@ -174,11 +174,12 @@ public class CovarianceExample {
 
         propagator.getMultiplexer()
                   .add(Header.getMasterClock()
-                             .getMultiplier(), spacecraftState -> {
-                      final StateCovariance covariance = provider.getStateCovariance(spacecraftState);
-                      covarianceListTemp.add(covariance);
-                      allSpaceCraftStateTemp.add(spacecraftState);
-                  });
+                             .getMultiplier(),
+                          spacecraftState -> {
+                              final StateCovariance covariance = provider.getStateCovariance(spacecraftState);
+                              covarianceListTemp.add(covariance);
+                              allSpaceCraftStateTemp.add(spacecraftState);
+                          });
 
         satellite.setAllSpaceCraftStates(allSpaceCraftStateTemp);
         propagator.propagate(allOrbits.get(0)
