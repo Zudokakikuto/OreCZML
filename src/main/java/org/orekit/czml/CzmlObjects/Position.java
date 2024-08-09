@@ -38,7 +38,7 @@ import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.TimePosition;
  * </p>
  *
  * @author Julien LEBLOND.
- * @since 1.0
+ * @since 1.0.0
  */
 
 public class Position {

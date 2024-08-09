@@ -24,6 +24,15 @@ import cesiumlanguagewriter.PacketCesiumWriter;
 
 import java.awt.Color;
 
+/**
+ * Label class
+ *
+ * <p> This class allows the user to display a specific text of an object during the simulation.</p>
+ *
+ * @author Julien LEBLOND
+ * @since 1.0
+ */
+
 public class Label implements CzmlSecondaryObject {
 
     /** . */

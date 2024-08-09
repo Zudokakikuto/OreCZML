@@ -28,6 +28,15 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
 
+/**
+ * Covariance display builder class
+ * <p>
+ * Builder for the {@link CovarianceDisplay} class.
+ * <p>
+ * @author Julien LEBLOND
+ * @since 1.0.0
+ */
+
 public class CovarianceDisplayBuilder {
     /** . */
     public static final Color DEFAULT_COLOR = new Color(255, 255, 0, 255);

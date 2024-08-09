@@ -24,6 +24,16 @@ import java.awt.Color;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+/**
+ * Satellite builder class
+ * <p>
+ * Builder for the {@link Satellite} class.
+ * <p>
+ *
+ * @author Julien LEBLOND
+ * @since 1.0.0
+ */
+
 public class SatelliteBuilder {
 
     /** . */

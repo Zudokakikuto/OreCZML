@@ -25,6 +25,15 @@ import cesiumlanguagewriter.PacketCesiumWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Time position class
+ *
+ * <p> The class aims at representing a position and a time of an object.</p>
+ *
+ * @author Julien LEBLOND
+ * @since 1.0
+ */
+
 public class TimePosition implements CzmlSecondaryObject {
 
     /** . */

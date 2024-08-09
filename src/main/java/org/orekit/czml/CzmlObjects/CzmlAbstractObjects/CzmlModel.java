@@ -47,7 +47,7 @@ import java.nio.file.StandardCopyOption;
  * it will be able to reference a local path.</p>
  *
  * @author Julien LEBLOND
- * @since 1.0
+ * @since 1.0.0
  */
 
 public class CzmlModel {

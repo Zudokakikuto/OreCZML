@@ -25,6 +25,15 @@ import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Satellite;
 
 import java.awt.Color;
 
+/**
+ * Attitude pointing builder class
+ * <p>
+ * Builder for the {@link org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.AttitudePointing} class.
+ * <p>
+ * @author Julien LEBLOND
+ * @since 1.0.0
+ */
+
 public class AttitudePointingBuilder {
 
     /** . */

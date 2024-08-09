@@ -32,14 +32,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * CZMLPrimaryObject
+ * CZML Primary Object Interface
  *
  * <p>
  * This interface represents the objects that are directly displayed on screen,they depends to no other objects except the header object.
  * </p>
  *
  * @author Julien LEBLOND
- * @since 1.0
+ * @since 1.0.0
  */
 
 public interface CzmlPrimaryObject {

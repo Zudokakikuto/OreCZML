@@ -28,6 +28,16 @@ import org.orekit.utils.IERSConventions;
 
 import java.awt.Color;
 
+/**
+ * Field of observation builder class
+ * <p>
+ * Builder for the {@link FieldOfObservation} class.
+ * <p>
+ *
+ * @author Julien LEBLOND
+ * @since 1.0.0
+ */
+
 public class FieldOfObservationBuilder {
     /** . */
     public static final Color DEFAULT_COLOR = Color.CYAN;

@@ -26,6 +26,15 @@ import org.orekit.time.AbsoluteDate;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Oem adaptor
+ * <p>
+ * Adaptor for the {@link Oem} class, this helps build satellites from Oems.
+ * <p>
+ *
+ * @author Julien LEBLOND
+ * @since 1.0.0
+ */
 
 public class OemAdaptor extends AbstractAdaptor<Oem> {
 

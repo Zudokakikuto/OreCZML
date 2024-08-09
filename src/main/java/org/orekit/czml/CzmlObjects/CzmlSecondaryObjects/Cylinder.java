@@ -35,6 +35,15 @@ import org.orekit.utils.Constants;
 
 import java.awt.Color;
 
+/**
+ * Cylinder class
+ *
+ * <p> This class allows the user to display a cylinder (that can be shaped as a cone) with variables geometries.</p>
+ *
+ * @author Julien LEBLOND
+ * @since 1.0
+ */
+
 public class Cylinder implements CzmlSecondaryObject {
     /** . */
     private final double length;

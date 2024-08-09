@@ -45,6 +45,7 @@ import java.util.List;
  * @author Julien LEBLOND
  * @since 1.0.0
  */
+
 public class Orientation implements CzmlSecondaryObject {
 
     /** . */

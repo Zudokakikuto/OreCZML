@@ -28,6 +28,16 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
 
+/**
+ * Maneuver sequence builder class
+ * <p>
+ * Builder for the {@link ManeuverSequence} class.
+ * <p>
+ *
+ * @author Julien LEBLOND
+ * @since 1.0.0
+ */
+
 public class ManeuverSequenceBuilder {
 
     /** . */

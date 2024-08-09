@@ -16,6 +16,17 @@
  */
 package org.orekit.czml.CzmlEnum;
 
+/**
+ * Position type enum
+ * <p>
+ * Enum for the {@link org.orekit.czml.CzmlObjects.Position} class. It describes all the different
+ * types of existing tuples to describe a position.
+ * <p>
+ *
+ * @author Julien LEBLOND
+ * @since 1.0.0
+ */
+
 public enum PositionType {
 
     /** The position in radians in the (longitude, latitude, altitude) reference system. */

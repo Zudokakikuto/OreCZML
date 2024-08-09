@@ -48,7 +48,7 @@ import java.util.List;
  * <p> This class builds the covariance as an ellipsoid around a satellite. </p>
  *
  * @author Julien LEBLOND
- * @since 1.0
+ * @since 1.0.0
  */
 
 public class CovarianceDisplay extends AbstractPrimaryObject implements CzmlPrimaryObject {

@@ -27,6 +27,7 @@ import org.orekit.annotation.DefaultDataContext;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.bodies.OneAxisEllipsoid;
 import org.orekit.czml.ArchiObjects.FieldOfObservationBuilder;
+import org.orekit.czml.CzmlObjects.CzmlAbstractObjects.AbstractPointOnBody;
 import org.orekit.czml.CzmlObjects.Polyline;
 import org.orekit.frames.FramesFactory;
 import org.orekit.frames.TopocentricFrame;

@@ -24,6 +24,16 @@ import org.orekit.czml.CzmlObjects.Polyline;
 import java.awt.Color;
 import java.util.List;
 
+/**
+ * Vector polyline builder class
+ * <p>
+ * Builder for the {@link Polyline} class to be built as a vector.
+ * <p>
+ *
+ * @author Julien LEBLOND
+ * @since 1.0.0
+ */
+
 public class VectorPolylineBuilder {
 
     /** . */

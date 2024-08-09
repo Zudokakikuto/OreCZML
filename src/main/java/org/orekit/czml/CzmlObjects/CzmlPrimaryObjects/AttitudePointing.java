@@ -28,6 +28,7 @@ import org.orekit.attitudes.Attitude;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.bodies.OneAxisEllipsoid;
 import org.orekit.czml.ArchiObjects.AttitudePointingBuilder;
+import org.orekit.czml.CzmlObjects.CzmlAbstractObjects.AbstractPointOnBody;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.Orientation;
 import org.orekit.czml.CzmlObjects.Polyline;
 import org.orekit.frames.Frame;

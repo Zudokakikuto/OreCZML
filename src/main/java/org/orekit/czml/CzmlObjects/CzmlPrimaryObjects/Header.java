@@ -25,7 +25,7 @@ import org.orekit.time.TimeScale;
 import java.io.StringWriter;
 
 /**
- * Header
+ * Header class
  *
  * <p>
  * The header object is the base to all the CZML file. It contains all the primary information needed for the scene to display.

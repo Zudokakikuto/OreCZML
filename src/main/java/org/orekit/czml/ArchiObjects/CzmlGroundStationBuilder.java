@@ -22,6 +22,16 @@ import org.orekit.frames.TopocentricFrame;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+/**
+ * Ground station builder class
+ * <p>
+ * Builder for the {@link CzmlGroundStation} class.
+ * <p>
+ *
+ * @author Julien LEBLOND
+ * @since 1.0.0
+ */
+
 public class CzmlGroundStationBuilder {
 
 

@@ -33,7 +33,17 @@ import org.orekit.time.TimeComponents;
 import org.orekit.time.TimeScale;
 import org.orekit.utils.TimeStampedPVCoordinates;
 
+import java.util.ArrayList;
 import java.util.List;
+
+/**
+ * Clock class.
+ *
+ * <p> This class aims at managing the time constants of the simulation.</p>
+
+ * @author Julien LEBLOND
+ * @since 1.0.0
+ */
 
 public class Clock implements CzmlSecondaryObject {
 
@@ -55,6 +65,9 @@ public class Clock implements CzmlSecondaryObject {
     /** . */
     private TimeScale timeScale;
 
+    /** .*/
+    private List<JulianDate> allJulianDateSimulation = new ArrayList<>();
+
 
     public Clock(final AbsoluteDate startDate, final AbsoluteDate stopDate, final TimeScale timeScale,
                  final double step) {
@@ -65,6 +78,7 @@ public class Clock implements CzmlSecondaryObject {
         this.range        = ClockRange.LOOP_STOP;
         this.currentTime  = this.getJulianDate(startDate, timeScale);
         this.timeScale    = timeScale;
+        this.allJulianDateSimulation = computeAllJulianDates();
     }
 
     public Clock(final TimeInterval interval, final JulianDate currentTime, final double multiplier,
@@ -74,6 +88,7 @@ public class Clock implements CzmlSecondaryObject {
         this.multiplier   = multiplier;
         this.range        = range;
         this.step         = step;
+        this.allJulianDateSimulation = computeAllJulianDates();
     }
 
     public Clock(final Oem oem) {
@@ -100,14 +115,12 @@ public class Clock implements CzmlSecondaryObject {
         final JulianDate startJulianDate = this.getJulianDate(startTime, timeScale);
         final JulianDate stopJulianDate  = this.getJulianDate(stopTime, timeScale);
 
-        final ClockStep clockStep       = ClockStep.getFromValue(step_rounded);
-        final double    multiplier_temp = step;
-
-        this.step         = clockStep;
+        this.step         = ClockStep.getFromValue(step_rounded);
         this.availability = new TimeInterval(startJulianDate, stopJulianDate);
         this.range        = ClockRange.LOOP_STOP;
-        this.multiplier   = multiplier_temp;
+        this.multiplier   = step;
         this.currentTime  = startJulianDate;
+        this.allJulianDateSimulation = computeAllJulianDates();
     }
 
     private JulianDate getJulianDate(final AbsoluteDate AbsDate, final TimeScale timeScaleInput) {
@@ -148,6 +161,10 @@ public class Clock implements CzmlSecondaryObject {
         return timeScale;
     }
 
+    public List<JulianDate> getAllJulianDatesSimulation() {
+        return allJulianDateSimulation;
+    }
+
     @Override
     public void write(final PacketCesiumWriter packetWriter, final CesiumOutputStream output) {
 
@@ -160,4 +177,17 @@ public class Clock implements CzmlSecondaryObject {
         writer.writeStep(step);
     }
 
+
+    private List<JulianDate> computeAllJulianDates() {
+        final List<JulianDate> toReturn = new ArrayList<>();
+        final JulianDate startDate = availability.getStart();
+        final JulianDate stopDate = availability.getStop();
+        final double totalSeconds = startDate.secondsDifference(stopDate);
+        final double numberOfIterationNotRounded = totalSeconds / multiplier;
+        final int numberOfIteration = (int) FastMath.round(numberOfIterationNotRounded);
+        for (int i = 0; i < numberOfIteration; i++) {
+            toReturn.add(startDate.addSeconds(multiplier * i));
+        }
+        return toReturn;
+    }
 }

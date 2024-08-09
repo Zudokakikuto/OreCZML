@@ -24,6 +24,16 @@ import org.orekit.czml.CzmlObjects.Polyline;
 
 import java.awt.Color;
 
+/**
+ * Non vector polyline builder class
+ * <p>
+ * Builder for the {@link Polyline} class to be built as a non vector.
+ * <p>
+ *
+ * @author Julien LEBLOND
+ * @since 1.0.0
+ */
+
 public class NonVectorPolylineBuilder {
 
     /** . */

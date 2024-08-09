@@ -29,7 +29,7 @@ import java.awt.Color;
 /**
  * Billboard class.
  *
- * <p> This class aims at  .</p>
+ * <p> This class aims at displaying an image to an object when one is defined.</p>
 
  * @author Julien LEBLOND
  * @since 1.0.0

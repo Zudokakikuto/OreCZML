@@ -17,6 +17,7 @@
 package org.orekit.czml.Outputs;
 
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.AttitudePointing;
+import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.BodyDisplay;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.CentralBodyReferenceSystem;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Constellation;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.CovarianceDisplay;
@@ -35,6 +36,18 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+
+/**
+ * Czml File Builder
+ *
+ * <p>
+ * Builder and architect for the {@link CzmlFile} class. This builder organise and manage all the objects that needs to
+ * be added to a Czml file.
+ * </p>
+ *
+ * @author Julien LEBLOND.
+ * @since 1.0.0
+ */
 
 public class CzmlFileBuilder {
 
@@ -82,6 +95,9 @@ public class CzmlFileBuilder {
 
     /** . */
     private List<SatelliteReferenceSystem> satelliteSystems = new ArrayList<>();
+
+    /** .*/
+    private List<BodyDisplay> bodyDisplays = new ArrayList<>();
 
     /** . */
     private CentralBodyReferenceSystem system;
@@ -290,6 +306,18 @@ public class CzmlFileBuilder {
     }
 
 
+    // Body Display
+    public CzmlFileBuilder withBodyDisplay(final BodyDisplay bodyDisplay) {
+        this.bodyDisplays.add(bodyDisplay);
+        return this;
+    }
+
+    public CzmlFileBuilder withBodyDisplay(final List<BodyDisplay> bodyDisplay) {
+        this.bodyDisplays.addAll(bodyDisplay);
+        return this;
+    }
+
+
     // Central Body Reference System
     public CzmlFileBuilder withCentralBodyReferenceSystem(final CentralBodyReferenceSystem systemInput) {
         this.system = systemInput;
@@ -312,6 +340,7 @@ public class CzmlFileBuilder {
         this.addManeuverSequence(toReturn);
         this.addGroundTrack(toReturn);
         this.addSatelliteReferenceSystem(toReturn);
+        this.addBodyDisplay(toReturn);
         this.addCentralBodyReferenceSystem(toReturn);
 
         return toReturn;
@@ -380,6 +409,12 @@ public class CzmlFileBuilder {
     private void addSatelliteReferenceSystem(final CzmlFile file) {
         for (SatelliteReferenceSystem systemInput : satelliteSystems) {
             file.addObject(systemInput);
+        }
+    }
+
+    private void addBodyDisplay(final CzmlFile file) {
+        for (BodyDisplay bodyDisplay : bodyDisplays) {
+            file.addObject(bodyDisplay);
         }
     }
 

@@ -27,6 +27,17 @@ import org.orekit.time.TimeComponents;
 import org.orekit.time.TimeScale;
 import org.orekit.time.TimeScalesFactory;
 
+/**
+ * CZML Secondary Object Interface
+ *
+ * <p>
+ * This interface represents the objects that are not directly displayed on screen,they depends to primary objects.
+ * </p>
+ *
+ * @author Julien LEBLOND
+ * @since 1.0
+ */
+
 public interface CzmlSecondaryObject {
 
     void write(PacketCesiumWriter packetWriter, CesiumOutputStream output);

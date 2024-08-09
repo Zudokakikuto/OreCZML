@@ -19,6 +19,15 @@ package org.orekit.czml.ArchiObjects;
 import org.orekit.propagation.AbstractPropagator;
 import org.orekit.propagation.Propagator;
 
+/**
+ * Abstract adaptor
+ * <p>
+ * Abstract class for all adaptors aiming at building objects from several inputs.
+ * <p>
+ * @author Julien LEBLOND
+ * @since 1.0.0
+ */
+
 public abstract class AbstractAdaptor<I> extends AbstractPropagator {
 
     /** . */

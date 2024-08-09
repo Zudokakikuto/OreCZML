@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.orekit.czml.CzmlObjects.CzmlPrimaryObjects;
+package org.orekit.czml.CzmlObjects.CzmlAbstractObjects;
 
 import cesiumlanguagewriter.Cartesian;
 import cesiumlanguagewriter.JulianDate;
@@ -24,6 +24,9 @@ import cesiumlanguagewriter.PositionCesiumWriter;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.orekit.bodies.BodyShape;
 import org.orekit.bodies.GeodeticPoint;
+import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.AbstractPrimaryObject;
+import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.CzmlPrimaryObject;
+import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Header;
 import org.orekit.frames.TopocentricFrame;
 
 import java.io.IOException;
@@ -91,11 +94,14 @@ public class AbstractPointOnBody extends AbstractPrimaryObject implements CzmlPr
             } else {
                 final TopocentricFrame topocentricFrame = new TopocentricFrame(body, currentGeodeticPoint, "");
                 positionsList.add(topocentricFrame.getCartesianPoint());
-                final Cartesian currentCartesian = new Cartesian(topocentricFrame.getCartesianPoint()
-                                                                                 .getX(),
+                final Cartesian currentCartesian = new Cartesian(
                         topocentricFrame.getCartesianPoint()
-                                        .getY(), topocentricFrame.getCartesianPoint()
-                                                                 .getZ());
+                                        .getX(),
+                        topocentricFrame.getCartesianPoint()
+                                        .getY(),
+                        topocentricFrame.getCartesianPoint()
+                                        .getZ());
+
                 cartesians.add(currentCartesian);
             }
         }
@@ -111,16 +117,7 @@ public class AbstractPointOnBody extends AbstractPrimaryObject implements CzmlPr
 
             writePosition(packet);
             if (displayPath) {
-                try (PathCesiumWriter pathWriter = packet.getPathWriter()) {
-                    pathWriter.open(OUTPUT);
-                    pathWriter.writeShowProperty(true);
-                    pathWriter.writeInterval(Header.getMasterClock()
-                                                   .getAvailability());
-                    if (displayPeriodPointingPath) {
-                        pathWriter.writeTrailTimeProperty(0.0);
-                        pathWriter.writeLeadTimeProperty(this.periodForPath);
-                    }
-                }
+                writePath(packet);
             }
         }
     }
@@ -194,4 +191,16 @@ public class AbstractPointOnBody extends AbstractPrimaryObject implements CzmlPr
         }
     }
 
+    private void writePath(final PacketCesiumWriter packet) {
+        try (PathCesiumWriter pathWriter = packet.getPathWriter()) {
+            pathWriter.open(OUTPUT);
+            pathWriter.writeShowProperty(true);
+            pathWriter.writeInterval(Header.getMasterClock()
+                                           .getAvailability());
+            if (displayPeriodPointingPath) {
+                pathWriter.writeTrailTimeProperty(0.0);
+                pathWriter.writeLeadTimeProperty(this.periodForPath);
+            }
+        }
+    }
 }

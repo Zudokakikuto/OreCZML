@@ -29,6 +29,15 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Czml Ellipsoid class
+ *
+ * <p> This class allows the user to display an ellipsoid with various geometries.</p>
+ *
+ * @author Julien LEBLOND
+ * @since 1.0
+ */
+
 public class CzmlEllipsoid implements CzmlSecondaryObject {
 
     /** . */
