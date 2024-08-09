@@ -21,12 +21,15 @@ import cesiumlanguagewriter.JulianDate;
 import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.PathCesiumWriter;
 import cesiumlanguagewriter.PositionCesiumWriter;
+import org.hipparchus.geometry.euclidean.threed.Rotation;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
+import org.orekit.attitudes.Attitude;
 import org.orekit.bodies.CelestialBody;
 import org.orekit.czml.CzmlObjects.CzmlAbstractObjects.CzmlModel;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.Orientation;
 import org.orekit.frames.Frame;
 import org.orekit.frames.FramesFactory;
+import org.orekit.frames.Transform;
 import org.orekit.time.AbsoluteDate;
 import org.orekit.utils.IERSConventions;
 
@@ -76,20 +79,19 @@ public class BodyDisplay extends AbstractPrimaryObject implements CzmlPrimaryObj
     /** . */
     private double periodForPath;
 
-    /** .*/
+    /** . */
     private double modelScale = 0.0;
 
-    /** .*/
+    /** . */
     private double modelMinimumPixelSize = 0.0;
 
-    /** .*/
+    /** . */
     private double modelMaximumScale = 0.0;
 
-    /** .*/
+    /** . */
     private Orientation orientation;
 
-    public BodyDisplay(final CelestialBody body,
-                       final String pathToModel) throws URISyntaxException, IOException {
+    public BodyDisplay(final CelestialBody body, final String pathToModel) throws URISyntaxException, IOException {
 
         this.setId(DEFAULT_ID + body.getName());
         this.setName(DEFAULT_NAME + body.getName());
@@ -102,6 +104,7 @@ public class BodyDisplay extends AbstractPrimaryObject implements CzmlPrimaryObj
                                               .getAllJulianDatesSimulation();
 
         this.cartesianList = fillCartesian(body, allJulianDatesSimulation);
+        this.orientation = generateOrientation(body, allJulianDatesSimulation);
     }
 
     @Override
@@ -118,6 +121,7 @@ public class BodyDisplay extends AbstractPrimaryObject implements CzmlPrimaryObj
             if (displayOrbit) {
                 writePath(packet);
             }
+            this.orientation.write(packet, OUTPUT);
         }
     }
 
@@ -135,7 +139,6 @@ public class BodyDisplay extends AbstractPrimaryObject implements CzmlPrimaryObj
         allJulianDatesSimulation = new ArrayList<>();
         displayOrbit             = true;
     }
-
 
     // GETTERS
 
@@ -238,18 +241,32 @@ public class BodyDisplay extends AbstractPrimaryObject implements CzmlPrimaryObj
         }
     }
 
-    private List<Cartesian> fillCartesian(final CelestialBody bodyInput,
-                                          final List<JulianDate> julianDates) {
-        final Frame ITRF = FramesFactory.getITRF(IERSConventions.IERS_2010, true);
+    private List<Cartesian> fillCartesian(final CelestialBody bodyInput, final List<JulianDate> julianDates) {
+        final Frame           ITRF     = FramesFactory.getITRF(IERSConventions.IERS_2010, true);
         final List<Cartesian> toReturn = new ArrayList<>();
         for (JulianDate julianDate : julianDates) {
-            final AbsoluteDate date = julianDateToAbsoluteDate(julianDate,
-                    Header.getTimeScale());
-            final Vector3D currentPosition = bodyInput.getPosition(date, ITRF);
+            final AbsoluteDate date            = julianDateToAbsoluteDate(julianDate, Header.getTimeScale());
+            final Vector3D     currentPosition = bodyInput.getPosition(date, ITRF);
             final Cartesian currentCartesian = new Cartesian(currentPosition.getX(), currentPosition.getY(),
                     currentPosition.getZ());
             toReturn.add(currentCartesian);
         }
         return toReturn;
+    }
+
+    private Orientation generateOrientation(final CelestialBody bodyInput, final List<JulianDate> julianDates) {
+        final List<Attitude> attitudes     = new ArrayList<>();
+        final Frame          bodyInertialFrame = bodyInput.getInertiallyOrientedFrame();
+        final Frame          bodyRotatingFrame   = bodyInput.getBodyOrientedFrame();
+
+        for (JulianDate julianDate : julianDates) {
+            final AbsoluteDate date             = julianDateToAbsoluteDate(julianDate, Header.getTimeScale());
+            final Transform    currentTransform = bodyRotatingFrame.getTransformTo(bodyInertialFrame, date);
+            final Rotation     currentRotation  = currentTransform.getRotation();
+            final Attitude currentAttitudeBody = new Attitude(date, bodyRotatingFrame, currentRotation, Vector3D.ZERO,
+                    Vector3D.ZERO);
+            attitudes.add(currentAttitudeBody);
+        }
+        return new Orientation(attitudes, bodyRotatingFrame, false);
     }
 }
