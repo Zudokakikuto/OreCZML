@@ -1,0 +1,93 @@
+v1.0.0 :
+    Added :
+        CZMLFile                   : Reprensents the CZML file that will be outputted
+        Header                     : for the header of the CZMLFile
+        Clock                      : to build the time parameters of the scene
+        Billboard                  : to display 2d images in the scene
+        Cylinder                   : to build cylinder and cones in the scene
+        Label                      : to display text in the scene
+        CZMLEllipsoid              : to draw ellipsoids in the scene
+        Path                       : to draw paths of objects in the scene
+        SatellitePosition          : to build the position of a satellite in time
+        Satellite                  : to add satellite to the scene
+        CZMLGroundStation          : to display ground station in the scene
+        VisibilityCone             : to build what a ground station see
+        LineOfVisibility           : to display lines of visibility between a satellite and a ground station
+        CZMLModel                  : for 3D Model
+        Constellation              : for satellite constellations
+        SatelliteOffsetPath        : to build a path of a satellite offsetted in a direction
+        CZMLShow                   : to display objects
+        Polyline                   : to draw lines in the scene
+        Position                   : to place objects
+        TerrestrialReferenceSystem : to build a system around the crental body
+        ModelType                  : to enumerate several types of models
+        PositionType               : to enumerate several type of positions
+        OffsetType                 : to enumerate several type of offsets
+        CZMLPrimaryObject          : An interface to groups all the primary objects
+        CZMLSecondaryObjet         : An interface to groups all the objects that require a primary object to exists         
+
+    Added but not operational :
+        [Not Operational] GroundTrack              : to display the ground track of a satellite in flight
+        [Not Operational] CovarianceDisplay        : to display the covariance of an object in the scene
+        [Not Operational] SatelliteAttitude        : to display the attitude of a satellite
+        [Not Operational] SatelliteReferenceSystem : to display a loca lreference system of a Satellite
+
+    Added but to be removed :
+        [To be removed] JavascriptRun             : To run a javascript programm to display the scene with a local cesiumJS
+        [To be removed] InputObject              : An interface to represents all the inputs objects that can be added into OreCZML
+        [To be removed] InputFileBuilder         : An interface to represents all the files that can be inputted
+        [To be removed] OrbitInput               : To build an object that represents an orbit inputted
+        [To be removed] OEMFile                  : To build an object that represents an Oem file inputted  
+        [To be removed] SpacecraftStateListInput : To build an object that represents a list of SpacecraftState inputted  
+
+V2.0.0 :
+    Added : 
+        AbstractPrimaryObject : An abstract class to represents all the primary objects clearly
+        TypeOfVisu            : to enumerate all the type of visu that can happend when a line of visu is created
+        VectorPositionType    : to enumerate all the type of vector that can be used to build vectors with the polyline
+
+        TUTORIALS :
+            OtherTutorials.LowEarthOrbitSatellite : An example of how to setup a basic LEO satellite
+            OtherTutorials.MultipleGroundStations : An example of how to setup several ground stations
+            TrackingVisu.LineOfVisuSatStation   : An example of how to setup a line of visibility between a satellite and a ground station
+            TrackingVisu.ConstellationVisu      : An example of how to setup a visualisation of a constellation with several ground stations
+            TrackingVisu.SatelliteTracking      : An example of how several ground station can track a single satellite
+            OtherTutorials.ModelLoading           : An example of how to setup a 3D model in the scene
+    
+    Removed : 
+    (The inputs no longer needs a class to interface with OreCzml so they are removed)
+        InputObject
+        InputFileBuilder
+        OEMFile
+        TLEFile
+        OrbitInput
+        SpacecraftStateListInput
+        JavascriptRun
+
+    Changes :
+        Renamed :
+            Name of the project : OreCZML -> OreCzml
+            PathDirectory : org.example -> org.orekit.czml
+
+            CZMLModel -> CzmlModel
+            CZMLShow -> CzmlShow
+            CZMLSecondaryObject -> CzmlSecondaryObject
+            CZMLEllipsoid -> CzmlEllipsoid
+            CZMLGroundStation -> CzmlGroundStation
+            CZMLPrimaryObject -> CzmlPrimaryObject
+            CZMLSecondaryObject -> CzmlSecondaryObject
+            CZMLFile -> CzmlFile
+
+            generateCZML() -> writeCZMLBlock()
+        
+        JavaDoc of all classes added
+        The user only need to build a CzmlFile now, add the objects with the addObject(Object) function then call CzmlFile.write()
+        Header object can no longer be built with a propagator
+        CzmlGroundStation can no longer be built with an Orekit groundStation
+        A Header.MASTER_CLOCK is not available to be used as a global clock
+        Add a presentation image for the Readme.md
+        The writeCZMLBlocks function will be called directly in the CZMLFile.java instead of each time a primary object is added.
+        The satellite object now understands clearly Orekit Inputs
+        The clock object now understands clearly the Oem orekit input
+        An ISSModel.glb has been added to the repository for the tutorial
+
