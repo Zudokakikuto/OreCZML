@@ -40,8 +40,6 @@
     <dependency>
       <groupId>com.custom</groupId>
       <artifactId>cesium</artifactId>
-      <scope>system</scope>
-      <systemPath>${basedir}/src/main/resources/dependencies/cesiumlanguagewriter-1.0.jar</systemPath>
       <version>${dependency.cesiumwriter.version}</version>
     </dependency>
   </dependencies>
