@@ -2,7 +2,7 @@
 FROM maven:3.9-eclipse-temurin-17-alpine
 
 # Custom installation of cesium writer dependency
-COPY oreczml-core/src/main/resources/dependencies/cesiumlanguagewriter-1.0.jar .
+COPY cesiumlanguagewriter-1.0.jar .
 RUN mvn install:install-file -Dfile=cesiumlanguagewriter-1.0.jar -DgroupId=com.custom -DartifactId=cesium -Dversion=1.0 -Dpackaging=jar -DgeneratePom=true
 
 # Default command to run Maven; adjust as needed for your use case
