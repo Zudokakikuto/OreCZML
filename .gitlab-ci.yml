@@ -5,9 +5,12 @@ include:
 
 variables:
   MAVEN_DEPLOY_ENABLED: "false"
+  MAVEN_IMAGE: "vcucchie/maven:test2"
+  MAVEN_CFG_DIR: "/root/.m2"
 
 # your pipeline stages
 stages:
+  - debug
   - build
   - test
   - package-build
@@ -18,3 +21,10 @@ stages:
   - publish
   - infra-prod
   - production
+
+# Define the debug job
+debug:
+  stage: debug
+  script:
+    - echo "Listing contents of Maven local repository..."
+    - ls -R /root/.m2/repository/
