@@ -1,0 +1,83 @@
+[
+  {
+    "id":"document",
+    "version":"1.0",
+    "name":"Multiple Ground Stations",
+    "version":"1.0",
+    "clock":{
+      "interval":"2024-03-15T00:00:00Z/2024-03-15T05:00:00Z",
+      "currentTime":"2024-03-15T00:00:00Z",
+      "multiplier":60,
+      "range":"LOOP_STOP",
+      "step":"TICK_DEPENDENT"
+    }
+  },
+  {
+    "id":"GROUND_STATION/Toulouse Frame",
+    "name":"Ground station : Toulouse Frame",
+    "availability":"2024-03-15T00:00:00Z/2024-03-15T05:00:00Z",
+    "billboard":{
+      "horizontalOrigin":"CENTER",
+      "color":{
+        "rgba":[
+          0,255,255,195
+        ]
+      },
+      "image":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACvSURBVDhPrZDRDcMgDAU9GqN0lIzijw6SUbJJygUeNQgSqepJTyHG91LVVpwDdfxM3T9TSl1EXZvDwii471fivK73cBFFQNTT/d2KoGpfGOpSIkhUpgUMxq9DFEsWv4IXhlyCnhBFnZcFEEuYqbiUlNwWgMTdrZ3JbQFoEVG53rd8ztG9aPJMnBUQf/VFraBJeWnLS0RfjbKyLJA8FkT5seDYS1Qwyv8t0B/5C2ZmH2/eTGNNBgMmAAAAAElFTkSuQmCC",
+      "scale":1.5,
+      "show":true
+    },
+    "label":{
+      "fillColor":{
+        "rgba":[
+          0,255,255,255
+        ]
+      },
+      "font":"11pt Lucida Console",
+      "horizontalOrigin":"LEFT",
+      "verticalOrigin":"CENTER",
+      "text":"Toulouse Frame",
+      "show":true
+    },
+    "position":{
+      "interval":"2024-03-15T00:00:00Z/2024-03-15T05:00:00Z",
+      "cartesian":[
+        4624415.12018318,116587.90809901741,4376399.285187051
+      ]
+    }
+  },
+  {
+    "id":"GROUND_STATION/Las Vegas Frame",
+    "name":"Ground station : Las Vegas Frame",
+    "availability":"2024-03-15T00:00:00Z/2024-03-15T05:00:00Z",
+    "billboard":{
+      "horizontalOrigin":"CENTER",
+      "color":{
+        "rgba":[
+          0,255,255,195
+        ]
+      },
+      "image":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACvSURBVDhPrZDRDcMgDAU9GqN0lIzijw6SUbJJygUeNQgSqepJTyHG91LVVpwDdfxM3T9TSl1EXZvDwii471fivK73cBFFQNTT/d2KoGpfGOpSIkhUpgUMxq9DFEsWv4IXhlyCnhBFnZcFEEuYqbiUlNwWgMTdrZ3JbQFoEVG53rd8ztG9aPJMnBUQf/VFraBJeWnLS0RfjbKyLJA8FkT5seDYS1Qwyv8t0B/5C2ZmH2/eTGNNBgMmAAAAAElFTkSuQmCC",
+      "scale":1.5,
+      "show":true
+    },
+    "label":{
+      "fillColor":{
+        "rgba":[
+          0,255,255,255
+        ]
+      },
+      "font":"11pt Lucida Console",
+      "horizontalOrigin":"LEFT",
+      "verticalOrigin":"CENTER",
+      "text":"Las Vegas Frame",
+      "show":true
+    },
+    "position":{
+      "interval":"2024-03-15T00:00:00Z/2024-03-15T05:00:00Z",
+      "cartesian":[
+        -2189844.79518433,-4666525.372240734,3743585.1561989784
+      ]
+    }
+  }
+]
