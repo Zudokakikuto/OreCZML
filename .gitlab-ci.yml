@@ -7,6 +7,7 @@ variables:
   MAVEN_DEPLOY_ENABLED: "true"
   MAVEN_IMAGE: "vcucchie/maven:maven-3.9-alpine-cesiumwriter"
   MAVEN_CFG_DIR: "/root/.m2"
+  MAVEN_SETTINGS_FILE: ${MAVEN_PROJECT_DIR}/cicd/ci-settings.xml
 
 # your pipeline stages
 stages:

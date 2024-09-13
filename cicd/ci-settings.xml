@@ -1,0 +1,17 @@
+<settings>
+    <servers>
+        <!-- required when using GitLab's package registry to deploy -->
+        <!-- see: https://docs.gitlab.com/ee/user/packages/maven_repository/index.html#use-the-gitlab-endpoint-for-maven-packages -->
+        <server>
+            <id>gitlab-maven</id>
+            <configuration>
+                <httpHeaders>
+                    <property>
+                        <name>Job-Token</name>
+                        <value>${env.CI_JOB_TOKEN}</value>
+                    </property>
+                </httpHeaders>
+            </configuration>
+        </server>
+    </servers>
+</settings>
