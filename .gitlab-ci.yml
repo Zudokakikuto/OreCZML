@@ -4,7 +4,7 @@ include:
   - remote: "https://gitlab.com/to-be-continuous/maven/-/raw/3.9.0/templates/gitlab-ci-maven.yml"
 
 variables:
-  MAVEN_DEPLOY_ENABLED: "false"
+  MAVEN_DEPLOY_ENABLED: "true"
   MAVEN_IMAGE: "vcucchie/maven:maven-3.9-alpine-cesiumwriter"
   MAVEN_CFG_DIR: "/root/.m2"
 
