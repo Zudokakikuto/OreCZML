@@ -8,6 +8,7 @@ variables:
   MAVEN_IMAGE: "vcucchie/maven:maven-3.9-alpine-cesiumwriter"
   MAVEN_CFG_DIR: "/root/.m2"
   MAVEN_SETTINGS_FILE: ${MAVEN_PROJECT_DIR}/cicd/ci-settings.xml
+  MVN_FORBID_SNAPSHOT_DEPENDENCIES_DISABLED: "true"
 
 # your pipeline stages
 stages:
