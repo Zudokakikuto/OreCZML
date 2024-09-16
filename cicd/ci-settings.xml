@@ -14,4 +14,60 @@
             </configuration>
         </server>
     </servers>
+    <mirrors>
+        <mirror>
+            <id>cs-maven-central-mirror</id>
+            <mirrorOf>*</mirrorOf>
+            <name>cs-maven-central</name>
+            <url>http://cs-nano-pic-master.cloud-espace.si.c-s.fr:8081/repository/maven-public/</url>
+        </mirror>
+        <mirror>
+            <id>cs-maven-oreoc-mirror</id>
+            <mirrorOf>*</mirrorOf>
+            <name>cs-maven-oreoc</name>
+            <url>https://gitlab.si.c-s.fr/api/v4/projects/83/packages/maven</url>
+        </mirror>
+    </mirrors>
+    <profiles>
+        <profile>
+            <id>oreflids</id>
+            <repositories>
+                <repository>
+                    <id>Nexus-CS</id>
+                    <name>Nexus Managed Internal Repository</name>
+                    <url>http://cs-nano-pic-master.cloud-espace.si.c-s.fr:8081/repository/maven-public/</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                </repository>
+                <repository>
+                    <id>Nexus-CS-OREC</id>
+                    <name>OREC Nexus Managed Internal Repository</name>
+                    <url>https://gitlab.si.c-s.fr/api/v4/projects/83/packages/maven</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
+            </repositories>
+            <pluginRepositories>
+                <pluginRepository>
+                    <id>internal</id>
+                    <name>Nexus Managed Internal Repository</name>
+                    <url>http://cs-nano-pic-master.cloud-espace.si.c-s.fr:8081/repository/maven-public/</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                </pluginRepository>
+            </pluginRepositories>
+        </profile>
+    </profiles>
 </settings>

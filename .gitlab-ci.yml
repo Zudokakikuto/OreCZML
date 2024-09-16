@@ -9,6 +9,8 @@ variables:
   MAVEN_CFG_DIR: "/root/.m2"
   MAVEN_SETTINGS_FILE: ${MAVEN_PROJECT_DIR}/cicd/ci-settings.xml
   MVN_FORBID_SNAPSHOT_DEPENDENCIES_DISABLED: "true"
+  SONAR_HOST_URL: https://localhost:9000
+  SONAR_QUALITY_GATE_ENABLED: true
 
 # your pipeline stages
 stages:
