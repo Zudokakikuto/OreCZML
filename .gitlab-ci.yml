@@ -8,6 +8,7 @@ variables:
   MAVEN_IMAGE: "vcucchie/maven:maven-3.9-alpine-cesiumwriter"
   MAVEN_CFG_DIR: "/root/.m2"
   MAVEN_SETTINGS_FILE: ${MAVEN_PROJECT_DIR}/cicd/ci-settings.xml
+  MAVEN_DEPLOY_FROM_UNPROTECTED_DISABLED : true
   SONAR_QUALITY_GATE_ENABLED: true
 
 # your pipeline stages
