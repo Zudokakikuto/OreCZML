@@ -5,5 +5,5 @@ FROM maven:3.9-eclipse-temurin-17-alpine
 COPY cesiumlanguagewriter-1.0.jar .
 RUN mvn install:install-file -Dfile=cesiumlanguagewriter-1.0.jar -DgroupId=com.custom -DartifactId=cesium -Dversion=1.0 -Dpackaging=jar -DgeneratePom=true
 
-# Default command to run Maven; adjust as needed for your use case
+# Run mvn clean install by default
 CMD ["mvn", "clean", "install"]
