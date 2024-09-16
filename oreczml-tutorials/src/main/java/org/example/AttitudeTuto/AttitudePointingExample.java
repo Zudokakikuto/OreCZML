@@ -16,6 +16,7 @@
  */
 package org.example.AttitudeTuto;
 
+import org.example.TutorialUtils;
 import org.hipparchus.geometry.euclidean.threed.RotationOrder;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
@@ -29,10 +30,6 @@ import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Satellite;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.Clock;
 import org.orekit.czml.Outputs.CzmlFile;
 import org.orekit.czml.Outputs.CzmlFileBuilder;
-import org.orekit.data.DataContext;
-import org.orekit.data.DataProvider;
-import org.orekit.data.DirectoryCrawler;
-import org.orekit.errors.OrekitException;
 import org.orekit.forces.ForceModel;
 import org.orekit.forces.gravity.HolmesFeatherstoneAttractionModel;
 import org.orekit.forces.gravity.potential.GravityFieldFactory;
@@ -54,7 +51,8 @@ import org.orekit.utils.Constants;
 import org.orekit.utils.IERSConventions;
 
 import java.awt.Color;
-import java.io.File;
+
+import static org.example.TutorialUtils.loadResources;
 
 public class AttitudePointingExample {
 
@@ -63,16 +61,8 @@ public class AttitudePointingExample {
     }
 
     public static void main(final String[] args) throws Exception {
-        try {
-            final File         home      = new File(System.getProperty("user.home"));
-            final File         orekitDir = new File(home, "orekit-data");
-            final DataProvider provider  = new DirectoryCrawler(orekitDir);
-            DataContext.getDefault()
-                       .getDataProvidersManager()
-                       .addProvider(provider);
-        } catch (OrekitException oe) {
-            System.err.println(oe.getLocalizedMessage());
-        }
+        // Load orekit data
+        TutorialUtils.loadOrekitData();
 
         // Paths
         final String root = System.getProperty("user.dir")
@@ -80,7 +70,10 @@ public class AttitudePointingExample {
         final String outputPath = root + "/Output";
         final String outputName = "Output.czml";
         final String output     = outputPath + "/" + outputName;
-        final String IssModel   = root + "/src/main/resources/Default3DModels/ISSModel.glb";
+        // Change the path here to your JavaScript>public folder.
+        final String pathToJSFolder = root + "/Javascript/public/";
+
+        final String IssModel = loadResources("Default3DModels/ISSModel.glb");
 
         // Creation of the clock.
         final TimeScale    UTC                    = TimeScalesFactory.getUTC();
@@ -90,7 +83,7 @@ public class AttitudePointingExample {
         final AbsoluteDate finalDate              = startDate.shiftedBy(durationOfSimulation);
         final Clock        clock                  = new Clock(startDate, finalDate, UTC, stepBetweenEachInstant);
 
-        final Header header = new Header("Setup of the pointing of the attitude of a satellite", clock);
+        final Header header = new Header("Setup of the pointing of the attitude of a satellite", clock, pathToJSFolder);
 
         // Creation of the model of the earth.
         final IERSConventions IERS = IERSConventions.IERS_2010;

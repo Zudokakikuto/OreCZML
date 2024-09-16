@@ -16,6 +16,7 @@
  */
 package org.example.TrackingVisu;
 
+import org.example.TutorialUtils;
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
@@ -27,10 +28,6 @@ import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Satellite;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.Clock;
 import org.orekit.czml.Outputs.CzmlFile;
 import org.orekit.czml.Outputs.CzmlFileBuilder;
-import org.orekit.data.DataContext;
-import org.orekit.data.DataProvider;
-import org.orekit.data.DirectoryCrawler;
-import org.orekit.errors.OrekitException;
 import org.orekit.forces.ForceModel;
 import org.orekit.forces.gravity.HolmesFeatherstoneAttractionModel;
 import org.orekit.forces.gravity.potential.GravityFieldFactory;
@@ -51,7 +48,7 @@ import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.Constants;
 import org.orekit.utils.IERSConventions;
 
-import java.io.File;
+import static org.example.TutorialUtils.loadResources;
 
 public class LineOfVisuSatStation {
 
@@ -60,24 +57,19 @@ public class LineOfVisuSatStation {
     }
 
     public static void main(final String[] args) throws Exception {
-        try {
-            final File         home      = new File(System.getProperty("user.home"));
-            final File         orekitDir = new File(home, "orekit-data");
-            final DataProvider provider  = new DirectoryCrawler(orekitDir);
-            DataContext.getDefault()
-                       .getDataProvidersManager()
-                       .addProvider(provider);
-        } catch (OrekitException oe) {
-            System.err.println(oe.getLocalizedMessage());
-        }
+        // Load orekit data
+        TutorialUtils.loadOrekitData();
 
         // Paths
         final String root = System.getProperty("user.dir")
                                   .replace("\\", "/");
-        final String outputPath         = root + "/Output";
-        final String outputName         = "Output.czml";
-        final String output             = outputPath + "/" + outputName;
-        final String groundStationModel = root + "/src/main/resources/Default3DModels/ground_Station.glb";
+        final String outputPath = root + "/Output";
+        final String outputName = "Output.czml";
+        final String output     = outputPath + "/" + outputName;
+        // Change the path here to your JavaScript>public folder.
+        final String pathToJSFolder = root + "/Javascript/public/";
+
+        final String groundStationModel = loadResources("Default3DModels/ground_Station.glb");
 
         // Creation of the clock.
         final TimeScale    UTC                    = TimeScalesFactory.getUTC();
@@ -87,7 +79,7 @@ public class LineOfVisuSatStation {
         final AbsoluteDate finalDate              = startDate.shiftedBy(durationOfSimulation);
         final Clock        clock                  = new Clock(startDate, finalDate, UTC, stepBetweenEachInstant);
 
-        final Header header = new Header("Line of visibility between a satellite and a station", clock);
+        final Header header = new Header("Line of visibility between a satellite and a station", clock, pathToJSFolder);
 
         // Creation of the model of the earth.
         final IERSConventions IERS = IERSConventions.IERS_2010;

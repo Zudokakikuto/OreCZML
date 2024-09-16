@@ -225,7 +225,7 @@ public class CzmlGroundStation extends AbstractPrimaryObject implements CzmlPrim
     // Overrides
 
     @Override
-    public void writeCzmlBlock() {
+    public void writeCzmlBlock() throws IOException, URISyntaxException {
         if (getMultipleId().isEmpty()) {
             OUTPUT.setPrettyFormatting(true);
             try (PacketCesiumWriter packet = STREAM.openPacket(OUTPUT)) {
@@ -238,6 +238,8 @@ public class CzmlGroundStation extends AbstractPrimaryObject implements CzmlPrim
                 writeLabel(packet);
 
                 writePosition(packet);
+            } catch (IOException | URISyntaxException e) {
+                throw new RuntimeException(e);
             }
             cleanObject();
         } else {
@@ -360,7 +362,7 @@ public class CzmlGroundStation extends AbstractPrimaryObject implements CzmlPrim
      *
      * @param packet : The packet that will write in the czml file.
      */
-    private void writeBillBoard(final PacketCesiumWriter packet) {
+    private void writeBillBoard(final PacketCesiumWriter packet) throws IOException, URISyntaxException {
         if (model == null) {
             try (BillboardCesiumWriter billboardWriter = packet.getBillboardWriter()) {
                 billboardWriter.open(OUTPUT);
@@ -383,7 +385,8 @@ public class CzmlGroundStation extends AbstractPrimaryObject implements CzmlPrim
      * @param packet          : The packet that will write in the czml file.
      * @param iterationNumber : The iteration number of the current station.
      */
-    private void writeMultipleModels(final PacketCesiumWriter packet, final int iterationNumber) {
+    private void writeMultipleModels(final PacketCesiumWriter packet,
+                                     final int iterationNumber) throws IOException, URISyntaxException {
         if (multipleModel.isEmpty()) {
             writeBillBoard(packet);
         } else if (modelPaths.size() == 1) {

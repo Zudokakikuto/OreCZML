@@ -45,10 +45,13 @@ public class AemAdaptorExample {
         TutorialUtils.loadOrekitData();
 
         // Paths
-        final String root = System.getProperty("user.dir").replace("\\", "/");
+        final String root = System.getProperty("user.dir")
+                                  .replace("\\", "/");
         final String outputPath = root + "/Output";
         final String outputName = "Output.czml";
         final String output     = outputPath + "/" + outputName;
+        // Change the path here to your JavaScript>public folder.
+        final String pathToJSFolder = root + "/Javascript/public/";
 
         final String OemPath  = loadResources("oemForAemTuto.xml");
         final String AemPath  = loadResources("aemForAemTuto.xml");
@@ -81,7 +84,7 @@ public class AemAdaptorExample {
         final Clock     clock                  = new Clock(startDate, finalDate, UTC, stepBetweenEachInstant);
 
         // Creation of the header
-        final Header header = new Header("Aem Adaptor Example", clock);
+        final Header header = new Header("Aem Adaptor Example", clock, pathToJSFolder);
 
         // Creation of the model of the earth.
         final IERSConventions IERS = IERSConventions.IERS_2010;

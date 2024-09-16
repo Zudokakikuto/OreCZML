@@ -150,7 +150,7 @@ public class SatelliteBuilder {
     }
 
     public SatelliteBuilder withOrientation(final Orientation orientationInput) {
-        this.orientation = orientationInput;
+        this.orientation     = orientationInput;
         this.displayAttitude = true;
         return this;
     }
@@ -186,7 +186,7 @@ public class SatelliteBuilder {
             satellite.displayOnlyOnePeriod();
         }
         if (displayAttitude) {
-            if(orientation != null) {
+            if (orientation != null) {
                 satellite.setAttitudes(orientation.getAttitudes());
             }
             satellite.displaySatelliteAttitude();

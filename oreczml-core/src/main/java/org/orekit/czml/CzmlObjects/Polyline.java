@@ -472,7 +472,7 @@ public class Polyline {
      */
     private void writeReferences(final PolylineCesiumWriter polylineCesiumWriter, final CesiumOutputStream output) {
         if (firstReference == null || secondReference == null) {
-            throw new RuntimeException(OreCzmlExceptions.NOT_REFERENCES_POLYLINE);
+            throw new RuntimeException(OreCzmlExceptions.NO_REFERENCES_POLYLINE);
         } else {
             try (PositionListCesiumWriter positionWriter = polylineCesiumWriter.getPositionsWriter()) {
                 positionWriter.open(output);

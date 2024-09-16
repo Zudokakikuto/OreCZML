@@ -53,6 +53,8 @@ public class Header extends AbstractPrimaryObject implements CzmlPrimaryObject {
     private static      Clock     MASTER_CLOCK;
     /** The timescale of the header. */
     private static      TimeScale TIME_SCALE;
+    /** JavaScript path for the public folder. */
+    private static      String    pathToPublicJSFolder;
     /** The minimum step in time between each instant. */
     private             double    stepSimulation;
     /** The version of Cesium. */
@@ -67,14 +69,15 @@ public class Header extends AbstractPrimaryObject implements CzmlPrimaryObject {
      * @param name  : the name of the header.
      * @param clock : the clock of the header
      */
-    public Header(final String name, final Clock clock) {
+    public Header(final String name, final Clock clock, final String pathToPublicJSFolder) {
         this.setId(DEFAULT_ID);
         this.setName(name);
-        this.stepSimulation = clock.getStep()
-                                   .getValue();
-        MASTER_CLOCK        = clock;
-        this.version        = DEFAULT_VERSION;
-        TIME_SCALE          = clock.getTimeScale();
+        this.stepSimulation       = clock.getStep()
+                                         .getValue();
+        this.pathToPublicJSFolder = pathToPublicJSFolder;
+        MASTER_CLOCK              = clock;
+        this.version              = DEFAULT_VERSION;
+        TIME_SCALE                = clock.getTimeScale();
     }
 
     /**
@@ -103,6 +106,11 @@ public class Header extends AbstractPrimaryObject implements CzmlPrimaryObject {
     public static TimeScale getTimeScale() {
         return TIME_SCALE;
     }
+
+    public static String getPathToPublicJSFolder() {
+        return pathToPublicJSFolder;
+    }
+
 
     @Override
     public void writeCzmlBlock() {

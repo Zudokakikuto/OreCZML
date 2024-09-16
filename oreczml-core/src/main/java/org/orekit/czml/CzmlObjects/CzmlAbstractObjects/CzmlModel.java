@@ -55,7 +55,7 @@ public class CzmlModel {
     public static final String DEFAULT_SLASH_LOCAL = "./";
 
     /** . */
-    public static final String DEFAULT_MODEL_NAME = "satellite.png";
+    public static final String DEFAULT_MODEL_NAME = "Default3DModels/satellite.png";
 
     /** A boolean to show or not the model. */
     private final boolean show;
@@ -150,15 +150,6 @@ public class CzmlModel {
             this.billboard = new Billboard(uri.toString(), nearFarScalar);
             this.show      = true;
         }
-    }
-
-    /**
-     * Gets default satellite resource path
-     *
-     * @return default satellite resource path
-     */
-    private static String getSatelliteResourcePath() {
-        return CzmlModel.class.getClassLoader().getResource(DEFAULT_MODEL_NAME).getPath().toString();
     }
 
     /**
@@ -349,5 +340,17 @@ public class CzmlModel {
         } else {
             throw new RuntimeException(OreCzmlExceptions.MODEL_EXTENSION_UNKNOWN);
         }
+    }
+
+    /**
+     * Gets default satellite resource path
+     *
+     * @return default satellite resource path
+     */
+    private static String getSatelliteResourcePath() {
+        return CzmlModel.class.getClassLoader()
+                              .getResource(DEFAULT_MODEL_NAME)
+                              .getPath()
+                              .toString();
     }
 }

@@ -45,7 +45,7 @@ import java.util.List;
  *
  * <p>
  * This class aims at representing the probability of collision between two satellites. In order to do so, the class uses
- * the covariances of each satellites and checks if there is an intersection of the coraviance in time.
+ * the covariances of each satellites and checks if there is an intersection of the covariance in time.
  * </p>
  *
  * @author Julien LEBLOND.

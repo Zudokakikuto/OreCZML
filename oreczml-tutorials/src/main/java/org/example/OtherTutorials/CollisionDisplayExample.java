@@ -16,6 +16,7 @@
  */
 package org.example.OtherTutorials;
 
+import org.example.TutorialUtils;
 import org.hipparchus.linear.MatrixUtils;
 import org.hipparchus.linear.RealMatrix;
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
@@ -27,10 +28,6 @@ import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Satellite;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.Clock;
 import org.orekit.czml.Outputs.CzmlFile;
 import org.orekit.czml.Outputs.CzmlFileBuilder;
-import org.orekit.data.DataContext;
-import org.orekit.data.DataProvider;
-import org.orekit.data.DirectoryCrawler;
-import org.orekit.errors.OrekitException;
 import org.orekit.forces.ForceModel;
 import org.orekit.forces.gravity.HolmesFeatherstoneAttractionModel;
 import org.orekit.forces.gravity.potential.GravityFieldFactory;
@@ -56,9 +53,10 @@ import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.Constants;
 
 import java.awt.Color;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.example.TutorialUtils.loadResources;
 
 public class CollisionDisplayExample {
 
@@ -66,16 +64,8 @@ public class CollisionDisplayExample {
     }
 
     public static void main(final String[] args) throws Exception {
-        try {
-            final File         home      = new File(System.getProperty("user.home"));
-            final File         orekitDir = new File(home, "orekit-data");
-            final DataProvider provider  = new DirectoryCrawler(orekitDir);
-            DataContext.getDefault()
-                       .getDataProvidersManager()
-                       .addProvider(provider);
-        } catch (OrekitException oe) {
-            System.err.println(oe.getLocalizedMessage());
-        }
+        // Load orekit data
+        TutorialUtils.loadOrekitData();
 
         // Paths
         final String root = System.getProperty("user.dir")
@@ -83,7 +73,10 @@ public class CollisionDisplayExample {
         final String outputPath = root + "/Output";
         final String outputName = "Output.czml";
         final String output     = outputPath + "/" + outputName;
-        final String IssModel   = root + "/src/main/resources/Default3DModels/ISSModel.glb";
+        // Change the path here to your JavaScript>public folder.
+        final String pathToJSFolder = root + "/Javascript/public/";
+
+        final String IssModel = loadResources("Default3DModels/ISSModel.glb");
 
         // Creation of the clock.
         final TimeScale    UTC                    = TimeScalesFactory.getUTC();
@@ -93,7 +86,7 @@ public class CollisionDisplayExample {
         final AbsoluteDate finalDate              = startDate.shiftedBy(durationOfSimulation);
         final Clock        clock                  = new Clock(startDate, finalDate, UTC, stepBetweenEachInstant);
 
-        final Header header = new Header("Collision detection example", clock);
+        final Header header = new Header("Collision detection example", clock, pathToJSFolder);
 
         // Build of a LEO orbit
         final Frame EME2000 = FramesFactory.getEME2000();

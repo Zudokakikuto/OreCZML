@@ -55,9 +55,8 @@ public class FieldOfObservationBuilder {
     private FieldOfView fieldOfView;
 
     /**
-     * The transform that convert the frame of the fov to the frame of the body.
-     *
-     * @see FieldOfViewTuto.FieldOfObservationSatellite
+     * The transform that converts the frame of the fov to the frame of the body.
+     * Check the tutorial 'FieldOfObservationSatellite'.
      */
     private Transform fovToBody;
 

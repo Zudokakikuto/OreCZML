@@ -16,6 +16,7 @@
  */
 package org.example.OtherTutorials;
 
+import org.example.TutorialUtils;
 import org.hipparchus.util.FastMath;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.bodies.OneAxisEllipsoid;
@@ -24,10 +25,6 @@ import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Header;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.Clock;
 import org.orekit.czml.Outputs.CzmlFile;
 import org.orekit.czml.Outputs.CzmlFileBuilder;
-import org.orekit.data.DataContext;
-import org.orekit.data.DataProvider;
-import org.orekit.data.DirectoryCrawler;
-import org.orekit.errors.OrekitException;
 import org.orekit.frames.Frame;
 import org.orekit.frames.FramesFactory;
 import org.orekit.frames.TopocentricFrame;
@@ -37,7 +34,6 @@ import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.Constants;
 import org.orekit.utils.IERSConventions;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,16 +44,8 @@ public class MultipleGroundStations {
     }
 
     public static void main(final String[] args) throws Exception {
-        try {
-            final File         home      = new File(System.getProperty("user.home"));
-            final File         orekitDir = new File(home, "orekit-data");
-            final DataProvider provider  = new DirectoryCrawler(orekitDir);
-            DataContext.getDefault()
-                       .getDataProvidersManager()
-                       .addProvider(provider);
-        } catch (OrekitException oe) {
-            System.err.println(oe.getLocalizedMessage());
-        }
+        // Load orekit data
+        TutorialUtils.loadOrekitData();
 
         // Paths
         final String root = System.getProperty("user.dir")
@@ -65,6 +53,8 @@ public class MultipleGroundStations {
         final String outputPath = root + "/Output";
         final String outputName = "Output.czml";
         final String output     = outputPath + "/" + outputName;
+        // Change the path here to your JavaScript>public folder.
+        final String pathToJSFolder = root + "/Javascript/public/";
 
         // Creation of the clock.
         final TimeScale    UTC                    = TimeScalesFactory.getUTC();
@@ -75,7 +65,7 @@ public class MultipleGroundStations {
         final Clock        clock                  = new Clock(startDate, finalDate, UTC, stepBetweenEachInstant);
 
         // Creation of the header.
-        final Header header = new Header("Multiple Ground Stations", clock);
+        final Header header = new Header("Multiple Ground Stations", clock, pathToJSFolder);
 
         // Creation of the model of the earth.
         final IERSConventions IERS = IERSConventions.IERS_2010;

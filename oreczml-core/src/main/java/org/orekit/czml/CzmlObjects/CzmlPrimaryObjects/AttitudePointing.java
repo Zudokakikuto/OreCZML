@@ -70,25 +70,25 @@ public class AttitudePointing extends AbstractPrimaryObject implements CzmlPrima
     public static final Color DEFAULT_COLOR = Color.GREEN;
 
     /** The satellite which attitude will be pointed. */
-    private final Satellite satellite;
+    private final Satellite           satellite;
     /** The list of the attitude of the satellite. */
-    private final List<Attitude> satelliteAttitudes;
+    private final List<Attitude>      satelliteAttitudes;
     /** The list of the position in cartesian of the satellite. */
-    private final List<Cartesian> satelliteCartesians;
+    private final List<Cartesian>     satelliteCartesians;
     /** The central body around which the satellite is orbiting. */
-    private OneAxisEllipsoid body;
+    private       OneAxisEllipsoid    body;
     /** The orientation of the satellite. */
-    private Orientation satelliteOrientation;
+    private       Orientation         satelliteOrientation;
     /** The line to be displayed. */
-    private Polyline attitudePointingPolyline;
+    private       Polyline            attitudePointingPolyline;
     /** The list of the projected attitude that gives points on the body. */
-    private List<GeodeticPoint> projectedAttitudes = new ArrayList<>();
+    private       List<GeodeticPoint> projectedAttitudes  = new ArrayList<>();
     /** The list of the julian dates when the line should be displayed. */
-    private List<JulianDate> julianDates;
+    private       List<JulianDate>    julianDates;
     /** The abstract point on body builds from the projected attitudes. */
-    private AbstractPointOnBody pointOnBody;
+    private       AbstractPointOnBody pointOnBody;
     /** To display or not the path of the attitude pointing. */
-    private boolean displayPointingPath = false;
+    private       boolean             displayPointingPath = false;
 
     /** To display or not the path with a period. */
     private boolean displayPeriodPointingPath = false;
@@ -123,7 +123,7 @@ public class AttitudePointing extends AbstractPrimaryObject implements CzmlPrima
      *                              parameter on if the satellite is pointing at objects during the orbit. This boolean will project the attitude on
      *                              the ground when it is not pointing at objects. When the attitude is pointing at objects, it will put the
      *                              projection on the pointed object
-     * @see AttitudeTuto.AttitudePathAlongOrbit
+     *                              AttitudeTuto.AttitudePathAlongOrbit
      */
 
     public AttitudePointing(final Satellite satellite, final OneAxisEllipsoid body, final Vector3D direction,

@@ -119,7 +119,7 @@ public class ManeuverSequence extends AbstractPrimaryObject implements CzmlPrima
      * @param lofInput              : The local orbital frame of the satellite.
      * @param showTrustInput        : To show or not the arrow in the direction of the thrust (by default, it shows the direction of the acceleration)
      * @param pathModel             : The path to the model of the arrow to display.
-     * @see OtherTutorials.ManeuverSequenceExample
+     *                              Check the 'ManeuverSequenceExample' tutorial to see the usage of this class.
      */
     public ManeuverSequence(final AttitudesSequence sequenceInput, final Maneuver maneuverInput,
                             final Satellite satelliteInput, final Vector3D accelerationDirection, final LOF lofInput,
@@ -160,7 +160,7 @@ public class ManeuverSequence extends AbstractPrimaryObject implements CzmlPrima
      * @param satelliteInput        : The satellite that will perform the maneuvers.
      * @param accelerationDirection : The direction of the acceleration of the maneuver.
      * @param lofInput              : The local orbital frame of the satellite.
-     * @see OtherTutorials.ManeuverSequenceExample
+     * Chekc the 'ManeuverSequenceExample' tutorial.
      */
     public ManeuverSequence(final AttitudesSequence sequenceInput, final List<Maneuver> maneuversInput,
                             final Satellite satelliteInput, final Vector3D accelerationDirection,
@@ -182,7 +182,7 @@ public class ManeuverSequence extends AbstractPrimaryObject implements CzmlPrima
      * @param lofInput              : The local orbital frame of the satellite.
      * @param showTrustInput        : To show or not the arrow in the direction of the thrust (by default, it shows the direction of the acceleration)
      * @param pathModel             : The path to the model of the arrow to display.
-     * @see OtherTutorials.ManeuverSequenceExample
+     * Check the 'ManeuverSequenceExample' tutorial.
      */
     public ManeuverSequence(final AttitudesSequence sequenceInput, final List<Maneuver> maneuversInput,
                             final Satellite satelliteInput, final Vector3D accelerationDirection, final LOF lofInput,

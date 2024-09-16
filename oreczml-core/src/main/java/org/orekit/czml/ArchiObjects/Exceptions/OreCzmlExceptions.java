@@ -1,5 +1,6 @@
 package org.orekit.czml.ArchiObjects.Exceptions;
 
+
 public class OreCzmlExceptions extends RuntimeException {
 
     // Czml ground station builder
@@ -38,7 +39,7 @@ public class OreCzmlExceptions extends RuntimeException {
 
     // Polyline
     public static final String MORE_THAN_2_CARTESIAN_POLYLINE = "The size of the cartesian positions inputted in the Polyline must be 2";
-    public static final String NOT_REFERENCES_POLYLINE        = "The polyline was not defined with references, so it cannot be written that way.";
+    public static final String NO_REFERENCES_POLYLINE         = "The polyline was not defined with references, so it cannot be written that way.";
 
     // Position
     public static final String EMPTY_POSITION_HEIGHT = "Height is not defined";

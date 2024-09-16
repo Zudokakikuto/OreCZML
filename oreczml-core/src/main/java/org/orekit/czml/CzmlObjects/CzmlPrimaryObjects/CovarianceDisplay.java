@@ -190,6 +190,7 @@ public class CovarianceDisplay extends AbstractPrimaryObject implements CzmlPrim
             try (PacketCesiumWriter packet = STREAM.openPacket(OUTPUT)) {
                 packet.writeId(getId() + Arrays.toString(Arrays.copyOfRange(julianDates.toArray(), 0, 10)));
                 packet.writeName(getName());
+                packet.writeAvailability(getAvailability());
 
                 final Orientation orientation = Orientation.builder(attitudes, satellite.getFrame())
                                                            .withInvertToITRF(false)
@@ -339,8 +340,16 @@ public class CovarianceDisplay extends AbstractPrimaryObject implements CzmlPrim
     private void postComputation(final Color color, final LOF lofInput) {
         for (int i = 0; i < covarianceList.size(); i++) {
             final StateCovariance covariance = covarianceList.get(i);
-            final RealMatrix realMatrix = covariance.getMatrix()
-                                                    .getSubMatrix(0, 2, 0, 2);
+
+            final RealMatrix oldMatrix = covariance.getMatrix()
+                                                   .getSubMatrix(0, 2, 0, 2);
+
+            final StateCovariance covarianceLof = covariance.changeCovarianceFrame(allSpaceCraftStates.get(i)
+                                                                                                      .getOrbit(),
+                    lofInput);
+
+            final RealMatrix realMatrix = covarianceLof.getMatrix()
+                                                       .getSubMatrix(0, 2, 0, 2);
 
             final EigenDecompositionNonSymmetric decomposition      = new EigenDecompositionNonSymmetric(realMatrix);
             final RealMatrix                     matrixEigenVectors = decomposition.getV();
@@ -360,12 +369,12 @@ public class CovarianceDisplay extends AbstractPrimaryObject implements CzmlPrim
                                 FastMath.sqrt(dataEigenValues[2][2])));
             }
 
-            final Rotation rotationFromLOF = lofInput.rotationFromInertial(covariance.getDate(),
+            final Rotation           rotationFromLOF           = lofInput.rotationFromInertial(covariance.getDate(),
                     allSpaceCraftStates.get(i)
                                        .getPVCoordinates());
             final AngularCoordinates angularCoordinatesRotated = new AngularCoordinates(rotationFromLOF);
-            final Attitude currentAttitudeCovariance = new Attitude(allSpaceCraftStates.get(i)
-                                                                                       .getDate(),
+            final Attitude           currentAttitudeCovariance = new Attitude(allSpaceCraftStates.get(i)
+                                                                                                 .getDate(),
                     allSpaceCraftStates.get(0)
                                        .getFrame(), angularCoordinatesRotated);
             attitudes.add(currentAttitudeCovariance);

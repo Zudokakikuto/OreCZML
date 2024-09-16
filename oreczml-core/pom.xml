@@ -1,59 +1,59 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>org.example</groupId>
-    <artifactId>oreczml-parent</artifactId>
+    <parent>
+        <groupId>org.example</groupId>
+        <artifactId>oreczml-parent</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>oreczml-core</artifactId>
     <version>1.0-SNAPSHOT</version>
-  </parent>
+    <packaging>jar</packaging>
 
-  <artifactId>oreczml-core</artifactId>
-  <version>1.0-SNAPSHOT</version>
-  <packaging>jar</packaging>
+    <name>OreCzml</name>
+    <url>http://maven.apache.org</url>
 
-  <name>OreCzml</name>
-  <url>http://maven.apache.org</url>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.build.dependency.maven-compiler>3.13.0</project.build.dependency.maven-compiler>
+        <dependency.orekit.version>12.1.3</dependency.orekit.version>
+        <dependency.junit.jupiter.version>5.10.2</dependency.junit.jupiter.version>
+        <dependency.cesiumwriter.version>1.0</dependency.cesiumwriter.version>
+        <project.compiler.source>17</project.compiler.source>
+        <project.compiler.target>17</project.compiler.target>
+    </properties>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <project.build.dependency.maven-compiler>3.13.0</project.build.dependency.maven-compiler>
-    <dependency.orekit.version>12.1.3</dependency.orekit.version>
-    <dependency.junit.jupiter.version>5.10.2</dependency.junit.jupiter.version>
-    <dependency.cesiumwriter.version>1.0</dependency.cesiumwriter.version>
-    <project.compiler.source>17</project.compiler.source>
-    <project.compiler.target>17</project.compiler.target>
-  </properties>
-
-  <dependencies>
-    <dependency>
-      <groupId>org.orekit</groupId>
-      <artifactId>orekit</artifactId>
-    </dependency>
-    <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter -->
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter</artifactId>
-      <version>${dependency.junit.jupiter.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.custom</groupId>
-      <artifactId>cesium</artifactId>
-      <version>${dependency.cesiumwriter.version}</version>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>${project.build.dependency.maven-compiler}</version>
-        <configuration>
-          <source>${project.compiler.source}</source>
-          <target>${project.compiler.target}</target>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+    <dependencies>
+        <dependency>
+            <groupId>org.orekit</groupId>
+            <artifactId>orekit</artifactId>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${dependency.junit.jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.custom</groupId>
+            <artifactId>cesium</artifactId>
+            <version>${dependency.cesiumwriter.version}</version>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${project.build.dependency.maven-compiler}</version>
+                <configuration>
+                    <source>${project.compiler.source}</source>
+                    <target>${project.compiler.target}</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

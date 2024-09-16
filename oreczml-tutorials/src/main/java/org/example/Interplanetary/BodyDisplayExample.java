@@ -16,21 +16,17 @@
  */
 package org.example.Interplanetary;
 
+import org.example.TutorialUtils;
 import org.orekit.czml.ArchiObjects.Factories.BodyDisplayFactory;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.BodyDisplay;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Header;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.Clock;
 import org.orekit.czml.Outputs.CzmlFile;
 import org.orekit.czml.Outputs.CzmlFileBuilder;
-import org.orekit.data.DataContext;
-import org.orekit.data.DataProvider;
-import org.orekit.data.DirectoryCrawler;
-import org.orekit.errors.OrekitException;
 import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScale;
 import org.orekit.time.TimeScalesFactory;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,16 +36,8 @@ public class BodyDisplayExample {
     }
 
     public static void main(final String[] args) throws Exception {
-        try {
-            final File         home      = new File(System.getProperty("user.home"));
-            final File         orekitDir = new File(home, "orekit-data");
-            final DataProvider provider  = new DirectoryCrawler(orekitDir);
-            DataContext.getDefault()
-                       .getDataProvidersManager()
-                       .addProvider(provider);
-        } catch (OrekitException oe) {
-            System.err.println(oe.getLocalizedMessage());
-        }
+        // Load orekit data
+        TutorialUtils.loadOrekitData();
 
         // Paths
         final String root = System.getProperty("user.dir")
@@ -57,6 +45,8 @@ public class BodyDisplayExample {
         final String outputPath = root + "/Output";
         final String outputName = "Output.czml";
         final String output     = outputPath + "/" + outputName;
+        // Change the path here to your JavaScript>public folder.
+        final String pathToJSFolder = root + "/Javascript/public/";
 
         // Creation of the clock.
         final TimeScale    UTC                    = TimeScalesFactory.getUTC();
@@ -66,7 +56,7 @@ public class BodyDisplayExample {
         final AbsoluteDate finalDate              = startDate.shiftedBy(durationOfSimulation);
         final Clock        clock                  = new Clock(startDate, finalDate, UTC, stepBetweenEachInstant);
 
-        final Header header = new Header("Setup of the moon in the simulation", clock);
+        final Header header = new Header("Setup of the solar system in the simulation", clock, pathToJSFolder);
 
         // Solar system
         final List<BodyDisplay> solarSystem    = new ArrayList<>();

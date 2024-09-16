@@ -16,17 +16,14 @@
  */
 package org.example.Adaptors;
 
+import org.example.TutorialUtils;
 import org.orekit.czml.ArchiObjects.Adaptors.OemAdaptor;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Header;
 import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Satellite;
 import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.Clock;
 import org.orekit.czml.Outputs.CzmlFile;
 import org.orekit.czml.Outputs.CzmlFileBuilder;
-import org.orekit.data.DataContext;
-import org.orekit.data.DataProvider;
 import org.orekit.data.DataSource;
-import org.orekit.data.DirectoryCrawler;
-import org.orekit.errors.OrekitException;
 import org.orekit.files.ccsds.ndm.ParserBuilder;
 import org.orekit.files.ccsds.ndm.odm.oem.Oem;
 import org.orekit.files.ccsds.ndm.odm.oem.OemParser;
@@ -37,7 +34,7 @@ import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScale;
 import org.orekit.time.TimeScalesFactory;
 
-import java.io.File;
+import static org.example.TutorialUtils.loadResources;
 
 public class OemAdaptorExample {
 
@@ -46,16 +43,9 @@ public class OemAdaptorExample {
     }
 
     public static void main(final String[] args) throws Exception {
-        try {
-            final File         home      = new File(System.getProperty("user.home"));
-            final File         orekitDir = new File(home, "orekit-data");
-            final DataProvider provider  = new DirectoryCrawler(orekitDir);
-            DataContext.getDefault()
-                       .getDataProvidersManager()
-                       .addProvider(provider);
-        } catch (OrekitException oe) {
-            System.err.println(oe.getLocalizedMessage());
-        }
+
+        // Load orekit data
+        TutorialUtils.loadOrekitData();
 
         // Paths
         final String root = System.getProperty("user.dir")
@@ -63,8 +53,11 @@ public class OemAdaptorExample {
         final String outputPath = root + "/Output";
         final String outputName = "Output.czml";
         final String output     = outputPath + "/" + outputName;
-        final String OemPath    = root + "/src/main/resources/oemForOemTuto.xml";
-        final String IssModel   = root + "/src/main/resources/Default3DModels/ISSModel.glb";
+        // Change the path here to your JavaScript>public folder.
+        final String pathToJSFolder = root + "/Javascript/public/";
+
+        final String OemPath  = loadResources("oemForOemTuto.xml");
+        final String IssModel = loadResources("Default3DModels/ISSModel.glb");
 
         // Creation of the Oem
         final DataSource    dataSource    = new DataSource(OemPath);
@@ -87,7 +80,7 @@ public class OemAdaptorExample {
         final Clock     clock                  = new Clock(startDate, finalDate, UTC, stepBetweenEachInstant);
 
         // Creation of the header
-        final Header header = new Header("Oem Adaptor Example", clock);
+        final Header header = new Header("Oem Adaptor Example", clock, pathToJSFolder);
 
         // Creation of the satellite
         final Satellite satellite = Satellite.builder(oemBoundedPropagator)

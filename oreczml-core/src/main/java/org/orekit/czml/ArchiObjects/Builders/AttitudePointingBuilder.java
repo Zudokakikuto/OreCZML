@@ -66,8 +66,8 @@ public class AttitudePointingBuilder {
      * Put this parameter on if the satellite is pointing at objects during the orbit.
      * This boolean will project the attitude on the ground when it is not pointing at objects.
      * When the attitude is pointing at objects, it will put the projection on the pointed object.
-     *
-     * @see AttitudeTuto.AttitudePathAlongOrbit
+     * <p>
+     * AttitudeTuto.AttitudePathAlongOrbit
      */
     private Boolean displayOnGround = false;
 

@@ -57,7 +57,7 @@ public class OemAdaptor {
     }
 
     /**
-     * This functions builds the propagator from the oem.
+     * This function builds the propagator from the oem.
      *
      * @return : A propagator extracted from the oem.
      */
