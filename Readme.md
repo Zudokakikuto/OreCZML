@@ -1,4 +1,4 @@
-![Logo OreCzml](https://github.com/Zudokakikuto/OreCZML/blob/master/src/main/resources/OreCZML.png?raw=true)
+![Logo OreCzml](https://github.com/Zudokakikuto/OreCZML/blob/master/images/OreCZML.png?raw=true)
 
 
 # Global information
@@ -7,7 +7,7 @@ This JAVA project was created in order to assess the matter of display in the li
 The aim was to create an interface with some outputs of Orekit and to display them with Cesium. 
 Cesium understands CZML file as inputs. Hence, this project provides a library to build a CZML file to input into Cesium.
 
-![Presentation](https://gitlab.orekit.org/Zudo/oreczml/-/raw/master/src/main/resources/sinusoidalAttitudeFovGIF.gif)
+![Presentation](https://github.com/Zudokakikuto/OreCZML/blob/master/images/sinusoidalAttitudeFovGIF.gif?raw=true)
 
 
 ## DEPENDENCIES
