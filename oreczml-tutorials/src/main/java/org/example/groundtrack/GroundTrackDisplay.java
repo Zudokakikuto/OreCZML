@@ -123,7 +123,7 @@ public class GroundTrackDisplay {
         final GroundTrack groundTrack = new GroundTrack(satellite, earth, new Color(255, 10, 20));
 
         // Creation of the file
-        final CzmlFile file = new CzmlFileBuilder(output).withHeader(header)
+        final CzmlFile file = CzmlFile.builder(output).withHeader(header)
                                                          .withSatellite(satellite)
                                                          .withGroundTrack(groundTrack)
                                                          .build();

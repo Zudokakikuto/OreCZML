@@ -89,7 +89,7 @@ public class MultipleGroundStations {
         allGroundStation.add(new CzmlGroundStation(topocentricLasVegas));
 
         // Creation of the file
-        final CzmlFile file = new CzmlFileBuilder(output).withHeader(header)
+        final CzmlFile file = CzmlFile.builder(output).withHeader(header)
                                                          .withCzmlGroundStation(allGroundStation)
                                                          .build();
 

@@ -154,7 +154,7 @@ public class FieldOfObservationSatellite {
         final FieldOfObservation fieldOfObservation = new FieldOfObservation(satellite, fov, initialFovBody);
 
         // Creation of the file
-        final CzmlFile file = new CzmlFileBuilder(output).withHeader(header)
+        final CzmlFile file = CzmlFile.builder(output).withHeader(header)
                                                          .withSatellite(satellite)
                                                          .withFieldOfObservation(fieldOfObservation)
                                                          .build();

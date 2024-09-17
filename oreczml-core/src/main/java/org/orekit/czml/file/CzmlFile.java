@@ -111,6 +111,10 @@ public class CzmlFile {
     }
 
 
+    public static CzmlFileBuilder builder(final String pathFile) {
+        return new CzmlFileBuilder(pathFile);
+    }
+
     // Getters
 
     /**

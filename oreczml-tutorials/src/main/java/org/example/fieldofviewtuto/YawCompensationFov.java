@@ -246,7 +246,7 @@ public class YawCompensationFov {
         fobs.add(fieldOfObservation3);
 
         // Creation of the file
-        final CzmlFile file = new CzmlFileBuilder(output).withHeader(header)
+        final CzmlFile file = CzmlFile.builder(output).withHeader(header)
                                                          .withSatellite(satellites)
                                                          .withFieldOfObservation(fobs)
                                                          .build();

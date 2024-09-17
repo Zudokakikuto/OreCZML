@@ -127,7 +127,7 @@ public class ConstellationGroundTracks {
         final GroundTrack groundTrack = new GroundTrack(constellation, earth);
         groundTrack.displayLinkSatellite();
 
-        final CzmlFile file = new CzmlFileBuilder(output).withHeader(header)
+        final CzmlFile file = CzmlFile.builder(output).withHeader(header)
                                                          .withConstellation(constellation)
                                                          .withGroundTrack(groundTrack)
                                                          .build();

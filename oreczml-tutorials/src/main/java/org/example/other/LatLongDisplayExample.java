@@ -58,7 +58,7 @@ public class LatLongDisplayExample {
         //LatLongLinesDisplay
         final LatLongLinesDisplay latLongLinesDisplay = new LatLongLinesDisplay(30, 30, true);
 
-        final CzmlFile file = new CzmlFileBuilder(output).withHeader(header)
+        final CzmlFile file = CzmlFile.builder(output).withHeader(header)
                                                          .withLatLongDisplay(latLongLinesDisplay)
                                                          .build();
 

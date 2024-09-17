@@ -168,7 +168,7 @@ public class SinusoidalAttitude {
         final FieldOfObservation fieldOfObservation = FieldOfObservation.builder(satellite, fov, initialFovBody)
                                                                         .build();
         // Creation of the file
-        final CzmlFile file = new CzmlFileBuilder(output).withHeader(header)
+        final CzmlFile file = CzmlFile.builder(output).withHeader(header)
                                                          .withSatellite(satellite)
                                                          .withAttitudePointing(pointing)
                                                          .withCentralBodyReferenceSystem(system)

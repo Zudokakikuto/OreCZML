@@ -106,7 +106,7 @@ public class AemAdaptorExample {
         final CzmlGroundStation groundStation = new CzmlGroundStation(
                 new TopocentricFrame(earth, new GeodeticPoint(0, 0, 0), "Station"), "");
 
-        final CzmlFile file = new CzmlFileBuilder(output).withHeader(header)
+        final CzmlFile file = CzmlFile.builder(output).withHeader(header)
                                                          .withSatellite(satellite)
                                                          .withCzmlGroundStation(groundStation)
                                                          .build();

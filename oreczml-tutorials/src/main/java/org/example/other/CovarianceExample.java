@@ -137,7 +137,7 @@ public class CovarianceExample {
                                                               .build();
 
         // Creation of the file
-        final CzmlFile file = new CzmlFileBuilder(output).withHeader(header)
+        final CzmlFile file = CzmlFile.builder(output).withHeader(header)
                                                          .withSatellite(satellite)
                                                          .withCovarianceDisplay(covariance)
                                                          .build();

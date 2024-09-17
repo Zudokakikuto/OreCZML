@@ -162,7 +162,7 @@ public class JupiterFlyBy {
 
         final BodyDisplay jupiterDisplay = BodyDisplayFactory.getJupiter();
 
-        final CzmlFile file = new CzmlFileBuilder(output).withHeader(header)
+        final CzmlFile file = CzmlFile.builder(output).withHeader(header)
                                                          .withSatellite(satellite)
                                                          .withBodyDisplay(jupiterDisplay)
                                                          .build();

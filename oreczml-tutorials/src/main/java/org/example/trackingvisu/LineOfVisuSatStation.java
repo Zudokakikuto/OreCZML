@@ -133,7 +133,7 @@ public class LineOfVisuSatStation {
                                              .withOnlyOnePeriod()
                                              .build();
 
-        final CzmlFile file = new CzmlFileBuilder(output).
+        final CzmlFile file = CzmlFile.builder(output).
                 withHeader(header).
                 withCzmlGroundStation(toulouseStation).
                 withSatellite(satellite).

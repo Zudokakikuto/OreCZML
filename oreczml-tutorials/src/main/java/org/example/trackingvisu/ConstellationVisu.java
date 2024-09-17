@@ -146,7 +146,7 @@ public class ConstellationVisu {
             allGroundStation.add(new CzmlGroundStation(allStation));
         }
 
-        final CzmlFile file = new CzmlFileBuilder(output).withHeader(header)
+        final CzmlFile file = CzmlFile.builder(output).withHeader(header)
                                                          .withConstellation(constellation)
                                                          .withCzmlGroundStation(allGroundStation)
                                                          .withLineOfVisibility(allStations, constellation)

@@ -191,7 +191,7 @@ public class InterVisuConstellationExample {
         final InterSatVisu interSatVisu = new InterSatVisu(constellation, finalDate);
 
         // Creation of the file
-        final CzmlFile file = new CzmlFileBuilder(output).withHeader(header)
+        final CzmlFile file = CzmlFile.builder(output).withHeader(header)
                                                          .withConstellation(constellation)
                                                          .withInterSatVisu(interSatVisu)
                                                          .build();
