@@ -227,7 +227,7 @@ public class Satellite extends AbstractPrimaryObject implements CzmlPrimaryObjec
             czmlPosition(packet);
 
         } catch (URISyntaxException | IOException e) {
-            throw new OreCzmlException(e);
+            throw new RuntimeException(e);
         }
         if (getDisplayReferenceSystem()) {
             getSatelliteReferenceSystem().writeCzmlBlock();

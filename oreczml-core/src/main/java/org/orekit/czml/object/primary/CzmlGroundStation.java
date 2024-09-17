@@ -240,7 +240,7 @@ public class CzmlGroundStation extends AbstractPrimaryObject implements CzmlPrim
 
                 writePosition(packet);
             } catch (IOException | URISyntaxException e) {
-                throw new OreCzmlException(e);
+                throw new RuntimeException(e);
             }
             cleanObject();
         } else {
