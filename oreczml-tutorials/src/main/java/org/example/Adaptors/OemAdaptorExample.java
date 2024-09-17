@@ -17,12 +17,12 @@
 package org.example.Adaptors;
 
 import org.example.TutorialUtils;
-import org.orekit.czml.ArchiObjects.Adaptors.OemAdaptor;
-import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Header;
-import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Satellite;
-import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.Clock;
-import org.orekit.czml.Outputs.CzmlFile;
-import org.orekit.czml.Outputs.CzmlFileBuilder;
+import org.orekit.czml.archi.adaptor.OemAdaptor;
+import org.orekit.czml.object.primary.Header;
+import org.orekit.czml.object.primary.Satellite;
+import org.orekit.czml.object.secondary.Clock;
+import org.orekit.czml.file.CzmlFile;
+import org.orekit.czml.file.CzmlFileBuilder;
 import org.orekit.data.DataSource;
 import org.orekit.files.ccsds.ndm.ParserBuilder;
 import org.orekit.files.ccsds.ndm.odm.oem.Oem;

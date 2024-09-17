@@ -6160,8 +6160,8 @@
     }
   },
   {
-    "id":"org.orekit.czml.CzmlObjects.Polyline@17c1bced",
-    "name":"Line of the Line of observation : org.orekit.czml.CzmlObjects.Polyline@17c1bced",
+    "id":"org.orekit.czml.object.Polyline@17c1bced",
+    "name":"Line of the Line of observation : org.orekit.czml.object.Polyline@17c1bced",
     "polyline":{
       "width":1,
       "arcType":"NONE",
@@ -6183,8 +6183,8 @@
     }
   },
   {
-    "id":"org.orekit.czml.CzmlObjects.Polyline@6a01e23",
-    "name":"Line of the Line of observation : org.orekit.czml.CzmlObjects.Polyline@6a01e23",
+    "id":"org.orekit.czml.object.Polyline@6a01e23",
+    "name":"Line of the Line of observation : org.orekit.czml.object.Polyline@6a01e23",
     "polyline":{
       "width":1,
       "arcType":"NONE",
@@ -6206,8 +6206,8 @@
     }
   },
   {
-    "id":"org.orekit.czml.CzmlObjects.Polyline@5a955565",
-    "name":"Line of the Line of observation : org.orekit.czml.CzmlObjects.Polyline@5a955565",
+    "id":"org.orekit.czml.object.Polyline@5a955565",
+    "name":"Line of the Line of observation : org.orekit.czml.object.Polyline@5a955565",
     "polyline":{
       "width":1,
       "arcType":"NONE",
@@ -6229,8 +6229,8 @@
     }
   },
   {
-    "id":"org.orekit.czml.CzmlObjects.Polyline@6293abcc",
-    "name":"Line of the Line of observation : org.orekit.czml.CzmlObjects.Polyline@6293abcc",
+    "id":"org.orekit.czml.object.Polyline@6293abcc",
+    "name":"Line of the Line of observation : org.orekit.czml.object.Polyline@6293abcc",
     "polyline":{
       "width":1,
       "arcType":"NONE",
@@ -6252,8 +6252,8 @@
     }
   },
   {
-    "id":"org.orekit.czml.CzmlObjects.Polyline@7995092a",
-    "name":"Line of the Line of observation : org.orekit.czml.CzmlObjects.Polyline@7995092a",
+    "id":"org.orekit.czml.object.Polyline@7995092a",
+    "name":"Line of the Line of observation : org.orekit.czml.object.Polyline@7995092a",
     "polyline":{
       "width":1,
       "arcType":"NONE",
@@ -6275,8 +6275,8 @@
     }
   },
   {
-    "id":"org.orekit.czml.CzmlObjects.Polyline@7fc2413d",
-    "name":"Line of the Line of observation : org.orekit.czml.CzmlObjects.Polyline@7fc2413d",
+    "id":"org.orekit.czml.object.Polyline@7fc2413d",
+    "name":"Line of the Line of observation : org.orekit.czml.object.Polyline@7fc2413d",
     "polyline":{
       "width":1,
       "arcType":"NONE",
@@ -6298,8 +6298,8 @@
     }
   },
   {
-    "id":"org.orekit.czml.CzmlObjects.Polyline@f8c1ddd",
-    "name":"Line of the Line of observation : org.orekit.czml.CzmlObjects.Polyline@f8c1ddd",
+    "id":"org.orekit.czml.object.Polyline@f8c1ddd",
+    "name":"Line of the Line of observation : org.orekit.czml.object.Polyline@f8c1ddd",
     "polyline":{
       "width":1,
       "arcType":"NONE",
@@ -6321,8 +6321,8 @@
     }
   },
   {
-    "id":"org.orekit.czml.CzmlObjects.Polyline@70be0a2b",
-    "name":"Line of the Line of observation : org.orekit.czml.CzmlObjects.Polyline@70be0a2b",
+    "id":"org.orekit.czml.object.Polyline@70be0a2b",
+    "name":"Line of the Line of observation : org.orekit.czml.object.Polyline@70be0a2b",
     "polyline":{
       "width":1,
       "arcType":"NONE",
@@ -6344,8 +6344,8 @@
     }
   },
   {
-    "id":"org.orekit.czml.CzmlObjects.Polyline@2133814f",
-    "name":"Outline of the line of observation : org.orekit.czml.CzmlObjects.Polyline@2133814f",
+    "id":"org.orekit.czml.object.Polyline@2133814f",
+    "name":"Outline of the line of observation : org.orekit.czml.object.Polyline@2133814f",
     "polyline":{
       "width":1,
       "arcType":"NONE",
@@ -6367,8 +6367,8 @@
     }
   },
   {
-    "id":"org.orekit.czml.CzmlObjects.Polyline@4c15e7fd",
-    "name":"Outline of the line of observation : org.orekit.czml.CzmlObjects.Polyline@4c15e7fd",
+    "id":"org.orekit.czml.object.Polyline@4c15e7fd",
+    "name":"Outline of the line of observation : org.orekit.czml.object.Polyline@4c15e7fd",
     "polyline":{
       "width":1,
       "arcType":"NONE",
@@ -6390,8 +6390,8 @@
     }
   },
   {
-    "id":"org.orekit.czml.CzmlObjects.Polyline@23986957",
-    "name":"Outline of the line of observation : org.orekit.czml.CzmlObjects.Polyline@23986957",
+    "id":"org.orekit.czml.object.Polyline@23986957",
+    "name":"Outline of the line of observation : org.orekit.czml.object.Polyline@23986957",
     "polyline":{
       "width":1,
       "arcType":"NONE",
@@ -6413,8 +6413,8 @@
     }
   },
   {
-    "id":"org.orekit.czml.CzmlObjects.Polyline@23f7d05d",
-    "name":"Outline of the line of observation : org.orekit.czml.CzmlObjects.Polyline@23f7d05d",
+    "id":"org.orekit.czml.object.Polyline@23f7d05d",
+    "name":"Outline of the line of observation : org.orekit.czml.object.Polyline@23f7d05d",
     "polyline":{
       "width":1,
       "arcType":"NONE",
@@ -6436,8 +6436,8 @@
     }
   },
   {
-    "id":"org.orekit.czml.CzmlObjects.Polyline@1e730495",
-    "name":"Outline of the line of observation : org.orekit.czml.CzmlObjects.Polyline@1e730495",
+    "id":"org.orekit.czml.object.Polyline@1e730495",
+    "name":"Outline of the line of observation : org.orekit.czml.object.Polyline@1e730495",
     "polyline":{
       "width":1,
       "arcType":"NONE",
@@ -6459,8 +6459,8 @@
     }
   },
   {
-    "id":"org.orekit.czml.CzmlObjects.Polyline@7d3a22a9",
-    "name":"Outline of the line of observation : org.orekit.czml.CzmlObjects.Polyline@7d3a22a9",
+    "id":"org.orekit.czml.object.Polyline@7d3a22a9",
+    "name":"Outline of the line of observation : org.orekit.czml.object.Polyline@7d3a22a9",
     "polyline":{
       "width":1,
       "arcType":"NONE",
@@ -6482,8 +6482,8 @@
     }
   },
   {
-    "id":"org.orekit.czml.CzmlObjects.Polyline@1d082e88",
-    "name":"Outline of the line of observation : org.orekit.czml.CzmlObjects.Polyline@1d082e88",
+    "id":"org.orekit.czml.object.Polyline@1d082e88",
+    "name":"Outline of the line of observation : org.orekit.czml.object.Polyline@1d082e88",
     "polyline":{
       "width":1,
       "arcType":"NONE",
@@ -6505,8 +6505,8 @@
     }
   },
   {
-    "id":"org.orekit.czml.CzmlObjects.Polyline@60704c",
-    "name":"Outline of the line of observation : org.orekit.czml.CzmlObjects.Polyline@60704c",
+    "id":"org.orekit.czml.object.Polyline@60704c",
+    "name":"Outline of the line of observation : org.orekit.czml.object.Polyline@60704c",
     "polyline":{
       "width":1,
       "arcType":"NONE",

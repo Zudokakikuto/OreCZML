@@ -3,16 +3,16 @@ package org.example.Adaptors;
 import org.example.TutorialUtils;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.bodies.OneAxisEllipsoid;
-import org.orekit.czml.ArchiObjects.Adaptors.AemAdaptor;
-import org.orekit.czml.ArchiObjects.Adaptors.OemAdaptor;
-import org.orekit.czml.ArchiObjects.Builders.SatelliteBuilder;
-import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.CzmlGroundStation;
-import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Header;
-import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Satellite;
-import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.Clock;
-import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.Orientation;
-import org.orekit.czml.Outputs.CzmlFile;
-import org.orekit.czml.Outputs.CzmlFileBuilder;
+import org.orekit.czml.archi.adaptor.AemAdaptor;
+import org.orekit.czml.archi.adaptor.OemAdaptor;
+import org.orekit.czml.archi.builder.SatelliteBuilder;
+import org.orekit.czml.object.primary.CzmlGroundStation;
+import org.orekit.czml.object.primary.Header;
+import org.orekit.czml.object.primary.Satellite;
+import org.orekit.czml.object.secondary.Clock;
+import org.orekit.czml.object.secondary.Orientation;
+import org.orekit.czml.file.CzmlFile;
+import org.orekit.czml.file.CzmlFileBuilder;
 import org.orekit.data.DataSource;
 import org.orekit.files.ccsds.ndm.ParserBuilder;
 import org.orekit.files.ccsds.ndm.adm.aem.Aem;
@@ -92,7 +92,7 @@ public class AemAdaptorExample {
         final OneAxisEllipsoid earth = new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS,
                 Constants.WGS84_EARTH_FLATTENING, ITRF);
 
-        // Creation of the orientation for the satellite wit the aem adaptor
+        // Creation of the orientation for the satellite with the aem adaptor
         // Careful here, the header must be set before else way the bounded propagator does not have a reference for the timescale.
         final AemAdaptor  aemAdaptor  = new AemAdaptor(aem);
         final Orientation orientation = aemAdaptor.buildOrientation(oemBoundedPropagator);

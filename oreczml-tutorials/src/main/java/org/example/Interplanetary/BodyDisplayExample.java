@@ -17,12 +17,12 @@
 package org.example.Interplanetary;
 
 import org.example.TutorialUtils;
-import org.orekit.czml.ArchiObjects.Factories.BodyDisplayFactory;
-import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.BodyDisplay;
-import org.orekit.czml.CzmlObjects.CzmlPrimaryObjects.Header;
-import org.orekit.czml.CzmlObjects.CzmlSecondaryObjects.Clock;
-import org.orekit.czml.Outputs.CzmlFile;
-import org.orekit.czml.Outputs.CzmlFileBuilder;
+import org.orekit.czml.archi.factory.BodyDisplayFactory;
+import org.orekit.czml.object.primary.BodyDisplay;
+import org.orekit.czml.object.primary.Header;
+import org.orekit.czml.object.secondary.Clock;
+import org.orekit.czml.file.CzmlFile;
+import org.orekit.czml.file.CzmlFileBuilder;
 import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScale;
 import org.orekit.time.TimeScalesFactory;
