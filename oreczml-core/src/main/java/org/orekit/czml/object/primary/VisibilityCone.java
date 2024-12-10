@@ -69,17 +69,12 @@ public class VisibilityCone extends AbstractPrimaryObject {
     /**
      * The cylinder object that represents the geometry of the visibility cone.
      */
-    private Cylinder cylinder;
+    private final Cylinder cylinder;
 
     /**
      * The position of the visibility cone.
      */
-    private Position position;
-
-    /**
-     * If the visibility cone has been cleaned or not.
-     */
-    private boolean clean = false;
+    private final Position position;
 
     /**
      * The satellite that enters the visibility cone.
@@ -211,23 +206,7 @@ public class VisibilityCone extends AbstractPrimaryObject {
 
             position.write(packet, output, getAvailability());
         }
-        if (clean) {
-            cleanObject();
-        }
     }
-
-    /**
-     * Clean object.
-     */
-    public void cleanObject() {
-        this.setId("");
-        this.setName("");
-        this.setAvailability(null);
-        this.position  = null;
-        this.cylinder  = null;
-        this.satellite = null;
-    }
-
 
     // Getters
 
@@ -261,17 +240,6 @@ public class VisibilityCone extends AbstractPrimaryObject {
             return satellite;
         }
     }
-
-
-    // Setters
-
-    /**
-     * Enable clean.
-     */
-    public void enableClean() {
-        this.clean = true;
-    }
-
 
     // Display functions
 

@@ -40,11 +40,12 @@ import org.orekit.propagation.numerical.NumericalPropagator;
 import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.Constants;
+import org.orekit.utils.IERSConventions;
 
 import java.awt.Color;
 
 /**
- * The type Satellite reference system example.
+ * This tutorial provides an example of how a satellite reference system can be set up.
  */
 public class SatelliteReferenceSystemExample {
 
@@ -53,7 +54,7 @@ public class SatelliteReferenceSystemExample {
     }
 
     /**
-     * Main.
+     * Main of the satellite reference system tutorial.
      *
      * @param args the args
      * @throws Exception the exception
@@ -100,7 +101,8 @@ public class SatelliteReferenceSystemExample {
 
         final NormalizedSphericalHarmonicsProvider provider = GravityFieldFactory.getNormalizedProvider(10,
                 10);
-        final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(FramesFactory.getEME2000(),
+        final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(FramesFactory.getITRF(
+                IERSConventions.IERS_2010, true),
                 provider);
 
         propagator.setOrbitType(OrbitType.CARTESIAN);

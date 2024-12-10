@@ -156,6 +156,7 @@ public class Polyline {
 
 
     // Constructors
+
     // Non-vector constructors
 
     /**

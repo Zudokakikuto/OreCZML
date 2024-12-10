@@ -10,6 +10,7 @@ Cesium understands CZML file as inputs. Hence, this project provides a library t
 [![Quality Gate Status](https://sonar.orekit.org/api/project_badges/measure?project=Zudo_oreczml_AZKVgjr8GI6o9WSLa4d5&metric=alert_status&token=sqb_ec26b77ffc69a7f8da60eab4b3c73ec9b1b851bf)](https://sonar.orekit.org/dashboard?id=Zudo_oreczml_AZKVgjr8GI6o9WSLa4d5)
 [![Coverage](https://sonar.orekit.org/api/project_badges/measure?project=Zudo_oreczml_AZKVgjr8GI6o9WSLa4d5&metric=coverage&token=sqb_ec26b77ffc69a7f8da60eab4b3c73ec9b1b851bf)](https://sonar.orekit.org/dashboard?id=Zudo_oreczml_AZKVgjr8GI6o9WSLa4d5)
 [![Security Rating](https://sonar.orekit.org/api/project_badges/measure?project=Zudo_oreczml_AZKVgjr8GI6o9WSLa4d5&metric=security_rating&token=sqb_ec26b77ffc69a7f8da60eab4b3c73ec9b1b851bf)](https://sonar.orekit.org/dashboard?id=Zudo_oreczml_AZKVgjr8GI6o9WSLa4d5)
+![Latest release](https://gitlab.orekit.org/Zudo/oreczml/-/badges/release.svg)
 
 <p align="center">
   <img src=https://github.com/Zudokakikuto/OreCZML/blob/master/images/sinusoidalAttitudeFovGIF.gif?raw=true alt=""/>
@@ -30,19 +31,20 @@ Orekit and junit can be installed with maven using a pom.xml with dependencies :
 
 For the czml writer you will need to install it differently, because no maven repository exists, two methods can be used : 
 
-* You download the .jar, and you install it directly. Let name the groupId `com.custom`, the artifactId `czml-writer` and the version will be `3.0.0`. You will need to add in the pom.xml the following lines to do so :
+* You download the .jar, and you install it directly. Let name the groupId `com.agi`, the artifactId `cesiumlanguagewriter` and the version will be `3.0.0`. You will need to add in the pom.xml the following lines to do so :
 ```xml
  <dependency>
       <groupId>com.agi</groupId>
-      <artifactId>czml-writer</artifactId>
+      <artifactId>cesiumlanguagewriter</artifactId>
       <version>3.0.0</version>
  </dependency>
 ```
+
 Now that the dependency is added you can now use the following command in maven to install it :
 
-(Replace [PATH] with the path that you used)
+`mvn install:install-file -Dfile=.\cicd\cesiumlanguagewriter-3.0.0.jar -DgroupId=com.agi -DartifactId=cesiumlanguagewriter -Dversion=3.0.0 -Dpackaging=jar -DgeneratePom=true`
 
-`mvn install:install-file -Dfile=[PATH]\cicd\cesiumlanguagewriter-3.0.0.jar -DgroupId=com.custom -DartifactId=czml-writer -Dversion=3.0.0 -Dpackaging=jar -DgeneratePom=true`
+(If maven do't find the path with '.\\' , replace the dot with your local path.)
 
 * You can directly add the file locally in your IDE, here are some methods for the most used IDE :
 
@@ -54,14 +56,29 @@ Now that the dependency is added you can now use the following command in maven 
 
 ## Deployment
 
-To deploy OreCzml, you will need to download the .jar. You can find the last version in the [releases](https://gitlab.orekit.org/Zudo/oreczml/-/releases).
+To use a deployed version of OreCzml, you will need to download the .jar of the core. You can find the last version in the [releases](https://gitlab.orekit.org/Zudo/oreczml/-/releases).
 Then you run this maven command :
 
-`mvn install:install-file -Dfile=[PATH]\OreCzml-1.0.jar -DgroupId=org.orekit -DartifactId=OreCzml -Dversion=1.0 -Dpackaging=jar -DgeneratePom=true`
+`mvn install:install-file -Dfile=[PATH]\oreczml-core-1.0.jar -DgroupId=org.orekit -DartifactId=OreCzml -Dversion=1.0 -Dpackaging=jar -DgeneratePom=true`
+
+(replace the [PATH] with your local path where you stored the .jar)
+
+## Tutorials
+
+if you want to launch a tutorial, you will need to replace on each of them the line :
+
+```java
+final String pathToJSFolder = TutorialUtils.generateJSPath(
+                System.getProperty("user.dir"));
+```
+
+Replace the `System.getProperty("user.dir")` with the path of the file where you wants your external resources to be taken if you use some.
+
+The Czml file will be outputted in the 'Output' folder.
 
 ## Wiki and more #
 
-Check out the [wiki](https://gitlab.orekit.org/Zudo/oreczml/-/wikis/home), including the [Get Started](https://gitlab.orekit.org/Zudo/oreczml/-/wikis/Get-Started?redirected_from=How-to-get-started). Also browse the [forum](https://community.cesium.com/) for questions on Cesium.
+Check out the [wiki](https://gitlab.orekit.org/Zudo/oreczml/-/wikis/home), including the [Get Started](https://gitlab.orekit.org/Zudo/oreczml/-/wikis/Get-Started?redirected_from=How-to-get-started). Also browse the [Orekit Forum](https://https://forum.orekit.org) or the [Cesium Forum](https://community.cesium.com/) for related questions.
 
 ## Input Accepted 
 

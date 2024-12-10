@@ -55,13 +55,15 @@ import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.AngularCoordinates;
 import org.orekit.utils.Constants;
+import org.orekit.utils.IERSConventions;
 import org.orekit.utils.PVCoordinatesProvider;
 
 import java.awt.Color;
 
 
 /**
- * The type Covered surface example.
+ * This tutorial provides an example of how to set up a covered surface on the Earth.
+ * It will represent the surface covered by the field of view of the satellite in time.
  */
 public class CoveredSurfaceExample {
 
@@ -121,7 +123,8 @@ public class CoveredSurfaceExample {
 
         final NormalizedSphericalHarmonicsProvider provider = GravityFieldFactory.getNormalizedProvider(10,
                 10);
-        final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(FramesFactory.getEME2000(),
+        final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(FramesFactory.getITRF(
+                IERSConventions.IERS_2010, true),
                 provider);
 
         propagator.setOrbitType(OrbitType.CARTESIAN);

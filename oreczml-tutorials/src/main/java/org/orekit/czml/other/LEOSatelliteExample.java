@@ -16,10 +16,10 @@
  */
 package org.orekit.czml.other;
 
-import org.orekit.czml.TutorialUtils;
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
+import org.orekit.czml.TutorialUtils;
 import org.orekit.czml.file.CzmlFile;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.primary.Satellite;
@@ -39,23 +39,24 @@ import org.orekit.propagation.numerical.NumericalPropagator;
 import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.Constants;
+import org.orekit.utils.IERSConventions;
 
 /**
- * The type Leo satellite example.
+ * An example of a LEO mission.
  */
 public class LEOSatelliteExample {
 
-    private LEOSatelliteExample () {
+    private LEOSatelliteExample() {
         // empty
     }
 
     /**
-     * Main.
+     * Main of the LEO satellite tutorial.
      *
      * @param args the args
      * @throws Exception the exception
      */
-    public static void main (final String[] args) throws Exception {
+    public static void main(final String[] args) throws Exception {
         // Load orekit data
         TutorialUtils.loadOrekitData();
 
@@ -80,7 +81,8 @@ public class LEOSatelliteExample {
         // Build of the LEO orbit
 
         final KeplerianOrbit initialOrbit = new KeplerianOrbit(7878000, 0, FastMath.toRadians(10), 0,
-                FastMath.toRadians(90), FastMath.toRadians(0), PositionAngleType.MEAN, FramesFactory.getEME2000(), startDate,
+                FastMath.toRadians(90), FastMath.toRadians(0), PositionAngleType.MEAN, FramesFactory.getEME2000(),
+                startDate,
                 Constants.WGS84_EARTH_MU);
 
         final SpacecraftState initialState = new SpacecraftState(initialOrbit);
@@ -98,7 +100,8 @@ public class LEOSatelliteExample {
 
         final NormalizedSphericalHarmonicsProvider provider = GravityFieldFactory.getNormalizedProvider(10,
                 10);
-        final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(FramesFactory.getEME2000(),
+        final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(FramesFactory.getITRF(
+                IERSConventions.IERS_2010, true),
                 provider);
 
         final EphemerisGenerator generator = propagator.getEphemerisGenerator();

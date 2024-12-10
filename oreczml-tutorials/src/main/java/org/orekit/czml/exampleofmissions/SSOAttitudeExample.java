@@ -16,7 +16,6 @@
  */
 package org.orekit.czml.exampleofmissions;
 
-import org.orekit.czml.TutorialUtils;
 import org.hipparchus.geometry.euclidean.threed.Rotation;
 import org.hipparchus.geometry.euclidean.threed.RotationConvention;
 import org.hipparchus.geometry.euclidean.threed.RotationOrder;
@@ -26,6 +25,7 @@ import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
 import org.orekit.attitudes.Attitude;
 import org.orekit.attitudes.LofOffset;
+import org.orekit.czml.TutorialUtils;
 import org.orekit.czml.file.CzmlFile;
 import org.orekit.czml.object.primary.AttitudePointing;
 import org.orekit.czml.object.primary.FieldOfObservation;
@@ -59,7 +59,7 @@ import org.orekit.utils.PVCoordinatesProvider;
 import java.awt.Color;
 
 /**
- * The type Sso attitude example.
+ * An example of an SSO mission with a satellite that has a sinusoidal attitude.
  */
 public class SSOAttitudeExample {
 
@@ -67,11 +67,12 @@ public class SSOAttitudeExample {
         // empty
     }
 
+
     /**
-     * Main.
+     * Main of the SSO attitude tutorial.
      *
-     * @param args the args
-     * @throws Exception the exception
+     * @param args arguments of the main function
+     * @throws Exception exception to throw
      */
     public static void main(final String[] args) throws Exception {
         // Load orekit data

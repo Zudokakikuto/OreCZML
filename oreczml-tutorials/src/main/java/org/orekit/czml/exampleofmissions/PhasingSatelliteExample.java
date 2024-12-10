@@ -44,7 +44,7 @@ import org.orekit.utils.Constants;
 import java.awt.Color;
 
 /**
- * The type Phasing satellite example.
+ * An example of a mission where two satellites are phasing.
  */
 public class PhasingSatelliteExample {
 
@@ -53,10 +53,10 @@ public class PhasingSatelliteExample {
     }
 
     /**
-     * Main.
+     * Main of the phasing satellite tutorial.
      *
-     * @param args the args
-     * @throws Exception the exception
+     * @param args arguments of the main function
+     * @throws Exception exception to throw
      */
     public static void main(final String[] args) throws Exception {
         // Load orekit data

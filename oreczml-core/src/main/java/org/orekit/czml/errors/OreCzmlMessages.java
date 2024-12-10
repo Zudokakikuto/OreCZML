@@ -36,14 +36,18 @@ public enum OreCzmlMessages implements Localizable {
     /**
      * Trigger when satellites are not close enough to build a collision object.
      */
-    NOT_CLOSE_ENOUGH("Satellite are not close enough to build a collision object"),
+    NOT_CLOSE_ENOUGH("Satellite are not close enough to build a collision object."),
+
+    // Constellation
+    /** Trigger when the number of models loaded is different from the name of satellite when several models are loaded. */
+    NOT_SAME_NUMBER_SAT_MODELS("The number of models loaded is not the same as the number of satellites of the constellation."),
 
     // Czml ground station builder
     /**
      * Triggers when multiple models are loaded into a single station.
      */
     MULTIPLE_MODEL_SINGLE_STATION(
-            "Can't apply none or several models to one ground station, use the .withModel(String) instead"),
+            "Can't apply none or several models to one ground station, use the .withModel(String) instead."),
 
     // Czml ground station
     /**
@@ -56,7 +60,7 @@ public enum OreCzmlMessages implements Localizable {
      * Triggers when a get returning a single parameter on ground station are used when several ground stations are defined.
      */
     SEVERAL_STATION_UNIQUE_GET(
-            "Several ground stations were build, please use the appropriate getter (usually ends with an \"s\" for plural)"),
+            "Several ground stations were build, please use the appropriate getter (usually ends with an \"s\" for plural)."),
 
     // body
     /**
@@ -69,18 +73,18 @@ public enum OreCzmlMessages implements Localizable {
     /**
      * Triggers when the extension of the file of the model used is not recognized as one of the extension file accepted.
      */
-    MODEL_EXTENSION_UNKNOWN("The extension of the file for the model is not supported"),
+    MODEL_EXTENSION_UNKNOWN("The extension of the file for the model is not supported."),
 
     /**
      * Triggers when the file given is not a 2D or a 3D model.
      */
-    MODEL_TYPE_UNKNOWN("Model Type not known"),
+    MODEL_TYPE_UNKNOWN("Model Type not known."),
 
     // Attitude Pointing
     /**
      * Trigger when the pointing path is not displayed, but the user tried to display the period of the pointing path.
      */
-    POINTING_PATH_NOT_SHOWN("The pointing path is not displayed yet, use displayPointingPath first"),
+    POINTING_PATH_NOT_SHOWN("The pointing path is not displayed yet, use displayPointingPath first."),
 
     /**
      * Triggers when the period of the pointing path is not displayed and the user tried to setup the period pointing path.
@@ -99,7 +103,7 @@ public enum OreCzmlMessages implements Localizable {
     NO_HEADER("No header was defined in the primary objects."),
 
     /** Triggers when the Czml file can't generate the output string asked. */
-    STRING_NOT_GENERATED("String generation error"),
+    STRING_NOT_GENERATED("String generation error."),
 
     // Ground track
     /**
@@ -108,23 +112,23 @@ public enum OreCzmlMessages implements Localizable {
      * or the ground track object is not built with a constellation.
      */
     EMPTY_GROUND_TRACKS(
-            "The ground tracks are empty, either the file is already written or the ground track is not build with a constellation"),
+            "The ground tracks are empty, either the file is already written or the ground track is not build with a constellation."),
 
     // Satellite
     /**
      * Triggers when the satellite does not display the orientation, but the method getOrientation() has been called.
      */
     NO_ORIENTATION_DISPLAYED(
-            "The satellite did not display the orientation, maybe you tried to use an AttitudePointing, please use the withDisplayAttitude() method first"),
+            "The satellite did not display the orientation, maybe you tried to use an AttitudePointing, please use the withDisplayAttitude() method first."),
 
     /** Trigger when the initial state of the satellite object is not built with a keplerian period gettable. */
-    NO_ORBIT_FOR_KEPLERIAN_PERIOD("The initial state of the satellite does not have a keplerian period"),
+    NO_ORBIT_FOR_KEPLERIAN_PERIOD("The initial state of the satellite does not have a keplerian period."),
 
     // Visibility cone
     /**
      * Triggers when the visibility cone was not defined for a given satellite.
      */
-    NO_SAT_VISIBILITY_CONE("The Visibility cone was not defined with a given satellite"),
+    NO_SAT_VISIBILITY_CONE("The Visibility cone was not defined with a given satellite."),
 
     // Orientation
     /**
@@ -143,14 +147,14 @@ public enum OreCzmlMessages implements Localizable {
     /**
      * Triggers when the user calls a vector function into a non-vector polyline.
      */
-    DEFAULT_CANT_CALL("Can't call a vector function on a non-vector polyline"),
+    DEFAULT_CANT_CALL("Can't call a vector function on a non-vector polyline."),
 
     /**
      * Triggers when the user input more than 2 cartesians
      * to build a vector polyline that takes two cartesian coordinates as an input.
      * (each coordinate represents the extremity of the line).
      */
-    MORE_THAN_2_CARTESIAN_POLYLINE("The size of the cartesian positions inputted in the Polyline must be 2"),
+    MORE_THAN_2_CARTESIAN_POLYLINE("The size of the cartesian positions inputted in the Polyline must be 2."),
 
     /**
      * Triggers when the non-vector polyline is not defined with references.
@@ -161,63 +165,48 @@ public enum OreCzmlMessages implements Localizable {
     /**
      * Triggers when the height is not defined and the user uses the getHeight() method.
      */
-    EMPTY_POSITION_HEIGHT("Height is not defined"),
+    EMPTY_POSITION_HEIGHT("Height is not defined."),
 
     /**
      * Triggers when the 'x' parameter is not defined and the user uses the getX() method.
      */
-    EMPTY_X("x is not defined"),
+    EMPTY_X("x is not defined."),
 
     /**
      * Triggers when the 'y' parameter is not defined and the user uses the getY() method.
      */
-    EMPTY_Y("y is not defined"),
+    EMPTY_Y("y is not defined."),
 
     /**
      * Triggers when the 'z' parameter is not defined and the user uses the getZ() method.
      */
-    EMPTY_Z("z is not defined"),
-
-    /**
-     * Triggers when the 'vx' parameter is not defined and the user uses the getVX() method.
-     */
-    EMPTY_VX("vx is not defined"),
-
-    /**
-     * Triggers when the 'vy' parameter is not defined and the user uses the getVY() method.
-     */
-    EMPTY_VY("vy is not defined"),
-
-    /**
-     * Triggers when the 'vz' parameter is not defined and the user uses the getVZ() method.
-     */
-    EMPTY_VZ("vz is not defined"),
+    EMPTY_Z("z is not defined."),
 
     /**
      * Triggers when the position type given is not in the position type defined. (CARTESIAN_POSITION, CARTESIAN_VELOCITY, CARTOGRAPHIC_RADIANS, CARTOGRAPHIC_DEGREES)
      */
-    POSITION_TYPE_UNKNOWN("Position Type is not defined"),
+    POSITION_TYPE_UNKNOWN("Position Type is not defined."),
 
     // Long lat lines
     /**
      * Triggers when the latitude is not defined and the user uses the getLatitudeRad() method.
      */
-    DEFAULT_ERROR_LATITUDE("Latitude is not defined"),
+    DEFAULT_ERROR_LATITUDE("Latitude is not defined."),
 
     /**
      * Triggers when the longitude is not defined and the user uses the getLongitudeRad() method.
      */
-    DEFAULT_ERROR_LONGITUDE("Longitude is not defined"),
+    DEFAULT_ERROR_LONGITUDE("Longitude is not defined."),
 
     /**
      * Triggers when the angular step for the latitude is greater than 180°.
      */
-    GREATER_ANGULAR_LATITUDE_STEP("The angular step for the latitude can't be greater than 180"),
+    GREATER_ANGULAR_LATITUDE_STEP("The angular step for the latitude can't be greater than 180."),
 
     /**
      * Triggers when the angular step for the longitude is greater than 360°.
      */
-    GREATER_ANGULAR_LONGITUDE_STEP("The angular step for the longitude can't be greater than 360");
+    GREATER_ANGULAR_LONGITUDE_STEP("The angular step for the longitude can't be greater than 360.");
 
     /**
      * The string containing the message.

@@ -48,7 +48,8 @@ import org.orekit.utils.PVCoordinates;
 import java.awt.Color;
 
 /**
- * The type Jupiter fly by example.
+ * This tutorial provides an example interplanetary mission with Juno near jupiter.
+ * (It is highly recommended to use the local JavaScript interface designed for OreCzml to visualize this example).
  */
 public class JupiterFlyByExample {
 
@@ -56,10 +57,10 @@ public class JupiterFlyByExample {
     }
 
     /**
-     * Main.
+     * Main of the jupiter fly by tutorial.
      *
-     * @param args the args
-     * @throws Exception the exception
+     * @param args arguments of the main function
+     * @throws Exception exception to throw
      */
     public static void main (final String[] args) throws Exception {
         // Load orekit data

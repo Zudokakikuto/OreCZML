@@ -44,8 +44,16 @@ public class PathTest extends AbstractTest {
 
         final TimeInterval availability = header.getAvailability();
 
-        final Path   path     = new Path(availability);
-        final String pathFile = loadResources("templateFile/PathTemplate.txt");
+        final Path path = new Path(availability);
+
+        final Path pathCoverage = new Path(availability, true);
+
+        final String pathFile         = loadResources("templateFile/PathTemplate.txt");
+        final String pathCoverageFile = loadResources("templateFile/PathCoverageTemplate.txt");
+
         Assertions.assertEquals(Files.readString(java.nio.file.Path.of(pathFile)), path.toString());
+        Assertions.assertEquals(Files.readString(java.nio.file.Path.of(pathCoverageFile)), pathCoverage.toString());
+        Assertions.assertTrue(pathCoverage.isShow());
+        Assertions.assertEquals(availability, pathCoverage.getAvailability());
     }
 }

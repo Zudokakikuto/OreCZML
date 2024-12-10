@@ -40,11 +40,12 @@ import org.orekit.propagation.numerical.NumericalPropagator;
 import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.Constants;
+import org.orekit.utils.IERSConventions;
 
 import java.awt.Color;
 
 /**
- * The type Ground track example.
+ * This tutorial provides an example of how a ground track can be set up.
  */
 public class GroundTrackExample {
 
@@ -53,10 +54,10 @@ public class GroundTrackExample {
     }
 
     /**
-     * Main.
+     * Main of the ground track tutorial.
      *
-     * @param args the args
-     * @throws Exception the exception
+     * @param args arguments of the main function
+     * @throws Exception exception to throw
      */
     public static void main(final String[] args) throws Exception {
         // Load orekit data
@@ -90,7 +91,8 @@ public class GroundTrackExample {
 
         final NormalizedSphericalHarmonicsProvider provider = GravityFieldFactory.getNormalizedProvider(10,
                 10);
-        final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(FramesFactory.getEME2000(),
+        final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(FramesFactory.getITRF(
+                IERSConventions.IERS_2010, true),
                 provider);
 
         final double[][] tolerances = NumericalPropagator.tolerances(TutorialUtils.POSITION_TOLERANCE, initialOrbit,

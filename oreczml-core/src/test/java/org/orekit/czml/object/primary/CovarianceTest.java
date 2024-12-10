@@ -42,6 +42,7 @@ import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.Constants;
 
+import java.awt.Color;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -64,29 +65,25 @@ public class CovarianceTest extends AbstractTest {
 
         loadOrekitData();
 
-        final Header header = dummyHeader();
-        final AbsoluteDate startDate            = new AbsoluteDate(2024, 3, 15, 0, 0, 0.0, TimeScalesFactory.getUTC());
-        final AbsoluteDate finalDate            = startDate.shiftedBy(5 * 3600);
+        final Header       header    = dummyHeader();
+        final AbsoluteDate startDate = new AbsoluteDate(2024, 3, 15, 0, 0, 0.0, TimeScalesFactory.getUTC());
+        final AbsoluteDate finalDate = startDate.shiftedBy(5 * 3600);
 
         final KeplerianOrbit initialOrbit = new KeplerianOrbit(7878000, 0, FastMath.toRadians(20), 0,
                 FastMath.toRadians(0), FastMath.toRadians(0), PositionAngleType.MEAN, FramesFactory.getEME2000(),
-                startDate,
-                Constants.WGS84_EARTH_MU);
+                startDate, Constants.WGS84_EARTH_MU);
         final SpacecraftState initialState = new SpacecraftState(initialOrbit);
 
         // Build of the propagator
 
 
-        final double[][] tolerances = NumericalPropagator.tolerances(10, initialOrbit,
-                OrbitType.CARTESIAN);
-        final AdaptiveStepsizeIntegrator integrator = new DormandPrince853Integrator(0.001,
-                1000.0, tolerances[0],
+        final double[][] tolerances = NumericalPropagator.tolerances(10, initialOrbit, OrbitType.CARTESIAN);
+        final AdaptiveStepsizeIntegrator integrator = new DormandPrince853Integrator(0.001, 1000.0, tolerances[0],
                 tolerances[1]);
 
         final NumericalPropagator propagator = new NumericalPropagator(integrator);
 
-        final NormalizedSphericalHarmonicsProvider provider = GravityFieldFactory.getNormalizedProvider(10,
-                10);
+        final NormalizedSphericalHarmonicsProvider provider = GravityFieldFactory.getNormalizedProvider(10, 10);
         final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(FramesFactory.getEME2000(),
                 provider);
 
@@ -108,7 +105,11 @@ public class CovarianceTest extends AbstractTest {
                 OrbitType.EQUINOCTIAL, PositionAngleType.MEAN);
         final List<StateCovariance> covariances = covariancePropagation(satellite, propagator, stateCovariance, header);
 
-        final Covariance covariance = Covariance.builder(satellite, covariances, LOFType.TNW, header).build();
+        final Covariance covariance = Covariance.builder(satellite, covariances, LOFType.TNW, header)
+                                                .withColor(Color.ORANGE)
+                                                .withCustomID("CustomID")
+                                                .withHeader(header)
+                                                .build();
 
         final String pathFile = loadResources("templateFile/primary/CovarianceTemplate.txt");
 

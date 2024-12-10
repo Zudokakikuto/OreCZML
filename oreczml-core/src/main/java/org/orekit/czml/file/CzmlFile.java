@@ -245,25 +245,4 @@ public class CzmlFile {
         this.pathDirectory = "";
         this.objects       = new ArrayList<>();
     }
-
-    // Private functions
-
-    private <E> boolean containsInstance(final List<E> list) {
-        for (E e : list) {
-            if (e instanceof Header) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private <E> int indexOfInstance(final List<E> list) {
-        for (int i = 0; i < list.size(); i++) {
-            final E e = list.get(i);
-            if (e instanceof Header) {
-                return i;
-            }
-        }
-        return 0;
-    }
 }

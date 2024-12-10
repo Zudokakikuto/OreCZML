@@ -61,6 +61,12 @@ public class ConstellationBuilder {
     /** The header to use when several are used. */
     private Header header;
 
+    /** Boolean to display or not the attitude of satellites. */
+    private boolean displayAttitude;
+
+    /** Boolean to know is only one period should be displayed or not. */
+    private boolean displayOnlyOnePeriod;
+
     /**
      * The default builder for the constellation builder.
      *
@@ -108,6 +114,16 @@ public class ConstellationBuilder {
         return this;
     }
 
+    public ConstellationBuilder displayAttitude() {
+        this.displayAttitude = true;
+        return this;
+    }
+
+    public ConstellationBuilder displayOnlyOnePeriod() {
+        this.displayOnlyOnePeriod = true;
+        return this;
+    }
+
     /**
      * The build function that generates a constellation object.
      *
@@ -116,6 +132,17 @@ public class ConstellationBuilder {
      * @throws IOException        the io exception
      */
     public Constellation build() throws URISyntaxException, IOException {
-        return new Constellation(propagators, finalDate, pathToModel, customID, header);
+        final Constellation tempConstellation = new Constellation(propagators, finalDate, pathToModel, customID, header);
+        return checkAttributes(tempConstellation);
+    }
+
+    private Constellation checkAttributes(final Constellation constellationInput) {
+        if (displayAttitude) {
+            constellationInput.displayAttitude();
+        }
+        if (displayOnlyOnePeriod) {
+            constellationInput.displayOnlyOnePeriod();
+        }
+        return constellationInput;
     }
 }

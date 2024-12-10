@@ -186,7 +186,7 @@ public class ManeuverSequence extends AbstractPrimaryObject {
         this.satellitePositionReference = new Reference(satelliteInput.getId() + DEFAULT_H_POSITION);
 
         this.attitudesWithManeuver   = generateAttitudesManeuvers(states, maneuversTemp, arrowsDirection);
-        this.model                   = new CzmlModel(pathModel, 500000, 40, 5E-05, header);
+        this.model                   = new CzmlModel(pathModel, 500000, 40, 5E-05, false, header);
         this.availabilitiesManeuvers = generateAvailabilitiesManeuvers(maneuvers, header);
         this.orientations            = generateOrientationManeuvers(attitudesWithManeuver, header);
     }
@@ -253,6 +253,7 @@ public class ManeuverSequence extends AbstractPrimaryObject {
         this.maneuvers  = maneuversInput;
         this.propagator = satelliteInput.getSatelliteBoundedPropagator();
         this.states     = satelliteInput.getSpaceCraftStates();
+        this.header     = header;
 
         if (accelerationDirection.size() == 1) {
             for (int i = 0; i < maneuversInput.size(); i++) {
@@ -276,7 +277,7 @@ public class ManeuverSequence extends AbstractPrimaryObject {
         this.setAvailability(new TimeInterval(startDate, stopDate));
         this.satellitePositionReference = new Reference(satelliteInput.getId() + DEFAULT_H_POSITION);
         this.attitudesWithManeuver      = generateAttitudesManeuvers(states, maneuversInput, arrowsDirection);
-        this.model                      = new CzmlModel(pathModel, 500000, 40, 5E-05, header);
+        this.model                      = new CzmlModel(pathModel, 500000, 40, 5E-05, false, header);
         this.availabilitiesManeuvers    = generateAvailabilitiesManeuvers(maneuvers, header);
         this.orientations               = generateOrientationManeuvers(attitudesWithManeuver, header);
     }
@@ -501,10 +502,11 @@ public class ManeuverSequence extends AbstractPrimaryObject {
      * This function will generate a list of the time intervals representing when the maneuvers take place.
      *
      * @param maneuverList : The list of the maneuvers to perform.
-     * @param headerInput       : The header considered when several headers are used.
+     * @param headerInput  : The header considered when several headers are used.
      * @return : A list of the time intervals chronologically ordered of when the maneuvers happen.
      */
-    private List<TimeInterval> generateAvailabilitiesManeuvers(final List<Maneuver> maneuverList, final Header headerInput) {
+    private List<TimeInterval> generateAvailabilitiesManeuvers(final List<Maneuver> maneuverList,
+                                                               final Header headerInput) {
 
         final List<TimeInterval> toReturn = new ArrayList<>();
         for (final Maneuver currentManeuver : maneuverList) {
@@ -514,19 +516,22 @@ public class ManeuverSequence extends AbstractPrimaryObject {
                 if (span.getData()) {
                     if (span.getEnd()
                             .isAfter(DateUtils.toAbsoluteDate(headerInput.getAvailability()
-                                                                    .getStop(), headerInput.getTimeScale()))) {
-                        toReturn.add(new TimeInterval(DateUtils.toJulianDate(span.getStart(), headerInput.getTimeScale()),
-                                headerInput.getAvailability()
-                                      .getStop()));
+                                                                         .getStop(), headerInput.getTimeScale()))) {
+                        toReturn.add(
+                                new TimeInterval(DateUtils.toJulianDate(span.getStart(), headerInput.getTimeScale()),
+                                        headerInput.getAvailability()
+                                                   .getStop()));
                     } else if (span.getStart()
                                    .isBefore(DateUtils.toAbsoluteDate(headerInput.getAvailability()
-                                                                            .getStart(), headerInput.getTimeScale()))) {
+                                                                                 .getStart(),
+                                           headerInput.getTimeScale()))) {
                         toReturn.add(new TimeInterval(headerInput.getAvailability()
-                                                            .getStart(),
+                                                                 .getStart(),
                                 DateUtils.toJulianDate(span.getEnd(), headerInput.getTimeScale())));
                     } else {
-                        toReturn.add(new TimeInterval(DateUtils.toJulianDate(span.getStart(), headerInput.getTimeScale()),
-                                DateUtils.toJulianDate(span.getEnd(), headerInput.getTimeScale())));
+                        toReturn.add(
+                                new TimeInterval(DateUtils.toJulianDate(span.getStart(), headerInput.getTimeScale()),
+                                        DateUtils.toJulianDate(span.getEnd(), headerInput.getTimeScale())));
                     }
                 }
             }
@@ -598,10 +603,11 @@ public class ManeuverSequence extends AbstractPrimaryObject {
      * This function will generate the orientations in time, knowing the list of the attitudes ordered by maneuvers.
      *
      * @param allAttitudeByManeuver : The list of the attitudes ordered by maneuver.
-     * @param headerInput : The header considered
+     * @param headerInput           : The header considered
      * @return : A list of orientation objects representing the orientation of the satellite in time to be written in the czml file.
      */
-    private List<Orientation> generateOrientationManeuvers(final List<List<Attitude>> allAttitudeByManeuver, final Header headerInput) {
+    private List<Orientation> generateOrientationManeuvers(final List<List<Attitude>> allAttitudeByManeuver,
+                                                           final Header headerInput) {
         final List<Orientation> toReturn = new ArrayList<>();
         for (final List<Attitude> attitudesGivenManeuver : allAttitudeByManeuver) {
             if (!attitudesGivenManeuver.isEmpty()) {

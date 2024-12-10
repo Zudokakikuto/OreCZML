@@ -25,13 +25,14 @@ import cesiumlanguagewriter.Reference;
 import cesiumlanguagewriter.TimeInterval;
 import org.hipparchus.ode.events.Action;
 import org.hipparchus.util.FastMath;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.bodies.OneAxisEllipsoid;
 import org.orekit.czml.archi.builder.InterSatVisuBuilder;
 import org.orekit.czml.object.CzmlShow;
 import org.orekit.czml.object.Polyline;
 import org.orekit.czml.object.Utils.DateUtils;
+import org.orekit.data.DataContext;
 import org.orekit.frames.Frame;
-import org.orekit.frames.FramesFactory;
 import org.orekit.orbits.Orbit;
 import org.orekit.propagation.BoundedPropagator;
 import org.orekit.propagation.EphemerisGenerator;
@@ -232,6 +233,7 @@ public class InterSatVisu extends AbstractPrimaryObject {
      * @param customID        : The custom ID of the inter sat visu object.
      * @param header          : The header of the
      */
+    @DefaultDataContext
     public InterSatVisu(final Satellite satellite1Input, final Satellite satellite2Input, final AbsoluteDate finalDate,
                         final String customID, final Header header) {
 
@@ -242,9 +244,12 @@ public class InterSatVisu extends AbstractPrimaryObject {
         this.setName(DEFAULT_NAME + satellite2Input.getName() + "/" + satellite2Input.getName());
         final TimeInterval minimumInterval = this.findMinimumAvailability(satellite1Input, satellite2Input, header);
         this.setAvailability(minimumInterval);
-        final Frame ITRF = FramesFactory.getITRF(IERSConventions.IERS_2010, true);
-        this.body         = new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS,
-                Constants.WGS84_EARTH_FLATTENING, ITRF);
+        final Frame ITRF = DataContext.getDefault()
+                                      .getFrames()
+                                      .getITRF(IERSConventions.IERS_2010, true);
+        this.body = new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS, Constants.WGS84_EARTH_FLATTENING,
+                ITRF);
+
         this.initialState = satellite1Input.getSpaceCraftStates()
                                            .get(0);
 
@@ -262,7 +267,8 @@ public class InterSatVisu extends AbstractPrimaryObject {
                                                  .withSecondReference(referenceSecondSatellite)
                                                  .build();
         this.showList                  = this.buildShowList(singleTimeIntervalsOfVisu, booleanList);
-        this.stopDate = DateUtils.toAbsoluteDate(header.getAvailability().getStop(), header.getTimeScale());
+        this.stopDate                  = DateUtils.toAbsoluteDate(header.getAvailability()
+                                                                        .getStop(), header.getTimeScale());
     }
 
     /**
@@ -314,6 +320,7 @@ public class InterSatVisu extends AbstractPrimaryObject {
      * @param customID                 : The custom ID of the inter sat visu.
      * @param header                   : The header considered when several are used.
      */
+    @DefaultDataContext
     public InterSatVisu(final Constellation constellationPropagators, final AbsoluteDate finalDate,
                         final String customID, final Header header) {
 
@@ -330,7 +337,9 @@ public class InterSatVisu extends AbstractPrimaryObject {
 
         this.stopDate = finalDate;
 
-        final Frame ITRF = FramesFactory.getITRF(IERSConventions.IERS_2010, true);
+        final Frame ITRF = DataContext.getDefault()
+                                      .getFrames()
+                                      .getITRF(IERSConventions.IERS_2010, true);
         this.body = new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS, Constants.WGS84_EARTH_FLATTENING,
                 ITRF);
 
@@ -820,8 +829,10 @@ public class InterSatVisu extends AbstractPrimaryObject {
             AbsoluteDate       stopTime  = span.getEnd();
             final AbsoluteDate startTime = span.getStart();
             if (span.getEnd()
-                    .isAfter(DateUtils.toAbsoluteDate(headerInput.getAvailability().getStop(), headerInput.getTimeScale()))) {
-                stopTime = DateUtils.toAbsoluteDate(headerInput.getAvailability().getStop(), headerInput.getTimeScale());
+                    .isAfter(DateUtils.toAbsoluteDate(headerInput.getAvailability()
+                                                                 .getStop(), headerInput.getTimeScale()))) {
+                stopTime = DateUtils.toAbsoluteDate(headerInput.getAvailability()
+                                                               .getStop(), headerInput.getTimeScale());
             }
             tempBooleansList.add(span.getData());
             tempTimeIntervals.add(new TimeInterval(DateUtils.toJulianDate(startTime, headerInput.getTimeScale()),
@@ -905,24 +916,30 @@ public class InterSatVisu extends AbstractPrimaryObject {
                                         final List<TimeInterval> toReturn, final Header headerInput) {
 
         if (!seenAtTheBeginning) {
-            toReturn.add(new TimeInterval(headerInput.getAvailability().getStart(),
+            toReturn.add(new TimeInterval(headerInput.getAvailability()
+                                                     .getStart(),
                     DateUtils.toJulianDate(datesWhenVisuInput.get(0), headerInput.getTimeScale())));
             this.booleanList.add(true);
             for (int i = 0; i < minimumLength; i++) {
-                toReturn.add(new TimeInterval(DateUtils.toJulianDate(datesWhenVisuInput.get(i), headerInput.getTimeScale()),
-                        DateUtils.toJulianDate(datesWhenNotVisuInput.get(i), headerInput.getTimeScale())));
-                toReturn.add(new TimeInterval(DateUtils.toJulianDate(datesWhenNotVisuInput.get(i), headerInput.getTimeScale()),
+                toReturn.add(
+                        new TimeInterval(DateUtils.toJulianDate(datesWhenVisuInput.get(i), headerInput.getTimeScale()),
+                                DateUtils.toJulianDate(datesWhenNotVisuInput.get(i), headerInput.getTimeScale())));
+                toReturn.add(new TimeInterval(
+                        DateUtils.toJulianDate(datesWhenNotVisuInput.get(i), headerInput.getTimeScale()),
                         DateUtils.toJulianDate(datesWhenVisuInput.get(i + 1), headerInput.getTimeScale())));
             }
         } else {
-            toReturn.add(new TimeInterval(headerInput.getAvailability().getStart(),
+            toReturn.add(new TimeInterval(headerInput.getAvailability()
+                                                     .getStart(),
                     DateUtils.toJulianDate(datesWhenNotVisuInput.get(0), headerInput.getTimeScale())));
             this.booleanList.add(false);
             for (int i = 0; i < minimumLength; i++) {
-                toReturn.add(new TimeInterval(DateUtils.toJulianDate(datesWhenNotVisuInput.get(i), headerInput.getTimeScale()),
+                toReturn.add(new TimeInterval(
+                        DateUtils.toJulianDate(datesWhenNotVisuInput.get(i), headerInput.getTimeScale()),
                         DateUtils.toJulianDate(datesWhenVisuInput.get(i), headerInput.getTimeScale())));
-                toReturn.add(new TimeInterval(DateUtils.toJulianDate(datesWhenVisuInput.get(i), headerInput.getTimeScale()),
-                        DateUtils.toJulianDate(datesWhenNotVisuInput.get(i), headerInput.getTimeScale())));
+                toReturn.add(
+                        new TimeInterval(DateUtils.toJulianDate(datesWhenVisuInput.get(i), headerInput.getTimeScale()),
+                                DateUtils.toJulianDate(datesWhenNotVisuInput.get(i), headerInput.getTimeScale())));
             }
         }
     }
@@ -945,13 +962,15 @@ public class InterSatVisu extends AbstractPrimaryObject {
 
             final JulianDate finalDate = DateUtils.toJulianDate(datesWhenVisuInput.get(datesWhenVisuInput.size() - 1),
                     headerInput.getTimeScale());
-            toReturn.add(new TimeInterval(finalDate, headerInput.getAvailability().getStop()));
+            toReturn.add(new TimeInterval(finalDate, headerInput.getAvailability()
+                                                                .getStop()));
 
         } else if (datesWhenVisuInput.size() < datesWhenNotVisuInput.size()) {
 
             final JulianDate finalDate = DateUtils.toJulianDate(
                     datesWhenNotVisuInput.get(datesWhenNotVisuInput.size() - 1), headerInput.getTimeScale());
-            toReturn.add(new TimeInterval(finalDate, headerInput.getAvailability().getStop()));
+            toReturn.add(new TimeInterval(finalDate, headerInput.getAvailability()
+                                                                .getStop()));
         }
     }
 

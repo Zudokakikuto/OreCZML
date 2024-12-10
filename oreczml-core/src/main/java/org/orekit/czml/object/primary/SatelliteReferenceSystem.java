@@ -120,7 +120,7 @@ public class SatelliteReferenceSystem extends AbstractPrimaryObject {
         this.referencePosition    = new Reference(satellite.getId() + DEFAULT_H_POSITION);
         this.referenceOrientation = new Reference(satellite.getId() + DEFAULT_H_ORIENTATION);
         this.referenceSystemModel = new CzmlModel(PATH_TO_REFERENCE_SYSTEM, maximumScale, minimumPixelSize, scale,
-                header);
+                false, header);
     }
 
 

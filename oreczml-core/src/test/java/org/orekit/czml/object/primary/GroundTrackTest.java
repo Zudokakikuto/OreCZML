@@ -30,7 +30,6 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -63,6 +62,7 @@ public class GroundTrackTest extends AbstractTest {
         final Constellation constellation = new Constellation(propagators, finalDate, header);
 
         final GroundTrack groundTrack = new GroundTrack(satellite, getEarth(), header);
+        groundTrack.displayLinkSatellite();
 
         final GroundTrack groundTrackWithBuilder = GroundTrack.builder(satellite, getEarth(), header)
                                                               .withColor(Color.ORANGE)
@@ -72,6 +72,8 @@ public class GroundTrackTest extends AbstractTest {
 
         final GroundTrack constellationGroundTrack = GroundTrack.builder(constellation, getEarth(), header)
                                                                 .build();
+        constellationGroundTrack.displayLinkSatellite();
+
 
         final String pathFile              = loadResources("templateFile/primary/GroundTrackTemplate.txt");
         final String builderPathFile       = loadResources("templateFile/primary/GroundTrackWithBuilderTemplate.txt");

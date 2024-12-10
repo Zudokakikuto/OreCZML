@@ -1,5 +1,5 @@
 {
-  "id":"COV/SAT/{P(7.87800000e+06, 0.00000000e+00, 0.00000000e+00), V(-0.00000000e+00, 6.68415814e+03, 2.43283460e+03)}",
+  "id":"CustomID",
   "name":"Covariance of Satellite",
   "availability":"2024-03-15T00:00:00Z/2024-03-15T05:00:00Z",
   "orientation":{
@@ -1819,7 +1819,7 @@
     "outline":true,
     "outlineColor":{
       "rgba":[
-        255,255,0,255
+        255,200,0,255
       ]
     },
     "slicePartitions":24,

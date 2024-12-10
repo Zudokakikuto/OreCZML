@@ -34,7 +34,7 @@ import org.orekit.time.TimeScalesFactory;
 
 
 /**
- * The type Oem adaptor example.
+ * This tutorial provides an example of how an Oem object ban be used to build a propagator from it.
  */
 public class OemAdaptorExample {
 
@@ -43,10 +43,10 @@ public class OemAdaptorExample {
     }
 
     /**
-     * Main.
+     * Main of the Oem tutorial.
      *
-     * @param args the args
-     * @throws Exception the exception
+     * @param args arguments of the main function
+     * @throws Exception exception to throw
      */
     public static void main(final String[] args) throws Exception {
 

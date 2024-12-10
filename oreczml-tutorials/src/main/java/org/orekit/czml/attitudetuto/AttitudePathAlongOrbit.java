@@ -17,7 +17,6 @@
 
 package org.orekit.czml.attitudetuto;
 
-import org.orekit.czml.TutorialUtils;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
@@ -30,6 +29,7 @@ import org.orekit.attitudes.LofOffset;
 import org.orekit.attitudes.PredefinedTarget;
 import org.orekit.bodies.CelestialBodyFactory;
 import org.orekit.bodies.GeodeticPoint;
+import org.orekit.czml.TutorialUtils;
 import org.orekit.czml.file.CzmlFile;
 import org.orekit.czml.object.primary.AttitudePointing;
 import org.orekit.czml.object.primary.CzmlGroundStation;
@@ -58,13 +58,15 @@ import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.AngularDerivativesFilter;
 import org.orekit.utils.Constants;
 import org.orekit.utils.ExtendedPVCoordinatesProvider;
+import org.orekit.utils.IERSConventions;
 
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The type Attitude path along orbit.
+ * This tutorial provides an example of a satellite targeting points on earth when visible,
+ * then comes back to a default attitude when not visible.
  */
 public class AttitudePathAlongOrbit {
 
@@ -73,10 +75,10 @@ public class AttitudePathAlongOrbit {
     }
 
     /**
-     * Main.
+     * Main of the attitude path along orbit tutorial.
      *
-     * @param args the args
-     * @throws Exception the exception
+     * @param args arguments of the main function
+     * @throws Exception exception to throw
      */
     public static void main(final String[] args) throws Exception {
         // Load orekit data
@@ -149,7 +151,8 @@ public class AttitudePathAlongOrbit {
 
         final NormalizedSphericalHarmonicsProvider provider = GravityFieldFactory.getNormalizedProvider(10,
                 10);
-        final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(FramesFactory.getEME2000(),
+        final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(
+                FramesFactory.getITRF(IERSConventions.IERS_2010, true),
                 provider);
 
         propagator.setOrbitType(OrbitType.CARTESIAN);

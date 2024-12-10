@@ -22,9 +22,10 @@ import cesiumlanguagewriter.CesiumStreamWriter;
 import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.PositionCesiumWriter;
 import org.orekit.bodies.OneAxisEllipsoid;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.archi.builder.CentralBodyReferenceSystemBuilder;
 import org.orekit.czml.object.Polyline;
-import org.orekit.frames.FramesFactory;
+import org.orekit.data.DataContext;
 import org.orekit.utils.Constants;
 import org.orekit.utils.IERSConventions;
 
@@ -82,9 +83,10 @@ public class CentralBodyReferenceSystem extends AbstractPrimaryObject {
      *
      * @param header : The header considered.
      */
+    @DefaultDataContext
     public CentralBodyReferenceSystem(final Header header) {
         this(new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS, Constants.WGS84_EARTH_FLATTENING,
-                        FramesFactory.getITRF(IERSConventions.IERS_2010, true)), DEFAULT_ID, DEFAULT_NAME, DEFAULT_RED,
+                        DataContext.getDefault().getFrames().getITRF(IERSConventions.IERS_2010, true)), DEFAULT_ID, DEFAULT_NAME, DEFAULT_RED,
                 DEFAULT_GREEN, DEFAULT_BLUE, header);
     }
 

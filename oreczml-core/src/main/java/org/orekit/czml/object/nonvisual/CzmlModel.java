@@ -41,7 +41,6 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.Objects;
 
 /**
  * 3D/2D Models
@@ -63,7 +62,7 @@ public class CzmlModel {
     /**
      * .
      */
-    public static final String DEFAULT_MODEL_NAME = "satellite.png";
+    public static final String DEFAULT_MODEL_NAME = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADJSURBVDhPnZHRDcMgEEMZjVEYpaNklIzSEfLfD4qNnXAJSFWfhO7w2Zc0Tf9QG2rXrEzSUeZLOGm47WoH95x3Hl3jEgilvDgsOQUTqsNl68ezEwn1vae6lceSEEYvvWNT/Rxc4CXQNGadho1NXoJ+9iaqc2xi2xbt23PJCDIB6TQjOC6Bho/sDy3fBQT8PrVhibU7yBFcEPaRxOoeTwbwByCOYf9VGp1BYI1BA+EeHhmfzKbBoJEQwn1yzUZtyspIQUha85MpkNIXB7GizqDEECsAAAAASUVORK5CYII=";
 
     /**
      * A boolean to show or not the model.
@@ -135,14 +134,18 @@ public class CzmlModel {
      */
     private boolean pathExternalUsed;
 
+    /** Check if the model is for a satellite. */
+    private boolean isSatellite;
+
     /**
      * Builder for the model of the satellite, default parameters entered.
      *
      * @param absolutePathToObject : The string leading to the absolute path of the object
      * @param header               : The header considered.
+     * @param isSatelliteInput     : Is the mode loaded for a satellite?
      */
-    public CzmlModel(final String absolutePathToObject, final Header header) {
-        this(absolutePathToObject, 5000000, 400, 1, header);
+    public CzmlModel(final String absolutePathToObject, final boolean isSatelliteInput, final Header header) {
+        this(absolutePathToObject, 5000000, 400, 1, isSatelliteInput, header);
     }
 
     /**
@@ -150,14 +153,17 @@ public class CzmlModel {
      *
      * @param absolutePathToObject  : The string leading to the absolute path of the object
      * @param maximumScale          : The minimum scale for the object
-     * @param minimumPixelSizeInput : The minimum of pixels displays for the object
+     * @param minimumPixelSizeInput : The minimum of pixel displayed for the object
      * @param scale                 : The scale of the 3D model
+     * @param isSatelliteInput      : Is the model loaded for a satellite?
      * @param header                : The header considered.
      */
     public CzmlModel(final String absolutePathToObject, final double maximumScale,
                      final double minimumPixelSizeInput,
-                     final double scale, final Header header) {
-        this.modelType = getModelTypeFromString(absolutePathToObject);
+                     final double scale, final boolean isSatelliteInput, final Header header) {
+
+        this.isSatellite = isSatelliteInput;
+        this.modelType   = getModelTypeFromString(absolutePathToObject);
 
         if (this.modelType == ModelType.MODEL_3D) {
             this.absolutePath     = absolutePathToObject;
@@ -171,9 +177,15 @@ public class CzmlModel {
             this.availability = header.getAvailability();
             this.show         = true;
         } else {
-            this.absolutePath = getSatelliteResourcePath();
-            this.availability = header.getAvailability();
-            this.show         = true;
+            if (isSatellite) {
+                this.absolutePath = getSatelliteResourcePath();
+                this.availability = header.getAvailability();
+                this.show         = true;
+            } else {
+                this.absolutePath = "";
+                this.availability = header.getAvailability();
+                this.show         = false;
+            }
         }
     }
 
@@ -190,38 +202,22 @@ public class CzmlModel {
 
         this.duplicateFile(absolutePath);
 
-        if (pathExternalUsed) {
+        if (modelType == ModelType.MODEL_3D) {
 
-            if (modelType == ModelType.MODEL_3D) {
-
-                generate3DModel(packet, output);
-
-            } else if (modelType == ModelType.MODEL_2D || modelType == ModelType.EMPTY_MODEL) {
-
-                final BufferedImage image  = ImageIO.read(duplicatedLocalFile);
-                final int           height = image.getHeight();
-                final NearFarScalar nearFarScalar = new NearFarScalar(1, (double) 80 / height, 1e9,
-                        (double) 80 / height);
-                this.uri       = new URI(DEFAULT_SLASH_LOCAL + nameOfObject);
-                this.billboard = new Billboard(uri.toString(), nearFarScalar);
-
-                this.getBillboard()
-                    .write(packet, output);
-            } else {
-                throw new OreCzmlException(OreCzmlMessages.MODEL_TYPE_UNKNOWN);
-            }
-        } else if (modelType == ModelType.MODEL_3D) {
             generate3DModel(packet, output);
-        } else if (modelType == ModelType.MODEL_2D || modelType == ModelType.EMPTY_MODEL) {
-            final BufferedImage image  = ImageIO.read(duplicatedLocalFile);
-            final int           height = image.getHeight();
-            final NearFarScalar nearFarScalar = new NearFarScalar(1, (double) 80 / height, 1e9,
-                    (double) 80 / height);
-            this.uri       = new URI(DEFAULT_SLASH_LOCAL + nameOfObject);
-            this.billboard = new Billboard(uri.toString(), nearFarScalar);
 
-            this.getBillboard()
-                .write(packet, output);
+        } else if (modelType == ModelType.MODEL_2D) {
+
+            write2D(packet, output);
+
+        } else if (modelType == ModelType.EMPTY_MODEL) {
+
+            if (isSatellite) {
+                writeEmpty(packet, output);
+            }
+
+        } else {
+            throw new OreCzmlException(OreCzmlMessages.MODEL_TYPE_UNKNOWN);
         }
     }
 
@@ -364,28 +360,30 @@ public class CzmlModel {
      */
     private void duplicateFile(final String absolutePathInputted) throws IOException {
 
-        final File inputtedFile = new File(absolutePathInputted);
-        this.nameOfObject = inputtedFile.getName();
+        if (!(absolutePathInputted == null)) {
+            final File inputtedFile = new File(absolutePathInputted);
+            this.nameOfObject = inputtedFile.getName();
 
-        // If you use cesiumJS, the file needs to be in the public folder of the JavaScript file to be read by the local cesiumJS.
-        // Else way, put the path to the resource folder that you are using.
-        final String Javascript = Header.getPathToExternalResourceFolder();
-        if (Javascript.isEmpty()) {
-            pathExternalUsed         = false;
-            this.duplicatedLocalFile = new File(absolutePathInputted);
-            return;
+            // If you use cesiumJS, the file needs to be in the public folder of the JavaScript file to be read by the local cesiumJS.
+            // Else way, put the path to the resource folder that you are using.
+            final String Javascript = Header.getPathToExternalResourceFolder();
+            if (Javascript.isEmpty()) {
+                pathExternalUsed         = false;
+                this.duplicatedLocalFile = new File(absolutePathInputted);
+                return;
+            }
+
+            pathExternalUsed  = true;
+            this.relativePath = Javascript + "/" + nameOfObject;
+
+            final File absoluteFile = new File(absolutePath);
+            final File relativeFile = new File(relativePath);
+            this.duplicatedLocalFile = relativeFile;
+            final Path absolutePathOfFile = absoluteFile.getAbsoluteFile()
+                                                        .toPath();
+            final Path relativePathOfFile = relativeFile.toPath();
+            Files.copy(absolutePathOfFile, relativePathOfFile, StandardCopyOption.REPLACE_EXISTING);
         }
-
-        pathExternalUsed  = true;
-        this.relativePath = Javascript + "/" + nameOfObject;
-
-        final File absoluteFile = new File(absolutePath);
-        final File relativeFile = new File(relativePath);
-        this.duplicatedLocalFile = relativeFile;
-        final Path absolutePathOfFile = absoluteFile.getAbsoluteFile()
-                                                    .toPath();
-        final Path relativePathOfFile = relativeFile.toPath();
-        Files.copy(absolutePathOfFile, relativePathOfFile, StandardCopyOption.REPLACE_EXISTING);
     }
 
     /**
@@ -437,9 +435,13 @@ public class CzmlModel {
      * @return default satellite resource path
      */
     private static String getSatelliteResourcePath() {
-        return Objects.requireNonNull(CzmlModel.class.getClassLoader()
-                                                     .getResource(DEFAULT_MODEL_NAME))
-                      .getPath();
+        if (!(CzmlModel.class.getClassLoader()
+                             .getResource(DEFAULT_MODEL_NAME) == null)) {
+            return CzmlModel.class.getClassLoader()
+                                  .getResource(DEFAULT_MODEL_NAME)
+                                  .getPath();
+        }
+        return null;
     }
 
     /**
@@ -463,5 +465,23 @@ public class CzmlModel {
             modelWriter.writeIncrementallyLoadTexturesProperty(true);
             modelWriter.writeShowProperty(true);
         }
+    }
+
+    private void write2D(final PacketCesiumWriter packet,
+                         final CesiumOutputStream output) throws IOException, URISyntaxException {
+        if (show) {
+            final BufferedImage image  = ImageIO.read(duplicatedLocalFile);
+            final int           height = image.getHeight();
+            final NearFarScalar nearFarScalar = new NearFarScalar(1, (double) 80 / height, 1e9,
+                    (double) 80 / height);
+            this.uri       = new URI(DEFAULT_SLASH_LOCAL + nameOfObject);
+            this.billboard = new Billboard(uri.toString(), nearFarScalar);
+            this.billboard.write(packet, output);
+        }
+    }
+
+    private void writeEmpty(final PacketCesiumWriter packet, final CesiumOutputStream output) {
+        this.billboard = new Billboard(DEFAULT_MODEL_NAME);
+        this.billboard.write(packet, output);
     }
 }

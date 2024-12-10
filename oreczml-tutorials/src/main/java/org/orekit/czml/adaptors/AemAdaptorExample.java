@@ -42,7 +42,7 @@ import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScalesFactory;
 
 /**
- * The type Aem adaptor example.
+ * This tutorial provides an example of how an Aem object ban be used to build an orientation from it.
  */
 public class AemAdaptorExample {
 
@@ -51,10 +51,10 @@ public class AemAdaptorExample {
     }
 
     /**
-     * Main.
+     * Main of the Aem tutorial.
      *
-     * @param args the args
-     * @throws Exception the exception
+     * @param args arguments of the main function
+     * @throws Exception exception to throw
      */
     public static void main (final String[] args) throws Exception {
 

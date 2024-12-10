@@ -91,6 +91,9 @@ public class Satellite extends AbstractPrimaryObject {
     /** The default format for the formatted ID. */
     public static final String DEFAULT_FORMAT = DEFAULT_ID + "{P(%1.8e, %2.8e, %3.8e), V(%4.8e, %5.8e, %6.8e)}";
 
+    /** The intertial frame used in the position. */
+    public static final String DEFAULT_INERTIAL = "INERTIAL";
+
     /**
      * The default orbit color of the satellite.
      */
@@ -183,6 +186,9 @@ public class Satellite extends AbstractPrimaryObject {
     /** The header used for the satellite. */
     private final Header header;
 
+    /** The description of the satellite. */
+    private String description;
+
 
     // Constructor
 
@@ -242,14 +248,14 @@ public class Satellite extends AbstractPrimaryObject {
         this.setAvailability(new TimeInterval(DateUtils.toJulianDate(startDateInput, header.getTimeScale()),
                 DateUtils.toJulianDate(finalDateInput, header.getTimeScale())));
         this.satellitePropagator = propagator;
-
-        this.frame     = propagator.getFrame();
-        this.color     = color;
-        this.model     = new CzmlModel(modelPath, header);
-        this.modelType = model.getModelType();
-        this.startDate = startDateInput;
-        this.finalDate = finalDateInput;
-        this.header    = header;
+        this.description         = "<!--HTML-->\r\n<p>Id : " + customID + "</p>\r\n<p>" + "Simulated from : " + startDateInput + " to " + finalDateInput + "</p>";
+        this.frame               = propagator.getFrame();
+        this.color               = color;
+        this.model               = new CzmlModel(modelPath, true, header);
+        this.modelType           = model.getModelType();
+        this.startDate           = startDateInput;
+        this.finalDate           = finalDateInput;
+        this.header              = header;
         // Setup propagator
         multiplexerSetup(propagator);
         // Propagation
@@ -283,6 +289,7 @@ public class Satellite extends AbstractPrimaryObject {
             packet.writeId(this.getId());
             packet.writeName(getName());
             packet.writeAvailability(getAvailability());
+            packet.writeDescriptionProperty(description);
 
             czmlDisplay(packet, stream, output);
 
@@ -360,8 +367,7 @@ public class Satellite extends AbstractPrimaryObject {
             for (SpacecraftState spacecraftState : spaceCraftStates) {
                 toReturn.add(spacecraftState.getAttitude());
             }
-        }
-        else {
+        } else {
             toReturn = attitudes;
         }
         return Collections.unmodifiableList(toReturn);
@@ -538,7 +544,7 @@ public class Satellite extends AbstractPrimaryObject {
      * @param attitudes the attitudes
      */
     public void setAttitudes(final List<Attitude> attitudes) {
-        this.attitudes = new ArrayList<>(attitudes);
+        this.attitudes   = new ArrayList<>(attitudes);
         this.orientation = new Orientation(attitudes, getFrame(), header);
         oriented         = true;
     }
@@ -562,10 +568,19 @@ public class Satellite extends AbstractPrimaryObject {
     }
 
     /**
+     * Sets the description.
+     *
+     * @param descriptionInput : The description
+     */
+    public void setDescription(final String descriptionInput) {
+        this.description = descriptionInput;
+    }
+
+    /**
      * Reset attitudes.
      */
     public void resetAttitudes() {
-        this.attitudes = new ArrayList<>();
+        this.attitudes   = new ArrayList<>();
         this.orientation = null;
         oriented         = false;
     }
@@ -600,6 +615,10 @@ public class Satellite extends AbstractPrimaryObject {
                              final CesiumOutputStream output) throws URISyntaxException, IOException {
 
         if (getModelType() == ModelType.MODEL_2D || getModelType() == ModelType.EMPTY_MODEL) {
+            try (PositionCesiumWriter positionWriter = packet.getPositionWriter()) {
+                positionWriter.open(output);
+                positionWriter.writeReferenceFrame(DEFAULT_INERTIAL);
+            }
             getModel().generateCZML(packet, output);
             if (getDisplayAttitude()) {
                 orientation.write(packet, output);
@@ -607,7 +626,7 @@ public class Satellite extends AbstractPrimaryObject {
         } else if (getModelType() == ModelType.MODEL_3D) {
             try (PositionCesiumWriter positionWriter = packet.getPositionWriter()) {
                 positionWriter.open(output);
-                positionWriter.writeReferenceFrame("INERTIAL");
+                positionWriter.writeReferenceFrame(DEFAULT_INERTIAL);
             }
             if (!getDisplayAttitude()) {
 
@@ -692,7 +711,9 @@ public class Satellite extends AbstractPrimaryObject {
                 if (displayAttitude) {
                     this.orientation = Orientation.builder(getAttitudes(), getFrame(), header)
                                                   .withOptionalRotation(optionalRotation)
+                                                  .withInvertToITRF(false)
                                                   .build();
+                    oriented         = true;
                 }
             } else if (getModelType() == ModelType.MODEL_3D) {
                 if (!displayAttitude) {
@@ -700,7 +721,9 @@ public class Satellite extends AbstractPrimaryObject {
                 } else {
                     this.orientation = Orientation.builder(getAttitudes(), getFrame(), header)
                                                   .withOptionalRotation(optionalRotation)
+                                                  .withInvertToITRF(false)
                                                   .build();
+                    oriented         = true;
                 }
             }
         }

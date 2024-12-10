@@ -31,5 +31,31 @@
         }
       }
     }
+  },
+  "polyline":{
+    "width":1,
+    "arcType":"NONE",
+    "material":{
+      "solidColor":{
+        "color":{
+          "rgba":[
+            0,255,255,255
+          ]
+        }
+      }
+    },
+    "arcType":"NONE",
+    "positions":{
+      "references":[
+        "GROUND_TRACK/SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-7.00506805e+03, 4.28936708e-13, 1.23518250e+03)}#position",
+        "SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-7.00506805e+03, 4.28936708e-13, 1.23518250e+03)}#position"
+      ]
+    },
+    "show":[
+      {
+        "interval":"2024-01-01T00:00:00Z/2024-01-01T00:01:00Z",
+        "boolean":true
+      }
+    ]
   }
 }

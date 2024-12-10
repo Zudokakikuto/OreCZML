@@ -43,7 +43,7 @@ public class CzmlModelTest extends AbstractTest {
 
         final Header header = dummyHeader();
 
-        final CzmlModel modelToTest = new CzmlModel(loadResources("Default3DModels/ISSModel.glb"), header);
+        final CzmlModel modelToTest = new CzmlModel(loadResources("Default3DModels/ISSModel.glb"), false, header);
 
         final String pathFile = loadResources("templateFile/nonvisual/CzmlModelTemplate.txt");
 

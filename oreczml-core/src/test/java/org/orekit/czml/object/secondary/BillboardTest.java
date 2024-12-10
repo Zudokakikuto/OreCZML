@@ -16,10 +16,14 @@
  */
 package org.orekit.czml.object.secondary;
 
+import cesiumlanguagewriter.CesiumHorizontalOrigin;
+import cesiumlanguagewriter.CesiumResourceBehavior;
+import cesiumlanguagewriter.NearFarScalar;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.czml.file.AbstractTest;
 
+import java.awt.Color;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -39,12 +43,28 @@ public class BillboardTest extends AbstractTest {
 
         loadOrekitData();
 
-        final String imageStr ="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACvSURBVDhPrZDRDcMgDAU9GqN0lIzijw6SUbJJygUeNQgSqepJTyHG91LVVpwDdfxM3T9TSl1EXZvDwii471fivK73cBFFQNTT/d2KoGpfGOpSIkhUpgUMxq9DFEsWv4IXhlyCnhBFnZcFEEuYqbiUlNwWgMTdrZ3JbQFoEVG53rd8ztG9aPJMnBUQf/VFraBJeWnLS0RfjbKyLJA8FkT5seDYS1Qwyv8t0B/5C2ZmH2/eTGNNBgMmAAAAAElFTkSuQmCC";
+        final String imageStr = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACvSURBVDhPrZDRDcMgDAU9GqN0lIzijw6SUbJJygUeNQgSqepJTyHG91LVVpwDdfxM3T9TSl1EXZvDwii471fivK73cBFFQNTT/d2KoGpfGOpSIkhUpgUMxq9DFEsWv4IXhlyCnhBFnZcFEEuYqbiUlNwWgMTdrZ3JbQFoEVG53rd8ztG9aPJMnBUQf/VFraBJeWnLS0RfjbKyLJA8FkT5seDYS1Qwyv8t0B/5C2ZmH2/eTGNNBgMmAAAAAElFTkSuQmCC";
 
         final Billboard billboard = new Billboard(imageStr);
 
+        final Billboard billboardCoverage = new Billboard(imageStr, 10);
+
+        final NearFarScalar nearFarScalar = new NearFarScalar(10.0, 20.0, 100.0, 50.0);
+
+        final Billboard billboardNearFar = new Billboard(imageStr, nearFarScalar);
+
+        final Billboard complexConstructor = new Billboard(CesiumResourceBehavior.LINK_TO,
+                CesiumHorizontalOrigin.CENTER, imageStr, true, 10,
+                Color.RED, nearFarScalar);
+
         final String pathFile = loadResources("templateFile/secondary/BillboardTemplate.txt");
+        final String coveragePathFile = loadResources("templateFile/secondary/BillboardCoverageTemplate.txt");
+        final String nearFarPathFile = loadResources("templateFile/secondary/BillboardNearFarTemplate.txt");
+        final String complexConstructorPathFile = loadResources("templateFile/secondary/BillboardComplexConstructorTemplate.txt");
 
         Assertions.assertEquals(Files.readString(Path.of(pathFile)), billboard.toString());
+        Assertions.assertEquals(Files.readString(Path.of(coveragePathFile)), billboardCoverage.toString());
+        Assertions.assertEquals(Files.readString(Path.of(nearFarPathFile)), billboardNearFar.toString());
+        Assertions.assertEquals(Files.readString(Path.of(complexConstructorPathFile)), complexConstructor.toString());
     }
 }

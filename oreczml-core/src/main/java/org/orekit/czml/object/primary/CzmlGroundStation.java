@@ -137,6 +137,9 @@ public class CzmlGroundStation extends AbstractPrimaryObject {
      */
     private final List<String> modelPaths;
 
+    /** The descriptions to write for each station. */
+    private List<String> descriptions = new ArrayList<>();
+
     //// Constructors
     // Single Station Constructors
 
@@ -162,8 +165,8 @@ public class CzmlGroundStation extends AbstractPrimaryObject {
      * @throws URISyntaxException the uri syntax exception
      * @throws IOException        the io exception
      */
-    public CzmlGroundStation(final TopocentricFrame topocentricFrame,
-                             final String modelPath, final Header header) throws URISyntaxException, IOException {
+    public CzmlGroundStation(final TopocentricFrame topocentricFrame, final String modelPath,
+                             final Header header) throws URISyntaxException, IOException {
 
         this(Collections.singletonList(topocentricFrame), modelPath, header);
     }
@@ -192,8 +195,8 @@ public class CzmlGroundStation extends AbstractPrimaryObject {
      * @throws URISyntaxException the uri syntax exception
      * @throws IOException        the io exception
      */
-    public CzmlGroundStation(final List<TopocentricFrame> topocentricFrames,
-                             final String modelPath, final Header header) throws URISyntaxException, IOException {
+    public CzmlGroundStation(final List<TopocentricFrame> topocentricFrames, final String modelPath,
+                             final Header header) throws URISyntaxException, IOException {
         this(topocentricFrames, Collections.singletonList(modelPath),
                 topocentricFrames.size() + " " + topocentricFrames.get(0)
                                                                   .getName() + DEFAULT_ID, header);
@@ -209,8 +212,7 @@ public class CzmlGroundStation extends AbstractPrimaryObject {
      * @throws URISyntaxException the uri syntax exception
      * @throws IOException        the io exception
      */
-    public CzmlGroundStation(final List<TopocentricFrame> topocentricFrames,
-                             final List<String> modelPathsInput,
+    public CzmlGroundStation(final List<TopocentricFrame> topocentricFrames, final List<String> modelPathsInput,
                              final String customID, final Header header) throws URISyntaxException, IOException {
 
         this.topocentricFrames = new ArrayList<>(topocentricFrames);
@@ -227,6 +229,10 @@ public class CzmlGroundStation extends AbstractPrimaryObject {
             final PositionType positionType = PositionType.CARTOGRAPHIC_RADIANS;
             this.availabilities.add(header.getAvailability());
             this.ids.add(DEFAULT_ID + currentTopocentricFrame.getName());
+            this.descriptions.add(
+                    "<!--HTML-->\r\n<p>Id : " + DEFAULT_ID + currentTopocentricFrame.getName() + "</p\r\n<p>Longitude : " + longitude + "</p>\r\n<p>Latitude : " + latitude + "</p>\r\n<p>Simulated from : " + header.getAvailability()
+                                                                                                                                                                         .getStart() + " to " + header.getAvailability()
+                                                                                                                                                                                                      .getStop() + "</p>");
             this.billboards.add(new Billboard(DEFAULT_IMAGE));
             this.names.add(DEFAULT_NAME + currentTopocentricFrame.getName());
             this.positionsOnEarth.add(currentTopocentricFrame.getCartesianPoint());
@@ -240,10 +246,10 @@ public class CzmlGroundStation extends AbstractPrimaryObject {
                                                               .isEmpty()) {
                 this.model = null;
             } else if (modelPathsInput.size() == 1) {
-                this.model = new CzmlModel(modelPathsInput.get(0), 50, 300, 2, header);
+                this.model = new CzmlModel(modelPathsInput.get(0), 50, 300, 2, false, header);
             } else {
                 for (final String currentPathModel : modelPathsInput) {
-                    this.models.add(new CzmlModel(currentPathModel, 50, 300, 2, header));
+                    this.models.add(new CzmlModel(currentPathModel, 50, 300, 2, false, header));
                 }
             }
         }
@@ -269,7 +275,8 @@ public class CzmlGroundStation extends AbstractPrimaryObject {
      * @param header                 the header
      * @return the czml ground station builder
      */
-    public static CzmlGroundStationBuilder builder(final List<TopocentricFrame> topocentricFramesInput, final Header header) {
+    public static CzmlGroundStationBuilder builder(final List<TopocentricFrame> topocentricFramesInput,
+                                                   final Header header) {
         return new CzmlGroundStationBuilder(topocentricFramesInput, header);
     }
 
@@ -466,8 +473,7 @@ public class CzmlGroundStation extends AbstractPrimaryObject {
      * @param iterationNumber : The iteration number of the current station.
      * @param output          : The output stream of cesium that will contain the strings to write into the CzmLFile.
      */
-    private void writeMultipleModels(final PacketCesiumWriter packet,
-                                     final int iterationNumber,
+    private void writeMultipleModels(final PacketCesiumWriter packet, final int iterationNumber,
                                      final CesiumOutputStream output) throws IOException, URISyntaxException {
         if (models.isEmpty()) {
             writeBillBoard(packet, output);

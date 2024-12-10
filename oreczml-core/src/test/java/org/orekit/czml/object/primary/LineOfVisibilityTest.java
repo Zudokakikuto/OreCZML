@@ -57,7 +57,7 @@ public class LineOfVisibilityTest extends AbstractTest {
      * @throws URISyntaxException the uri syntax exception
      */
     @Test
-    void LineOfVisbilityConstructorTest() throws IOException, URISyntaxException {
+    void lineOfVisibilityConstructorTest() throws IOException, URISyntaxException {
 
         loadOrekitData();
 
@@ -72,7 +72,8 @@ public class LineOfVisibilityTest extends AbstractTest {
         final AbsoluteDate finalDate = startDate.shiftedBy(10 * 3600);
 
         final KeplerianOrbit initialOrbit = new KeplerianOrbit(7878000, 0, FastMath.toRadians(80), 0,
-                FastMath.toRadians(90), FastMath.toRadians(0), PositionAngleType.MEAN, FramesFactory.getEME2000(), startDate,
+                FastMath.toRadians(90), FastMath.toRadians(0), PositionAngleType.MEAN, FramesFactory.getEME2000(),
+                startDate,
                 Constants.WGS84_EARTH_MU);
 
         final SpacecraftState initialState = new SpacecraftState(initialOrbit);
@@ -104,9 +105,16 @@ public class LineOfVisibilityTest extends AbstractTest {
 
         final LineOfVisibility line = new LineOfVisibility(topocentricToulouse, satellite, header);
 
+        final LineOfVisibility coverageLine = LineOfVisibility.builder(topocentricToulouse, satellite, header)
+                                                              .withHeader(header)
+                                                              .withCustomID("CustomID")
+                                                              .withAngleOfAperture(90.0)
+                                                              .build();
+
         final String pathFile = loadResources("templateFile/primary/LineOfVisibilityTemplate.txt");
+        final String pathCoverageFile = loadResources("templateFile/primary/LineOfVisibilityCoverageTemplate.txt");
 
         Assertions.assertEquals(Files.readString(Path.of(pathFile)), line.toString());
+        Assertions.assertEquals(Files.readString(Path.of(pathCoverageFile)), coverageLine.toString());
     }
-
 }

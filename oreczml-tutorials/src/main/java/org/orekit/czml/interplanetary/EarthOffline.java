@@ -27,7 +27,8 @@ import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScalesFactory;
 
 /**
- * The type Earth offline.
+ * This tutorial shows how the earth can be implemented
+ * if the simulation is offline can the earth needs to be loaded anyway.
  */
 public class EarthOffline {
 
@@ -35,10 +36,10 @@ public class EarthOffline {
     }
 
     /**
-     * Main.
+     * Main of the Earth offline tutorial.
      *
-     * @param args the args
-     * @throws Exception the exception
+     * @param args arguments of the main function
+     * @throws Exception exception to throw
      */
     public static void main(final String[] args) throws Exception {
         // Load orekit data

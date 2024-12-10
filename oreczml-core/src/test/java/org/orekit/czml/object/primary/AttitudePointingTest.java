@@ -60,6 +60,8 @@ public class AttitudePointingTest extends AbstractTest {
                                              .build();
 
         final AttitudePointing attitudePointing = new AttitudePointing(satellite, getEarth(), Vector3D.MINUS_I, header);
+        attitudePointing.displayPointingPath();
+        attitudePointing.displayPeriodPointingPath();
 
         final AttitudePointing attitudePointingWithBuilder = AttitudePointing.builder(satellite, getEarth(),
                                                                                      Vector3D.MINUS_I, header)

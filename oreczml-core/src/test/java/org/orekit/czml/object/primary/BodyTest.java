@@ -48,9 +48,12 @@ public class BodyTest extends AbstractTest {
 
         final Body body = new Body(CelestialBodyFactory.getMars(), pathToModel, header);
 
+        final double marsOrbitalPeriod = 686.96 * 24 * 3600; // in sec
+
         final Body bodyBuilder = Body.builder(CelestialBodyFactory.getMars(), pathToModel, header)
                                      .withHeader(header)
                                      .withCustomID("CustomID")
+                                     .displayOnlyOnePeriod(marsOrbitalPeriod)
                                      .build();
 
         final Body mercury = BodyFactory.getMercury(header);
@@ -63,19 +66,25 @@ public class BodyTest extends AbstractTest {
         final Body pluto   = BodyFactory.getPluto(header);
         final Body sun     = BodyFactory.getSun(header);
 
-        final String   bodyPathFile    = loadResources("templateFile/primary/BodyTemplate.txt");
-        final CzmlFile file            = CzmlFile.builder()
-                                                 .withHeader(header)
-                                                 .withBody(mercury, earth, venus, jupiter, saturn, uranus, neptune,
-                                                         pluto, sun)
-                                                 .build();
-        final String   bodiesPathFiles = loadResources("templateFile/primary/BodiesTemplate.txt");
-        final String   builderPathFiles = loadResources("templateFile/primary/BodyWithBuilderTemplate.txt");
+        sun.noOrbitDisplay();
+
+        final String bodyPathFile = loadResources("templateFile/primary/BodyTemplate.txt");
+        final CzmlFile file = CzmlFile.builder()
+                                      .withHeader(header)
+                                      .withBody(mercury, earth, venus, jupiter, saturn, uranus, neptune,
+                                              pluto, sun)
+                                      .build();
+
+        final String bodiesPathFiles  = loadResources("templateFile/primary/BodiesTemplate.txt");
+        final String builderPathFiles = loadResources("templateFile/primary/BodyWithBuilderTemplate.txt");
 
         Assertions.assertEquals(Files.readString(Path.of(bodyPathFile)), body.toString());
         Assertions.assertEquals(Files.readString(Path.of(builderPathFiles)), bodyBuilder.toString());
 
         Assertions.assertEquals(Files.readString(Path.of(bodiesPathFiles)), file.toString());
 
+        Assertions.assertEquals(CelestialBodyFactory.getMars(), bodyBuilder.getBody());
+        Assertions.assertTrue(bodyBuilder.isDisplayOrbit());
+        Assertions.assertTrue(bodyBuilder.isDisplayOnlyOnePeriod());
     }
 }

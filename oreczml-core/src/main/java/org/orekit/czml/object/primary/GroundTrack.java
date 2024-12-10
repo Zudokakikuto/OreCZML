@@ -187,6 +187,7 @@ public class GroundTrack extends AbstractPrimaryObject {
         final List<Satellite> satellites = constellation.getSatellites();
         this.color        = color;
         this.groundTracks = new ArrayList<>();
+        this.header       = header;
         this.setId(customID);
         this.setName(DEFAULT_NAME + constellation.getTotalOfSatellite() + DEFAULT_CONSTELLATION_NUMBER_OF_SAT);
         this.setAvailability(header.getAvailability());

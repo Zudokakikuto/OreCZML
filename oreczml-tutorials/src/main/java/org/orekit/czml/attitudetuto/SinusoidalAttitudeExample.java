@@ -16,7 +16,6 @@
  */
 package org.orekit.czml.attitudetuto;
 
-import org.orekit.czml.TutorialUtils;
 import org.hipparchus.geometry.euclidean.threed.Rotation;
 import org.hipparchus.geometry.euclidean.threed.RotationConvention;
 import org.hipparchus.geometry.euclidean.threed.RotationOrder;
@@ -26,6 +25,7 @@ import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
 import org.orekit.attitudes.Attitude;
 import org.orekit.attitudes.LofOffset;
+import org.orekit.czml.TutorialUtils;
 import org.orekit.czml.file.CzmlFile;
 import org.orekit.czml.object.primary.AttitudePointing;
 import org.orekit.czml.object.primary.CentralBodyReferenceSystem;
@@ -55,26 +55,27 @@ import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.AngularCoordinates;
 import org.orekit.utils.Constants;
+import org.orekit.utils.IERSConventions;
 import org.orekit.utils.PVCoordinatesProvider;
 
 import java.awt.Color;
 
 /**
- * The type Sinusoidal attitude example.
+ * This tutorial provides an example of a sinusoidal attitude of a satellite and how to set up such scenario.
  */
 public class SinusoidalAttitudeExample {
 
-    private SinusoidalAttitudeExample () {
+    private SinusoidalAttitudeExample() {
         // empty
     }
 
     /**
-     * Main.
+     * Main of the sinusoidal attitude tutorial.
      *
-     * @param args the args
-     * @throws Exception the exception
+     * @param args arguments of the main function
+     * @throws Exception exception to throw
      */
-    public static void main (final String[] args) throws Exception {
+    public static void main(final String[] args) throws Exception {
         // Load orekit data
         TutorialUtils.loadOrekitData();
 
@@ -98,7 +99,8 @@ public class SinusoidalAttitudeExample {
 
         // Build of a LEO orbit
         final KeplerianOrbit initialOrbit = new KeplerianOrbit(7878000, 0, FastMath.toRadians(20), 0,
-                FastMath.toRadians(0), FastMath.toRadians(0), PositionAngleType.MEAN, FramesFactory.getEME2000(), startDate,
+                FastMath.toRadians(0), FastMath.toRadians(0), PositionAngleType.MEAN, FramesFactory.getEME2000(),
+                startDate,
                 Constants.WGS84_EARTH_MU);
 
         final SpacecraftState initialState = new SpacecraftState(initialOrbit);
@@ -115,7 +117,8 @@ public class SinusoidalAttitudeExample {
 
         final NormalizedSphericalHarmonicsProvider provider = GravityFieldFactory.getNormalizedProvider(10,
                 10);
-        final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(FramesFactory.getEME2000(),
+        final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(FramesFactory.getITRF(
+                IERSConventions.IERS_2010, true),
                 provider);
 
         propagator.setOrbitType(OrbitType.CARTESIAN);
@@ -124,7 +127,8 @@ public class SinusoidalAttitudeExample {
 
         final EphemerisGenerator generator = propagator.getEphemerisGenerator();
 
-        final SinusoidalLof sinusoidalLof = new SinusoidalLof(FramesFactory.getEME2000(), LOFType.VNC, Vector3D.PLUS_I, 3600,
+        final SinusoidalLof sinusoidalLof = new SinusoidalLof(FramesFactory.getEME2000(), LOFType.VNC, Vector3D.PLUS_I,
+                3600,
                 FastMath.toRadians(45.0), initialState.getDate());
         propagator.setAttitudeProvider(sinusoidalLof);
 
@@ -140,7 +144,8 @@ public class SinusoidalAttitudeExample {
                                              .withReferenceSystem()
                                              .build();
 
-        final AttitudePointing pointing = AttitudePointing.builder(satellite, TutorialUtils.getEarth(), Vector3D.MINUS_K, header)
+        final AttitudePointing pointing = AttitudePointing.builder(satellite, TutorialUtils.getEarth(),
+                                                                  Vector3D.MINUS_K, header)
                                                           .withColor(Color.ORANGE)
                                                           .displayPointingPath()
                                                           .displayPeriodPointingPath()
@@ -150,7 +155,8 @@ public class SinusoidalAttitudeExample {
 
         // Creation of the field of observation of the satellite, it describes the area the satellite see
         final Transform initialInertToBody = initialState.getFrame()
-                                                         .getTransformTo(TutorialUtils.getEarth().getBodyFrame(),
+                                                         .getTransformTo(TutorialUtils.getEarth()
+                                                                                      .getBodyFrame(),
                                                                  initialState.getDate());
         final Transform initialFovBody = new Transform(initialState.getDate(), initialState.toTransform()
                                                                                            .getInverse(),
@@ -212,14 +218,14 @@ public class SinusoidalAttitudeExample {
          * @param maxAngle      the max angle
          * @param initialDate   the initial date
          */
-        public SinusoidalLof (final Frame inertialFrame, final LOF lof, final Vector3D axis, final double period,
-                              final double maxAngle, final AbsoluteDate initialDate) {
+        public SinusoidalLof(final Frame inertialFrame, final LOF lof, final Vector3D axis, final double period,
+                             final double maxAngle, final AbsoluteDate initialDate) {
             super(inertialFrame, lof);
-            this.period = period;
+            this.period        = period;
             this.inertialFrame = inertialFrame;
-            this.initialDate = initialDate;
-            this.maxAngle = maxAngle;
-            this.axis = axis;
+            this.initialDate   = initialDate;
+            this.maxAngle      = maxAngle;
+            this.axis          = axis;
         }
 
         /**
@@ -236,19 +242,19 @@ public class SinusoidalAttitudeExample {
          * @param alpha2        the alpha 2
          * @param alpha3        the alpha 3
          */
-        public SinusoidalLof (final Frame inertialFrame, final LOF lof, final Vector3D axis, final double period,
-                              final double maxAngle, final AbsoluteDate initialDate, final RotationOrder order,
-                              final double alpha1, final double alpha2, final double alpha3) {
+        public SinusoidalLof(final Frame inertialFrame, final LOF lof, final Vector3D axis, final double period,
+                             final double maxAngle, final AbsoluteDate initialDate, final RotationOrder order,
+                             final double alpha1, final double alpha2, final double alpha3) {
             super(inertialFrame, lof, order, alpha1, alpha2, alpha3);
             this.inertialFrame = inertialFrame;
-            this.period = period;
-            this.initialDate = initialDate;
-            this.maxAngle = maxAngle;
-            this.axis = axis;
+            this.period        = period;
+            this.initialDate   = initialDate;
+            this.maxAngle      = maxAngle;
+            this.axis          = axis;
         }
 
         @Override
-        public Attitude getAttitude (final PVCoordinatesProvider pvProv, final AbsoluteDate date, final Frame frame) {
+        public Attitude getAttitude(final PVCoordinatesProvider pvProv, final AbsoluteDate date, final Frame frame) {
             final double deltaT = date.durationFrom(initialDate);
             final double alpha  = maxAngle * FastMath.sin(2 * FastMath.PI / period * deltaT);
 

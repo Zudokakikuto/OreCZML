@@ -16,6 +16,7 @@
     "id":"SAT/{P(7.87800000e+06, 0.00000000e+00, 0.00000000e+00), V(-0.00000000e+00, 6.68415814e+03, 2.43283460e+03)}",
     "name":"Satellite",
     "availability":"2024-03-15T00:00:00Z/2024-03-15T05:00:00Z",
+    "description":"<!--HTML-->\r\n<p>Id : SAT/{P(7.87800000e+06, 0.00000000e+00, 0.00000000e+00), V(-0.00000000e+00, 6.68415814e+03, 2.43283460e+03)}</p>\r\n<p>Simulated from : 2024-03-15T00:00:00.000Z to 2024-03-15T05:00:00.000Z</p>",
     "position":{
       "referenceFrame":"INERTIAL"
     },
@@ -667,6 +668,10 @@
     "id":"SAT/{P(1.05798000e+07, 0.00000000e+00, 0.00000000e+00), V(-0.00000000e+00, 1.06586055e+03, 6.04479557e+03)}",
     "name":"Satellite",
     "availability":"2024-03-15T00:00:00Z/2024-03-15T05:00:00Z",
+    "description":"<!--HTML-->\r\n<p>Id : SAT/{P(1.05798000e+07, 0.00000000e+00, 0.00000000e+00), V(-0.00000000e+00, 1.06586055e+03, 6.04479557e+03)}</p>\r\n<p>Simulated from : 2024-03-15T00:00:00.000Z to 2024-03-15T05:00:00.000Z</p>",
+    "position":{
+      "referenceFrame":"INERTIAL"
+    },
     "billboard":{
       "horizontalOrigin":"CENTER",
       "color":{
@@ -674,13 +679,9 @@
           0,255,255,195
         ]
       },
-      "scaleByDistance":{
-        "nearFarScalar":[
-          1,0.15625,1000000000,0.15625
-        ]
-      },
+      "scale":1.5,
       "show":true,
-      "image":"./satellite.png"
+      "image":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADJSURBVDhPnZHRDcMgEEMZjVEYpaNklIzSEfLfD4qNnXAJSFWfhO7w2Zc0Tf9QG2rXrEzSUeZLOGm47WoH95x3Hl3jEgilvDgsOQUTqsNl68ezEwn1vae6lceSEEYvvWNT/Rxc4CXQNGadho1NXoJ+9iaqc2xi2xbt23PJCDIB6TQjOC6Bho/sDy3fBQT8PrVhibU7yBFcEPaRxOoeTwbwByCOYf9VGp1BYI1BA+EeHhmfzKbBoJEQwn1yzUZtyspIQUha85MpkNIXB7GizqDEECsAAAAASUVORK5CYII="
     },
     "path":{
       "show":{
@@ -1011,6 +1012,10 @@
     "id":"SAT/{P(6.47825910e-10, 1.83716299e+06, 1.04190691e+07), V(-6.13804628e+03, 6.52651356e-14, 3.70136977e-13)}",
     "name":"Satellite",
     "availability":"2024-03-15T00:00:00Z/2024-03-15T05:00:00Z",
+    "description":"<!--HTML-->\r\n<p>Id : SAT/{P(6.47825910e-10, 1.83716299e+06, 1.04190691e+07), V(-6.13804628e+03, 6.52651356e-14, 3.70136977e-13)}</p>\r\n<p>Simulated from : 2024-03-15T00:00:00.000Z to 2024-03-15T05:00:00.000Z</p>",
+    "position":{
+      "referenceFrame":"INERTIAL"
+    },
     "billboard":{
       "horizontalOrigin":"CENTER",
       "color":{
@@ -1018,13 +1023,9 @@
           0,255,255,195
         ]
       },
-      "scaleByDistance":{
-        "nearFarScalar":[
-          1,0.15625,1000000000,0.15625
-        ]
-      },
+      "scale":1.5,
       "show":true,
-      "image":"./satellite.png"
+      "image":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADJSURBVDhPnZHRDcMgEEMZjVEYpaNklIzSEfLfD4qNnXAJSFWfhO7w2Zc0Tf9QG2rXrEzSUeZLOGm47WoH95x3Hl3jEgilvDgsOQUTqsNl68ezEwn1vae6lceSEEYvvWNT/Rxc4CXQNGadho1NXoJ+9iaqc2xi2xbt23PJCDIB6TQjOC6Bho/sDy3fBQT8PrVhibU7yBFcEPaRxOoeTwbwByCOYf9VGp1BYI1BA+EeHhmfzKbBoJEQwn1yzUZtyspIQUha85MpkNIXB7GizqDEECsAAAAASUVORK5CYII="
     },
     "path":{
       "show":{

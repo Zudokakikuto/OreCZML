@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The type Multiple ground stations example.
+ * This tutorial provides an example of how several ground stations can be set up.
  */
 public class MultipleGroundStationsExample {
 
@@ -40,7 +40,7 @@ public class MultipleGroundStationsExample {
     }
 
     /**
-     * Main.
+     * Main of the multiple ground stations tutorial.
      *
      * @param args the args
      * @throws Exception the exception

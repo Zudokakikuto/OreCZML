@@ -39,9 +39,10 @@ import org.orekit.propagation.numerical.NumericalPropagator;
 import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.Constants;
+import org.orekit.utils.IERSConventions;
 
 /**
- * The type Model loading example.
+ * This tutorial provides an example of how a 3D model can be loaded on a satellite.
  */
 public class ModelLoadingExample {
 
@@ -50,7 +51,7 @@ public class ModelLoadingExample {
     }
 
     /**
-     * Main.
+     * Main of the model loading tutorial.
      *
      * @param args the args
      * @throws Exception the exception
@@ -92,7 +93,8 @@ public class ModelLoadingExample {
 
         final NormalizedSphericalHarmonicsProvider provider = GravityFieldFactory.getNormalizedProvider(10,
                 10);
-        final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(FramesFactory.getEME2000(),
+        final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(FramesFactory.getITRF(
+                IERSConventions.IERS_2010, true),
                 provider);
 
         final double[][] tolerances = NumericalPropagator.tolerances(TutorialUtils.POSITION_TOLERANCE, initialOrbit,

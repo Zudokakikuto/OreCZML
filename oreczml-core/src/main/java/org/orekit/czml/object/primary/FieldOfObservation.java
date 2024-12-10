@@ -32,7 +32,7 @@ import org.orekit.czml.archi.builder.FieldOfObservationBuilder;
 import org.orekit.czml.object.Polyline;
 import org.orekit.czml.object.Utils.DateUtils;
 import org.orekit.czml.object.nonvisual.PointOnBody;
-import org.orekit.frames.FramesFactory;
+import org.orekit.data.DataContext;
 import org.orekit.frames.TopocentricFrame;
 import org.orekit.frames.Transform;
 import org.orekit.geometry.fov.FieldOfView;
@@ -179,10 +179,10 @@ public class FieldOfObservation extends AbstractPrimaryObject {
                               final Header header) throws URISyntaxException, IOException {
         this(satellite, fovInput, fovToBodyInput,
                 new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS, Constants.WGS84_EARTH_FLATTENING,
-                        FramesFactory.getITRF(IERSConventions.IERS_2010, true)), DEFAULT_ANGULAR_STEP, DEFAULT_COLOR,
+                        DataContext.getDefault().getFrames().getITRF(IERSConventions.IERS_2010, true)), DEFAULT_ANGULAR_STEP, DEFAULT_COLOR,
                 DEFAULT_ID + satellite.getName() + "/" + new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS,
                         Constants.WGS84_EARTH_FLATTENING,
-                        FramesFactory.getITRF(IERSConventions.IERS_2010, true)).getBodyFrame()
+                        DataContext.getDefault().getFrames().getITRF(IERSConventions.IERS_2010, true)).getBodyFrame()
                                                                                .getName(), header);
     }
 

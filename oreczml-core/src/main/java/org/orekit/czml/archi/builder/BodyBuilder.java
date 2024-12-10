@@ -43,6 +43,15 @@ public class BodyBuilder {
     /** The header to use if several are used. */
     private Header header;
 
+    /** To know if the orbit must be displayed or not. */
+    private boolean noOrbitDisplay;
+
+    /** To know if one period must be displayed or not for the body. */
+    private boolean displayOnlyOnePeriod;
+
+    /** The period of the orbit. */
+    private double period;
+
     /**
      * The body builder constructor.
      *
@@ -80,11 +89,44 @@ public class BodyBuilder {
     }
 
     /**
+     * Function to display only one period.
+     *
+     * @param periodInput : The period of the orbit.
+     * @return : The builder with one period to display.
+     */
+    public BodyBuilder displayOnlyOnePeriod(final double periodInput) {
+        displayOnlyOnePeriod = true;
+        this.period          = periodInput;
+        return this;
+    }
+
+    /**
+     * Function to not display the orbit.
+     *
+     * @return : The builder with no orbit displayed.
+     */
+    public BodyBuilder noOrbitDisplay() {
+        noOrbitDisplay = true;
+        return this;
+    }
+
+    /**
      * The build function that generates the body object.
      *
      * @return : A body object with the given parameters of the builder.
      */
     public Body build() {
-        return new Body(body, pathToModel, customId, header);
+        final Body tempBody = new Body(body, pathToModel, customId, header);
+        return checkAttributes(tempBody);
+    }
+
+    private Body checkAttributes(final Body bodyInput) {
+        if (noOrbitDisplay) {
+            bodyInput.noOrbitDisplay();
+        }
+        if (displayOnlyOnePeriod) {
+            bodyInput.displayOnlyOnePeriod(period);
+        }
+        return bodyInput;
     }
 }

@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.czml.archi.adaptor.OemAdaptor;
 import org.orekit.czml.file.AbstractTest;
-import org.orekit.czml.object.Utils.DateUtils;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.data.DataSource;
 import org.orekit.files.ccsds.ndm.ParserBuilder;

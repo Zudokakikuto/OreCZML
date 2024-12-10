@@ -16,6 +16,7 @@
  */
 package org.orekit.czml.object.secondary;
 
+import org.hipparchus.geometry.euclidean.threed.Rotation;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.attitudes.Attitude;
@@ -61,14 +62,28 @@ public class OrientationTest extends AbstractTest {
 
         final Orientation orientation = new Orientation(attitudes, FramesFactory.getEME2000(), header);
 
+        final Orientation orientationWithBuilder = Orientation.builder(attitudes.get(0), FramesFactory.getEME2000(), header).build();
+
         final Orientation orientationInvert = new Orientation(attitudes, FramesFactory.getEME2000(), true, null, header);
+
+        final Orientation orientationFalseInvert = new Orientation(attitudes, FramesFactory.getEME2000(), false, new Rotation(1.0, 0.0, 0.0, 1.0, false), header);
 
         final String pathFile = loadResources("templateFile/secondary/OrientationTemplate.txt");
 
         final String invertPathFile = loadResources("templateFile/secondary/OrientationInvertTemplate.txt");
 
+        final String withBuilderPathFile = loadResources("templateFile/secondary/OrientationWithBuilderTemplate.txt");
+
+        final String falseInvertPathFile = loadResources("templateFile/secondary/OrientationFalseInvertTemplate.txt");
+
         Assertions.assertEquals(Files.readString(Path.of(pathFile)), orientation.toString());
 
         Assertions.assertEquals(Files.readString(Path.of(invertPathFile)), orientationInvert.toString());
+
+        Assertions.assertEquals(Files.readString(Path.of(withBuilderPathFile)), orientationWithBuilder.toString());
+
+        Assertions.assertEquals(Files.readString(Path.of(falseInvertPathFile)), orientationFalseInvert.toString());
+
+        Assertions.assertEquals(attitudes, orientation.getAttitudes());
     }
 }

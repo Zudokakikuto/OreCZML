@@ -25,7 +25,9 @@ import cesiumlanguagewriter.JulianDate;
 import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.TimeInterval;
 import org.hipparchus.util.FastMath;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.object.Utils.DateUtils;
+import org.orekit.data.DataContext;
 import org.orekit.files.ccsds.ndm.odm.oem.Oem;
 import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScale;
@@ -83,6 +85,27 @@ public class Clock extends AbstractSecondaryObject {
     // Constructors
 
     /**
+     * The default clock with the default timescale.
+     *
+     * @param startDate  : The start date of the simulation
+     * @param stopDate   : The stop date of the simulation
+     * @param multiplier : Seconds between each step.
+     */
+    @DefaultDataContext
+    public Clock(final AbsoluteDate startDate, final AbsoluteDate stopDate, final double multiplier) {
+        this.step                 = ClockStep.TICK_DEPENDENT;
+        this.timeScale            = DataContext.getDefault()
+                                               .getTimeScales()
+                                               .getUTC();
+        this.availability         = new TimeInterval(DateUtils.toJulianDate(startDate, timeScale),
+                DateUtils.toJulianDate(stopDate, timeScale));
+        this.multiplier           = multiplier;
+        this.range                = ClockRange.LOOP_STOP;
+        this.currentTime          = DateUtils.toJulianDate(startDate, timeScale);
+        this.JulianDateSimulation = computeJulianDates();
+    }
+
+    /**
      * The basic constructor for the clock object, with default parameters.
      *
      * @param startDate  : The start date of the simulation
@@ -92,12 +115,12 @@ public class Clock extends AbstractSecondaryObject {
      */
     public Clock(final AbsoluteDate startDate, final AbsoluteDate stopDate, final TimeScale timeScale,
                  final double multiplier) {
-        this.step = ClockStep.TICK_DEPENDENT;
-        this.availability = new TimeInterval(DateUtils.toJulianDate(startDate, timeScale),
+        this.step                 = ClockStep.TICK_DEPENDENT;
+        this.availability         = new TimeInterval(DateUtils.toJulianDate(startDate, timeScale),
                 DateUtils.toJulianDate(stopDate, timeScale));
-        this.multiplier = multiplier;
-        this.range = ClockRange.LOOP_STOP;
-        this.currentTime = DateUtils.toJulianDate(startDate, timeScale);
+        this.multiplier           = multiplier;
+        this.range                = ClockRange.LOOP_STOP;
+        this.currentTime          = DateUtils.toJulianDate(startDate, timeScale);
         this.timeScale            = timeScale;
         this.JulianDateSimulation = computeJulianDates();
     }
@@ -113,10 +136,10 @@ public class Clock extends AbstractSecondaryObject {
      */
     public Clock(final TimeInterval interval, final JulianDate currentTime, final double multiplier,
                  final ClockRange range, final ClockStep step) {
-        this.availability = new TimeInterval(interval.getStart(), interval.getStop());
-        this.currentTime = currentTime;
-        this.multiplier = multiplier;
-        this.range = range;
+        this.availability         = new TimeInterval(interval.getStart(), interval.getStop());
+        this.currentTime          = currentTime;
+        this.multiplier           = multiplier;
+        this.range                = range;
         this.step                 = step;
         this.JulianDateSimulation = computeJulianDates();
     }
@@ -153,10 +176,10 @@ public class Clock extends AbstractSecondaryObject {
         final JulianDate startJulianDate = DateUtils.toJulianDate(startTime, timeScale);
         final JulianDate stopJulianDate  = DateUtils.toJulianDate(stopTime, timeScale);
 
-        this.step = ClockStep.SYSTEM_CLOCK_MULTIPLIER;
-        this.availability = new TimeInterval(startJulianDate, stopJulianDate);
-        this.range = ClockRange.LOOP_STOP;
-        this.multiplier = multiplier;
+        this.step                 = ClockStep.SYSTEM_CLOCK_MULTIPLIER;
+        this.availability         = new TimeInterval(startJulianDate, stopJulianDate);
+        this.range                = ClockRange.LOOP_STOP;
+        this.multiplier           = multiplier;
         this.currentTime          = startJulianDate;
         this.JulianDateSimulation = computeJulianDates();
     }

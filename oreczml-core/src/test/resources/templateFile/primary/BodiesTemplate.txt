@@ -380,10 +380,6 @@
       "incrementallyLoadTextures":true,
       "show":true
     },
-    "path":{
-      "show":true,
-      "interval":"2024-01-01T00:00:00Z/2024-01-01T00:01:00Z"
-    },
     "orientation":{
       "interval":"2024-01-01T00:00:00Z/2024-01-01T00:01:00Z",
       "epoch":"2024-01-01T00:00:00Z",

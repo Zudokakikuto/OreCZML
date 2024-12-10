@@ -112,16 +112,17 @@ public class Header extends AbstractPrimaryObject {
     /**
      * The versioned constructor, if you don't know which version to use, does not use this builder.
      *
-     * @param name        : the name of the header.
-     * @param version     : the version of the header.
-     * @param masterClock : the clock of the header.
+     * @param name    : the name of the header.
+     * @param version : the version of the header.
+     * @param clock   : the clock of the header.
      */
-    public Header(final String name, final String version, final Clock masterClock) {
+    public Header(final String name, final String version, final Clock clock) {
         this.setId(DEFAULT_ID);
         this.setName(name);
         this.version        = version;
-        this.stepSimulation = masterClock.getStep()
-                                         .getValue();
+        this.clock          = clock;
+        this.stepSimulation = clock.getStep()
+                                   .getValue();
     }
 
     /**
@@ -129,17 +130,18 @@ public class Header extends AbstractPrimaryObject {
      *
      * @param name                         : the name of the header.
      * @param version                      : the version of the header.
-     * @param masterClock                  : the clock of the header.
+     * @param clock                        : the clock of the header.
      * @param pathToExternalResourceFolder : The path to the JavaScript folder if one is used.
      */
-    public Header(final String name, final String version, final Clock masterClock,
+    public Header(final String name, final String version, final Clock clock,
                   final String pathToExternalResourceFolder) {
         this.setId(DEFAULT_ID);
         this.setName(name);
         this.version                        = version;
+        this.clock                          = clock;
         Header.pathToExternalResourceFolder = pathToExternalResourceFolder;
-        this.stepSimulation                 = masterClock.getStep()
-                                                         .getValue();
+        this.stepSimulation                 = clock.getStep()
+                                                   .getValue();
     }
 
     // Overrides
@@ -162,11 +164,11 @@ public class Header extends AbstractPrimaryObject {
 
     @Override
     public String toString() {
-        final StringWriter       writer = new StringWriter();
-        final CesiumOutputStream output = new CesiumOutputStream(writer);
+        final StringWriter       writer       = new StringWriter();
+        final CesiumOutputStream output       = new CesiumOutputStream(writer);
         final CesiumStreamWriter streamWriter = new CesiumStreamWriter();
         this.writeCzmlBlock(streamWriter, output);
-        final String tempString = writer.toString();
+        final String   tempString     = writer.toString();
         final String[] splittedString = tempString.split("\\[");
         return splittedString[1];
     }

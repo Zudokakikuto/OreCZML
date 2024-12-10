@@ -55,13 +55,14 @@ import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.AngularDerivativesFilter;
 import org.orekit.utils.Constants;
+import org.orekit.utils.IERSConventions;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
 /**
- * The type Maneuver sequence example.
+ * This tutorial provides an example of how a maneuver sequence can be set up.
  */
 public class ManeuverSequenceExample {
 
@@ -70,7 +71,7 @@ public class ManeuverSequenceExample {
     }
 
     /**
-     * Main.
+     * Main of the maneuver sequence tutorial.
      *
      * @param args the args
      * @throws Exception the exception
@@ -116,7 +117,8 @@ public class ManeuverSequenceExample {
 
         final NormalizedSphericalHarmonicsProvider provider = GravityFieldFactory.getNormalizedProvider(10,
                 10);
-        final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(FramesFactory.getEME2000(),
+        final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(FramesFactory.getITRF(
+                IERSConventions.IERS_2010, true),
                 provider);
 
         final double[][] tolerances = NumericalPropagator.tolerances(TutorialUtils.POSITION_TOLERANCE, initialOrbit,

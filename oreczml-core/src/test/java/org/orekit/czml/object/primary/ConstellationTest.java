@@ -185,6 +185,8 @@ public class ConstellationTest extends AbstractTest {
                                                          .withModel(ISSModel)
                                                          .withHeader(header)
                                                          .withCustomId("CustomID")
+                                                         .displayAttitude()
+                                                         .displayOnlyOnePeriod()
                                                          .build();
 
         final String pathFile = loadResources("templateFile/primary/ConstellationTemplate.txt");

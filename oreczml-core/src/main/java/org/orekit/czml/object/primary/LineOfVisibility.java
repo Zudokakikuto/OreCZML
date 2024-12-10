@@ -117,7 +117,7 @@ public class LineOfVisibility extends AbstractPrimaryObject {
     private List<VisibilityCone> visibilityCones = new ArrayList<>();
 
     /** The header considered. */
-    private Header header;
+    private final Header header;
 
     // Constructors
 

@@ -129,6 +129,9 @@ public class Body extends AbstractPrimaryObject {
     /** The header considered. */
     private Header header;
 
+    /** The description of the body selected. */
+    private String description;
+
     // Constructors
 
     /**
@@ -155,10 +158,13 @@ public class Body extends AbstractPrimaryObject {
         this.setId(customID);
         this.setName(DEFAULT_NAME + body.getName());
         this.setAvailability(header.getAvailability());
-        this.header = header;
-
+        this.body                  = body;
+        this.header                = header;
+        this.description           = "<!--HTML-->\r\n<p>Id : " + customID + "</p>\r\n<p>Name : " + body.getName() + "</p>\r\n<p>Simulated from : " + header.getAvailability()
+                                                                                                                       .getStart() + " to " + header.getAvailability()
+                                                                                                                                                    .getStop() + "</p>";
         this.pathToModel           = pathToModel;
-        this.model                 = new CzmlModel(pathToModel, header);
+        this.model                 = new CzmlModel(pathToModel, false, header);
         this.julianDatesSimulation = header.getClock()
                                            .getJulianDatesSimulation();
 
@@ -298,7 +304,7 @@ public class Body extends AbstractPrimaryObject {
     }
 
 
-    // Setters (This looks like a builder)
+    // Setters (looks like a builder to make it easier for the BodyFactory).
 
     /**
      * With model maximum scale body.
@@ -344,6 +350,17 @@ public class Body extends AbstractPrimaryObject {
         return this;
     }
 
+    /**
+     * With description body.
+     *
+     * @param descriptionInput : The description input
+     * @return the body
+     */
+    public Body withDescription(final String descriptionInput) {
+        this.description = descriptionInput;
+        return this;
+    }
+
     // Private functions
 
     /**
@@ -370,7 +387,8 @@ public class Body extends AbstractPrimaryObject {
     private void writeModel(final Header headerInput, final PacketCesiumWriter packet,
                             final CesiumOutputStream output) throws URISyntaxException, IOException {
         if (modelScale != 0.0 && modelMaximumScale != 0.0 && modelMinimumPixelSize != 0.0) {
-            this.model = new CzmlModel(pathToModel, modelMaximumScale, modelMinimumPixelSize, modelScale, headerInput);
+            this.model = new CzmlModel(pathToModel, modelMaximumScale, modelMinimumPixelSize, modelScale, false,
+                    headerInput);
         }
         model.generateCZML(packet, output);
     }

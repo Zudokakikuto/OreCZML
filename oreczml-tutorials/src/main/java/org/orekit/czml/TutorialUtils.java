@@ -31,7 +31,7 @@ import java.io.File;
 
 
 /**
- * The type Tutorial utils.
+ * This class aims at giving the tutorial utilities to ease the understanding of tutorials.
  */
 public class TutorialUtils {
 

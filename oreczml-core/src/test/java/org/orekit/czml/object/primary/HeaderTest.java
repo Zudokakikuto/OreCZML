@@ -41,8 +41,16 @@ public class HeaderTest extends AbstractTest {
 
         final Header header = dummyHeader();
 
-        final String pathFile = loadResources("templateFile/primary/HeaderTemplate.txt");
+        final Header headerCoverage = new Header("A header", "1.0", header.getClock());
+
+        final Header headerVersion = new Header("A header", "1.0", header.getClock(), "");
+
+        final String pathFile         = loadResources("templateFile/primary/HeaderTemplate.txt");
+        final String coveragePathFile = loadResources("templateFile/primary/HeaderCoverageTemplate.txt");
+        final String versionPathFile  = loadResources("templateFile/primary/HeaderVersionTemplate.txt");
 
         Assertions.assertEquals(Files.readString(Path.of(pathFile)), header.toString());
+        Assertions.assertEquals(Files.readString(Path.of(coveragePathFile)), headerCoverage.toString());
+        Assertions.assertEquals(Files.readString(Path.of(versionPathFile)), headerVersion.toString());
     }
 }

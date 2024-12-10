@@ -42,9 +42,10 @@ import org.orekit.propagation.numerical.NumericalPropagator;
 import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.Constants;
+import org.orekit.utils.IERSConventions;
 
 /**
- * The type Line of visu sat station example.
+ * This tutorial provides an example of how a line of visu between a satellite and a ground station.
  */
 public class LineOfVisuSatStationExample {
 
@@ -53,7 +54,7 @@ public class LineOfVisuSatStationExample {
     }
 
     /**
-     * Main.
+     * Main of the line of visu sat station tutorial.
      *
      * @param args the args
      * @throws Exception the exception
@@ -100,7 +101,8 @@ public class LineOfVisuSatStationExample {
 
         final NormalizedSphericalHarmonicsProvider provider = GravityFieldFactory.getNormalizedProvider(10,
                 10);
-        final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(FramesFactory.getEME2000(),
+        final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(FramesFactory.getITRF(
+                IERSConventions.IERS_2010, true),
                 provider);
 
         final double[][] tolerances = NumericalPropagator.tolerances(TutorialUtils.POSITION_TOLERANCE, initialOrbit,
