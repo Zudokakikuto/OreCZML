@@ -1,0 +1,62 @@
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.orekit</groupId>
+        <artifactId>oreczml-parent</artifactId>
+        <version>1.0</version>
+    </parent>
+
+    <artifactId>oreczml-core</artifactId>
+    <packaging>jar</packaging>
+
+    <name>OreCzml</name>
+    <url>https://gitlab.orekit.org/Zudo/oreczml</url>
+    <description>OreCzml core module</description>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <oreczml.cesiumwriter.version>3.0.0</oreczml.cesiumwriter.version>
+        <oreczml.junit.jupiter.version>5.10.2</oreczml.junit.jupiter.version>
+        <oreczml.mockito.version>5.5.0</oreczml.mockito.version>
+        <oreczml.maven-surefire-plugin.version>3.5.0</oreczml.maven-surefire-plugin.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.orekit</groupId>
+            <artifactId>orekit</artifactId>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${oreczml.junit.jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${oreczml.mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.agi</groupId>
+            <artifactId>cesiumlanguagewriter</artifactId>
+            <version>${oreczml.cesiumwriter.version}</version>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${project.compiler.source}</source>
+                    <target>${project.compiler.target}</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

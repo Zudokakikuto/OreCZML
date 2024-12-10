@@ -1,0 +1,42 @@
+{
+  "id":"POINT_ON_BODY/[null, null, null, null, null, null, null, null, null, null]",
+  "name":"Point on the body at location(s) : [null, null, null, null, null, null, null, null, null, null]",
+  "availability":"2024-01-01T00:00:00Z/2024-01-01T00:01:00Z",
+  "position":{
+    "interval":"2024-01-01T00:00:00Z/2024-01-01T00:01:00Z",
+    "epoch":"2024-01-01T00:00:00Z",
+    "cartesian":[
+      0,0,0,0,
+      10,0,0,0,
+      20,0,0,0,
+      30,0,0,0,
+      40,0,0,0,
+      50,0,0,0,
+      60,0,0,0
+    ]
+  }
+},
+{
+  "id":"ATTITUDE_POINTING/SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-7.00506805e+03, 4.28936708e-13, 1.23518250e+03)}",
+  "name":"Attitude pointing of : Satellite",
+  "availability":"2024-01-01T00:00:00Z/2024-01-01T00:01:00Z",
+  "polyline":{
+    "width":1,
+    "arcType":"NONE",
+    "material":{
+      "solidColor":{
+        "color":{
+          "rgba":[
+            0,255,0,255
+          ]
+        }
+      }
+    },
+    "positions":{
+      "references":[
+        "SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-7.00506805e+03, 4.28936708e-13, 1.23518250e+03)}#position",
+        "POINT_ON_BODY/[null, null, null, null, null, null, null, null, null, null]#position"
+      ]
+    }
+  }
+}

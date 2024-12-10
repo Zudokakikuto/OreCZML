@@ -1,0 +1,120 @@
+{
+  "id":"CENTRAL_BODY_REFERENCE_SYSTEM 0",
+  "name":"Reference system of the central body",
+  "availability":"2024-01-01T00:00:00Z/2024-01-01T00:01:00Z",
+  "position":{
+    "cartesian":[
+      0,0,0
+    ]
+  },
+  "polyline":{
+    "width":2,
+    "arcType":"NONE",
+    "show":true,
+    "distanceDisplayCondition":{
+      "distanceDisplayCondition":[
+        1,1000000000
+      ]
+    },
+    "material":{
+      "solidColor":{
+        "color":{
+          "rgba":[
+            255,10,10,255
+          ]
+        }
+      }
+    },
+    "positions":{
+      "referenceFrame":"FIXED",
+      "cartesian":[
+        0.1,0.1,0.1,
+        19134411,0,0
+      ]
+    },
+    "show":{
+      "interval":"2024-01-01T00:00:00Z/2024-01-01T00:01:00Z",
+      "boolean":true
+    }
+  }
+},
+{
+  "id":"CENTRAL_BODY_REFERENCE_SYSTEM 1",
+  "name":"Reference system of the central body",
+  "availability":"2024-01-01T00:00:00Z/2024-01-01T00:01:00Z",
+  "position":{
+    "cartesian":[
+      0,0,0
+    ]
+  },
+  "polyline":{
+    "width":2,
+    "arcType":"NONE",
+    "show":true,
+    "distanceDisplayCondition":{
+      "distanceDisplayCondition":[
+        1,1000000000
+      ]
+    },
+    "material":{
+      "solidColor":{
+        "color":{
+          "rgba":[
+            10,255,10,255
+          ]
+        }
+      }
+    },
+    "positions":{
+      "referenceFrame":"FIXED",
+      "cartesian":[
+        0.1,0.1,0.1,
+        0,19134411,0
+      ]
+    },
+    "show":{
+      "interval":"2024-01-01T00:00:00Z/2024-01-01T00:01:00Z",
+      "boolean":true
+    }
+  }
+},
+{
+  "id":"CENTRAL_BODY_REFERENCE_SYSTEM 2",
+  "name":"Reference system of the central body",
+  "availability":"2024-01-01T00:00:00Z/2024-01-01T00:01:00Z",
+  "position":{
+    "cartesian":[
+      0,0,0
+    ]
+  },
+  "polyline":{
+    "width":2,
+    "arcType":"NONE",
+    "show":true,
+    "distanceDisplayCondition":{
+      "distanceDisplayCondition":[
+        1,1000000000
+      ]
+    },
+    "material":{
+      "solidColor":{
+        "color":{
+          "rgba":[
+            10,10,255,255
+          ]
+        }
+      }
+    },
+    "positions":{
+      "referenceFrame":"FIXED",
+      "cartesian":[
+        0.1,0.1,0.1,
+        0,0,19134411
+      ]
+    },
+    "show":{
+      "interval":"2024-01-01T00:00:00Z/2024-01-01T00:01:00Z",
+      "boolean":true
+    }
+  }
+}

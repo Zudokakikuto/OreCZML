@@ -1,0 +1,158 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.orekit</groupId>
+    <artifactId>oreczml-parent</artifactId>
+    <version>1.0</version>
+    <packaging>pom</packaging>
+
+    <name>oreczml-parent</name>
+    <url>https://gitlab.orekit.org/Zudo/oreczml</url>
+    <inceptionYear>2024</inceptionYear>
+    <description>
+        OreCzml is a library that provides a bridge between libraries Orekit and czml-writer (by AnalyticalGraphicsInc).
+        The final goal is to display orbital 3D vizualisation using Cesium JS (.
+    </description>
+
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.compiler.source>17</project.compiler.source>
+        <project.compiler.target>17</project.compiler.target>
+        <sonar.qualitygate.wait>true</sonar.qualitygate.wait>
+        <sonar.projectKey>Zudo_oreczml_AZKVgjr8GI6o9WSLa4d5</sonar.projectKey>
+        <oreczml.orekit.version>12.2</oreczml.orekit.version>
+        <oreczml.maven-compiler-plugin.version>3.13.0</oreczml.maven-compiler-plugin.version>
+        <oreczml.maven-source-plugin.version>3.3.1</oreczml.maven-source-plugin.version>
+        <oreczml.maven-javadoc-plugin.version>3.6.0</oreczml.maven-javadoc-plugin.version>
+        <oreczml.build-helper-maven-plugin.version>3.4.0</oreczml.build-helper-maven-plugin.version>
+        <oreczml.maven-gpg-plugin.version>3.1.0</oreczml.maven-gpg-plugin.version>
+        <oreczml.maven-install-plugin.version>3.1.1</oreczml.maven-install-plugin.version>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${oreczml.maven-compiler-plugin.version}</version>
+                <configuration>
+                    <source>${project.compiler.source}</source>
+                    <target>${project.compiler.target}</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+
+    <modules>
+        <module>oreczml-core</module>
+        <module>oreczml-tutorials</module>
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- https://mvnrepository.com/artifact/org.orekit/orekit -->
+            <dependency>
+                <groupId>org.orekit</groupId>
+                <artifactId>orekit</artifactId>
+                <version>${oreczml.orekit.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>gitlab-maven</id>
+            <url>${env.CI_API_V4_URL}/projects/${env.CI_PROJECT_ID}/packages/maven</url>
+        </snapshotRepository>
+        <repository>
+            <id>gitlab-maven</id>
+            <url>${env.CI_API_V4_URL}/projects/${env.CI_PROJECT_ID}/packages/maven</url>
+        </repository>
+    </distributionManagement>
+
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>${oreczml.maven-source-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>${oreczml.maven-javadoc-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>build-helper-maven-plugin</artifactId>
+                        <version>${oreczml.build-helper-maven-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>attach-artifacts</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>attach-artifact</goal>
+                                </goals>
+                                <configuration>
+                                    <artifacts>
+                                        <artifact>
+                                            <file>${basedir}/target/oreczml-${project.version}-sources.jar</file>
+                                            <type>source-jar</type>
+                                        </artifact>
+                                    </artifacts>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>${oreczml.maven-gpg-plugin.version}</version>
+                        <configuration>
+                            <gpgArguments>
+                                <arg>--digest-algo=SHA512</arg>
+                            </gpgArguments>
+                            <keyname>BED6C076F306C70DE6A66A4609CBF7450F49D817</keyname>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-install-plugin</artifactId>
+                        <version>${oreczml.maven-install-plugin.version}</version>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>

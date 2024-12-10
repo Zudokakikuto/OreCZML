@@ -1,0 +1,41 @@
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.orekit</groupId>
+        <artifactId>oreczml-parent</artifactId>
+        <version>1.0</version>
+    </parent>
+
+    <artifactId>oreczml-tutorials</artifactId>
+    <packaging>jar</packaging>
+
+    <name>oreczml-tutorials</name>
+    <url>https://gitlab.orekit.org/Zudo/oreczml</url>
+    <description>OreCzml core module</description>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <oreczml.hipparchus.version>3.1</oreczml.hipparchus.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.orekit</groupId>
+            <artifactId>orekit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.orekit</groupId>
+            <artifactId>oreczml-core</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hipparchus</groupId>
+            <artifactId>hipparchus-geometry</artifactId>
+            <version>${oreczml.hipparchus.version}</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
+
+</project>

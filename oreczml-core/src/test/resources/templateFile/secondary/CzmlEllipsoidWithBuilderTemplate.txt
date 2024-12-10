@@ -1,0 +1,19 @@
+{
+  "ellipsoid":{
+    "fill":true,
+    "outline":true,
+    "outlineColor":{
+      "rgba":[
+        255,200,0,255
+      ]
+    },
+    "slicePartitions":6,
+    "stackPartitions":5,
+    "interval":"2024-01-01T00:00:00Z/2024-01-01T00:01:00Z",
+    "radii":{
+      "cartesian":[
+        0,0,0
+      ]
+    }
+  }
+}

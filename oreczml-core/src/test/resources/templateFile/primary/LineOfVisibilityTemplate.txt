@@ -1,0 +1,84 @@
+{
+  "id":"VIS/Toulouse Frame/Satellite",
+  "name":"Visibility of Toulouse Frame looking at Satellite",
+  "availability":"2024-01-01T00:00:00Z/2024-01-01T00:01:00Z",
+  "cylinder":{
+    "bottomRadius":10,
+    "topRadius":35465396.830746286,
+    "length":3939000,
+    "material":{
+      "solidColor":{
+        "color":{
+          "rgba":[
+            0,0,0,0
+          ]
+        }
+      }
+    },
+    "heightReference":"CLAMP_TO_GROUND"
+  },
+  "position":{
+    "interval":"2024-01-01T00:00:00Z/2024-01-01T00:01:00Z",
+    "cartesian":[
+      4624415.12018318,116587.90809901741,4376399.285187051
+    ]
+  }
+},
+{
+  "id":"LINE_VISU/Toulouse Frame/ and Satellite",
+  "name":"Line between Toulouse Frame and Satellite",
+  "availability":[
+    "0001-01-01T00:00:00Z/2024-03-15T00:00:00Z",
+    "2024-03-15T00:00:00Z/2024-01-01T00:01:00Z",
+    "2024-03-15T04:26:07Z/2024-01-01T00:01:00Z",
+    "2024-03-15T04:42:28Z/2024-01-01T00:01:00Z",
+    "2024-03-15T06:23:23Z/2024-01-01T00:01:00Z",
+    "2024-03-15T06:40:04Z/2024-01-01T00:01:00Z"
+  ],
+  "polyline":{
+    "width":1,
+    "arcType":"NONE",
+    "material":{
+      "solidColor":{
+        "color":{
+          "rgba":[
+            0,255,255,255
+          ]
+        }
+      }
+    },
+    "arcType":"NONE",
+    "positions":{
+      "references":[
+        "VIS/Toulouse Frame/Satellite#position",
+        "SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-1.23518250e+03, 7.56331147e-14, 7.00506805e+03)}#position"
+      ]
+    },
+    "show":[
+      {
+        "interval":"0001-01-01T00:00:00Z/2024-03-15T00:00:00Z",
+        "boolean":false
+      },
+      {
+        "interval":"2024-03-15T00:00:00Z/2024-01-01T00:01:00Z",
+        "boolean":true
+      },
+      {
+        "interval":"2024-03-15T04:26:07Z/2024-01-01T00:01:00Z",
+        "boolean":false
+      },
+      {
+        "interval":"2024-03-15T04:42:28Z/2024-01-01T00:01:00Z",
+        "boolean":true
+      },
+      {
+        "interval":"2024-03-15T06:23:23Z/2024-01-01T00:01:00Z",
+        "boolean":false
+      },
+      {
+        "interval":"2024-03-15T06:40:04Z/2024-01-01T00:01:00Z",
+        "boolean":true
+      }
+    ]
+  }
+}

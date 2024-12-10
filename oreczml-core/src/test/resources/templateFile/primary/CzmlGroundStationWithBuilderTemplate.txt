@@ -1,0 +1,31 @@
+{
+  "id":"GROUND_STATION/Toulouse Frame",
+  "name":"Ground station : Toulouse Frame",
+  "availability":"2024-01-01T00:00:00Z/2024-01-01T00:01:00Z",
+  "model":{
+    "gltf":"./ISSModel.glb",
+    "scale":2,
+    "maximumScale":50,
+    "minimumPixelSize":300,
+    "incrementallyLoadTextures":true,
+    "show":true
+  },
+  "label":{
+    "fillColor":{
+      "rgba":[
+        0,255,255,255
+      ]
+    },
+    "font":"11pt Lucida Console",
+    "horizontalOrigin":"LEFT",
+    "verticalOrigin":"CENTER",
+    "text":"Toulouse Frame",
+    "show":true
+  },
+  "position":{
+    "interval":"2024-01-01T00:00:00Z/2024-01-01T00:01:00Z",
+    "cartesian":[
+      4624415.12018318,116587.90809901741,4376399.285187051
+    ]
+  }
+}

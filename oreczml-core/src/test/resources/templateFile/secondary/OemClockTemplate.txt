@@ -1,0 +1,8 @@
+{
+  "clock":{
+    "interval":"2025-09-01T00:00:00Z/2025-09-02T00:00:00Z",
+    "currentTime":"2025-09-01T00:00:00Z",
+    "multiplier":60,
+    "range":"LOOP_STOP",
+    "step":"SYSTEM_CLOCK_MULTIPLIER"
+  }

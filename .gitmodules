@@ -1,0 +1,3 @@
+[submodule "oreczml-core/src/test/resources/orekit-data"]
+	path = oreczml-core/src/test/resources/orekit-data
+	url = https://gitlab.orekit.org/orekit/orekit-data.git

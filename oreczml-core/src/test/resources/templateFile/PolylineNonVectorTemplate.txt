@@ -1,0 +1,28 @@
+{
+  "polyline":{
+    "width":10,
+    "arcType":"NONE",
+    "material":{
+      "solidColor":{
+        "color":{
+          "rgba":[
+            255,200,0,255
+          ]
+        }
+      }
+    },
+    "arcType":"NONE",
+    "positions":{
+      "references":[
+        "sat#position",
+        "groundstation#position"
+      ]
+    },
+    "show":[
+      {
+        "interval":"2024-01-01T00:00:00Z/2024-01-01T00:01:00Z",
+        "boolean":true
+      }
+    ]
+  }
+}

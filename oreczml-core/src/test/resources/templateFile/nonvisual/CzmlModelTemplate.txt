@@ -1,0 +1,10 @@
+{
+  "model":{
+    "gltf":"./ISSModel.glb",
+    "scale":1,
+    "maximumScale":5000000,
+    "minimumPixelSize":400,
+    "incrementallyLoadTextures":true,
+    "show":true
+  }
+}
