@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.czml.file.AbstractTest;
+import org.orekit.czml.object.primary.visu.LineOfVisibility;
 import org.orekit.forces.ForceModel;
 import org.orekit.forces.gravity.HolmesFeatherstoneAttractionModel;
 import org.orekit.forces.gravity.potential.GravityFieldFactory;
@@ -103,7 +104,7 @@ public class LineOfVisibilityTest extends AbstractTest {
 
         final Satellite satellite = new Satellite(boundedPropagator, header);
 
-        final LineOfVisibility line = new LineOfVisibility(topocentricToulouse, satellite, header);
+        final LineOfVisibility line = LineOfVisibility.builder(topocentricToulouse, satellite, header).build();
 
         final LineOfVisibility coverageLine = LineOfVisibility.builder(topocentricToulouse, satellite, header)
                                                               .withHeader(header)

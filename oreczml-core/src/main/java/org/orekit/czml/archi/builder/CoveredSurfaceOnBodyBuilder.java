@@ -18,7 +18,7 @@
 package org.orekit.czml.archi.builder;
 
 import org.orekit.czml.object.primary.CoveredSurfaceOnBody;
-import org.orekit.czml.object.primary.FieldOfObservation;
+import org.orekit.czml.object.primary.visu.FieldOfObservation;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.primary.Satellite;
 

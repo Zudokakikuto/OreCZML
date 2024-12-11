@@ -16,15 +16,16 @@
  */
 package org.orekit.czml.trackingvisu;
 
-import org.orekit.czml.TutorialUtils;
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
 import org.orekit.bodies.GeodeticPoint;
+import org.orekit.czml.TutorialUtils;
 import org.orekit.czml.file.CzmlFile;
 import org.orekit.czml.object.primary.CzmlGroundStation;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.primary.Satellite;
+import org.orekit.czml.object.primary.visu.LineOfVisibility;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.forces.ForceModel;
 import org.orekit.forces.gravity.HolmesFeatherstoneAttractionModel;
@@ -52,7 +53,7 @@ import java.util.List;
  */
 public class SatTrackingExample {
 
-    private SatTrackingExample () {
+    private SatTrackingExample() {
         // empty
     }
 
@@ -62,7 +63,7 @@ public class SatTrackingExample {
      * @param args the args
      * @throws Exception the exception
      */
-    public static void main (final String[] args) throws Exception {
+    public static void main(final String[] args) throws Exception {
         // Load orekit data
         TutorialUtils.loadOrekitData();
 
@@ -88,7 +89,8 @@ public class SatTrackingExample {
         // Creation of the orbit
 
         final KeplerianOrbit initialOrbit = new KeplerianOrbit(7878000, 0, FastMath.toRadians(20), 0,
-                FastMath.toRadians(90), FastMath.toRadians(0), PositionAngleType.MEAN, FramesFactory.getEME2000(), startDate,
+                FastMath.toRadians(90), FastMath.toRadians(0), PositionAngleType.MEAN, FramesFactory.getEME2000(),
+                startDate,
                 Constants.WGS84_EARTH_MU);
 
         final SpacecraftState initialState = new SpacecraftState(initialOrbit);
@@ -139,7 +141,8 @@ public class SatTrackingExample {
         // Creation of a topocentric frame around Sydney
         final GeodeticPoint sydneyFrame = new GeodeticPoint(FastMath.toRadians(-33.8688),
                 FastMath.toRadians(-241.2093), 100);
-        final TopocentricFrame topocentricSydney = new TopocentricFrame(TutorialUtils.getEarth(), sydneyFrame, "Sydney");
+        final TopocentricFrame topocentricSydney = new TopocentricFrame(TutorialUtils.getEarth(), sydneyFrame,
+                "Sydney");
         // Creation of a topocentric frame around gibraltar
         final GeodeticPoint gibraltarFrame = new GeodeticPoint(FastMath.toRadians(36.1408),
                 FastMath.toRadians(5.3536), 400);
@@ -164,12 +167,15 @@ public class SatTrackingExample {
             groundStations.add(new CzmlGroundStation(station, header));
         }
 
+        final LineOfVisibility lineOfVisibility = LineOfVisibility.builder(stations, satellite, header)
+                                                                  .build();
+
         //// Creation of a line of visu between the satellite and all the ground stations
         final CzmlFile file = CzmlFile.builder()
                                       .withHeader(header)
                                       .withSatellite(satellite)
                                       .withCzmlGroundStation(groundStations)
-                                      .withLineOfVisibility(stations, satellite, header)
+                                      .withLineOfVisibility(lineOfVisibility)
                                       .build();
 
         // Write inside the CzmlFile the objects

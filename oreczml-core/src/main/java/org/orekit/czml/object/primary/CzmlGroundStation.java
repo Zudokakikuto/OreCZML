@@ -231,8 +231,8 @@ public class CzmlGroundStation extends AbstractPrimaryObject {
             this.ids.add(DEFAULT_ID + currentTopocentricFrame.getName());
             this.descriptions.add(
                     "<!--HTML-->\r\n<p>Id : " + DEFAULT_ID + currentTopocentricFrame.getName() + "</p\r\n<p>Longitude : " + longitude + "</p>\r\n<p>Latitude : " + latitude + "</p>\r\n<p>Simulated from : " + header.getAvailability()
-                                                                                                                                                                         .getStart() + " to " + header.getAvailability()
-                                                                                                                                                                                                      .getStop() + "</p>");
+                                                                                                                                                                                                                     .getStart() + " to " + header.getAvailability()
+                                                                                                                                                                                                                                                  .getStop() + "</p>");
             this.billboards.add(new Billboard(DEFAULT_IMAGE));
             this.names.add(DEFAULT_NAME + currentTopocentricFrame.getName());
             this.positionsOnEarth.add(currentTopocentricFrame.getCartesianPoint());

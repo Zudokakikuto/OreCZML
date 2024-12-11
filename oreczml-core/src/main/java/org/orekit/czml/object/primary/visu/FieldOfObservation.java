@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.orekit.czml.object.primary;
+package org.orekit.czml.object.primary.visu;
 
 import cesiumlanguagewriter.Cartesian;
 import cesiumlanguagewriter.CesiumArcType;
@@ -28,10 +28,12 @@ import org.hipparchus.util.FastMath;
 import org.orekit.annotation.DefaultDataContext;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.bodies.OneAxisEllipsoid;
-import org.orekit.czml.archi.builder.FieldOfObservationBuilder;
 import org.orekit.czml.object.Polyline;
 import org.orekit.czml.object.Utils.DateUtils;
 import org.orekit.czml.object.nonvisual.PointOnBody;
+import org.orekit.czml.object.primary.AbstractPrimaryObject;
+import org.orekit.czml.object.primary.Header;
+import org.orekit.czml.object.primary.Satellite;
 import org.orekit.data.DataContext;
 import org.orekit.frames.TopocentricFrame;
 import org.orekit.frames.Transform;
@@ -183,7 +185,7 @@ public class FieldOfObservation extends AbstractPrimaryObject {
                 DEFAULT_ID + satellite.getName() + "/" + new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS,
                         Constants.WGS84_EARTH_FLATTENING,
                         DataContext.getDefault().getFrames().getITRF(IERSConventions.IERS_2010, true)).getBodyFrame()
-                                                                               .getName(), header);
+                                                                                                      .getName(), header);
     }
 
     /**

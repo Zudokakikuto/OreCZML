@@ -26,9 +26,10 @@ import org.orekit.attitudes.LofOffset;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.czml.file.CzmlFile;
 import org.orekit.czml.object.primary.CzmlGroundStation;
-import org.orekit.czml.object.primary.FieldOfObservation;
+import org.orekit.czml.object.primary.visu.FieldOfObservation;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.primary.Satellite;
+import org.orekit.czml.object.primary.visu.LineOfVisibility;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.forces.ForceModel;
 import org.orekit.forces.gravity.HolmesFeatherstoneAttractionModel;
@@ -195,13 +196,15 @@ public class Demonstrator {
                                                                         .withColor(Color.PINK)
                                                                         .build();
 
+        final LineOfVisibility lineOfVisibility = LineOfVisibility.builder(stations, satellite, header).build();
+
         // Creation of the file
         final CzmlFile file = CzmlFile.builder()
                                       .withHeader(header)
                                       .withSatellite(satellite)
                                       .withCzmlGroundStation(groundStations)
                                       .withFieldOfObservation(fieldOfObservation)
-                                      .withLineOfVisibility(stations, satellite, header)
+                                      .withLineOfVisibility(lineOfVisibility)
                                       .build();
 
         // Write inside the CzmlFile the objects

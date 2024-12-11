@@ -22,7 +22,7 @@ import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
 import org.orekit.czml.file.CzmlFile;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.InterSatVisu;
+import org.orekit.czml.object.primary.visu.InterSatVisu;
 import org.orekit.czml.object.primary.Satellite;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.forces.ForceModel;

@@ -25,6 +25,7 @@ import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.Position;
 import org.orekit.czml.object.PositionType;
 import org.orekit.czml.object.Utils.DateUtils;
+import org.orekit.czml.object.primary.visu.VisibilityCone;
 import org.orekit.czml.object.secondary.Cylinder;
 import org.orekit.frames.TopocentricFrame;
 import org.orekit.propagation.BoundedPropagator;

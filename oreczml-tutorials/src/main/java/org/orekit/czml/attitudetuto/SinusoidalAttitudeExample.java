@@ -29,7 +29,7 @@ import org.orekit.czml.TutorialUtils;
 import org.orekit.czml.file.CzmlFile;
 import org.orekit.czml.object.primary.AttitudePointing;
 import org.orekit.czml.object.primary.CentralBodyReferenceSystem;
-import org.orekit.czml.object.primary.FieldOfObservation;
+import org.orekit.czml.object.primary.visu.FieldOfObservation;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.primary.Satellite;
 import org.orekit.czml.object.secondary.Clock;

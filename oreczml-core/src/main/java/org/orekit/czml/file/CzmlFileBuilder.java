@@ -24,19 +24,15 @@ import org.orekit.czml.object.primary.Constellation;
 import org.orekit.czml.object.primary.Covariance;
 import org.orekit.czml.object.primary.CoveredSurfaceOnBody;
 import org.orekit.czml.object.primary.CzmlGroundStation;
-import org.orekit.czml.object.primary.FieldOfObservation;
 import org.orekit.czml.object.primary.GroundTrack;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.InterSatVisu;
 import org.orekit.czml.object.primary.LatLongLines;
-import org.orekit.czml.object.primary.LineOfVisibility;
 import org.orekit.czml.object.primary.ManeuverSequence;
 import org.orekit.czml.object.primary.Satellite;
 import org.orekit.czml.object.primary.SatelliteReferenceSystem;
-import org.orekit.frames.TopocentricFrame;
+import org.orekit.czml.object.primary.visu.FieldOfObservation;
+import org.orekit.czml.object.primary.visu.InterSatVisu;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -77,15 +73,15 @@ public class CzmlFileBuilder {
     /**
      * List of all the collision to write.
      */
-    private List<Collision>                collisions        = new ArrayList<>();
+    private List<Collision>                                            collisions   = new ArrayList<>();
     /**
      * List of all the lines of visibility to write.
      */
-    private List<LineOfVisibility>         lines             = new ArrayList<>();
+    private List<org.orekit.czml.object.primary.visu.LineOfVisibility> lines        = new ArrayList<>();
     /**
      * List of all the ground tracks to write.
      */
-    private List<GroundTrack>              groundTracks      = new ArrayList<>();
+    private List<GroundTrack>                                          groundTracks = new ArrayList<>();
     /**
      * List of all the attitude pointings to write.
      */
@@ -301,180 +297,25 @@ public class CzmlFileBuilder {
 
     // Line of visibility
 
-    // Single Satellites/Single Station
-
     /**
-     * Function to set up a line of visibility from a topocentric frame and a satellite with default parameters.
+     * Function to set up a line of visibility.
      *
-     * @param topocentricFrameInput : The topocentric frame where the ground station must be.
-     * @param satelliteInput        : The satellite that will be observed by the station.
-     * @param headerInput           : The header considered.
+     * @param lineOfVisibility : The line of visibility to set up.
      * @return : The czml file builder with the given line of visibility.
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException        the io exception
      */
-    public CzmlFileBuilder withLineOfVisibility(final TopocentricFrame topocentricFrameInput,
-                                                final Satellite satelliteInput,
-                                                final Header headerInput) throws URISyntaxException, IOException {
-        return this.withLineOfVisibility(topocentricFrameInput, satelliteInput, DEFAULT_ANGLE_OF_APERTURE, headerInput);
-    }
-
-    /**
-     * Function to set up a line of visibility from a topocentric frame and a satellite with a given angle of aperture.
-     *
-     * @param topocentricFrameInput : The topocentric frame where the ground station must be.
-     * @param satelliteInput        : The satellite that will be observed by the station.
-     * @param angleOfAperture       : The angle of aperture of the visibility of the station.
-     * @param headerInput           : The header considered.
-     * @return : The czml file builder with the given line of visibility.
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException        the io exception
-     */
-    public CzmlFileBuilder withLineOfVisibility(final TopocentricFrame topocentricFrameInput,
-                                                final Satellite satelliteInput,
-                                                final double angleOfAperture,
-                                                final Header headerInput) throws URISyntaxException, IOException {
-        final LineOfVisibility line = LineOfVisibility.builder(topocentricFrameInput, satelliteInput, headerInput)
-                                                      .withAngleOfAperture(angleOfAperture)
-                                                      .build();
-        lines.add(line);
+    public CzmlFileBuilder withLineOfVisibility(final org.orekit.czml.object.primary.visu.LineOfVisibility... lineOfVisibility) {
+        this.lines.addAll(Arrays.asList(lineOfVisibility));
         return this;
     }
 
-
-    // Multiple Satellites/Single Station
-
     /**
-     * Function to set up a line of visibility from a topocentric frame and a constellation with default parameters.
+     * Function to set up a list of lines of visibility.
      *
-     * @param topocentricFrameInput : The topocentric frame where the ground station must be.
-     * @param constellationInput    : The constellation that will be observed by the station.
-     * @param headerInput           : The header considered.
-     * @return : The czml file builder with the given line of visibility.
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException        the io exception
+     * @param linesOfVisibility : The list of line of visibility to set up.
+     * @return : The czml file builder with the given list of lines of visibility.
      */
-    public CzmlFileBuilder withLineOfVisibility(final TopocentricFrame topocentricFrameInput,
-                                                final Constellation constellationInput,
-                                                final Header headerInput) throws URISyntaxException, IOException {
-        return this.withLineOfVisibility(topocentricFrameInput, constellationInput, DEFAULT_ANGLE_OF_APERTURE,
-                headerInput);
-    }
-
-    /**
-     * Function to set up a line of visibility from a topocentric frame and a constellation with a given angle of aperture.
-     *
-     * @param topocentricFrameInput : The topocentric frame where the ground station must be.
-     * @param constellationInput    : The constellation that will be observed by the station.
-     * @param angleOfAperture       : The angle of aperture of the visibility of the station.
-     * @param headerInput           : The header considered.
-     * @return : The czml file builder with the given line of visibility.
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException        the io exception
-     */
-    public CzmlFileBuilder withLineOfVisibility(final TopocentricFrame topocentricFrameInput,
-                                                final Constellation constellationInput,
-                                                final double angleOfAperture,
-                                                final Header headerInput) throws URISyntaxException, IOException {
-        final List<Satellite> satellitesOfConstellation = constellationInput.getSatellites();
-        for (int i = 0; i < constellationInput.getTotalOfSatellite(); i++) {
-            final Satellite currentSatellite = satellitesOfConstellation.get(i);
-            lines.add(LineOfVisibility.builder(topocentricFrameInput, currentSatellite, headerInput)
-                                      .withAngleOfAperture(angleOfAperture)
-                                      .build());
-        }
-        return this;
-    }
-
-
-    // Single Satellites/Multiple Stations
-
-    /**
-     * Function to set up a line of visibility from a list of topocentric frames and a satellite with a given angle of aperture.
-     *
-     * @param topocentricFramesInput : The list of topocentric frames where the ground stations must be.
-     * @param satelliteInput         : The satellite that will be observed by the stations.
-     * @param headerInput            : The header considered.
-     * @return : The czml file builder with the given line of visibility.
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException        the io exception
-     */
-    public CzmlFileBuilder withLineOfVisibility(final List<TopocentricFrame> topocentricFramesInput,
-                                                final Satellite satelliteInput,
-                                                final Header headerInput) throws URISyntaxException, IOException {
-        return this.withLineOfVisibility(topocentricFramesInput, satelliteInput, DEFAULT_ANGLE_OF_APERTURE,
-                headerInput);
-    }
-
-    /**
-     * Function to set up a line of visibility from a list of topocentric frames and a satellite with a given angle of aperture.
-     *
-     * @param topocentricFramesInput : The list of topocentric frames where the ground stations must be.
-     * @param satelliteInput         : The satellite that will be observed by the stations.
-     * @param angleOfAperture        : The angle of aperture of the visibility of the stations.
-     * @param headerInput            : The header considered.
-     * @return : The czml file builder with the given line of visibility.
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException        the io exception
-     */
-    public CzmlFileBuilder withLineOfVisibility(final List<TopocentricFrame> topocentricFramesInput,
-                                                final Satellite satelliteInput,
-                                                final double angleOfAperture,
-                                                final Header headerInput) throws URISyntaxException, IOException {
-        for (final TopocentricFrame currentFrame : topocentricFramesInput) {
-            lines.add(LineOfVisibility.builder(currentFrame, satelliteInput, headerInput)
-                                      .withAngleOfAperture(angleOfAperture)
-                                      .build());
-        }
-        return this;
-    }
-
-
-    // Multiple Satellites/Multiple Stations
-
-    /**
-     * Function to set up a line of visibility from a list of topocentric frames and a satellite with a given angle of aperture.
-     *
-     * @param topocentricFramesInput : The list of topocentric frames where the ground stations must be.
-     * @param constellationInput     : The constellation that will be observed by the stations.
-     * @param headerInput            : The header considered.
-     * @return : The czml file builder with the given line of visibility.
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException        the io exception
-     */
-    public CzmlFileBuilder withLineOfVisibility(final List<TopocentricFrame> topocentricFramesInput,
-                                                final Constellation constellationInput,
-                                                final Header headerInput) throws URISyntaxException, IOException {
-        return this.withLineOfVisibility(topocentricFramesInput, constellationInput, DEFAULT_ANGLE_OF_APERTURE,
-                headerInput);
-    }
-
-    /**
-     * Function to set up a line of visibility from a list of topocentric frames and a satellite with a given angle of aperture.
-     *
-     * @param topocentricFramesInput : The list of topocentric frames where the ground stations must be.
-     * @param constellationInput     : The constellation that will be observed by the stations.
-     * @param angleOfAperture        : The angle of aperture of the visibility of the stations.
-     * @param headerInput            : The header considered.
-     * @return : The czml file builder with the given line of visibility.
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException        the io exception
-     */
-    public CzmlFileBuilder withLineOfVisibility(final List<TopocentricFrame> topocentricFramesInput,
-                                                final Constellation constellationInput,
-                                                final double angleOfAperture,
-                                                final Header headerInput) throws URISyntaxException, IOException {
-        for (final TopocentricFrame currentFrame : topocentricFramesInput) {
-            for (int j = 0; j < constellationInput.getTotalOfSatellite(); j++) {
-                final Satellite currentSatellite = constellationInput.getSatellites()
-                                                                     .get(j);
-                final LineOfVisibility currentLine = LineOfVisibility.builder(currentFrame, currentSatellite,
-                                                                             headerInput)
-                                                                     .withAngleOfAperture(angleOfAperture)
-                                                                     .build();
-                lines.add(currentLine);
-            }
-        }
+    public CzmlFileBuilder withLineOfVisibility(final List<org.orekit.czml.object.primary.visu.LineOfVisibility> linesOfVisibility) {
+        this.lines.addAll(linesOfVisibility);
         return this;
     }
 
@@ -799,7 +640,7 @@ public class CzmlFileBuilder {
      * @param file : The czml file that will be written.
      */
     private void addLineOfVisibility(final CzmlFile file) {
-        for (LineOfVisibility line : lines) {
+        for (org.orekit.czml.object.primary.visu.LineOfVisibility line : lines) {
             file.addObject(line);
         }
     }

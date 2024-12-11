@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.Polyline;
+import org.orekit.czml.object.primary.visu.InterSatVisu;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.forces.ForceModel;
 import org.orekit.forces.gravity.HolmesFeatherstoneAttractionModel;
@@ -135,7 +136,7 @@ public class InterSatVisuTest extends AbstractTest {
         satellites.add(firstSat);
         satellites.add(secondSat);
 
-        final InterSatVisu interSatVisu = new InterSatVisu(firstSat, secondSat, finalDate, header);
+        final InterSatVisu interSatVisu        = new InterSatVisu(firstSat, secondSat, finalDate, header);
         final InterSatVisu interSatVisuBuilder = InterSatVisu.builder(firstSat, secondSat, finalDate, header).build();
 
         final InterSatVisu interSatVisuPropagators = new InterSatVisu(propagators, finalDate, header);

@@ -42,13 +42,14 @@ import org.orekit.czml.object.primary.Constellation;
 import org.orekit.czml.object.primary.Covariance;
 import org.orekit.czml.object.primary.CoveredSurfaceOnBody;
 import org.orekit.czml.object.primary.CzmlGroundStation;
-import org.orekit.czml.object.primary.FieldOfObservation;
+import org.orekit.czml.object.primary.visu.FieldOfObservation;
 import org.orekit.czml.object.primary.GroundTrack;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.InterSatVisu;
+import org.orekit.czml.object.primary.visu.InterSatVisu;
 import org.orekit.czml.object.primary.LatLongLines;
 import org.orekit.czml.object.primary.ManeuverSequence;
 import org.orekit.czml.object.primary.Satellite;
+import org.orekit.czml.object.primary.visu.LineOfVisibility;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.czml.object.secondary.Orientation;
 import org.orekit.data.DataSource;
@@ -684,24 +685,56 @@ class GlobalTests extends AbstractTest {
         propagators.add(boundedPropagator);
         final Constellation constellation = new Constellation(propagators, finalDate, header);
 
+        final LineOfVisibility lineToulouse = LineOfVisibility.builder(topocentricToulouse, satellite,
+                                                                      header)
+                                                              .build();
+        final LineOfVisibility lineVegasAperture = LineOfVisibility.builder(topocentricLasVegas, satellite,
+                                                                           header)
+                                                                   .withAngleOfAperture(90.0)
+                                                                   .build();
+
+        final LineOfVisibility lineVegasConstellation = LineOfVisibility.builder(topocentricLasVegas,
+                                                                                constellation, header)
+                                                                        .build();
+        final LineOfVisibility lineVegasConstellationAperture = LineOfVisibility.builder(topocentricLasVegas,
+                                                                                        constellation, header)
+                                                                                .withAngleOfAperture(90.0)
+                                                                                .build();
+
+        final LineOfVisibility lineTopocentric = LineOfVisibility.builder(topocentrics, satellite, header)
+                                                                 .build();
+
+        final LineOfVisibility lineTopocentricAperture = LineOfVisibility.builder(topocentrics, satellite, header)
+                                                                         .withAngleOfAperture(90.0)
+                                                                         .build();
+
+        final LineOfVisibility lineTopocentricConstellation = LineOfVisibility.builder(topocentrics, constellation,
+                                                                                      header)
+                                                                              .build();
+
+        final LineOfVisibility lineTopocentricConstellationAperture = LineOfVisibility.builder(topocentrics,
+                                                                                              constellation, header)
+                                                                                      .withAngleOfAperture(90.0)
+                                                                                      .build();
+
         final CzmlFile file = CzmlFile.builder()
                                       .withHeader(header)
                                       .withSatellite(satellite)
                                       .withManeuverSequence(maneuverSequence)
                                       .withCzmlGroundStation(groundStation)
-                                      .withLineOfVisibility(topocentricToulouse, satellite, header)
+                                      .withLineOfVisibility(lineToulouse)
                                       .build();
 
         final CzmlFile coverageFile = CzmlFile.builder()
                                               .withHeader(header)
                                               .withManeuverSequence(sequences)
-                                              .withLineOfVisibility(topocentricLasVegas, satellite, 90.0, header)
-                                              .withLineOfVisibility(topocentricLasVegas, constellation, header)
-                                              .withLineOfVisibility(topocentricLasVegas, constellation, 90.0, header)
-                                              .withLineOfVisibility(topocentrics, satellite, header)
-                                              .withLineOfVisibility(topocentrics, satellite, 90.0, header)
-                                              .withLineOfVisibility(topocentrics, constellation, header)
-                                              .withLineOfVisibility(topocentrics, constellation, 90.0, header)
+                                              .withLineOfVisibility(lineVegasAperture)
+                                              .withLineOfVisibility(lineVegasConstellation)
+                                              .withLineOfVisibility(lineVegasConstellationAperture)
+                                              .withLineOfVisibility(lineTopocentric)
+                                              .withLineOfVisibility(lineTopocentricAperture)
+                                              .withLineOfVisibility(lineTopocentricConstellation)
+                                              .withLineOfVisibility(lineTopocentricConstellationAperture)
                                               .build();
 
         // Writing the file

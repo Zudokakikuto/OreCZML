@@ -44,8 +44,8 @@
     "availability":[
       "0001-01-01T00:00:00Z/2024-03-15T00:00:00Z",
       "2024-03-15T00:00:00Z/2024-03-15T01:55:56Z",
-      "2024-03-15T01:55:56Z/2024-03-15T02:03:56Z",
-      "2024-03-15T02:03:56Z/2024-03-15T05:00:00Z"
+      "2024-03-15T01:55:56Z/2024-03-15T02:03:55Z",
+      "2024-03-15T02:03:55Z/2024-03-15T05:00:00Z"
     ],
     "polyline":{
       "width":1,
@@ -76,95 +76,11 @@
           "boolean":false
         },
         {
-          "interval":"2024-03-15T01:55:56Z/2024-03-15T02:03:56Z",
+          "interval":"2024-03-15T01:55:56Z/2024-03-15T02:03:55Z",
           "boolean":true
         },
         {
-          "interval":"2024-03-15T02:03:56Z/2024-03-15T05:00:00Z",
-          "boolean":false
-        }
-      ]
-    }
-  },
-  {
-    "id":"VIS/Toulouse Frame/Satellite",
-    "name":"Visibility of Toulouse Frame looking at Satellite",
-    "availability":"2024-03-15T00:00:00Z/2024-03-15T05:00:00Z",
-    "cylinder":{
-      "bottomRadius":10,
-      "topRadius":35465396.83074629,
-      "length":3939000.000000001,
-      "material":{
-        "solidColor":{
-          "color":{
-            "rgba":[
-              0,0,0,0
-            ]
-          }
-        }
-      },
-      "heightReference":"CLAMP_TO_GROUND"
-    },
-    "position":{
-      "interval":"2024-03-15T00:00:00Z/2024-03-15T05:00:00Z",
-      "cartesian":[
-        4624415.12018318,116587.90809901741,4376399.285187051
-      ]
-    }
-  },
-  {
-    "id":"LINE_VISU/Toulouse Frame/SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}",
-    "name":"Line between Toulouse Frame and Satellite",
-    "availability":[
-      "0001-01-01T00:00:00Z/2024-03-15T00:00:00Z",
-      "2024-03-15T00:00:00Z/2024-03-15T00:24:40Z",
-      "2024-03-15T00:24:40Z/2024-03-15T00:34:02Z",
-      "2024-03-15T00:34:02Z/2024-03-15T02:26:56Z",
-      "2024-03-15T02:26:56Z/2024-03-15T02:42:28Z",
-      "2024-03-15T02:42:28Z/2024-03-15T05:00:00Z"
-    ],
-    "polyline":{
-      "width":1,
-      "arcType":"NONE",
-      "material":{
-        "solidColor":{
-          "color":{
-            "rgba":[
-              0,255,255,255
-            ]
-          }
-        }
-      },
-      "arcType":"NONE",
-      "positions":{
-        "references":[
-          "VIS/Toulouse Frame/Satellite#position",
-          "SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}#position"
-        ]
-      },
-      "show":[
-        {
-          "interval":"0001-01-01T00:00:00Z/2024-03-15T00:00:00Z",
-          "boolean":false
-        },
-        {
-          "interval":"2024-03-15T00:00:00Z/2024-03-15T00:24:40Z",
-          "boolean":false
-        },
-        {
-          "interval":"2024-03-15T00:24:40Z/2024-03-15T00:34:02Z",
-          "boolean":true
-        },
-        {
-          "interval":"2024-03-15T00:34:02Z/2024-03-15T02:26:56Z",
-          "boolean":false
-        },
-        {
-          "interval":"2024-03-15T02:26:56Z/2024-03-15T02:42:28Z",
-          "boolean":true
-        },
-        {
-          "interval":"2024-03-15T02:42:28Z/2024-03-15T05:00:00Z",
+          "interval":"2024-03-15T02:03:55Z/2024-03-15T05:00:00Z",
           "boolean":false
         }
       ]
@@ -197,7 +113,7 @@
     }
   },
   {
-    "id":"LINE_VISU/Las Vegas Frame/SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}",
+    "id":"LINE_VISU/Las Vegas Frame/Constellation/1  satellites ",
     "name":"Line between Las Vegas Frame and Satellite",
     "availability":[
       "0001-01-01T00:00:00Z/2024-03-15T00:00:00Z",
@@ -266,173 +182,15 @@
     }
   },
   {
-    "id":"LINE_VISU/Toulouse Frame/SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}",
-    "name":"Line between Toulouse Frame and Satellite",
-    "availability":[
-      "0001-01-01T00:00:00Z/2024-03-15T00:00:00Z",
-      "2024-03-15T00:00:00Z/2024-03-15T00:19:47Z",
-      "2024-03-15T00:19:47Z/2024-03-15T00:38:54Z",
-      "2024-03-15T00:38:54Z/2024-03-15T02:22:41Z",
-      "2024-03-15T02:22:41Z/2024-03-15T02:50:02Z",
-      "2024-03-15T02:50:02Z/2024-03-15T05:00:00Z"
-    ],
-    "polyline":{
-      "width":1,
-      "arcType":"NONE",
-      "material":{
-        "solidColor":{
-          "color":{
-            "rgba":[
-              0,255,255,255
-            ]
-          }
-        }
-      },
-      "arcType":"NONE",
-      "positions":{
-        "references":[
-          "VIS/Toulouse Frame/Satellite#position",
-          "SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}#position"
-        ]
-      },
-      "show":[
-        {
-          "interval":"0001-01-01T00:00:00Z/2024-03-15T00:00:00Z",
-          "boolean":false
-        },
-        {
-          "interval":"2024-03-15T00:00:00Z/2024-03-15T00:19:47Z",
-          "boolean":false
-        },
-        {
-          "interval":"2024-03-15T00:19:47Z/2024-03-15T00:38:54Z",
-          "boolean":true
-        },
-        {
-          "interval":"2024-03-15T00:38:54Z/2024-03-15T02:22:41Z",
-          "boolean":false
-        },
-        {
-          "interval":"2024-03-15T02:22:41Z/2024-03-15T02:50:02Z",
-          "boolean":true
-        },
-        {
-          "interval":"2024-03-15T02:50:02Z/2024-03-15T05:00:00Z",
-          "boolean":false
-        }
-      ]
-    }
-  },
-  {
-    "id":"VIS/Las Vegas Frame/Satellite",
-    "name":"Visibility of Las Vegas Frame looking at Satellite",
-    "availability":"2024-03-15T00:00:00Z/2024-03-15T05:00:00Z",
-    "cylinder":{
-      "bottomRadius":10,
-      "topRadius":35465396.83074629,
-      "length":3939000.000000001,
-      "material":{
-        "solidColor":{
-          "color":{
-            "rgba":[
-              0,0,0,0
-            ]
-          }
-        }
-      },
-      "heightReference":"CLAMP_TO_GROUND"
-    },
-    "position":{
-      "interval":"2024-03-15T00:00:00Z/2024-03-15T05:00:00Z",
-      "cartesian":[
-        -2189844.79518433,-4666525.372240734,3743585.1561989784
-      ]
-    }
-  },
-  {
-    "id":"LINE_VISU/Las Vegas Frame/SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}",
-    "name":"Line between Las Vegas Frame and Satellite",
-    "availability":[
-      "0001-01-01T00:00:00Z/2024-03-15T00:00:00Z",
-      "2024-03-15T00:00:00Z/2024-03-15T01:55:56Z",
-      "2024-03-15T01:55:56Z/2024-03-15T02:03:56Z",
-      "2024-03-15T02:03:56Z/2024-03-15T05:00:00Z"
-    ],
-    "polyline":{
-      "width":1,
-      "arcType":"NONE",
-      "material":{
-        "solidColor":{
-          "color":{
-            "rgba":[
-              0,255,255,255
-            ]
-          }
-        }
-      },
-      "arcType":"NONE",
-      "positions":{
-        "references":[
-          "VIS/Las Vegas Frame/Satellite#position",
-          "SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}#position"
-        ]
-      },
-      "show":[
-        {
-          "interval":"0001-01-01T00:00:00Z/2024-03-15T00:00:00Z",
-          "boolean":false
-        },
-        {
-          "interval":"2024-03-15T00:00:00Z/2024-03-15T01:55:56Z",
-          "boolean":false
-        },
-        {
-          "interval":"2024-03-15T01:55:56Z/2024-03-15T02:03:56Z",
-          "boolean":true
-        },
-        {
-          "interval":"2024-03-15T02:03:56Z/2024-03-15T05:00:00Z",
-          "boolean":false
-        }
-      ]
-    }
-  },
-  {
-    "id":"VIS/Toulouse Frame/Satellite",
-    "name":"Visibility of Toulouse Frame looking at Satellite",
-    "availability":"2024-03-15T00:00:00Z/2024-03-15T05:00:00Z",
-    "cylinder":{
-      "bottomRadius":10,
-      "topRadius":35465396.83074629,
-      "length":3939000.000000001,
-      "material":{
-        "solidColor":{
-          "color":{
-            "rgba":[
-              0,0,0,0
-            ]
-          }
-        }
-      },
-      "heightReference":"CLAMP_TO_GROUND"
-    },
-    "position":{
-      "interval":"2024-03-15T00:00:00Z/2024-03-15T05:00:00Z",
-      "cartesian":[
-        4624415.12018318,116587.90809901741,4376399.285187051
-      ]
-    }
-  },
-  {
-    "id":"LINE_VISU/Toulouse Frame/SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}",
+    "id":"LINE_VISU/STATIONS : 2/SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}",
     "name":"Line between Toulouse Frame and Satellite",
     "availability":[
       "0001-01-01T00:00:00Z/2024-03-15T00:00:00Z",
       "2024-03-15T00:00:00Z/2024-03-15T00:24:40Z",
       "2024-03-15T00:24:40Z/2024-03-15T00:34:02Z",
       "2024-03-15T00:34:02Z/2024-03-15T02:26:56Z",
-      "2024-03-15T02:26:56Z/2024-03-15T02:42:28Z",
-      "2024-03-15T02:42:28Z/2024-03-15T05:00:00Z"
+      "2024-03-15T02:26:56Z/2024-03-15T02:42:27Z",
+      "2024-03-15T02:42:27Z/2024-03-15T05:00:00Z"
     ],
     "polyline":{
       "width":1,
@@ -471,11 +229,11 @@
           "boolean":false
         },
         {
-          "interval":"2024-03-15T02:26:56Z/2024-03-15T02:42:28Z",
+          "interval":"2024-03-15T02:26:56Z/2024-03-15T02:42:27Z",
           "boolean":true
         },
         {
-          "interval":"2024-03-15T02:42:28Z/2024-03-15T05:00:00Z",
+          "interval":"2024-03-15T02:42:27Z/2024-03-15T05:00:00Z",
           "boolean":false
         }
       ]
@@ -508,7 +266,7 @@
     }
   },
   {
-    "id":"LINE_VISU/Las Vegas Frame/SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}",
+    "id":"LINE_VISU/STATIONS : 2/SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}",
     "name":"Line between Las Vegas Frame and Satellite",
     "availability":[
       "0001-01-01T00:00:00Z/2024-03-15T00:00:00Z",
@@ -577,15 +335,15 @@
     }
   },
   {
-    "id":"LINE_VISU/Toulouse Frame/SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}",
+    "id":"LINE_VISU/STATIONS : 2/Constellation/1  satellites ",
     "name":"Line between Toulouse Frame and Satellite",
     "availability":[
       "0001-01-01T00:00:00Z/2024-03-15T00:00:00Z",
-      "2024-03-15T00:00:00Z/2024-03-15T00:19:47Z",
-      "2024-03-15T00:19:47Z/2024-03-15T00:38:54Z",
-      "2024-03-15T00:38:54Z/2024-03-15T02:22:41Z",
-      "2024-03-15T02:22:41Z/2024-03-15T02:50:02Z",
-      "2024-03-15T02:50:02Z/2024-03-15T05:00:00Z"
+      "2024-03-15T00:00:00Z/2024-03-15T00:24:40Z",
+      "2024-03-15T00:24:40Z/2024-03-15T00:34:02Z",
+      "2024-03-15T00:34:02Z/2024-03-15T02:26:56Z",
+      "2024-03-15T02:26:56Z/2024-03-15T02:42:27Z",
+      "2024-03-15T02:42:27Z/2024-03-15T05:00:00Z"
     ],
     "polyline":{
       "width":1,
@@ -612,23 +370,23 @@
           "boolean":false
         },
         {
-          "interval":"2024-03-15T00:00:00Z/2024-03-15T00:19:47Z",
+          "interval":"2024-03-15T00:00:00Z/2024-03-15T00:24:40Z",
           "boolean":false
         },
         {
-          "interval":"2024-03-15T00:19:47Z/2024-03-15T00:38:54Z",
+          "interval":"2024-03-15T00:24:40Z/2024-03-15T00:34:02Z",
           "boolean":true
         },
         {
-          "interval":"2024-03-15T00:38:54Z/2024-03-15T02:22:41Z",
+          "interval":"2024-03-15T00:34:02Z/2024-03-15T02:26:56Z",
           "boolean":false
         },
         {
-          "interval":"2024-03-15T02:22:41Z/2024-03-15T02:50:02Z",
+          "interval":"2024-03-15T02:26:56Z/2024-03-15T02:42:27Z",
           "boolean":true
         },
         {
-          "interval":"2024-03-15T02:50:02Z/2024-03-15T05:00:00Z",
+          "interval":"2024-03-15T02:42:27Z/2024-03-15T05:00:00Z",
           "boolean":false
         }
       ]
@@ -661,13 +419,12 @@
     }
   },
   {
-    "id":"LINE_VISU/Las Vegas Frame/SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}",
+    "id":"LINE_VISU/STATIONS : 2/Constellation/1  satellites ",
     "name":"Line between Las Vegas Frame and Satellite",
     "availability":[
       "0001-01-01T00:00:00Z/2024-03-15T00:00:00Z",
-      "2024-03-15T00:00:00Z/2024-03-15T01:55:56Z",
-      "2024-03-15T01:55:56Z/2024-03-15T02:03:56Z",
-      "2024-03-15T02:03:56Z/2024-03-15T05:00:00Z"
+      "2024-03-15T00:00:00Z/2024-03-15T05:00:00Z",
+      "2024-03-15T05:00:00Z/2024-03-15T05:00:00Z"
     ],
     "polyline":{
       "width":1,
@@ -694,16 +451,12 @@
           "boolean":false
         },
         {
-          "interval":"2024-03-15T00:00:00Z/2024-03-15T01:55:56Z",
+          "interval":"2024-03-15T00:00:00Z/2024-03-15T05:00:00Z",
           "boolean":false
         },
         {
-          "interval":"2024-03-15T01:55:56Z/2024-03-15T02:03:56Z",
+          "interval":"2024-03-15T05:00:00Z/2024-03-15T05:00:00Z",
           "boolean":true
-        },
-        {
-          "interval":"2024-03-15T02:03:56Z/2024-03-15T05:00:00Z",
-          "boolean":false
         }
       ]
     }

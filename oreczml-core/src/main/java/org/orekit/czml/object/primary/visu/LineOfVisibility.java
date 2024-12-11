@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.orekit.czml.object.primary;
+package org.orekit.czml.object.primary.visu;
 
 import cesiumlanguagewriter.CesiumOutputStream;
 import cesiumlanguagewriter.CesiumStreamWriter;
@@ -25,10 +25,14 @@ import cesiumlanguagewriter.Reference;
 import cesiumlanguagewriter.TimeInterval;
 import org.hipparchus.ode.events.Action;
 import org.hipparchus.util.FastMath;
-import org.orekit.czml.archi.builder.LineOfVisibilityBuilder;
 import org.orekit.czml.object.CzmlShow;
 import org.orekit.czml.object.Polyline;
 import org.orekit.czml.object.Utils.DateUtils;
+import org.orekit.czml.object.primary.AbstractPrimaryObject;
+import org.orekit.czml.object.primary.Constellation;
+import org.orekit.czml.object.primary.Header;
+import org.orekit.czml.object.primary.Satellite;
+import org.orekit.czml.object.secondary.VisibilityTriangle;
 import org.orekit.frames.TopocentricFrame;
 import org.orekit.propagation.BoundedPropagator;
 import org.orekit.propagation.SpacecraftState;
@@ -40,6 +44,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -117,7 +122,19 @@ public class LineOfVisibility extends AbstractPrimaryObject {
     private List<VisibilityCone> visibilityCones = new ArrayList<>();
 
     /** The header considered. */
-    private final Header header;
+    private Header header;
+
+    /** Lines when constellations. */
+    private List<LineOfVisibility> lines = new ArrayList<>();
+
+    /** The topocentric frame of the line. */
+    private TopocentricFrame topocentricFrame;
+
+    /** The topocentrics when several stations are considered. */
+    private List<TopocentricFrame> topocentricFrames = new ArrayList<>();
+
+    /** Visibility triangle. */
+    private VisibilityTriangle triangle;
 
     // Constructors
 
@@ -128,8 +145,7 @@ public class LineOfVisibility extends AbstractPrimaryObject {
      * @param satellite        : The satellite that will be observed by the station.
      * @param header           : The header considered.S
      */
-    public LineOfVisibility(final TopocentricFrame topocentricFrame,
-                            final Satellite satellite, final Header header) {
+    LineOfVisibility(final TopocentricFrame topocentricFrame, final Satellite satellite, final Header header) {
         this(topocentricFrame, satellite, DEFAULT_ANGLE_OF_APERTURE,
                 DEFAULT_ID + topocentricFrame.getName() + "/" + DEFAULT_AND + satellite.getName(), header);
     }
@@ -143,12 +159,12 @@ public class LineOfVisibility extends AbstractPrimaryObject {
      * @param customID         : The custom ID of the line of visibility object.
      * @param header           : The header considered when several are used.
      */
-    public LineOfVisibility(final TopocentricFrame topocentricFrame, final Satellite satellite,
-                            final double angleOfAperture,
-                            final String customID, final Header header) {
+    LineOfVisibility(final TopocentricFrame topocentricFrame, final Satellite satellite,
+                     final double angleOfAperture, final String customID, final Header header) {
 
-        this.angleOfAperture = angleOfAperture;
-        this.header          = header;
+        this.angleOfAperture  = angleOfAperture;
+        this.header           = header;
+        this.topocentricFrame = topocentricFrame;
         this.setId(customID);
         this.setName(DEFAULT_LINE_BETWEEN + topocentricFrame.getName() + DEFAULT_AND + satellite.getName());
 
@@ -167,7 +183,43 @@ public class LineOfVisibility extends AbstractPrimaryObject {
         this.showList      = new ArrayList<>();
 
         buildSingleTimeIntervalsAndVisu(topocentricFrame, satellite, header);
-        buildShowList();
+        buildShowList(satellite, topocentricFrame);
+    }
+
+    LineOfVisibility(final TopocentricFrame topocentricFrame, final Constellation constellation,
+                     final double angleOfAperture, final String customID, final Header header) {
+        this.setId(customID);
+        this.header = header;
+        for (int i = 0; i < constellation.getTotalOfSatellite(); i++) {
+            final Satellite currentSatellite = constellation.getSatellites()
+                                                            .get(i);
+            lines.add(new LineOfVisibility(topocentricFrame, currentSatellite, angleOfAperture, customID, header));
+        }
+    }
+
+    LineOfVisibility(final List<TopocentricFrame> topocentricFrames, final Satellite satellite,
+                     final double angleOfAperture, final String customID, final Header header) {
+        this.setId(customID);
+        this.header = header;
+        this.topocentricFrames.addAll(topocentricFrames);
+        for (final TopocentricFrame currentTopocentricFrame : topocentricFrames) {
+            lines.add(new LineOfVisibility(currentTopocentricFrame, satellite, angleOfAperture, customID, header));
+        }
+    }
+
+    LineOfVisibility(final List<TopocentricFrame> topocentricFrames, final Constellation constellation,
+                     final double angleOfAperture, final String customID, final Header header) {
+        this.setId(customID);
+        this.header = header;
+        this.topocentricFrames.addAll(topocentricFrames);
+        for (final TopocentricFrame currentTopocentric : topocentricFrames) {
+            for (int j = 0; j < constellation.getTotalOfSatellite(); j++) {
+                final Satellite currentSatellite = constellation.getSatellites()
+                                                                .get(j);
+                lines.add(
+                        new LineOfVisibility(currentTopocentric, currentSatellite, angleOfAperture, customID, header));
+            }
+        }
     }
 
     // Builder
@@ -185,25 +237,40 @@ public class LineOfVisibility extends AbstractPrimaryObject {
         return new LineOfVisibilityBuilder(topocentricFrameInput, satelliteInput, header);
     }
 
+    public static LineOfVisibilityBuilder builder(final TopocentricFrame topocentricFrameInput,
+                                                  final Constellation constellationInput,
+                                                  final Header header) throws URISyntaxException, IOException {
+        return new LineOfVisibilityBuilder(topocentricFrameInput, constellationInput, header);
+    }
+
+    public static LineOfVisibilityBuilder builder(final List<TopocentricFrame> topocentricFramesInput,
+                                                  final Satellite satellite, final Header header) {
+        return new LineOfVisibilityBuilder(topocentricFramesInput, satellite, header);
+    }
+
+    public static LineOfVisibilityBuilder builder(final List<TopocentricFrame> topocentricFramesInput,
+                                                  final Constellation constellationInput, final Header header) {
+        return new LineOfVisibilityBuilder(topocentricFramesInput, constellationInput, header);
+    }
+
     // Overrides
 
     @Override
     public void writeCzmlBlock(final CesiumStreamWriter stream,
                                final CesiumOutputStream output) throws URISyntaxException, IOException {
-        output.setPrettyFormatting(true);
-        for (int i = 0; i < this.getVisibilityCones()
-                                .size(); i++) {
-            final VisibilityCone currentVisibilityCone = this.getVisibilityCones()
-                                                             .get(i);
-            currentVisibilityCone.writeCzmlBlock(stream, output);
+        if (this.triangle != null) {
+            this.triangle.writeCzmlBlock(stream, output);
         }
-        try (PacketCesiumWriter packet = stream.openPacket(output)) {
-            packet.writeId(this.getId());
-            packet.writeName(this.getName());
-            packet.writeAvailability(this.getTimeIntervals());
-            this.writePolyline(packet, output, header);
+
+        if (lines.isEmpty()) {
+            writeSingleLine(output, stream, this);
+            cleanObject();
+        } else {
+            for (LineOfVisibility line : lines) {
+                writeSingleLine(output, stream, line);
+            }
+            cleanObject();
         }
-        cleanObject();
     }
 
 
@@ -220,8 +287,12 @@ public class LineOfVisibility extends AbstractPrimaryObject {
         this.visuList        = new ArrayList<>();
         this.angleOfAperture = 0.0;
         this.visibilityCones = new ArrayList<>();
+        this.lines           = new ArrayList<>();
     }
 
+    public void displayTriangle() {
+        this.triangle = new VisibilityTriangle(this, header);
+    }
 
     // Getters
 
@@ -261,6 +332,13 @@ public class LineOfVisibility extends AbstractPrimaryObject {
         return Collections.unmodifiableList(showList);
     }
 
+    public TopocentricFrame getTopocentricFrame() {
+        return topocentricFrame;
+    }
+
+    public List<TopocentricFrame> getTopocentricFrames() {
+        return Collections.unmodifiableList(topocentricFrames);
+    }
 
     // Private functions
 
@@ -271,6 +349,18 @@ public class LineOfVisibility extends AbstractPrimaryObject {
      */
     public Iterable<Reference> getReferences() {
         return references;
+    }
+
+    /**
+     * Get a list of the references.
+     *
+     * @return : A list of the references
+     */
+    public List<Reference> getReferenceList() {
+        final List<Reference>     toReturn = new ArrayList<>();
+        final Iterator<Reference> iterator = references.iterator();
+        iterator.forEachRemaining(toReturn::add);
+        return toReturn;
     }
 
     /**
@@ -294,38 +384,38 @@ public class LineOfVisibility extends AbstractPrimaryObject {
     /**
      * This function builds an elevation detector for the propagator to detect when the station sees the satellite or not.
      *
-     * @param topocentricFrame :The topocentric frame where the ground station must be.
-     * @param visuMap          : The time span map of boolean that will contain all the information about when the station sees the satellite or not.
+     * @param topocentricFrameInput :The topocentric frame where the ground station must be.
+     * @param visuMap               : The time span map of boolean that will contain all the information about when the station sees the satellite or not.
      * @return : An elevation detector that allows the station to detect the satellite during the propagation.
      */
-    private ElevationDetector detectionVisu(final TopocentricFrame topocentricFrame,
+    private ElevationDetector detectionVisu(final TopocentricFrame topocentricFrameInput,
                                             final TimeSpanMap<Boolean> visuMap) {
-        return new ElevationDetector(30, 0.001, topocentricFrame).withConstantElevation(
-                                                                         FastMath.toRadians(90.0 - angleOfAperture))
-                                                                 .withHandler(
-                                                                         (spacecraftState, detector, increasing) -> {
-                                                                             if (increasing) {
-                                                                                 visuMap.addValidAfter(true,
-                                                                                         spacecraftState.getDate(),
-                                                                                         true);
-                                                                             } else {
-                                                                                 visuMap.addValidAfter(false,
-                                                                                         spacecraftState.getDate(),
-                                                                                         true);
-                                                                             }
-                                                                             return Action.CONTINUE;
-                                                                         });
+        return new ElevationDetector(30, 0.001, topocentricFrameInput).withConstantElevation(
+                                                                              FastMath.toRadians(90.0 - angleOfAperture))
+                                                                      .withHandler(
+                                                                              (spacecraftState, detector, increasing) -> {
+                                                                                  if (increasing) {
+                                                                                      visuMap.addValidAfter(true,
+                                                                                              spacecraftState.getDate(),
+                                                                                              true);
+                                                                                  } else {
+                                                                                      visuMap.addValidAfter(false,
+                                                                                              spacecraftState.getDate(),
+                                                                                              true);
+                                                                                  }
+                                                                                  return Action.CONTINUE;
+                                                                              });
     }
 
     /**
      * This function aims at building the time intervals and the list of visualization containing the boolean showing
      * if the station sees the satellite or not.
      *
-     * @param topocentricFrame :The topocentric frame where the ground station must be.
-     * @param satellite_input  : The satellite that will be observed by the station.
-     * @param headerInput      : The header considered when several are used.
+     * @param topocentricFrameInput :The topocentric frame where the ground station must be.
+     * @param satellite_input       : The satellite that will be observed by the station.
+     * @param headerInput           : The header considered when several are used.
      */
-    private void buildSingleTimeIntervalsAndVisu(final TopocentricFrame topocentricFrame,
+    private void buildSingleTimeIntervalsAndVisu(final TopocentricFrame topocentricFrameInput,
                                                  final Satellite satellite_input, final Header headerInput) {
 
         final BoundedPropagator propagator         = (BoundedPropagator) satellite_input.getSatellitePropagator();
@@ -341,7 +431,7 @@ public class LineOfVisibility extends AbstractPrimaryObject {
         final TimeSpanMap<Boolean> visuMap = new TimeSpanMap<>(null);
         // Add the first boolean false that represent the visibility out of the scope of the simulation.
         visuMap.addValidBetween(false, initialState.getDate(), propagator.getMaxDate());
-        final ElevationDetector visuDetector = detectionVisu(topocentricFrame, visuMap);
+        final ElevationDetector visuDetector = detectionVisu(topocentricFrameInput, visuMap);
         final double            enVisu       = visuDetector.g(initialState);
 
         if (enVisu > 0) {
@@ -371,7 +461,7 @@ public class LineOfVisibility extends AbstractPrimaryObject {
                 visuList.add(span.getData());
                 final JulianDate startDate = DateUtils.toJulianDate(span.getStart(),
                         headerInput.getTimeScale());
-                final JulianDate   stopDate            = DateUtils.toJulianDate(span.getEnd(),
+                final JulianDate stopDate = DateUtils.toJulianDate(span.getEnd(),
                         headerInput.getTimeScale());
                 final TimeInterval currentTimeInterval = new TimeInterval(startDate, stopDate);
                 timeIntervals.add(currentTimeInterval);
@@ -397,11 +487,15 @@ public class LineOfVisibility extends AbstractPrimaryObject {
 
     /**
      * This function builds a list of czml show to write into the czml file when the station sees the satellite or not.
+     *
+     * @param satelliteInput        : The satellite related to the Czml show.
+     * @param topocentricFrameInput : The topocentric frame related to the Czml show.
      */
-    private void buildShowList() {
+    private void buildShowList(final Satellite satelliteInput, final TopocentricFrame topocentricFrameInput) {
         showList = new ArrayList<>();
         for (int i = 0; i < visuList.size(); i++) {
-            final CzmlShow showTemp = new CzmlShow(visuList.get(i), timeIntervals.get(i));
+            final CzmlShow showTemp = new CzmlShow(visuList.get(i), timeIntervals.get(i), satelliteInput,
+                    topocentricFrameInput);
             showList.add(showTemp);
         }
     }
@@ -417,6 +511,30 @@ public class LineOfVisibility extends AbstractPrimaryObject {
                                final Header headerInput) {
         final Polyline polylineInput = new Polyline(headerInput);
         polylineInput.writePolylineOfVisibility(packet, output, references, showList);
+    }
+
+    /**
+     * This functions write in the czml file a single line of visibility.
+     *
+     * @param output : The output stream of cesium that will contain the strings to write into the CzmlFile.
+     * @param stream : The stream that will write into the file.
+     * @param line   : The line written
+     */
+    private void writeSingleLine(final CesiumOutputStream output, final CesiumStreamWriter stream,
+                                 final LineOfVisibility line) {
+        output.setPrettyFormatting(true);
+        for (int i = 0; i < line.getVisibilityCones()
+                                .size(); i++) {
+            final VisibilityCone currentVisibilityCone = line.getVisibilityCones()
+                                                             .get(i);
+            currentVisibilityCone.writeCzmlBlock(stream, output);
+        }
+        try (PacketCesiumWriter packet = stream.openPacket(output)) {
+            packet.writeId(line.getId());
+            packet.writeName(line.getName());
+            packet.writeAvailability(line.getTimeIntervals());
+            line.writePolyline(packet, output, header);
+        }
     }
 
     /**

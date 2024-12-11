@@ -3,7 +3,7 @@
 # Global information
 
 This JAVA project was created in order to assess the matter of display in the library Orekit using the library Cesium.
-The aim was to create an interface with some outputs of Orekit and to display them with Cesium. 
+The aim was to create an interface with some outputs of Orekit and to display them with Cesium.
 Cesium understands CZML file as inputs. Hence, this project provides a library to build a CZML file to input into Cesium.
 
 [![](http://img.shields.io/:license-apache-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
@@ -29,15 +29,15 @@ Orekit and junit can be installed with maven using a pom.xml with dependencies :
 * [Orekit](https://mvnrepository.com/artifact/org.orekit/orekit)
 * [junit-jupiter](https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter)
 
-For the czml writer you will need to install it differently, because no maven repository exists, two methods can be used : 
+For the czml writer you will need to install it differently, because no maven repository exists, two methods can be used :
 
 * You download the .jar, and you install it directly. Let name the groupId `com.agi`, the artifactId `cesiumlanguagewriter` and the version will be `3.0.0`. You will need to add in the pom.xml the following lines to do so :
 ```xml
  <dependency>
-      <groupId>com.agi</groupId>
-      <artifactId>cesiumlanguagewriter</artifactId>
-      <version>3.0.0</version>
- </dependency>
+  <groupId>com.agi</groupId>
+  <artifactId>cesiumlanguagewriter</artifactId>
+  <version>3.0.0</version>
+</dependency>
 ```
 
 Now that the dependency is added you can now use the following command in maven to install it :
@@ -69,7 +69,7 @@ if you want to launch a tutorial, you will need to replace on each of them the l
 
 ```java
 final String pathToJSFolder = TutorialUtils.generateJSPath(
-                System.getProperty("user.dir"));
+        System.getProperty("user.dir"));
 ```
 
 Replace the `System.getProperty("user.dir")` with the path of the file where you wants your external resources to be taken if you use some.
@@ -80,18 +80,18 @@ The Czml file will be outputted in the 'Output' folder.
 
 Check out the [wiki](https://gitlab.orekit.org/Zudo/oreczml/-/wikis/home), including the [Get Started](https://gitlab.orekit.org/Zudo/oreczml/-/wikis/Get-Started?redirected_from=How-to-get-started). Also browse the [Orekit Forum](https://https://forum.orekit.org) or the [Cesium Forum](https://community.cesium.com/) for related questions.
 
-## Input Accepted 
+## Input Accepted
 
 This converter accepts several inputs to write a CZML file :
 
 - An Oem file (TXT or XML file are supported)
 - A list of Orekit SpacecraftStates
 - A Tle file
-- An Orekit Orbit defined with orbital parameters, the orbital parameters supported are : 
-    - Keplerian parameters
-    - Cartesian parameters
-    - Equinoctial parameters
-    - Circular parameters
+- An Orekit Orbit defined with orbital parameters, the orbital parameters supported are :
+  - Keplerian parameters
+  - Cartesian parameters
+  - Equinoctial parameters
+  - Circular parameters
 
 
 ## Output
@@ -99,7 +99,7 @@ This converter accepts several inputs to write a CZML file :
 The output obtained will be a .czml file that you can directly enter in cesium to display.
 
 
-# Examples 
+# Examples
 
 <h1 style="text-align: center;">Solar System Display</h1>
 

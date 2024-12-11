@@ -25,6 +25,7 @@ import org.orekit.bodies.GeodeticPoint;
 import org.orekit.czml.archi.builder.CoveredSurfaceOnBodyBuilder;
 import org.orekit.czml.archi.builder.PolygonBuilder;
 import org.orekit.czml.object.nonvisual.PointOnBody;
+import org.orekit.czml.object.primary.visu.FieldOfObservation;
 import org.orekit.czml.object.secondary.Polygon;
 import org.orekit.frames.Transform;
 import org.orekit.geometry.fov.FieldOfView;
@@ -153,7 +154,7 @@ public class CoveredSurfaceOnBody extends AbstractPrimaryObject {
      * @return the covered surface on body builder
      */
     public static CoveredSurfaceOnBodyBuilder builder(final Satellite satelliteInput,
-                                               final FieldOfObservation fieldOfObservationInput, final Header header) {
+                                                      final FieldOfObservation fieldOfObservationInput, final Header header) {
         return new CoveredSurfaceOnBodyBuilder(satelliteInput, fieldOfObservationInput, header);
     }
 

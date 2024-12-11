@@ -29,7 +29,8 @@ import java.io.StringWriter;
  * CZML Show class
  *
  * <p>
- * This class represents the show objects that will allows other primary objects to be displayed or not in a given time interval.
+ * This class represents the show objects that will allow other primary objects to be displayed or not in a given time interval.
+ * It can be related to up to two objects.
  * </p>
  *
  * @author Julien LEBLOND.
@@ -47,11 +48,17 @@ public class CzmlShow {
      */
     private TimeInterval availability;
 
+    /** The first object related to the show. */
+    private Object object1;
+
+    /** The second object related to the show. */
+    private Object object2;
 
     // Constructors
 
+
     /**
-     * The basic czml show constructor.
+     * The basic czml show constructor. It has no objects related to it.
      *
      * @param toShow       : The boolean that represent if the object is displayed or not.
      * @param availability : The time interval when the object is displayed or not.
@@ -59,6 +66,35 @@ public class CzmlShow {
     public CzmlShow(final boolean toShow, final TimeInterval availability) {
         this.toShow       = toShow;
         this.availability = availability;
+    }
+
+    /**
+     * The basic czml show constructor. It has no objects related to it.
+     *
+     * @param toShow       : The boolean that represent if the object is displayed or not.
+     * @param availability : The time interval when the object is displayed or not.
+     * @param object1Input : The first object related to the show.
+     */
+    public CzmlShow(final boolean toShow, final TimeInterval availability, final Object object1Input) {
+        this.toShow       = toShow;
+        this.availability = availability;
+        this.object1      = object1Input;
+    }
+
+    /**
+     * The czml show constructor with two objects related to it.
+     *
+     * @param toShow       : The boolean that represent if the object is displayed or not.
+     * @param availability : The time interval when the object is displayed or not.
+     * @param object1Input : The first object related to the show.
+     * @param object2Input : The second object related to the show.
+     */
+    public CzmlShow(final boolean toShow, final TimeInterval availability, final Object object1Input,
+                    final Object object2Input) {
+        this.toShow       = toShow;
+        this.availability = availability;
+        this.object1      = object1Input;
+        this.object2      = object2Input;
     }
 
 
@@ -122,6 +158,24 @@ public class CzmlShow {
      */
     public boolean getShow() {
         return toShow;
+    }
+
+    /**
+     * Get the first object.
+     *
+     * @return the first object
+     */
+    public Object getObject1() {
+        return object1;
+    }
+
+    /**
+     * Get the second object.
+     *
+     * @return the second object
+     */
+    public Object getObject2() {
+        return object2;
     }
 
     // Setters

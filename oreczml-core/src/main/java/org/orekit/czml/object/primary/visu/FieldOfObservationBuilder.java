@@ -14,11 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.orekit.czml.archi.builder;
+package org.orekit.czml.object.primary.visu;
 
 import org.hipparchus.util.FastMath;
 import org.orekit.bodies.OneAxisEllipsoid;
-import org.orekit.czml.object.primary.FieldOfObservation;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.primary.Satellite;
 import org.orekit.frames.FramesFactory;

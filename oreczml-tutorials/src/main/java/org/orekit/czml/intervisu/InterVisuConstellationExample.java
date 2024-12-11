@@ -23,7 +23,7 @@ import org.hipparchus.util.FastMath;
 import org.orekit.czml.file.CzmlFile;
 import org.orekit.czml.object.primary.Constellation;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.InterSatVisu;
+import org.orekit.czml.object.primary.visu.InterSatVisu;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.forces.ForceModel;
 import org.orekit.forces.gravity.HolmesFeatherstoneAttractionModel;

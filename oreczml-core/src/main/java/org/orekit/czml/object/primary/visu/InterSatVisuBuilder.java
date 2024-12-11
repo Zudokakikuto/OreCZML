@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.orekit.czml.archi.builder;
+package org.orekit.czml.object.primary.visu;
 
 import org.orekit.czml.object.primary.Constellation;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.InterSatVisu;
 import org.orekit.czml.object.primary.Satellite;
 import org.orekit.propagation.BoundedPropagator;
 import org.orekit.time.AbsoluteDate;

@@ -27,7 +27,7 @@ import org.orekit.attitudes.YawSteering;
 import org.orekit.bodies.CelestialBodyFactory;
 import org.orekit.czml.archi.builder.SatelliteBuilder;
 import org.orekit.czml.file.CzmlFile;
-import org.orekit.czml.object.primary.FieldOfObservation;
+import org.orekit.czml.object.primary.visu.FieldOfObservation;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.primary.Satellite;
 import org.orekit.czml.object.secondary.Clock;
@@ -180,22 +180,22 @@ public class YawCompensationExample {
         // Build of satellites
         final List<Satellite> satellites = new ArrayList<>();
         final Satellite satellite1 = new SatelliteBuilder(boundedPropagator1, header).withColor(Color.PINK)
-                                                                             .withOnlyOnePeriod()
-                                                                             .withDisplayAttitude()
-                                                                             .withReferenceSystem()
-                                                                             .build();
+                                                                                     .withOnlyOnePeriod()
+                                                                                     .withDisplayAttitude()
+                                                                                     .withReferenceSystem()
+                                                                                     .build();
 
         final Satellite satellite2 = new SatelliteBuilder(boundedPropagator2, header).withColor(Color.BLUE)
-                                                                             .withOnlyOnePeriod()
-                                                                             .withDisplayAttitude()
-                                                                             .withReferenceSystem()
-                                                                             .build();
+                                                                                     .withOnlyOnePeriod()
+                                                                                     .withDisplayAttitude()
+                                                                                     .withReferenceSystem()
+                                                                                     .build();
 
         final Satellite satellite3 = new SatelliteBuilder(boundedPropagator3, header).withColor(Color.WHITE)
-                                                                             .withOnlyOnePeriod()
-                                                                             .withDisplayAttitude()
-                                                                             .withReferenceSystem()
-                                                                             .build();
+                                                                                     .withOnlyOnePeriod()
+                                                                                     .withDisplayAttitude()
+                                                                                     .withReferenceSystem()
+                                                                                     .build();
         satellites.add(satellite1);
         satellites.add(satellite2);
         satellites.add(satellite3);

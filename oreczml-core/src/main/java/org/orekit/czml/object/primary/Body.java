@@ -161,8 +161,8 @@ public class Body extends AbstractPrimaryObject {
         this.body                  = body;
         this.header                = header;
         this.description           = "<!--HTML-->\r\n<p>Id : " + customID + "</p>\r\n<p>Name : " + body.getName() + "</p>\r\n<p>Simulated from : " + header.getAvailability()
-                                                                                                                       .getStart() + " to " + header.getAvailability()
-                                                                                                                                                    .getStop() + "</p>";
+                                                                                                                                                           .getStart() + " to " + header.getAvailability()
+                                                                                                                                                                                        .getStop() + "</p>";
         this.pathToModel           = pathToModel;
         this.model                 = new CzmlModel(pathToModel, false, header);
         this.julianDatesSimulation = header.getClock()

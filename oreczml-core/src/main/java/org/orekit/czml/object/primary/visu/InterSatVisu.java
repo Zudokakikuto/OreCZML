@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.orekit.czml.object.primary;
+package org.orekit.czml.object.primary.visu;
 
 import cesiumlanguagewriter.CesiumOutputStream;
 import cesiumlanguagewriter.CesiumStreamWriter;
@@ -27,10 +27,13 @@ import org.hipparchus.ode.events.Action;
 import org.hipparchus.util.FastMath;
 import org.orekit.annotation.DefaultDataContext;
 import org.orekit.bodies.OneAxisEllipsoid;
-import org.orekit.czml.archi.builder.InterSatVisuBuilder;
 import org.orekit.czml.object.CzmlShow;
 import org.orekit.czml.object.Polyline;
 import org.orekit.czml.object.Utils.DateUtils;
+import org.orekit.czml.object.primary.AbstractPrimaryObject;
+import org.orekit.czml.object.primary.Constellation;
+import org.orekit.czml.object.primary.Header;
+import org.orekit.czml.object.primary.Satellite;
 import org.orekit.data.DataContext;
 import org.orekit.frames.Frame;
 import org.orekit.orbits.Orbit;
@@ -51,6 +54,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -479,6 +483,18 @@ public class InterSatVisu extends AbstractPrimaryObject {
     }
 
     /**
+     * Get a list of the references.
+     *
+     * @return : A list of the references
+     */
+    public List<Reference> getReferenceList() {
+        final List<Reference>     toReturn = new ArrayList<>();
+        final Iterator<Reference> iterator = references.iterator();
+        iterator.forEachRemaining(toReturn::add);
+        return toReturn;
+    }
+
+    /**
      * Gets single time intervals of visu.
      *
      * @return the single time intervals of visu
@@ -716,16 +732,16 @@ public class InterSatVisu extends AbstractPrimaryObject {
 
         final InterSatDirectViewDetector detector = new InterSatDirectViewDetector(this.getBody(),
                 boundedPropagatorSat2).withHandler((spacecraftState, currentDetector, increasing) -> {
-                    final double detected = currentDetector.g(spacecraftState);
-                    if (detected >= 0) {
-                        this.datesWhenNotVisu.add(spacecraftState.getDate());
-                        this.booleanList.add(true);
-                    } else if (detected < 0) {
-                        this.datesWhenVisu.add(spacecraftState.getDate());
-                        this.booleanList.add(false);
-                    }
-                    return Action.CONTINUE;
-                });
+            final double detected = currentDetector.g(spacecraftState);
+            if (detected >= 0) {
+                this.datesWhenNotVisu.add(spacecraftState.getDate());
+                this.booleanList.add(true);
+            } else if (detected < 0) {
+                this.datesWhenVisu.add(spacecraftState.getDate());
+                this.booleanList.add(false);
+            }
+            return Action.CONTINUE;
+        });
 
         final TimeInterval availabilityOfTheSatellite = this.getSatellite1()
                                                             .getAvailability();

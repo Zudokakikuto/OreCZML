@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.orekit.czml.object.primary;
+package org.orekit.czml.object.primary.visu;
 
 import cesiumlanguagewriter.CesiumOutputStream;
 import cesiumlanguagewriter.CesiumStreamWriter;
@@ -23,6 +23,10 @@ import org.hipparchus.util.FastMath;
 import org.orekit.czml.errors.OreCzmlException;
 import org.orekit.czml.errors.OreCzmlMessages;
 import org.orekit.czml.object.Position;
+import org.orekit.czml.object.primary.AbstractPrimaryObject;
+import org.orekit.czml.object.primary.CzmlGroundStation;
+import org.orekit.czml.object.primary.Header;
+import org.orekit.czml.object.primary.Satellite;
 import org.orekit.czml.object.secondary.Cylinder;
 import org.orekit.frames.TopocentricFrame;
 

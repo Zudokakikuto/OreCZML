@@ -154,7 +154,6 @@ public class Polyline {
      */
     private final double farDistance;
 
-
     // Constructors
 
     // Non-vector constructors

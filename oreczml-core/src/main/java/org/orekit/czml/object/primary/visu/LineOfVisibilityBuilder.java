@@ -14,15 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.orekit.czml.archi.builder;
+package org.orekit.czml.object.primary.visu;
 
+import org.orekit.czml.object.primary.Constellation;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.LineOfVisibility;
 import org.orekit.czml.object.primary.Satellite;
 import org.orekit.frames.TopocentricFrame;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Line of visibility builder class
@@ -39,15 +41,21 @@ public class LineOfVisibilityBuilder {
      */
     public static final double DEFAULT_ANGLE_OF_APERTURE = 80.0;
 
+    /** The string to call stations in the id. */
+    public static final String DEFAULT_STATIONS = "STATIONS : ";
+
     /**
      * The topocentric frame where the ground station is.
      */
-    private final TopocentricFrame topocentricFrame;
+    private TopocentricFrame topocentricFrame;
+
+    /** Topocentrics when several stations are considered. */
+    private final List<TopocentricFrame> topocentricFrames = new ArrayList<>();
 
     /**
      * The satellite observed.
      */
-    private final Satellite satellite;
+    private Satellite satellite;
 
     // Optional parameters
     /**
@@ -63,6 +71,12 @@ public class LineOfVisibilityBuilder {
     /** The header considered when several are used. */
     private Header header = null;
 
+    /** The constellation of the lines. */
+    private Constellation constellation;
+
+    /** Boolean to display the triangle or not. */
+    private boolean displayTriangle = false;
+
     // Constructor
 
     /**
@@ -77,7 +91,31 @@ public class LineOfVisibilityBuilder {
         this.satellite        = satelliteInput;
         this.topocentricFrame = topocentricFrameInput;
         this.customID         = LineOfVisibility.DEFAULT_ID + topocentricFrameInput.getName() + "/" + satelliteInput.getId();
-        this.header = headerInput;
+        this.header           = headerInput;
+    }
+
+    public LineOfVisibilityBuilder(final TopocentricFrame topocentricFrameInput, final Constellation constellationInput,
+                                   final Header headerInput) {
+        this.constellation    = constellationInput;
+        this.topocentricFrame = topocentricFrameInput;
+        this.customID         = LineOfVisibility.DEFAULT_ID + topocentricFrameInput.getName() + "/" + constellationInput.getId();
+        this.header           = headerInput;
+    }
+
+    public LineOfVisibilityBuilder(final List<TopocentricFrame> topocentricFramesInput, final Satellite satellite,
+                                   final Header headerInput) {
+        this.satellite = satellite;
+        this.topocentricFrames.addAll(topocentricFramesInput);
+        this.customID = LineOfVisibility.DEFAULT_ID + DEFAULT_STATIONS + topocentricFrames.size() + "/" + satellite.getId();
+        this.header   = headerInput;
+    }
+
+    public LineOfVisibilityBuilder(final List<TopocentricFrame> topocentricFramesInput,
+                                   final Constellation constellationInput, final Header headerInput) {
+        this.constellation = constellationInput;
+        this.topocentricFrames.addAll(topocentricFramesInput);
+        this.customID = LineOfVisibility.DEFAULT_ID + DEFAULT_STATIONS + topocentricFrames.size() + "/" + constellationInput.getId();
+        this.header   = headerInput;
     }
 
     /**
@@ -113,6 +151,11 @@ public class LineOfVisibilityBuilder {
         return this;
     }
 
+    public LineOfVisibilityBuilder withVisibilityTriangle() {
+        this.displayTriangle = true;
+        return this;
+    }
+
     /**
      * The build function that generates a line of visibility object.
      *
@@ -121,7 +164,25 @@ public class LineOfVisibilityBuilder {
      * @throws IOException        the io exception
      */
     public LineOfVisibility build() throws URISyntaxException, IOException {
-        return new LineOfVisibility(topocentricFrame, satellite, angleOfAperture, customID, header);
+        LineOfVisibility toReturn = null;
+        if (satellite != null) {
+            if (topocentricFrames.isEmpty()) {
+                toReturn = new LineOfVisibility(topocentricFrame, satellite, angleOfAperture, customID, header);
+            } else {
+                toReturn = new LineOfVisibility(topocentricFrames, satellite, angleOfAperture, customID, header);
+            }
+        }
+        if (constellation != null) {
+            if (topocentricFrames.isEmpty()) {
+                toReturn = new LineOfVisibility(topocentricFrame, constellation, angleOfAperture, customID, header);
+            } else {
+                toReturn = new LineOfVisibility(topocentricFrames, constellation, angleOfAperture, customID, header);
+            }
+        }
+        if (displayTriangle) {
+            toReturn.displayTriangle();
+        }
+        return toReturn;
     }
 
 }

@@ -78,7 +78,7 @@ public class DateUtils {
         final int min = date.getComponents(timeScale)
                             .getTime()
                             .getMinute();
-        final double sec = FastMath.round(date.getComponents(timeScale)
+        final double sec = FastMath.floor(date.getComponents(timeScale)
                                               .getTime()
                                               .getSecond());
 

@@ -37,9 +37,6 @@ public class OemAdaptorTest extends AbstractTest {
         final OemParser     oemParser     = parserBuilder.buildOemParser();
         final Oem           oem           = oemParser.parse(dataSource);
 
-
-        final Header header = dummyHeader();
-
         final AbsoluteDate startDate = new AbsoluteDate(2025,9,1,0,0,0.0, TimeScalesFactory.getUTC());
         final AbsoluteDate finalDate = new AbsoluteDate(2025,9,2,0,0,0.0, TimeScalesFactory.getUTC());
 

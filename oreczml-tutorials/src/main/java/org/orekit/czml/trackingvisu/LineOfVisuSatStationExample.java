@@ -16,15 +16,16 @@
  */
 package org.orekit.czml.trackingvisu;
 
-import org.orekit.czml.TutorialUtils;
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
 import org.orekit.bodies.GeodeticPoint;
+import org.orekit.czml.TutorialUtils;
 import org.orekit.czml.file.CzmlFile;
 import org.orekit.czml.object.primary.CzmlGroundStation;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.primary.Satellite;
+import org.orekit.czml.object.primary.visu.LineOfVisibility;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.forces.ForceModel;
 import org.orekit.forces.gravity.HolmesFeatherstoneAttractionModel;
@@ -49,7 +50,7 @@ import org.orekit.utils.IERSConventions;
  */
 public class LineOfVisuSatStationExample {
 
-    private LineOfVisuSatStationExample () {
+    private LineOfVisuSatStationExample() {
         // empty
     }
 
@@ -59,7 +60,7 @@ public class LineOfVisuSatStationExample {
      * @param args the args
      * @throws Exception the exception
      */
-    public static void main (final String[] args) throws Exception {
+    public static void main(final String[] args) throws Exception {
         // Load orekit data
         TutorialUtils.loadOrekitData();
 
@@ -93,7 +94,8 @@ public class LineOfVisuSatStationExample {
         // Build of an orbit that will fly above toulouse
 
         final KeplerianOrbit initialOrbit = new KeplerianOrbit(7878000, 0, FastMath.toRadians(80), 0,
-                FastMath.toRadians(90), FastMath.toRadians(0), PositionAngleType.MEAN, FramesFactory.getEME2000(), startDate,
+                FastMath.toRadians(90), FastMath.toRadians(0), PositionAngleType.MEAN, FramesFactory.getEME2000(),
+                startDate,
                 Constants.WGS84_EARTH_MU);
 
         final SpacecraftState initialState = new SpacecraftState(initialOrbit);
@@ -123,18 +125,23 @@ public class LineOfVisuSatStationExample {
         final BoundedPropagator boundedPropagator = generator.getGeneratedEphemeris();
 
         // Creation of a ground Station at Toulouse
-        final CzmlGroundStation toulouseStation = new CzmlGroundStation(topocentricToulouse, groundStationModel, header);
+        final CzmlGroundStation toulouseStation = new CzmlGroundStation(topocentricToulouse, groundStationModel,
+                header);
 
         // Creation of the satellite
         final Satellite satellite = Satellite.builder(boundedPropagator, header)
                                              .withOnlyOnePeriod()
                                              .build();
 
+        final LineOfVisibility lineOfVisibility = LineOfVisibility.builder(topocentricToulouse, satellite, header)
+                                                                  .withVisibilityTriangle()
+                                                                  .build();
+
         final CzmlFile file = CzmlFile.builder().
                                       withHeader(header).
                                       withCzmlGroundStation(toulouseStation).
                                       withSatellite(satellite).
-                                      withLineOfVisibility(topocentricToulouse, satellite, header).
+                                      withLineOfVisibility(lineOfVisibility).
                                       build();
 
         // Writing in the file
