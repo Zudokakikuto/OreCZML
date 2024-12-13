@@ -17,25 +17,29 @@
 package org.orekit.czml.object.secondary;
 
 import cesiumlanguagewriter.Cartesian;
-import cesiumlanguagewriter.CesiumArcType;
 import cesiumlanguagewriter.CesiumOutputStream;
 import cesiumlanguagewriter.CesiumStreamWriter;
 import cesiumlanguagewriter.MaterialCesiumWriter;
 import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.PolygonCesiumWriter;
-import cesiumlanguagewriter.PositionCesiumWriter;
-import cesiumlanguagewriter.Reference;
+import cesiumlanguagewriter.PositionListCesiumWriter;
 import cesiumlanguagewriter.SolidColorMaterialCesiumWriter;
 import cesiumlanguagewriter.TimeInterval;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
+import org.orekit.bodies.GeodeticPoint;
+import org.orekit.bodies.OneAxisEllipsoid;
 import org.orekit.czml.object.CzmlShow;
 import org.orekit.czml.object.Utils.DateUtils;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.primary.visu.LineOfVisibility;
+import org.orekit.frames.Frame;
+import org.orekit.frames.FramesFactory;
 import org.orekit.frames.TopocentricFrame;
 import org.orekit.propagation.SpacecraftState;
 import org.orekit.time.AbsoluteDate;
+import org.orekit.utils.Constants;
+import org.orekit.utils.IERSConventions;
 
 import java.awt.Color;
 import java.io.IOException;
@@ -110,41 +114,20 @@ public class VisibilityTriangle extends AbstractPrimaryObject {
                                final CesiumOutputStream output) throws URISyntaxException, IOException {
         output.setPrettyFormatting(true);
         for (int i = 0; i < trianglesCartesians.size(); i++) {
-            final List<String> idStartStopPoints = new ArrayList<>();
-            for (int j = 1; j < trianglesCartesians.get(i)
-                                                   .size(); j++) {
-                try (PacketCesiumWriter packet = stream.openPacket(output)) {
-                    final String idCurrentRefPoint = REFERENCE_POINT + line.getSatellite()
-                                                                           .getId() + "N" + i + "." + j;
-                    packet.writeId(idCurrentRefPoint);
-                    idStartStopPoints.add(idCurrentRefPoint);
-                    packet.writeName("Reference point number " + i + "." + j + " for satellite " + line.getSatellite()
-                                                                                                       .getName());
-                    packet.writeAvailability(availabilityTriangles.get(i));
-                    try (PositionCesiumWriter positionCesiumWriter = packet.getPositionWriter()) {
-                        positionCesiumWriter.open(output);
-                        positionCesiumWriter.writeInterval(availabilityTriangles.get(i));
-                        positionCesiumWriter.writeCartesian(trianglesCartesians.get(i)
-                                                                               .get(j));
-                    }
-                }
-                this.idRefPoints.add(idStartStopPoints);
-            }
-        }
-
-        final List<List<Reference>> referencesBuilt = buildReferences(idRefPoints, line.getReferenceList());
-
-        for (int i = 0; i < trianglesCartesians.size(); i++) {
             try (PacketCesiumWriter packet = stream.openPacket(output)) {
-                packet.writeId(getId());
+                packet.writeId(getId() + "//" + availabilityTriangles.get(i)
+                                                                     .getStart() + "/" + availabilityTriangles.get(i)
+                                                                                                              .getStop());
                 packet.writeName(getName());
                 packet.writeAvailability(availabilityTriangles.get(i));
                 try (PolygonCesiumWriter polygonCesiumWriter = packet.getPolygonWriter()) {
                     polygonCesiumWriter.open(output);
-                    polygonCesiumWriter.writeFillProperty(true);
-                    polygonCesiumWriter.writeArcTypeProperty(CesiumArcType.NONE);
                     polygonCesiumWriter.writeShowProperty(true);
-                    polygonCesiumWriter.writePositionsPropertyReferences(referencesBuilt.get(i));
+                    polygonCesiumWriter.writePerPositionHeightProperty(true);
+                    try (PositionListCesiumWriter positionCesiumWriter = polygonCesiumWriter.openPositionsProperty()) {
+                        positionCesiumWriter.writeCartesian(trianglesCartesians.get(i));
+                        positionCesiumWriter.writeInterval(availabilityTriangles.get(i));
+                    }
                     try (MaterialCesiumWriter materialCesiumWriter = polygonCesiumWriter.openMaterialProperty()) {
                         try (SolidColorMaterialCesiumWriter solidColorMaterialCesiumWriter = materialCesiumWriter.openSolidColorProperty()) {
                             solidColorMaterialCesiumWriter.writeColorProperty(new Color(238, 144, 37, 104));
@@ -169,10 +152,14 @@ public class VisibilityTriangle extends AbstractPrimaryObject {
                                                           final List<SpacecraftState> statesInput) {
         final List<List<Cartesian>> toReturn = new ArrayList<>();
 
+        final Frame ITRF = FramesFactory.getITRF(IERSConventions.IERS_2010, true);
+        final OneAxisEllipsoid earth = new OneAxisEllipsoid(Constants.IERS2010_EARTH_EQUATORIAL_RADIUS,
+                Constants.IERS2010_EARTH_FLATTENING, ITRF);
+
         for (final CzmlShow currentShow : showsInput) {
             // The triplet for the triangle that will contain the three positions:
             // the station, the positions at the start and at the end of the approach.
-            final List<Cartesian> currentTriplet = new ArrayList<>();
+            final List<Cartesian> pointsPositions = new ArrayList<>();
             // The second object of the czml show built by a line of visibility is a topocentric frame
             final TopocentricFrame topocentricShow         = (TopocentricFrame) currentShow.getObject2();
             final Vector3D         positionTopocentricShow = topocentricShow.getCartesianPoint();
@@ -181,7 +168,7 @@ public class VisibilityTriangle extends AbstractPrimaryObject {
             if (currentShow.getShow()) {
 
                 // Add the position of the station to the triplet
-                currentTriplet.add(new Cartesian(positionTopocentricShow.getX(), positionTopocentricShow.getY(),
+                pointsPositions.add(new Cartesian(positionTopocentricShow.getX(), positionTopocentricShow.getY(),
                         positionTopocentricShow.getZ()));
 
                 // Get the interval and the boundaries of the interval.
@@ -194,22 +181,17 @@ public class VisibilityTriangle extends AbstractPrimaryObject {
                 for (final SpacecraftState currentState : statesInput) {
                     // If the state is the starting state of the approach
                     if (currentState.getDate()
-                                    .isCloseTo(startInterval, 31)) {
-                        final Vector3D position = currentState.getPosition();
-                        final Cartesian positionCartesian = new Cartesian(position.getX(), position.getY(),
-                                position.getZ());
-                        currentTriplet.add(positionCartesian);
-                    }
-                    // If the state is the stopping state of the approach
-                    else if (currentState.getDate()
-                                         .isCloseTo(stopInterval, 31)) {
-                        final Vector3D position = currentState.getPosition();
-                        final Cartesian positionCartesian = new Cartesian(position.getX(), position.getY(),
-                                position.getZ());
-                        currentTriplet.add(positionCartesian);
+                                    .isCloseTo(startInterval, 31) || currentState.getDate()
+                                                                                 .isCloseTo(stopInterval, 31)) {
+                        final Cartesian positionCartesian = buildCartesian(currentState, earth);
+                        pointsPositions.add(positionCartesian);
+                    } else if (currentState.getDate()
+                                           .isBetween(startInterval, stopInterval)) {
+                        final Cartesian positionCartesian = buildCartesian(currentState, earth);
+                        pointsPositions.add(positionCartesian);
                     }
                 }
-                toReturn.add(currentTriplet);
+                toReturn.add(pointsPositions);
             }
         }
         return toReturn;
@@ -224,36 +206,29 @@ public class VisibilityTriangle extends AbstractPrimaryObject {
     private List<TimeInterval> buildTrueIntervals(final List<CzmlShow> showsInput) {
         final List<TimeInterval> toReturn = new ArrayList<>();
         for (CzmlShow czmlShow : showsInput) {
-            if (czmlShow
-                    .getShow()) {
-                toReturn.add(czmlShow
-                        .getAvailability());
+            if (czmlShow.getShow()) {
+                toReturn.add(czmlShow.getAvailability());
             }
         }
         return toReturn;
     }
 
     /**
-     * This function aims at building the list of references used for positionning the triangles.
+     * Build the position point to add to the list.
      *
-     * @param idsPoints            : The ids of the reference points used to place the start and stop points of visibility.
-     * @param referencesLineOfVisu : The references from the line of visibility
-     * @return : A list of list of the references. Each sublist attributed to each time interval of visibility.
+     * @param currentState : The current spacecraft state considered
+     * @param earth        : A model of the earth
+     * @return : A cartesian point projected on the earth frame to be added to the list of cartesians.
      */
-    private List<List<Reference>> buildReferences(final List<List<String>> idsPoints,
-                                                  final List<Reference> referencesLineOfVisu) {
-        // Extract the reference of the station that is the first reference of the list
-        final Reference stationReference = referencesLineOfVisu.get(0);
-
-        final List<List<Reference>> toReturn = new ArrayList<>();
-
-        for (List<String> idsPoint : idsPoints) {
-            final List<Reference> tempReturn = new ArrayList<>();
-            tempReturn.add(new Reference(idsPoint.get(0) + DEFAULT_H_POSITION));
-            tempReturn.add(new Reference(idsPoint.get(1) + DEFAULT_H_POSITION));
-            tempReturn.add(stationReference);
-            toReturn.add(tempReturn);
-        }
-        return toReturn;
+    private Cartesian buildCartesian(final SpacecraftState currentState, final OneAxisEllipsoid earth) {
+        final Vector3D position = currentState.getPosition();
+        final GeodeticPoint currentGeodetic = earth.transform(position, currentState.getFrame(),
+                currentState.getDate());
+        final TopocentricFrame topocentricFrame = new TopocentricFrame(earth, currentGeodetic,
+                "currentGeodetic");
+        final Vector3D currentProjected = topocentricFrame.getCartesianPoint();
+        return new Cartesian(currentProjected.getX(),
+                currentProjected.getY(),
+                currentProjected.getZ());
     }
 }

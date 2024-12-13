@@ -25,6 +25,7 @@ import org.orekit.czml.file.CzmlFile;
 import org.orekit.czml.object.primary.Constellation;
 import org.orekit.czml.object.primary.CzmlGroundStation;
 import org.orekit.czml.object.primary.Header;
+import org.orekit.czml.object.primary.visu.LineOfVisibility;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.forces.ForceModel;
 import org.orekit.forces.gravity.HolmesFeatherstoneAttractionModel;
@@ -148,11 +149,13 @@ public class ConstellationVisuExample {
             groundStation.add(new CzmlGroundStation(station, header));
         }
 
+        final LineOfVisibility lineOfVisibility = LineOfVisibility.builder(stations, constellation, header).withVisibilityTriangle().build();
+
         final CzmlFile file = CzmlFile.builder()
                                       .withHeader(header)
                                       .withConstellation(constellation)
                                       .withCzmlGroundStation(groundStation)
-                                      .withLineOfVisibility(stations, constellation, header)
+                                      .withLineOfVisibility(lineOfVisibility)
                                       .build();
 
         // Writing in the file

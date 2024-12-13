@@ -113,7 +113,7 @@
     }
   },
   {
-    "id":"LINE_VISU/Las Vegas Frame/Constellation/1  satellites ",
+    "id":"Las Vegas FrameSAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}LINE_VISU/Las Vegas Frame/Constellation/1  satellites ",
     "name":"Line between Las Vegas Frame and Satellite",
     "availability":[
       "0001-01-01T00:00:00Z/2024-03-15T00:00:00Z",
@@ -182,7 +182,7 @@
     }
   },
   {
-    "id":"LINE_VISU/STATIONS : 2/SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}",
+    "id":"Toulouse FrameSAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}LINE_VISU/STATIONS : 2/SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}",
     "name":"Line between Toulouse Frame and Satellite",
     "availability":[
       "0001-01-01T00:00:00Z/2024-03-15T00:00:00Z",
@@ -266,7 +266,7 @@
     }
   },
   {
-    "id":"LINE_VISU/STATIONS : 2/SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}",
+    "id":"Las Vegas FrameSAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}LINE_VISU/STATIONS : 2/SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}",
     "name":"Line between Las Vegas Frame and Satellite",
     "availability":[
       "0001-01-01T00:00:00Z/2024-03-15T00:00:00Z",
@@ -335,7 +335,7 @@
     }
   },
   {
-    "id":"LINE_VISU/STATIONS : 2/Constellation/1  satellites ",
+    "id":"Toulouse FrameSAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}LINE_VISU/STATIONS : 2/[SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}]",
     "name":"Line between Toulouse Frame and Satellite",
     "availability":[
       "0001-01-01T00:00:00Z/2024-03-15T00:00:00Z",
@@ -419,7 +419,7 @@
     }
   },
   {
-    "id":"LINE_VISU/STATIONS : 2/Constellation/1  satellites ",
+    "id":"Las Vegas FrameSAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}LINE_VISU/STATIONS : 2/[SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}]",
     "name":"Line between Las Vegas Frame and Satellite",
     "availability":[
       "0001-01-01T00:00:00Z/2024-03-15T00:00:00Z",

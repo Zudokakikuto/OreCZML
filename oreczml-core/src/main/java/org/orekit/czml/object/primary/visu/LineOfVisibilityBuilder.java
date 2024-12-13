@@ -114,7 +114,7 @@ public class LineOfVisibilityBuilder {
                                    final Constellation constellationInput, final Header headerInput) {
         this.constellation = constellationInput;
         this.topocentricFrames.addAll(topocentricFramesInput);
-        this.customID = LineOfVisibility.DEFAULT_ID + DEFAULT_STATIONS + topocentricFrames.size() + "/" + constellationInput.getId();
+        this.customID = LineOfVisibility.DEFAULT_ID + DEFAULT_STATIONS + topocentricFrames.size() + "/" + constellationInput.getIds();
         this.header   = headerInput;
     }
 
@@ -180,7 +180,27 @@ public class LineOfVisibilityBuilder {
             }
         }
         if (displayTriangle) {
-            toReturn.displayTriangle();
+            assert toReturn != null;
+            if (satellite != null && topocentricFrames.isEmpty()) {
+                toReturn.displayTriangle();
+            } else {
+                if (constellation != null && !(topocentricFrames.isEmpty())) {
+                    for (int i = 0; i < constellation.getTotalOfSatellite(); i++) {
+                        for (int j = 0; j < topocentricFrames.size(); j++) {
+                            toReturn.displaySingleTriangle(j);
+                        }
+                    }
+                }
+                else if (constellation != null) {
+                    for (int i = 0; i < constellation.getTotalOfSatellite(); i++) {
+                        toReturn.displaySingleTriangle(i);
+                    }
+                } else if (!(topocentricFrames.isEmpty())) {
+                    for (int i = 0; i < topocentricFrames.size(); i++) {
+                        toReturn.displaySingleTriangle(i);
+                    }
+                }
+            }
         }
         return toReturn;
     }
