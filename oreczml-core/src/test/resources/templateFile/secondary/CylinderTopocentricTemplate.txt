@@ -1,7 +1,7 @@
 {
   "cylinder":{
     "bottomRadius":0,
-    "topRadius":-12725661.57152064,
+    "topRadius":1.0416288197447145E+23,
     "length":6378137,
     "material":{
       "solidColor":{

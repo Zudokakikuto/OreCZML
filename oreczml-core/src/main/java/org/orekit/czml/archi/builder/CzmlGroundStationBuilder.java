@@ -20,6 +20,8 @@ import org.orekit.czml.errors.OreCzmlException;
 import org.orekit.czml.errors.OreCzmlMessages;
 import org.orekit.czml.object.primary.CzmlGroundStation;
 import org.orekit.czml.object.primary.Header;
+import org.orekit.czml.object.primary.Satellite;
+import org.orekit.czml.object.primary.StationVisibilityCircle;
 import org.orekit.frames.TopocentricFrame;
 
 import java.io.IOException;
@@ -71,6 +73,12 @@ public class CzmlGroundStationBuilder {
     /** The header to consider when several are used. */
     private Header header = null;
 
+    private boolean displayCircle = false;
+
+    private Satellite satellite;
+
+    private double angleOfAperture;
+
     // Constructor
 
     /**
@@ -95,6 +103,14 @@ public class CzmlGroundStationBuilder {
         this.multipleTopocentricFrame.addAll(topocentricFramesInput);
         this.multipleStations = true;
         this.header = headerInput;
+    }
+
+
+    public CzmlGroundStationBuilder displayCircle(final Satellite satellite, final double angleOfAperture) {
+        displayCircle = true;
+        this.satellite = satellite;
+        this.angleOfAperture = angleOfAperture;
+        return this;
     }
 
     /**
@@ -170,15 +186,20 @@ public class CzmlGroundStationBuilder {
      * @throws IOException        the io exception
      */
     public CzmlGroundStation build() throws URISyntaxException, IOException {
+        CzmlGroundStation toReturn = null;
         if (!multipleStations) {
-            return new CzmlGroundStation(topocentricFrame, modelPath, header);
+            toReturn = new CzmlGroundStation(topocentricFrame, modelPath, header);
         } else {
             if (modelPath != null) {
-                return new CzmlGroundStation(multipleTopocentricFrame, modelPath, header);
+                toReturn = new CzmlGroundStation(multipleTopocentricFrame, modelPath, header);
             } else {
-                return new CzmlGroundStation(multipleTopocentricFrame, multipleModels, customID, header);
+                toReturn = new CzmlGroundStation(multipleTopocentricFrame, multipleModels, customID, header);
             }
         }
+        if (displayCircle) {
+            toReturn.displayCircle(satellite, angleOfAperture);
+        }
+        return toReturn;
     }
 
 }

@@ -53,6 +53,19 @@ Now that the dependency is added you can now use the following command in maven 
   * [VS Code](https://www.codeproject.com/Questions/5281024/How-to-import-jar-file-in-vs-code)
   * [Net Beans](https://stackoverflow.com/questions/17693040/adding-external-jar-to-maven-project-in-netbeans)
 
+## Clone the repository
+
+Because the project depends on a certain version of the Orekit-Data for test, it is recommended to clone the repository by including the submodules. To so so you can write : 
+
+```git
+git clone --recurse-submodules https://gitlab.orekit.org/orekit/oreczml.git
+```
+
+If you cloned the repository without the submodules you can still do :
+
+```git
+git submodule update --init
+```
 
 ## Deployment
 

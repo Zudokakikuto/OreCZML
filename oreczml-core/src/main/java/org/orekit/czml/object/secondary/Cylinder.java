@@ -125,9 +125,9 @@ public class Cylinder extends AbstractSecondaryObject {
 
         this.length = satellite.getOrbits()
                                .get(0)
-                               .getA() / 2;
+                               .getA() - Constants.WGS84_EARTH_EQUATORIAL_RADIUS;
         // Angle of aperture in degrees !
-        this.topRadius       = length * FastMath.tan(angleOfAperture);
+        this.topRadius       = length * FastMath.tan(FastMath.toRadians(angleOfAperture));
         this.bottomRadius    = 10.0;
         this.position        = new Position(x, y, z, positionType, header);
         this.color           = color_temp;
@@ -156,7 +156,7 @@ public class Cylinder extends AbstractSecondaryObject {
         final PositionType positionType = PositionType.CARTESIAN_POSITION;
 
         this.length          = Constants.WGS84_EARTH_EQUATORIAL_RADIUS;
-        this.topRadius       = length * FastMath.tan(angleOfAperture);
+        this.topRadius       = length * FastMath.tan(FastMath.toRadians(angleOfAperture));
         this.bottomRadius    = 0.0;
         this.position        = new Position(x, y, z, positionType, header);
         this.color           = color_temp;
@@ -183,7 +183,7 @@ public class Cylinder extends AbstractSecondaryObject {
         final PositionType positionType = PositionType.CARTESIAN_POSITION;
 
         this.length          = Constants.WGS84_EARTH_EQUATORIAL_RADIUS;
-        this.topRadius       = length * FastMath.tan(angleOfAperture);
+        this.topRadius       = length * FastMath.tan(FastMath.toRadians(angleOfAperture));
         this.bottomRadius    = 0.0;
         this.position        = new Position(x, y, z, positionType, header);
         this.color           = color_temp;

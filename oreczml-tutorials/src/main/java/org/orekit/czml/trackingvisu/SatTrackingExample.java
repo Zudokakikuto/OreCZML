@@ -164,10 +164,13 @@ public class SatTrackingExample {
 
         final List<CzmlGroundStation> groundStations = new ArrayList<>();
         for (TopocentricFrame station : stations) {
-            groundStations.add(new CzmlGroundStation(station, header));
+            final CzmlGroundStation currentCzmlStation = CzmlGroundStation.builder(station, header)
+                                                                          .displayCircle(satellite, 70.0)
+                                                                          .build();
+            groundStations.add(currentCzmlStation);
         }
 
-        final LineOfVisibility lineOfVisibility = LineOfVisibility.builder(stations, satellite, header)
+        final LineOfVisibility lineOfVisibility = LineOfVisibility.builder(stations, satellite, header).withAngleOfAperture(70.0)
                                                                   .build();
 
         //// Creation of a line of visu between the satellite and all the ground stations
