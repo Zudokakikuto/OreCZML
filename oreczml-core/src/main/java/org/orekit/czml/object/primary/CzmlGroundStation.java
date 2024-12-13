@@ -140,6 +140,10 @@ public class CzmlGroundStation extends AbstractPrimaryObject {
     /** The descriptions to write for each station. */
     private List<String> descriptions = new ArrayList<>();
 
+    private Header header;
+
+    private List<StationVisibilityCircle> visibilityCircles = new ArrayList<>();
+
     //// Constructors
     // Single Station Constructors
 
@@ -216,6 +220,7 @@ public class CzmlGroundStation extends AbstractPrimaryObject {
                              final String customID, final Header header) throws URISyntaxException, IOException {
 
         this.topocentricFrames = new ArrayList<>(topocentricFrames);
+        this.header            = header;
         this.setName("Packet containing " + topocentricFrames.size() + " ground stations");
         this.setId(customID);
         this.modelPaths = new ArrayList<>(modelPathsInput);
@@ -306,8 +311,17 @@ public class CzmlGroundStation extends AbstractPrimaryObject {
                 writePosition(packet, output);
             }
         }
+        for (StationVisibilityCircle visibilityCircle : visibilityCircles) {
+            visibilityCircle.writeCzmlBlock(stream, output);
+        }
     }
 
+
+    public void displayCircle(final Satellite satellite, final double angleOfAperture) {
+        for (TopocentricFrame topocentricFrame : topocentricFrames) {
+            visibilityCircles.add(new StationVisibilityCircle(topocentricFrame, satellite, angleOfAperture, header));
+        }
+    }
 
     // Getters
 

@@ -4,7 +4,7 @@
   "availability":"2024-01-01T00:00:00Z/2024-01-01T00:01:00Z",
   "cylinder":{
     "bottomRadius":0,
-    "topRadius":36172212.41113102,
+    "topRadius":155462.10672014568,
     "length":6378137,
     "material":{
       "solidColor":{

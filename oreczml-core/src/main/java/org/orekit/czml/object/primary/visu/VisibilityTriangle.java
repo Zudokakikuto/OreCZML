@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.orekit.czml.object.secondary;
+package org.orekit.czml.object.primary.visu;
 
 import cesiumlanguagewriter.Cartesian;
 import cesiumlanguagewriter.CesiumOutputStream;
@@ -32,7 +32,6 @@ import org.orekit.czml.object.CzmlShow;
 import org.orekit.czml.object.Utils.DateUtils;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.visu.LineOfVisibility;
 import org.orekit.frames.Frame;
 import org.orekit.frames.FramesFactory;
 import org.orekit.frames.TopocentricFrame;
@@ -51,7 +50,14 @@ import java.util.List;
  * Visibility Triangle.
  *
  * <p> This class aims at creating a triangle visible when a line of visibility is created. It shows the entire
- * plan where the line will navigate. </p>
+ * plan where the line will navigate.
+ * </p>
+ * <p>
+ * This object has no constructor usable, and is called with the .displayTriangle() method from the line of visibility.
+ * </p>
+ *
+ * @since 1.1
+ * @author Julien LEBLOND
  */
 
 public class VisibilityTriangle extends AbstractPrimaryObject {
@@ -95,7 +101,7 @@ public class VisibilityTriangle extends AbstractPrimaryObject {
     /** List of three points for each triangle. */
     private List<List<Cartesian>> trianglesCartesians = new ArrayList<>();
 
-    public VisibilityTriangle(final LineOfVisibility line, final Header header) {
+    VisibilityTriangle(final LineOfVisibility line, final Header header) {
         this.shows = line.getShowList();
         this.setId(DEFAULT_ID + line.getSatellite()
                                     .getId());

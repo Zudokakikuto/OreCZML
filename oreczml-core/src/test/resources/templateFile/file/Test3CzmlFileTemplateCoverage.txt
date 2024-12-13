@@ -18,8 +18,8 @@
     "availability":"2024-03-15T00:00:00Z/2024-03-15T05:00:00Z",
     "cylinder":{
       "bottomRadius":10,
-      "topRadius":35465396.83074629,
-      "length":3939000.000000001,
+      "topRadius":8506145.763817282,
+      "length":1499863.0000000019,
       "material":{
         "solidColor":{
           "color":{
@@ -92,8 +92,8 @@
     "availability":"2024-03-15T00:00:00Z/2024-03-15T05:00:00Z",
     "cylinder":{
       "bottomRadius":10,
-      "topRadius":35465396.83074629,
-      "length":3939000.000000001,
+      "topRadius":8506145.763817282,
+      "length":1499863.0000000019,
       "material":{
         "solidColor":{
           "color":{
@@ -161,8 +161,8 @@
     "availability":"2024-03-15T00:00:00Z/2024-03-15T05:00:00Z",
     "cylinder":{
       "bottomRadius":10,
-      "topRadius":35465396.83074629,
-      "length":3939000.000000001,
+      "topRadius":8506145.763817282,
+      "length":1499863.0000000019,
       "material":{
         "solidColor":{
           "color":{
@@ -245,8 +245,8 @@
     "availability":"2024-03-15T00:00:00Z/2024-03-15T05:00:00Z",
     "cylinder":{
       "bottomRadius":10,
-      "topRadius":35465396.83074629,
-      "length":3939000.000000001,
+      "topRadius":8506145.763817282,
+      "length":1499863.0000000019,
       "material":{
         "solidColor":{
           "color":{
@@ -314,8 +314,8 @@
     "availability":"2024-03-15T00:00:00Z/2024-03-15T05:00:00Z",
     "cylinder":{
       "bottomRadius":10,
-      "topRadius":35465396.83074629,
-      "length":3939000.000000001,
+      "topRadius":8506145.763817282,
+      "length":1499863.0000000019,
       "material":{
         "solidColor":{
           "color":{
@@ -398,8 +398,8 @@
     "availability":"2024-03-15T00:00:00Z/2024-03-15T05:00:00Z",
     "cylinder":{
       "bottomRadius":10,
-      "topRadius":35465396.83074629,
-      "length":3939000.000000001,
+      "topRadius":8506145.763817282,
+      "length":1499863.0000000019,
       "material":{
         "solidColor":{
           "color":{
