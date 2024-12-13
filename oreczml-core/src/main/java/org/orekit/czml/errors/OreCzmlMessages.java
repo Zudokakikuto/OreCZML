@@ -40,7 +40,8 @@ public enum OreCzmlMessages implements Localizable {
 
     // Constellation
     /** Trigger when the number of models loaded is different from the name of satellite when several models are loaded. */
-    NOT_SAME_NUMBER_SAT_MODELS("The number of models loaded is not the same as the number of satellites of the constellation."),
+    NOT_SAME_NUMBER_SAT_MODELS(
+            "The number of models loaded is not the same as the number of satellites of the constellation."),
 
     // Czml ground station builder
     /**
@@ -206,7 +207,31 @@ public enum OreCzmlMessages implements Localizable {
     /**
      * Triggers when the angular step for the longitude is greater than 360°.
      */
-    GREATER_ANGULAR_LONGITUDE_STEP("The angular step for the longitude can't be greater than 360.");
+    GREATER_ANGULAR_LONGITUDE_STEP("The angular step for the longitude can't be greater than 360."),
+
+    // Line of visibility
+
+    /**
+     * Triggers when the .getShowList() method is applied on a line of visibility containing several shows.
+     */
+    NOT_A_SINGLE_SAT_OR_STATION(
+            "The line of visibility used has several station or several satellites, don't use the .getShowList() method instead use the .getSingleShow(int) method."),
+
+    /**
+     * Triggers when the .getSingleShow(int) method is used while only one line of visibility is defined.
+     */
+    NOT_A_MULTIPLE_SAT_OR_STATION(
+            "The line of visibility used has only one station and one satellite defined, don't use the .getSingleShow(int) method, instead use the .getShowList() method."),
+
+    /** Triggers when the .displayTriangle() method is called while the line of visibility has several stations or satellites. */
+    NOT_A_SINGLE_TRIANGLE_LINE(
+            "The line of visibility used has several station or several satellites, don't use the .displayTriangle() method, instead use the .displaySingleTriangle(int) method"),
+
+    /**
+     * Triggers when the .displaySingleTriangle(int) method is used while only one line of visibility is defined.
+     */
+    NOT_A_MULTIPLE_TRIANGLE_LINE(
+            "The line of visibility used has only one station and one satellite defined, don't use the .displaySingleTriangle(int) method, instead use the .displayTriangle() method");
 
     /**
      * The string containing the message.

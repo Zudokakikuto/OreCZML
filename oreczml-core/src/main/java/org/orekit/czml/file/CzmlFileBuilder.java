@@ -32,6 +32,7 @@ import org.orekit.czml.object.primary.Satellite;
 import org.orekit.czml.object.primary.SatelliteReferenceSystem;
 import org.orekit.czml.object.primary.visu.FieldOfObservation;
 import org.orekit.czml.object.primary.visu.InterSatVisu;
+import org.orekit.czml.object.primary.visu.LineOfVisibility;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -303,7 +304,7 @@ public class CzmlFileBuilder {
      * @param lineOfVisibility : The line of visibility to set up.
      * @return : The czml file builder with the given line of visibility.
      */
-    public CzmlFileBuilder withLineOfVisibility(final org.orekit.czml.object.primary.visu.LineOfVisibility... lineOfVisibility) {
+    public CzmlFileBuilder withLineOfVisibility(final LineOfVisibility... lineOfVisibility) {
         this.lines.addAll(Arrays.asList(lineOfVisibility));
         return this;
     }
@@ -314,7 +315,7 @@ public class CzmlFileBuilder {
      * @param linesOfVisibility : The list of line of visibility to set up.
      * @return : The czml file builder with the given list of lines of visibility.
      */
-    public CzmlFileBuilder withLineOfVisibility(final List<org.orekit.czml.object.primary.visu.LineOfVisibility> linesOfVisibility) {
+    public CzmlFileBuilder withLineOfVisibility(final List<LineOfVisibility> linesOfVisibility) {
         this.lines.addAll(linesOfVisibility);
         return this;
     }

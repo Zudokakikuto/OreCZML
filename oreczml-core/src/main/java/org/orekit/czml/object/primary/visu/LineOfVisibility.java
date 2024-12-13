@@ -25,6 +25,8 @@ import cesiumlanguagewriter.Reference;
 import cesiumlanguagewriter.TimeInterval;
 import org.hipparchus.ode.events.Action;
 import org.hipparchus.util.FastMath;
+import org.orekit.czml.errors.OreCzmlException;
+import org.orekit.czml.errors.OreCzmlMessages;
 import org.orekit.czml.object.CzmlShow;
 import org.orekit.czml.object.Polyline;
 import org.orekit.czml.object.Utils.DateUtils;
@@ -96,6 +98,9 @@ public class LineOfVisibility extends AbstractPrimaryObject {
      */
     private Satellite satellite;
 
+    /** The satellites when a constellation is used. */
+    private List<Satellite> satellites = new ArrayList<>();
+
     /**
      * A list of CzmlShow that contains all the information about the satellite's visualization by the station.
      */
@@ -135,6 +140,9 @@ public class LineOfVisibility extends AbstractPrimaryObject {
 
     /** Visibility triangle. */
     private VisibilityTriangle triangle;
+
+    /** Visibility triangles. */
+    private List<VisibilityTriangle> triangles = new ArrayList<>();
 
     // Constructors
 
@@ -189,11 +197,15 @@ public class LineOfVisibility extends AbstractPrimaryObject {
     LineOfVisibility(final TopocentricFrame topocentricFrame, final Constellation constellation,
                      final double angleOfAperture, final String customID, final Header header) {
         this.setId(customID);
-        this.header = header;
+        this.header           = header;
+        this.topocentricFrame = topocentricFrame;
+        this.satellites       = constellation.getSatellites();
         for (int i = 0; i < constellation.getTotalOfSatellite(); i++) {
             final Satellite currentSatellite = constellation.getSatellites()
                                                             .get(i);
-            lines.add(new LineOfVisibility(topocentricFrame, currentSatellite, angleOfAperture, customID, header));
+            final LineOfVisibility currentLine = new LineOfVisibility(topocentricFrame, currentSatellite,
+                    angleOfAperture, topocentricFrame.getName() + currentSatellite.getId() + customID, header);
+            lines.add(currentLine);
         }
     }
 
@@ -202,8 +214,11 @@ public class LineOfVisibility extends AbstractPrimaryObject {
         this.setId(customID);
         this.header = header;
         this.topocentricFrames.addAll(topocentricFrames);
+        this.satellite = satellite;
         for (final TopocentricFrame currentTopocentricFrame : topocentricFrames) {
-            lines.add(new LineOfVisibility(currentTopocentricFrame, satellite, angleOfAperture, customID, header));
+            final LineOfVisibility currentLine = new LineOfVisibility(currentTopocentricFrame, satellite,
+                    angleOfAperture, currentTopocentricFrame.getName() + satellite.getId() + customID, header);
+            this.lines.add(currentLine);
         }
     }
 
@@ -212,12 +227,14 @@ public class LineOfVisibility extends AbstractPrimaryObject {
         this.setId(customID);
         this.header = header;
         this.topocentricFrames.addAll(topocentricFrames);
+        this.satellites = constellation.getSatellites();
         for (final TopocentricFrame currentTopocentric : topocentricFrames) {
             for (int j = 0; j < constellation.getTotalOfSatellite(); j++) {
                 final Satellite currentSatellite = constellation.getSatellites()
                                                                 .get(j);
-                lines.add(
-                        new LineOfVisibility(currentTopocentric, currentSatellite, angleOfAperture, customID, header));
+                final LineOfVisibility currentLine = new LineOfVisibility(currentTopocentric, currentSatellite,
+                        angleOfAperture, currentTopocentric.getName() + currentSatellite.getId() + customID, header);
+                this.lines.add(currentLine);
             }
         }
     }
@@ -260,6 +277,10 @@ public class LineOfVisibility extends AbstractPrimaryObject {
                                final CesiumOutputStream output) throws URISyntaxException, IOException {
         if (this.triangle != null) {
             this.triangle.writeCzmlBlock(stream, output);
+        } else if (!(triangles.isEmpty())) {
+            for (final VisibilityTriangle currentTriangle : triangles) {
+                currentTriangle.writeCzmlBlock(stream, output);
+            }
         }
 
         if (lines.isEmpty()) {
@@ -288,10 +309,23 @@ public class LineOfVisibility extends AbstractPrimaryObject {
         this.angleOfAperture = 0.0;
         this.visibilityCones = new ArrayList<>();
         this.lines           = new ArrayList<>();
+        this.triangles       = new ArrayList<>();
     }
 
     public void displayTriangle() {
-        this.triangle = new VisibilityTriangle(this, header);
+        if (lines.isEmpty()) {
+            this.triangle = new VisibilityTriangle(this, header);
+        } else {
+            throw new OreCzmlException(OreCzmlMessages.NOT_A_SINGLE_TRIANGLE_LINE);
+        }
+    }
+
+    public void displaySingleTriangle(final int i) {
+        if (lines.isEmpty()) {
+            throw new OreCzmlException(OreCzmlMessages.NOT_A_MULTIPLE_TRIANGLE_LINE);
+        } else {
+            this.triangles.add(new VisibilityTriangle(lines.get(i), header));
+        }
     }
 
     // Getters
@@ -329,7 +363,25 @@ public class LineOfVisibility extends AbstractPrimaryObject {
      * @return the show list
      */
     public List<CzmlShow> getShowList() {
-        return Collections.unmodifiableList(showList);
+        if (showList != null) {
+            return Collections.unmodifiableList(showList);
+        } else {
+            throw new OreCzmlException(OreCzmlMessages.NOT_A_SINGLE_SAT_OR_STATION);
+        }
+    }
+
+    /**
+     * Get a show list when several lines of visibility are created.
+     *
+     * @return a list of czml show corresponding to the line wanted
+     */
+    public List<CzmlShow> getSingleShow(final int i) {
+        if (lines.isEmpty()) {
+            throw new OreCzmlException(OreCzmlMessages.NOT_A_MULTIPLE_SAT_OR_STATION);
+        } else {
+            return Collections.unmodifiableList(lines.get(i)
+                                                     .getShowList());
+        }
     }
 
     public TopocentricFrame getTopocentricFrame() {
@@ -361,6 +413,15 @@ public class LineOfVisibility extends AbstractPrimaryObject {
         final Iterator<Reference> iterator = references.iterator();
         iterator.forEachRemaining(toReturn::add);
         return toReturn;
+    }
+
+    /**
+     * Get the list of satellites when a constellation is used.
+     *
+     * @return : The list of the satellites
+     */
+    public List<Satellite> getSatellites() {
+        return Collections.unmodifiableList(satellites);
     }
 
     /**
@@ -514,7 +575,7 @@ public class LineOfVisibility extends AbstractPrimaryObject {
     }
 
     /**
-     * This functions write in the czml file a single line of visibility.
+     * This function writes in the czml file a single line of visibility.
      *
      * @param output : The output stream of cesium that will contain the strings to write into the CzmlFile.
      * @param stream : The stream that will write into the file.

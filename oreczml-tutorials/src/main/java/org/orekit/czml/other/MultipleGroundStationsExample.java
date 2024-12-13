@@ -16,9 +16,9 @@
  */
 package org.orekit.czml.other;
 
-import org.orekit.czml.TutorialUtils;
 import org.hipparchus.util.FastMath;
 import org.orekit.bodies.GeodeticPoint;
+import org.orekit.czml.TutorialUtils;
 import org.orekit.czml.file.CzmlFile;
 import org.orekit.czml.object.primary.CzmlGroundStation;
 import org.orekit.czml.object.primary.Header;
@@ -35,7 +35,7 @@ import java.util.List;
  */
 public class MultipleGroundStationsExample {
 
-    private MultipleGroundStationsExample () {
+    private MultipleGroundStationsExample() {
         // empty
     }
 
@@ -45,7 +45,7 @@ public class MultipleGroundStationsExample {
      * @param args the args
      * @throws Exception the exception
      */
-    public static void main (final String[] args) throws Exception {
+    public static void main(final String[] args) throws Exception {
         // Load orekit data
         TutorialUtils.loadOrekitData();
 
@@ -84,6 +84,9 @@ public class MultipleGroundStationsExample {
         final List<CzmlGroundStation> groundStation = new ArrayList<>();
         groundStation.add(new CzmlGroundStation(topocentricToulouse, header));
         groundStation.add(new CzmlGroundStation(topocentricLasVegas, header));
+
+        final CzmlGroundStation groundStation1 = CzmlGroundStation.builder(topocentricToulouse, header)
+                                                                  .build();
 
         // Creation of the file
         final CzmlFile file = CzmlFile.builder()
