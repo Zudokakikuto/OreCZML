@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.orekit.czml.object.primary;
+package org.orekit.czml.object.primary.systems;
 
 import cesiumlanguagewriter.Cartesian;
 import cesiumlanguagewriter.CesiumOutputStream;
@@ -25,6 +25,8 @@ import org.orekit.bodies.OneAxisEllipsoid;
 import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.archi.builder.CentralBodyReferenceSystemBuilder;
 import org.orekit.czml.object.Polyline;
+import org.orekit.czml.object.primary.AbstractPrimaryObject;
+import org.orekit.czml.object.primary.Header;
 import org.orekit.data.DataContext;
 import org.orekit.utils.Constants;
 import org.orekit.utils.IERSConventions;

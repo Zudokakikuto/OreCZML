@@ -23,7 +23,7 @@ import org.orekit.attitudes.Attitude;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.Utils.DateUtils;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.Satellite;
+import org.orekit.czml.object.primary.entities.Satellite;
 import org.orekit.frames.FramesFactory;
 import org.orekit.propagation.BoundedPropagator;
 import org.orekit.time.AbsoluteDate;

@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.orekit.czml.object.primary;
+package org.orekit.czml.object.primary.pointing;
 
 import cesiumlanguagewriter.CesiumOutputStream;
 import cesiumlanguagewriter.CesiumStreamWriter;
@@ -27,11 +27,13 @@ import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.orekit.attitudes.Attitude;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.bodies.OneAxisEllipsoid;
-import org.orekit.czml.archi.builder.AttitudePointingBuilder;
 import org.orekit.czml.errors.OreCzmlException;
 import org.orekit.czml.errors.OreCzmlMessages;
 import org.orekit.czml.object.Polyline;
 import org.orekit.czml.object.nonvisual.PointOnBody;
+import org.orekit.czml.object.primary.AbstractPrimaryObject;
+import org.orekit.czml.object.primary.Header;
+import org.orekit.czml.object.primary.entities.Satellite;
 import org.orekit.czml.object.secondary.Orientation;
 import org.orekit.frames.Frame;
 import org.orekit.propagation.SpacecraftState;
@@ -87,7 +89,7 @@ public class AttitudePointing extends AbstractPrimaryObject {
     private final List<Attitude> satelliteAttitudes;
 
     /**
-     * The list of the position in cartesian of the satellite.
+     * The list of the spacecraft states of the satellite.
      */
     private final List<SpacecraftState> states;
 
@@ -142,7 +144,7 @@ public class AttitudePointing extends AbstractPrimaryObject {
      * @param direction : The direction to point to.
      * @param header    : The header considered.
      */
-    public AttitudePointing(final Satellite satellite, final OneAxisEllipsoid body, final Vector3D direction,
+    AttitudePointing(final Satellite satellite, final OneAxisEllipsoid body, final Vector3D direction,
                             final Header header) {
         this(satellite, body, direction, DEFAULT_COLOR, false, DEFAULT_ID + satellite.getId(),
                 header);
@@ -155,11 +157,11 @@ public class AttitudePointing extends AbstractPrimaryObject {
      * @param body                  : The body to point to.
      * @param direction             : The line of sight in the spacecraft frame.
      * @param color                 : The color of the pointing (polyline).
-     * @param alwaysDisplayOnGround : Director that manages the pointing or not at objects during the orbit. Put this                              parameter on if the satellite is pointing at objects during the orbit. This boolean will project the attitude on                              the ground when it is not pointing at objects. When the attitude is pointing at objects, it will put the                              projection on the pointed object                              AttitudeTuto.AttitudePathAlongOrbit
+     * @param alwaysDisplayOnGround : Director that manages the pointing or not at objects during the orbit. Put this parameter on if the satellite is pointing at objects during the orbit. This boolean will project the attitude on                              the ground when it is not pointing at objects. When the attitude is pointing at objects, it will put the                              projection on the pointed object                              AttitudeTuto.AttitudePathAlongOrbit
      * @param ID                    : The ID of the attitude pointing object
      * @param header                : The header to set up if several headers are used, else way put null.
      */
-    public AttitudePointing(final Satellite satellite, final OneAxisEllipsoid body, final Vector3D direction,
+    AttitudePointing(final Satellite satellite, final OneAxisEllipsoid body, final Vector3D direction,
                             final Color color, final boolean alwaysDisplayOnGround,
                             final String ID, final Header header) {
         this.setId(ID);

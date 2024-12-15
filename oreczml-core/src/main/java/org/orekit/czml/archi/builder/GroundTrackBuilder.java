@@ -20,7 +20,7 @@ import org.orekit.bodies.BodyShape;
 import org.orekit.czml.object.primary.Constellation;
 import org.orekit.czml.object.primary.GroundTrack;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.Satellite;
+import org.orekit.czml.object.primary.entities.Satellite;
 
 import java.awt.Color;
 

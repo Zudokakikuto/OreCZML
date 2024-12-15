@@ -22,6 +22,7 @@ import cesiumlanguagewriter.TimeInterval;
 import org.orekit.czml.archi.builder.ConstellationBuilder;
 import org.orekit.czml.errors.OreCzmlException;
 import org.orekit.czml.errors.OreCzmlMessages;
+import org.orekit.czml.object.primary.entities.Satellite;
 import org.orekit.orbits.Orbit;
 import org.orekit.propagation.BoundedPropagator;
 import org.orekit.time.AbsoluteDate;

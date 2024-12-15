@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.orekit.czml.object.primary;
+package org.orekit.czml.object.primary.systems;
 
 import cesiumlanguagewriter.Cartographic;
 import cesiumlanguagewriter.CesiumOutputStream;
@@ -26,9 +26,10 @@ import cesiumlanguagewriter.PolylineCesiumWriter;
 import cesiumlanguagewriter.PolylineMaterialCesiumWriter;
 import cesiumlanguagewriter.PositionCesiumWriter;
 import cesiumlanguagewriter.SolidColorMaterialCesiumWriter;
-import org.orekit.czml.archi.builder.LatLongLinesBuilder;
 import org.orekit.czml.errors.OreCzmlException;
 import org.orekit.czml.errors.OreCzmlMessages;
+import org.orekit.czml.object.primary.AbstractPrimaryObject;
+import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.secondary.Label;
 
 import java.awt.Color;
@@ -99,7 +100,7 @@ public class LatLongLines extends AbstractPrimaryObject {
      *
      * @param header : The header considered.
      */
-    public LatLongLines(final Header header) {
+    LatLongLines(final Header header) {
         this(DEFAULT_ANGULAR_STEP, DEFAULT_ANGULAR_STEP, false, DEFAULT_ID, header);
     }
 
@@ -112,8 +113,8 @@ public class LatLongLines extends AbstractPrimaryObject {
      * @param customID             : The custom ID of the lat long lines object.
      * @param header               : The header considered when several are used.
      */
-    public LatLongLines(final int latitudeAngularStep, final int longitudeAngularStep,
-                        final boolean displayLabelsInput, final String customID, final Header header) {
+    LatLongLines(final int latitudeAngularStep, final int longitudeAngularStep,
+                 final boolean displayLabelsInput, final String customID, final Header header) {
 
         this.setId(customID);
         this.setName(DEFAULT_NAME);

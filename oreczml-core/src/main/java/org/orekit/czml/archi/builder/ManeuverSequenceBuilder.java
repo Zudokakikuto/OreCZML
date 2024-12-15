@@ -20,7 +20,7 @@ import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.orekit.attitudes.AttitudesSequence;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.primary.ManeuverSequence;
-import org.orekit.czml.object.primary.Satellite;
+import org.orekit.czml.object.primary.entities.Satellite;
 import org.orekit.forces.maneuvers.Maneuver;
 import org.orekit.frames.LOF;
 

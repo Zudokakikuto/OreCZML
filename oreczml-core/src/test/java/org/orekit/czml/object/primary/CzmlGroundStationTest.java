@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.czml.file.AbstractTest;
+import org.orekit.czml.object.primary.entities.CzmlGroundStation;
 import org.orekit.frames.TopocentricFrame;
 
 import java.io.IOException;

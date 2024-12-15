@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.orekit.czml.archi.builder;
+package org.orekit.czml.object.primary.systems;
 
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.LatLongLines;
 
 /**
  * Lat Long Lines Builder class

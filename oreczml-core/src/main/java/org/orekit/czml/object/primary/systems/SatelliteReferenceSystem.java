@@ -14,13 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.orekit.czml.object.primary;
+package org.orekit.czml.object.primary.systems;
 
 import cesiumlanguagewriter.CesiumOutputStream;
 import cesiumlanguagewriter.CesiumStreamWriter;
 import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.Reference;
 import org.orekit.czml.object.nonvisual.CzmlModel;
+import org.orekit.czml.object.primary.AbstractPrimaryObject;
+import org.orekit.czml.object.primary.Header;
+import org.orekit.czml.object.primary.entities.Satellite;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

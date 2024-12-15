@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
-package org.orekit.czml.archi.builder;
+package org.orekit.czml.object.primary.pointing;
 
-import org.orekit.czml.object.primary.CoveredSurfaceOnBody;
 import org.orekit.czml.object.primary.visu.FieldOfObservation;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.Satellite;
+import org.orekit.czml.object.primary.entities.Satellite;
 
 /**
  * Covered Surface On Body Builder class

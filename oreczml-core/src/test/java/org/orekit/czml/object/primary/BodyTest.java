@@ -22,6 +22,7 @@ import org.orekit.bodies.CelestialBodyFactory;
 import org.orekit.czml.archi.factory.BodyFactory;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.file.CzmlFile;
+import org.orekit.czml.object.primary.entities.Body;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -46,7 +47,8 @@ public class BodyTest extends AbstractTest {
 
         final String pathToModel = loadResources("Bodies/mars.glb");
 
-        final Body body = new Body(CelestialBodyFactory.getMars(), pathToModel, header);
+        final Body body = Body.builder(CelestialBodyFactory.getMars(), pathToModel, header)
+                              .build();
 
         final double marsOrbitalPeriod = 686.96 * 24 * 3600; // in sec
 

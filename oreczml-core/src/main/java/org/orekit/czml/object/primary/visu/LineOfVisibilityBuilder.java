@@ -18,7 +18,7 @@ package org.orekit.czml.object.primary.visu;
 
 import org.orekit.czml.object.primary.Constellation;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.Satellite;
+import org.orekit.czml.object.primary.entities.Satellite;
 import org.orekit.frames.TopocentricFrame;
 
 import java.io.IOException;

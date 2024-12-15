@@ -20,7 +20,7 @@ import org.orekit.czml.TutorialUtils;
 import org.orekit.czml.archi.adaptor.OemAdaptor;
 import org.orekit.czml.file.CzmlFile;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.Satellite;
+import org.orekit.czml.object.primary.entities.Satellite;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.data.DataSource;
 import org.orekit.files.ccsds.ndm.ParserBuilder;

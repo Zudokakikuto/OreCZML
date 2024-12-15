@@ -197,7 +197,7 @@ public class InterVisuConstellationExample {
         constellation.displayOnlyOnePeriod();
 
         // Creation of the inter-sat visualization
-        final InterSatVisu interSatVisu = new InterSatVisu(constellation, finalDate, header);
+        final InterSatVisu interSatVisu = InterSatVisu.builder(constellation, finalDate, header).build();
 
         // Creation of the file
         final CzmlFile file = CzmlFile.builder()

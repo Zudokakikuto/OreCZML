@@ -27,9 +27,9 @@ import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.hipparchus.util.FastMath;
 import org.orekit.czml.object.Position;
 import org.orekit.czml.object.PositionType;
-import org.orekit.czml.object.primary.CzmlGroundStation;
+import org.orekit.czml.object.primary.entities.CzmlGroundStation;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.Satellite;
+import org.orekit.czml.object.primary.entities.Satellite;
 import org.orekit.frames.TopocentricFrame;
 import org.orekit.utils.Constants;
 

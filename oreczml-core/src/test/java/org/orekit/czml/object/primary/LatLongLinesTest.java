@@ -19,6 +19,7 @@ package org.orekit.czml.object.primary;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.czml.file.AbstractTest;
+import org.orekit.czml.object.primary.systems.LatLongLines;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -41,7 +42,8 @@ public class LatLongLinesTest extends AbstractTest {
 
         final Header header = dummyHeader();
 
-        final LatLongLines lines = new LatLongLines(header);
+        final LatLongLines lines = LatLongLines.builder(header)
+                                               .build();
 
         final LatLongLines linesBuilder = LatLongLines.builder(header)
                                                       .withCustomID("CustomID")

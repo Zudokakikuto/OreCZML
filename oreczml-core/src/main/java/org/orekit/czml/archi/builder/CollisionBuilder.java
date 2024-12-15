@@ -19,7 +19,7 @@ package org.orekit.czml.archi.builder;
 
 import org.orekit.czml.object.primary.Collision;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.Satellite;
+import org.orekit.czml.object.primary.entities.Satellite;
 import org.orekit.frames.LOF;
 import org.orekit.propagation.StateCovariance;
 

@@ -27,10 +27,10 @@ import org.orekit.attitudes.Attitude;
 import org.orekit.attitudes.LofOffset;
 import org.orekit.czml.TutorialUtils;
 import org.orekit.czml.file.CzmlFile;
-import org.orekit.czml.object.primary.AttitudePointing;
-import org.orekit.czml.object.primary.visu.FieldOfObservation;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.Satellite;
+import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.pointing.AttitudePointing;
+import org.orekit.czml.object.primary.visu.FieldOfObservation;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.forces.ForceModel;
 import org.orekit.forces.gravity.HolmesFeatherstoneAttractionModel;
@@ -163,7 +163,8 @@ public class SSOAttitudeExample {
                 initialInertToBody);
         final FieldOfView fov = new DoubleDihedraFieldOfView(Vector3D.MINUS_K, Vector3D.PLUS_I, FastMath.toRadians(20),
                 Vector3D.PLUS_J, FastMath.toRadians(20), 2);
-        final FieldOfObservation fieldOfObservation = new FieldOfObservation(satellite, fov, initialFovBody, header);
+        final FieldOfObservation fieldOfObservation = FieldOfObservation.builder(satellite, fov, initialFovBody, header)
+                                                                        .build();
 
         // Creation of the file
         final CzmlFile file = CzmlFile.builder()

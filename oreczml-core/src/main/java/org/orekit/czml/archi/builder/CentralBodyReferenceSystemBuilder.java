@@ -17,7 +17,7 @@
 package org.orekit.czml.archi.builder;
 
 import org.orekit.bodies.OneAxisEllipsoid;
-import org.orekit.czml.object.primary.CentralBodyReferenceSystem;
+import org.orekit.czml.object.primary.systems.CentralBodyReferenceSystem;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.frames.FramesFactory;
 import org.orekit.utils.Constants;
