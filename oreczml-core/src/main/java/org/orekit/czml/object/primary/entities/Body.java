@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.orekit.czml.object.primary;
+package org.orekit.czml.object.primary.entities;
 
 import cesiumlanguagewriter.Cartesian;
 import cesiumlanguagewriter.CesiumOutputStream;
@@ -28,11 +28,12 @@ import org.hipparchus.geometry.euclidean.threed.Rotation;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.orekit.attitudes.Attitude;
 import org.orekit.bodies.CelestialBody;
-import org.orekit.czml.archi.builder.BodyBuilder;
 import org.orekit.czml.errors.OreCzmlException;
 import org.orekit.czml.errors.OreCzmlMessages;
 import org.orekit.czml.object.Utils.DateUtils;
 import org.orekit.czml.object.nonvisual.CzmlModel;
+import org.orekit.czml.object.primary.AbstractPrimaryObject;
+import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.secondary.Orientation;
 import org.orekit.frames.Frame;
 import org.orekit.frames.FramesFactory;
@@ -141,7 +142,7 @@ public class Body extends AbstractPrimaryObject {
      * @param pathToModel : The path to the model to load.
      * @param header      : The header considered.
      */
-    public Body(final CelestialBody body, final String pathToModel, final Header header) {
+    Body(final CelestialBody body, final String pathToModel, final Header header) {
         this(body, pathToModel, DEFAULT_ID + body.getName(), header);
     }
 
@@ -153,7 +154,7 @@ public class Body extends AbstractPrimaryObject {
      * @param customID    : The custom ID for the body.
      * @param header      : The header to use if several are used, use null if not.
      */
-    public Body(final CelestialBody body, final String pathToModel, final String customID, final Header header) {
+    Body(final CelestialBody body, final String pathToModel, final String customID, final Header header) {
 
         this.setId(customID);
         this.setName(DEFAULT_NAME + body.getName());

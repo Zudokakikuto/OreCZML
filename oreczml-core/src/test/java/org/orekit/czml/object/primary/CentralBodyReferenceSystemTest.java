@@ -19,6 +19,7 @@ package org.orekit.czml.object.primary;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.czml.file.AbstractTest;
+import org.orekit.czml.object.primary.systems.CentralBodyReferenceSystem;
 
 import java.awt.Color;
 import java.io.IOException;

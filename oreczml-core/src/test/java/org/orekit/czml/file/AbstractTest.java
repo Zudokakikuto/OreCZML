@@ -22,7 +22,7 @@ import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
 import org.orekit.bodies.OneAxisEllipsoid;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.Satellite;
+import org.orekit.czml.object.primary.entities.Satellite;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.data.DataContext;
 import org.orekit.data.DataProvider;

@@ -21,6 +21,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.Utils.DateUtils;
+import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.pointing.AttitudePointing;
 import org.orekit.propagation.BoundedPropagator;
 import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScalesFactory;
@@ -59,7 +61,7 @@ public class AttitudePointingTest extends AbstractTest {
                                              .withDisplayAttitude()
                                              .build();
 
-        final AttitudePointing attitudePointing = new AttitudePointing(satellite, getEarth(), Vector3D.MINUS_I, header);
+        final AttitudePointing attitudePointing = AttitudePointing.builder(satellite, getEarth(), Vector3D.MINUS_I, header).build();
         attitudePointing.displayPointingPath();
         attitudePointing.displayPeriodPointingPath();
 

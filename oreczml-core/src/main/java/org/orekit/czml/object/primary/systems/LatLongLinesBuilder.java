@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.orekit.czml.archi.builder;
+package org.orekit.czml.object.primary.systems;
 
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.LatLongLines;
 
 /**
  * Lat Long Lines Builder class
@@ -52,7 +51,7 @@ public class LatLongLinesBuilder {
      * @param headerInput : The header considered.
      */
     public LatLongLinesBuilder(final Header headerInput) {
-        this.customID = "LAT_LONG_DISP";
+        this.customID = "LAT_LONG";
         this.header   = headerInput;
     }
 

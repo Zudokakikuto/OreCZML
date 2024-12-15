@@ -33,7 +33,7 @@ import org.orekit.czml.object.Utils.DateUtils;
 import org.orekit.czml.object.nonvisual.PointOnBody;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.Satellite;
+import org.orekit.czml.object.primary.entities.Satellite;
 import org.orekit.data.DataContext;
 import org.orekit.frames.TopocentricFrame;
 import org.orekit.frames.Transform;
@@ -177,7 +177,7 @@ public class FieldOfObservation extends AbstractPrimaryObject {
      * @throws IOException        the io exception
      */
     @DefaultDataContext
-    public FieldOfObservation(final Satellite satellite, final FieldOfView fovInput, final Transform fovToBodyInput,
+    FieldOfObservation(final Satellite satellite, final FieldOfView fovInput, final Transform fovToBodyInput,
                               final Header header) throws URISyntaxException, IOException {
         this(satellite, fovInput, fovToBodyInput,
                 new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS, Constants.WGS84_EARTH_FLATTENING,
@@ -202,7 +202,7 @@ public class FieldOfObservation extends AbstractPrimaryObject {
      * @throws URISyntaxException the uri syntax exception
      * @throws IOException        the io exception
      */
-    public FieldOfObservation(final Satellite satellite, final FieldOfView fovInput, final Transform transformFovToBody,
+    FieldOfObservation(final Satellite satellite, final FieldOfView fovInput, final Transform transformFovToBody,
                               final OneAxisEllipsoid body, final double angularStepInput, final Color color,
                               final String customID, final Header header) throws URISyntaxException, IOException {
 

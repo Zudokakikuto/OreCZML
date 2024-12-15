@@ -19,7 +19,7 @@ package org.orekit.czml.object.primary.visu;
 import org.hipparchus.util.FastMath;
 import org.orekit.bodies.OneAxisEllipsoid;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.Satellite;
+import org.orekit.czml.object.primary.entities.Satellite;
 import org.orekit.frames.FramesFactory;
 import org.orekit.frames.Transform;
 import org.orekit.geometry.fov.FieldOfView;

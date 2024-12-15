@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.orekit.czml.object.primary;
+package org.orekit.czml.object.primary.entities;
 
 import cesiumlanguagewriter.BillboardCesiumWriter;
 import cesiumlanguagewriter.Cartesian;
@@ -25,12 +25,14 @@ import cesiumlanguagewriter.PositionCesiumWriter;
 import cesiumlanguagewriter.TimeInterval;
 import cesiumlanguagewriter.UriCesiumWriter;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
-import org.orekit.czml.archi.builder.CzmlGroundStationBuilder;
 import org.orekit.czml.errors.OreCzmlException;
 import org.orekit.czml.errors.OreCzmlMessages;
 import org.orekit.czml.object.Position;
 import org.orekit.czml.object.PositionType;
 import org.orekit.czml.object.nonvisual.CzmlModel;
+import org.orekit.czml.object.primary.AbstractPrimaryObject;
+import org.orekit.czml.object.primary.Header;
+import org.orekit.czml.object.primary.visu.StationVisibilityCircle;
 import org.orekit.czml.object.secondary.Billboard;
 import org.orekit.czml.object.secondary.Label;
 import org.orekit.frames.TopocentricFrame;
@@ -319,7 +321,9 @@ public class CzmlGroundStation extends AbstractPrimaryObject {
 
     public void displayCircle(final Satellite satellite, final double angleOfAperture) {
         for (TopocentricFrame topocentricFrame : topocentricFrames) {
-            visibilityCircles.add(new StationVisibilityCircle(topocentricFrame, satellite, angleOfAperture, header));
+            visibilityCircles.add(StationVisibilityCircle.builder(topocentricFrame, satellite, header)
+                                                         .withAngleOfAperture(angleOfAperture)
+                                                         .build());
         }
     }
 

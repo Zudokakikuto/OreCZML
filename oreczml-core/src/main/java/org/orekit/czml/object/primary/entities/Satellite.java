@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.orekit.czml.object.primary;
+package org.orekit.czml.object.primary.entities;
 
 import cesiumlanguagewriter.BooleanCesiumWriter;
 import cesiumlanguagewriter.Cartesian;
@@ -32,13 +32,15 @@ import cesiumlanguagewriter.TimeInterval;
 import org.hipparchus.geometry.euclidean.threed.Rotation;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.orekit.attitudes.Attitude;
-import org.orekit.czml.archi.builder.SatelliteBuilder;
 import org.orekit.czml.errors.OreCzmlException;
 import org.orekit.czml.errors.OreCzmlMessages;
 import org.orekit.czml.object.ModelType;
 import org.orekit.czml.object.Path;
 import org.orekit.czml.object.Utils.DateUtils;
 import org.orekit.czml.object.nonvisual.CzmlModel;
+import org.orekit.czml.object.primary.AbstractPrimaryObject;
+import org.orekit.czml.object.primary.Header;
+import org.orekit.czml.object.primary.systems.SatelliteReferenceSystem;
 import org.orekit.czml.object.secondary.Orientation;
 import org.orekit.czml.object.secondary.TimePosition;
 import org.orekit.errors.OrekitException;

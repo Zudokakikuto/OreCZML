@@ -33,7 +33,7 @@ import org.orekit.czml.object.Utils.DateUtils;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
 import org.orekit.czml.object.primary.Constellation;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.Satellite;
+import org.orekit.czml.object.primary.entities.Satellite;
 import org.orekit.data.DataContext;
 import org.orekit.frames.Frame;
 import org.orekit.orbits.Orbit;
@@ -222,8 +222,8 @@ public class InterSatVisu extends AbstractPrimaryObject {
      * @param finalDate       : The final date for the propagation.
      * @param header          : The header considered.
      */
-    public InterSatVisu(final Satellite satellite1Input, final Satellite satellite2Input, final AbsoluteDate finalDate,
-                        final Header header) {
+    InterSatVisu(final Satellite satellite1Input, final Satellite satellite2Input, final AbsoluteDate finalDate,
+                 final Header header) {
         this(satellite1Input, satellite2Input, finalDate,
                 DEFAULT_ID + satellite1Input.getId() + "/" + satellite2Input.getId(), header);
     }
@@ -238,8 +238,8 @@ public class InterSatVisu extends AbstractPrimaryObject {
      * @param header          : The header of the
      */
     @DefaultDataContext
-    public InterSatVisu(final Satellite satellite1Input, final Satellite satellite2Input, final AbsoluteDate finalDate,
-                        final String customID, final Header header) {
+    InterSatVisu(final Satellite satellite1Input, final Satellite satellite2Input, final AbsoluteDate finalDate,
+                 final String customID, final Header header) {
 
         this.satellite1 = satellite1Input;
         this.satellite2 = satellite2Input;
@@ -284,8 +284,8 @@ public class InterSatVisu extends AbstractPrimaryObject {
      * @throws URISyntaxException the uri syntax exception
      * @throws IOException        the io exception
      */
-    public InterSatVisu(final List<BoundedPropagator> propagators, final AbsoluteDate finalDate,
-                        final Header header) throws URISyntaxException, IOException {
+    InterSatVisu(final List<BoundedPropagator> propagators, final AbsoluteDate finalDate,
+                 final Header header) throws URISyntaxException, IOException {
         this(new Constellation(propagators, finalDate, header), finalDate, header);
     }
 
@@ -299,8 +299,8 @@ public class InterSatVisu extends AbstractPrimaryObject {
      * @throws URISyntaxException the uri syntax exception
      * @throws IOException        the io exception
      */
-    public InterSatVisu(final List<BoundedPropagator> propagators, final AbsoluteDate finalDate, final String customID,
-                        final Header header) throws URISyntaxException, IOException {
+    InterSatVisu(final List<BoundedPropagator> propagators, final AbsoluteDate finalDate, final String customID,
+                 final Header header) throws URISyntaxException, IOException {
         this(new Constellation(propagators, finalDate, header), finalDate, customID, header);
     }
 
@@ -311,8 +311,8 @@ public class InterSatVisu extends AbstractPrimaryObject {
      * @param finalDate                : The final date for the propagation
      * @param header                   : The header considered.
      */
-    public InterSatVisu(final Constellation constellationPropagators, final AbsoluteDate finalDate,
-                        final Header header) {
+    InterSatVisu(final Constellation constellationPropagators, final AbsoluteDate finalDate,
+                 final Header header) {
         this(constellationPropagators, finalDate, DEFAULT_ID + constellationPropagators.getId(), header);
     }
 
@@ -325,8 +325,8 @@ public class InterSatVisu extends AbstractPrimaryObject {
      * @param header                   : The header considered when several are used.
      */
     @DefaultDataContext
-    public InterSatVisu(final Constellation constellationPropagators, final AbsoluteDate finalDate,
-                        final String customID, final Header header) {
+    InterSatVisu(final Constellation constellationPropagators, final AbsoluteDate finalDate,
+                 final String customID, final Header header) {
 
         this.header = header;
         this.orbits = constellationPropagators.getInitialOrbits();
@@ -383,6 +383,8 @@ public class InterSatVisu extends AbstractPrimaryObject {
     }
 
 
+    //Builders
+
     /**
      * Builder inter sat visu builder.
      *
@@ -392,7 +394,6 @@ public class InterSatVisu extends AbstractPrimaryObject {
      * @param header          the header
      * @return the inter sat visu builder
      */
-//Builders
     public static InterSatVisuBuilder builder(final Satellite satellite1Input, final Satellite satellite2Input,
                                               final AbsoluteDate finalDate, final Header header) {
         return new InterSatVisuBuilder(satellite1Input, satellite2Input, finalDate, header);

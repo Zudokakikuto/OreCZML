@@ -20,6 +20,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.Utils.DateUtils;
+import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.systems.SatelliteReferenceSystem;
 import org.orekit.propagation.BoundedPropagator;
 import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScalesFactory;
@@ -50,7 +52,7 @@ public class SatelliteReferenceSystemTest extends AbstractTest {
         final AbsoluteDate finalDate = startDate.shiftedBy(60.0);
 
         final BoundedPropagator propagator = dummyPropagator(startDate, finalDate);
-        final Satellite satellite = new Satellite(propagator, header);
+        final Satellite         satellite  = new Satellite(propagator, header);
 
         final SatelliteReferenceSystem system = new SatelliteReferenceSystem(satellite, header);
 

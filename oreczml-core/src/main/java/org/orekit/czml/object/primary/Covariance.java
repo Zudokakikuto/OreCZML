@@ -31,6 +31,7 @@ import org.hipparchus.util.FastMath;
 import org.orekit.attitudes.Attitude;
 import org.orekit.czml.archi.builder.CovarianceBuilder;
 import org.orekit.czml.object.Utils.DateUtils;
+import org.orekit.czml.object.primary.entities.Satellite;
 import org.orekit.czml.object.secondary.CzmlEllipsoid;
 import org.orekit.czml.object.secondary.Orientation;
 import org.orekit.frames.LOF;

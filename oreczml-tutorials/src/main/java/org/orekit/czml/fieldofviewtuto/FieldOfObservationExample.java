@@ -16,16 +16,16 @@
  */
 package org.orekit.czml.fieldofviewtuto;
 
-import org.orekit.czml.TutorialUtils;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
 import org.orekit.attitudes.LofOffset;
+import org.orekit.czml.TutorialUtils;
 import org.orekit.czml.file.CzmlFile;
-import org.orekit.czml.object.primary.visu.FieldOfObservation;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.Satellite;
+import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.visu.FieldOfObservation;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.forces.ForceModel;
 import org.orekit.forces.gravity.HolmesFeatherstoneAttractionModel;
@@ -55,7 +55,7 @@ import java.awt.Color;
  */
 public class FieldOfObservationExample {
 
-    private FieldOfObservationExample () {
+    private FieldOfObservationExample() {
         // empty
     }
 
@@ -65,7 +65,7 @@ public class FieldOfObservationExample {
      * @param args arguments of the main function
      * @throws Exception exception to throw
      */
-    public static void main (final String[] args) throws Exception {
+    public static void main(final String[] args) throws Exception {
         // Load orekit data
         TutorialUtils.loadOrekitData();
 
@@ -93,7 +93,8 @@ public class FieldOfObservationExample {
         // Build of a LEO orbit
 
         final KeplerianOrbit initialOrbit = new KeplerianOrbit(7878000, 0, FastMath.toRadians(20), 0,
-                FastMath.toRadians(0), FastMath.toRadians(0), PositionAngleType.MEAN, FramesFactory.getEME2000(), startDate,
+                FastMath.toRadians(0), FastMath.toRadians(0), PositionAngleType.MEAN, FramesFactory.getEME2000(),
+                startDate,
                 Constants.WGS84_EARTH_MU);
 
         final SpacecraftState initialState = new SpacecraftState(initialOrbit);
@@ -138,7 +139,8 @@ public class FieldOfObservationExample {
 
         // Creation of the field of observation of the satellite, it describes the area the satellite sees
         final Transform initialInertToBody = initialState.getFrame()
-                                                         .getTransformTo(TutorialUtils.getEarth().getBodyFrame(),
+                                                         .getTransformTo(TutorialUtils.getEarth()
+                                                                                      .getBodyFrame(),
                                                                  initialState.getDate());
         final Transform initialFovBody = new Transform(initialState.getDate(), initialState.toTransform()
                                                                                            .getInverse(),
@@ -148,7 +150,8 @@ public class FieldOfObservationExample {
         // A rectangular field of view
         final FieldOfView fov = new DoubleDihedraFieldOfView(Vector3D.PLUS_J, Vector3D.PLUS_I,
                 FastMath.toRadians(20), Vector3D.PLUS_K, FastMath.toRadians(20), 2);
-        final FieldOfObservation fieldOfObservation = new FieldOfObservation(satellite, fov, initialFovBody, header);
+        final FieldOfObservation fieldOfObservation = FieldOfObservation.builder(satellite, fov, initialFovBody, header)
+                                                                        .build();
 
         // Creation of the file
         final CzmlFile file = CzmlFile.builder()

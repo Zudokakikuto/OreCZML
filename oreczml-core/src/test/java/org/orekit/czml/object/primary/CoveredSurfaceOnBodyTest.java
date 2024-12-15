@@ -24,6 +24,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.attitudes.LofOffset;
 import org.orekit.czml.file.AbstractTest;
+import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.pointing.CoveredSurfaceOnBody;
 import org.orekit.czml.object.primary.visu.FieldOfObservation;
 import org.orekit.forces.ForceModel;
 import org.orekit.forces.gravity.HolmesFeatherstoneAttractionModel;
@@ -121,15 +123,17 @@ public class CoveredSurfaceOnBodyTest extends AbstractTest {
         final FieldOfObservation fieldOfObservation = FieldOfObservation.builder(satellite, fov, initialFovBody, header)
                                                                         .build();
 
-        final CoveredSurfaceOnBody surface = new CoveredSurfaceOnBody(satellite, fieldOfObservation, header);
+        final CoveredSurfaceOnBody surface = CoveredSurfaceOnBody.builder(satellite, fieldOfObservation, header)
+                                                                 .build();
 
         final CoveredSurfaceOnBody surfaceBuilder = CoveredSurfaceOnBody.builder(satellite, fieldOfObservation, header)
                                                                         .withCustomId("CustomID")
                                                                         .withHeader(header)
                                                                         .build();
 
-        final String pathFile = loadResources("templateFile/primary/CoveredSurfaceOnBodyTemplate.txt");
-        final String builderPathFile = loadResources("templateFile/primary/CoveredSurfaceOnBodyWithBuilderTemplate.txt");
+        final String pathFile        = loadResources("templateFile/primary/CoveredSurfaceOnBodyTemplate.txt");
+        final String builderPathFile = loadResources(
+                "templateFile/primary/CoveredSurfaceOnBodyWithBuilderTemplate.txt");
 
         Assertions.assertEquals(Files.readString(Path.of(pathFile)), surface.toString());
         Assertions.assertEquals(Files.readString(Path.of(builderPathFile)), surfaceBuilder.toString());

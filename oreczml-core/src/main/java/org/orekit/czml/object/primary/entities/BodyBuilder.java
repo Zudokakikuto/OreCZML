@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.orekit.czml.archi.builder;
+package org.orekit.czml.object.primary.entities;
 
 import org.orekit.bodies.CelestialBody;
-import org.orekit.czml.object.primary.Body;
 import org.orekit.czml.object.primary.Header;
+import org.orekit.czml.object.secondary.Orientation;
 
 /**
  * body builder class
@@ -51,6 +51,21 @@ public class BodyBuilder {
 
     /** The period of the orbit. */
     private double period;
+
+    /** The maximum scale of the model. */
+    private double modelMaximumScale;
+
+    /** The minimum pixel size of the model. */
+    private double modelMinimumPixelSize;
+
+    /** The scale of the model. */
+    private double modelScale;
+
+    /** The orientation of the model. */
+    private Orientation orientation;
+
+    /** The description of the model. */
+    private String description;
 
     /**
      * The body builder constructor.
@@ -101,6 +116,61 @@ public class BodyBuilder {
     }
 
     /**
+     * With model maximum scale body.
+     *
+     * @param modelMaximumScaleInput the model maximum scale input
+     * @return the body
+     */
+    public BodyBuilder withModelMaximumScale(final double modelMaximumScaleInput) {
+        this.modelMaximumScale = modelMaximumScaleInput;
+        return this;
+    }
+
+    /**
+     * With model minimum pixel size body.
+     *
+     * @param modelMinimumPixelSizeInput the model minimum pixel size input
+     * @return the body
+     */
+    public BodyBuilder withModelMinimumPixelSize(final double modelMinimumPixelSizeInput) {
+        this.modelMinimumPixelSize = modelMinimumPixelSizeInput;
+        return this;
+    }
+
+    /**
+     * With model scale body.
+     *
+     * @param modelScaleInput the model scale input
+     * @return the body
+     */
+    public BodyBuilder withModelScale(final double modelScaleInput) {
+        this.modelScale = modelScaleInput;
+        return this;
+    }
+
+    /**
+     * With orientation body.
+     *
+     * @param orientationInput the orientation input
+     * @return the body
+     */
+    public BodyBuilder withOrientation(final Orientation orientationInput) {
+        this.orientation = orientationInput;
+        return this;
+    }
+
+    /**
+     * With description body.
+     *
+     * @param descriptionInput : The description input
+     * @return the body
+     */
+    public BodyBuilder withDescription(final String descriptionInput) {
+        this.description = descriptionInput;
+        return this;
+    }
+
+    /**
      * Function to not display the orbit.
      *
      * @return : The builder with no orbit displayed.
@@ -121,6 +191,21 @@ public class BodyBuilder {
     }
 
     private Body checkAttributes(final Body bodyInput) {
+        if (orientation != null) {
+            bodyInput.withOrientation(orientation);
+        }
+        if (modelScale != 0.0) {
+            bodyInput.withModelScale(modelScale);
+        }
+        if (modelMaximumScale != 0.0) {
+            bodyInput.withModelMaximumScale(modelMaximumScale);
+        }
+        if (modelMinimumPixelSize != 0.0) {
+            bodyInput.withModelMinimumPixelSize(modelMinimumPixelSize);
+        }
+        if (!(description == null)) {
+            bodyInput.withDescription(description);
+        }
         if (noOrbitDisplay) {
             bodyInput.noOrbitDisplay();
         }

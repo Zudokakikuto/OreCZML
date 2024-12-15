@@ -27,6 +27,7 @@ import org.orekit.czml.archi.builder.CollisionBuilder;
 import org.orekit.czml.errors.OreCzmlException;
 import org.orekit.czml.errors.OreCzmlMessages;
 import org.orekit.czml.object.Utils.DateUtils;
+import org.orekit.czml.object.primary.entities.Satellite;
 import org.orekit.errors.OrekitException;
 import org.orekit.frames.LOF;
 import org.orekit.propagation.BoundedPropagator;

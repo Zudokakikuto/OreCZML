@@ -19,7 +19,7 @@ package org.orekit.czml.other;
 import org.orekit.czml.TutorialUtils;
 import org.orekit.czml.file.CzmlFile;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.LatLongLines;
+import org.orekit.czml.object.primary.systems.LatLongLines;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScalesFactory;
@@ -29,7 +29,7 @@ import org.orekit.time.TimeScalesFactory;
  */
 public class LatLongDisplayExample {
 
-    private LatLongDisplayExample () {
+    private LatLongDisplayExample() {
         // empty
     }
 
@@ -61,8 +61,12 @@ public class LatLongDisplayExample {
         final Header header = new Header("Example of the usage of the lat long display object.", clock, pathToJSFolder);
 
         //LatLongLinesDisplay
-        final LatLongLines latLongLines = new LatLongLines(30, 30, true,
-                LatLongLines.DEFAULT_ID, header);
+        final LatLongLines latLongLines = LatLongLines.builder(header)
+                                                      .withLatitudeAngularStep(30)
+                                                      .withLongitudeAngularStep(30)
+                                                      .withDisplay(true)
+                                                      .withCustomID(LatLongLines.DEFAULT_ID)
+                                                      .build();
 
         final CzmlFile file = CzmlFile.builder()
                                       .withHeader(header)

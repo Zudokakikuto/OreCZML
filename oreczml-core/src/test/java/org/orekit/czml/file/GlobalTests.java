@@ -32,23 +32,23 @@ import org.orekit.bodies.GeodeticPoint;
 import org.orekit.bodies.OneAxisEllipsoid;
 import org.orekit.czml.archi.adaptor.AemAdaptor;
 import org.orekit.czml.archi.adaptor.OemAdaptor;
-import org.orekit.czml.archi.builder.SatelliteBuilder;
+import org.orekit.czml.object.primary.entities.SatelliteBuilder;
 import org.orekit.czml.archi.factory.BodyFactory;
-import org.orekit.czml.object.primary.AttitudePointing;
-import org.orekit.czml.object.primary.Body;
-import org.orekit.czml.object.primary.CentralBodyReferenceSystem;
+import org.orekit.czml.object.primary.entities.Body;
 import org.orekit.czml.object.primary.Collision;
 import org.orekit.czml.object.primary.Constellation;
 import org.orekit.czml.object.primary.Covariance;
-import org.orekit.czml.object.primary.CoveredSurfaceOnBody;
-import org.orekit.czml.object.primary.CzmlGroundStation;
-import org.orekit.czml.object.primary.visu.FieldOfObservation;
+import org.orekit.czml.object.primary.entities.CzmlGroundStation;
 import org.orekit.czml.object.primary.GroundTrack;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.visu.InterSatVisu;
-import org.orekit.czml.object.primary.LatLongLines;
 import org.orekit.czml.object.primary.ManeuverSequence;
-import org.orekit.czml.object.primary.Satellite;
+import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.pointing.AttitudePointing;
+import org.orekit.czml.object.primary.pointing.CoveredSurfaceOnBody;
+import org.orekit.czml.object.primary.systems.CentralBodyReferenceSystem;
+import org.orekit.czml.object.primary.systems.LatLongLines;
+import org.orekit.czml.object.primary.visu.FieldOfObservation;
+import org.orekit.czml.object.primary.visu.InterSatVisu;
 import org.orekit.czml.object.primary.visu.LineOfVisibility;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.czml.object.secondary.Orientation;
@@ -176,7 +176,8 @@ class GlobalTests extends AbstractTest {
         final CzmlGroundStation groundStation = new CzmlGroundStation(topocentricForStation, "", header);
 
         // Attitude pointing
-        final AttitudePointing pointing = new AttitudePointing(satellite, earth, Vector3D.MINUS_I, header);
+        final AttitudePointing pointing = AttitudePointing.builder(satellite, earth, Vector3D.MINUS_I, header)
+                                                          .build();
 
         // Body
         final Body jupiter = BodyFactory.getJupiter(header);
@@ -185,7 +186,8 @@ class GlobalTests extends AbstractTest {
         final CentralBodyReferenceSystem system = new CentralBodyReferenceSystem(header);
 
         // Latitude longitude lines display
-        final LatLongLines latLong = new LatLongLines(header);
+        final LatLongLines latLong = LatLongLines.builder(header)
+                                                 .build();
 
         final List<Satellite> satellites = new ArrayList<>();
         satellites.add(satellite);
@@ -415,8 +417,9 @@ class GlobalTests extends AbstractTest {
         final FieldOfView fov = new DoubleDihedraFieldOfView(Vector3D.PLUS_J, Vector3D.PLUS_I, FastMath.toRadians(20),
                 Vector3D.PLUS_K, FastMath.toRadians(20), 2);
 
-        final FieldOfObservation fieldOfObservation = new FieldOfObservation(firstSatellite, fov, initialFovBody,
-                header);
+        final FieldOfObservation fieldOfObservation = FieldOfObservation.builder(firstSatellite, fov, initialFovBody,
+                                                                                header)
+                                                                        .build();
 
         // Ground track
         final GroundTrack groundTrack = new GroundTrack(firstSatellite, earth, header);
@@ -424,10 +427,12 @@ class GlobalTests extends AbstractTest {
         final GroundTrack groundTrackConstellation = new GroundTrack(constellation, earth, header);
 
         // Covered surface on body
-        final CoveredSurfaceOnBody surface = new CoveredSurfaceOnBody(firstSatellite, fieldOfObservation, header);
+        final CoveredSurfaceOnBody surface = CoveredSurfaceOnBody.builder(firstSatellite, fieldOfObservation, header)
+                                                                 .build();
 
         // Inter visu
-        final InterSatVisu interVisu = new InterSatVisu(firstSatellite, secondSatellite, finalDate, header);
+        final InterSatVisu interVisu = InterSatVisu.builder(firstSatellite, secondSatellite, finalDate, header)
+                                                   .build();
 
         // collision
         final Collision collision = new Collision(firstSatellite, secondSatellite, covariances1,

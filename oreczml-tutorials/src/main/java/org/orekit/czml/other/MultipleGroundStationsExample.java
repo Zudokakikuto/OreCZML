@@ -20,7 +20,7 @@ import org.hipparchus.util.FastMath;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.czml.TutorialUtils;
 import org.orekit.czml.file.CzmlFile;
-import org.orekit.czml.object.primary.CzmlGroundStation;
+import org.orekit.czml.object.primary.entities.CzmlGroundStation;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.frames.TopocentricFrame;

@@ -30,6 +30,7 @@ import org.orekit.attitudes.AttitudesSequence;
 import org.orekit.czml.archi.builder.ManeuverSequenceBuilder;
 import org.orekit.czml.object.Utils.DateUtils;
 import org.orekit.czml.object.nonvisual.CzmlModel;
+import org.orekit.czml.object.primary.entities.Satellite;
 import org.orekit.czml.object.secondary.Orientation;
 import org.orekit.forces.maneuvers.Maneuver;
 import org.orekit.forces.maneuvers.trigger.AbstractManeuverTriggers;

@@ -14,20 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.orekit.czml.archi.builder;
+package org.orekit.czml.object.primary.pointing;
 
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.orekit.bodies.OneAxisEllipsoid;
-import org.orekit.czml.object.primary.AttitudePointing;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.Satellite;
+import org.orekit.czml.object.primary.entities.Satellite;
 
 import java.awt.Color;
 
 /**
  * Attitude pointing builder class
  * <p>
- * Builder for the {@link org.orekit.czml.object.primary.AttitudePointing} class.
+ * Builder for the {@link AttitudePointing} class.
  *
  * @author Julien LEBLOND
  * @since 1.0.0

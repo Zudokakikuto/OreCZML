@@ -32,6 +32,7 @@ import org.orekit.czml.archi.builder.GroundTrackBuilder;
 import org.orekit.czml.object.CzmlShow;
 import org.orekit.czml.object.Path;
 import org.orekit.czml.object.Polyline;
+import org.orekit.czml.object.primary.entities.Satellite;
 import org.orekit.czml.object.secondary.TimePosition;
 import org.orekit.propagation.SpacecraftState;
 import org.orekit.time.AbsoluteDate;

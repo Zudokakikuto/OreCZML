@@ -27,6 +27,7 @@ import org.orekit.attitudes.CelestialBodyPointed;
 import org.orekit.attitudes.LofOffset;
 import org.orekit.bodies.CelestialBodyFactory;
 import org.orekit.czml.file.AbstractTest;
+import org.orekit.czml.object.primary.entities.Satellite;
 import org.orekit.forces.ForceModel;
 import org.orekit.forces.gravity.HolmesFeatherstoneAttractionModel;
 import org.orekit.forces.gravity.potential.GravityFieldFactory;

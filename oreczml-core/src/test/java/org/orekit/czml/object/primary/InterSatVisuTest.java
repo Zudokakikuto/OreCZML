@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.Polyline;
+import org.orekit.czml.object.primary.entities.Satellite;
 import org.orekit.czml.object.primary.visu.InterSatVisu;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.forces.ForceModel;
@@ -129,30 +130,40 @@ public class InterSatVisuTest extends AbstractTest {
         propagators.add(secondBoundedPropagator);
 
         final List<Satellite> satellites = new ArrayList<>();
-        final Satellite firstSat  = new Satellite(firstBoundedPropagator, header);
-        final Satellite secondSat = new Satellite(secondBoundedPropagator, header);
-        firstSat.setOrbitColor(new Color(255,0,0,255));
-        secondSat.setOrbitColor(new Color(255,127,0,255));
+        final Satellite       firstSat   = new Satellite(firstBoundedPropagator, header);
+        final Satellite       secondSat  = new Satellite(secondBoundedPropagator, header);
+        firstSat.setOrbitColor(new Color(255, 0, 0, 255));
+        secondSat.setOrbitColor(new Color(255, 127, 0, 255));
         satellites.add(firstSat);
         satellites.add(secondSat);
 
-        final InterSatVisu interSatVisu        = new InterSatVisu(firstSat, secondSat, finalDate, header);
-        final InterSatVisu interSatVisuBuilder = InterSatVisu.builder(firstSat, secondSat, finalDate, header).build();
+        final InterSatVisu interSatVisu        = InterSatVisu.builder(firstSat, secondSat, finalDate, header)
+                                                             .build();
+        final InterSatVisu interSatVisuBuilder = InterSatVisu.builder(firstSat, secondSat, finalDate, header)
+                                                             .build();
 
-        final InterSatVisu interSatVisuPropagators = new InterSatVisu(propagators, finalDate, header);
-        final InterSatVisu interSatVisuPropagatorsBuilder = InterSatVisu.builder(propagators, finalDate, header).build();
+        final InterSatVisu interSatVisuPropagators        = InterSatVisu.builder(propagators, finalDate, header)
+                                                                        .build();
+        final InterSatVisu interSatVisuPropagatorsBuilder = InterSatVisu.builder(propagators, finalDate, header)
+                                                                        .build();
 
-        final InterSatVisu interSatVisuPropagatorsID = new InterSatVisu(propagators, finalDate, "CustomIDTest", header);
+        final InterSatVisu interSatVisuPropagatorsID = InterSatVisu.builder(propagators, finalDate, header)
+                                                                   .withCustomId("CustomIDTest")
+                                                                   .build();
 
-        final InterSatVisu interSatVisuFromConstellationBuilder = InterSatVisu.builder(new Constellation(propagators, finalDate, header), finalDate, header).build();
+        final InterSatVisu interSatVisuFromConstellationBuilder = InterSatVisu.builder(
+                                                                                      new Constellation(propagators, finalDate, header), finalDate, header)
+                                                                              .build();
 
         final String pathFile = loadResources("templateFile/primary/InterSatVisuTemplate.txt");
         final String propagatorsInterSatPathFile = loadResources(
                 "templateFile/primary/InterSatVisuPropagatorsTemplate.txt");
-        final String propagatorsIDInterSatPathFile = loadResources("templateFile/primary/InterSatVisuPropagatorsIDTemplate.txt");
-        final String constellationInterSatPathFile = loadResources("templateFile/primary/InterSatVisuConstellationTemplate.txt");
+        final String propagatorsIDInterSatPathFile = loadResources(
+                "templateFile/primary/InterSatVisuPropagatorsIDTemplate.txt");
+        final String constellationInterSatPathFile = loadResources(
+                "templateFile/primary/InterSatVisuConstellationTemplate.txt");
 
-        Path path = Path.of(pathFile);
+        Path path  = Path.of(pathFile);
         Path path1 = Path.of(propagatorsInterSatPathFile);
 
 
@@ -164,19 +175,33 @@ public class InterSatVisuTest extends AbstractTest {
         Assertions.assertEquals(Files.readString(path1),
                 interSatVisuPropagatorsBuilder.toString());
 
-        Assertions.assertEquals(Files.readString(Path.of(propagatorsIDInterSatPathFile)), interSatVisuPropagatorsID.toString());
+        Assertions.assertEquals(Files.readString(Path.of(propagatorsIDInterSatPathFile)),
+                interSatVisuPropagatorsID.toString());
 
-        Assertions.assertEquals(Files.readString(Path.of(constellationInterSatPathFile)), interSatVisuFromConstellationBuilder.toString());
+        Assertions.assertEquals(Files.readString(Path.of(constellationInterSatPathFile)),
+                interSatVisuFromConstellationBuilder.toString());
 
         // Getters coverage
 
-        Assertions.assertEquals(secondSat.getSpaceCraftStates().get(0).getPVCoordinates(), interSatVisu.getSatellite2().getSpaceCraftStates().get(0).getPVCoordinates());
+        Assertions.assertEquals(secondSat.getSpaceCraftStates()
+                                         .get(0)
+                                         .getPVCoordinates(), interSatVisu.getSatellite2()
+                                                                          .getSpaceCraftStates()
+                                                                          .get(0)
+                                                                          .getPVCoordinates());
         Assertions.assertEquals(startDate, interSatVisu.getStartDate());
         Assertions.assertEquals(finalDate, interSatVisu.getStopDate());
-        Assertions.assertEquals(firstSat.getSpaceCraftStates().get(0).getPVCoordinates(), interSatVisu.getInitialState().getPVCoordinates());
+        Assertions.assertEquals(firstSat.getSpaceCraftStates()
+                                        .get(0)
+                                        .getPVCoordinates(), interSatVisu.getInitialState()
+                                                                         .getPVCoordinates());
         Assertions.assertEquals(propagators, interSatVisuPropagators.getPropagators());
-        Assertions.assertEquals(new ArrayList<>(Arrays.asList(firstSat.getId(), secondSat.getId())), interSatVisuFromConstellationBuilder.getIdsSatellites());
-        Assertions.assertEquals(new Polyline(header).getAvailability(), interSatVisu.getPolyline().getAvailability());
-        Assertions.assertEquals(new ArrayList<>(Arrays.asList(true, false, true, false, true, false, false, true, false, true, false, true, false, true, false, true, false, true, false)), interSatVisu.getBooleanList());
+        Assertions.assertEquals(new ArrayList<>(Arrays.asList(firstSat.getId(), secondSat.getId())),
+                interSatVisuFromConstellationBuilder.getIdsSatellites());
+        Assertions.assertEquals(new Polyline(header).getAvailability(), interSatVisu.getPolyline()
+                                                                                    .getAvailability());
+        Assertions.assertEquals(new ArrayList<>(
+                Arrays.asList(true, false, true, false, true, false, false, true, false, true, false, true, false, true,
+                        false, true, false, true, false)), interSatVisu.getBooleanList());
     }
 }

@@ -1,4 +1,4 @@
-package org.orekit.czml.object.primary;
+package org.orekit.czml.object.primary.visu;
 
 import cesiumlanguagewriter.BooleanCesiumWriter;
 import cesiumlanguagewriter.Cartesian;
@@ -12,7 +12,9 @@ import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.hipparchus.util.FastMath;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.bodies.OneAxisEllipsoid;
-import org.orekit.czml.object.primary.visu.VisibilityCone;
+import org.orekit.czml.object.primary.AbstractPrimaryObject;
+import org.orekit.czml.object.primary.Header;
+import org.orekit.czml.object.primary.entities.Satellite;
 import org.orekit.frames.Frame;
 import org.orekit.frames.FramesFactory;
 import org.orekit.frames.TopocentricFrame;
@@ -80,6 +82,12 @@ public class StationVisibilityCircle extends AbstractPrimaryObject {
                                     .getTopRadius();
         this.circleGeodetic   = computePointPositions(topocentricFrame, satellite, angleOfAperture);
         this.circleCartesian  = cartesianGround(circleGeodetic);
+    }
+
+    // Builder
+
+    public static StationVisibilityCircleBuilder builder(final TopocentricFrame topocentricFrameInput, final Satellite satelliteInput, final Header headerInput) {
+        return new StationVisibilityCircleBuilder(topocentricFrameInput, satelliteInput, headerInput);
     }
 
     @Override

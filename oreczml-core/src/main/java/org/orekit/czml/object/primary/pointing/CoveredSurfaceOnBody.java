@@ -15,16 +15,18 @@
  * limitations under the License.
  */
 
-package org.orekit.czml.object.primary;
+package org.orekit.czml.object.primary.pointing;
 
 import cesiumlanguagewriter.Cartesian;
 import cesiumlanguagewriter.CesiumOutputStream;
 import cesiumlanguagewriter.CesiumStreamWriter;
 import cesiumlanguagewriter.PacketCesiumWriter;
 import org.orekit.bodies.GeodeticPoint;
-import org.orekit.czml.archi.builder.CoveredSurfaceOnBodyBuilder;
 import org.orekit.czml.archi.builder.PolygonBuilder;
 import org.orekit.czml.object.nonvisual.PointOnBody;
+import org.orekit.czml.object.primary.AbstractPrimaryObject;
+import org.orekit.czml.object.primary.Header;
+import org.orekit.czml.object.primary.entities.Satellite;
 import org.orekit.czml.object.primary.visu.FieldOfObservation;
 import org.orekit.czml.object.secondary.Polygon;
 import org.orekit.frames.Transform;
@@ -96,7 +98,7 @@ public class CoveredSurfaceOnBody extends AbstractPrimaryObject {
      * @param fieldOfObservationInput : The field of observation of the satellite that will define the surface covered.
      * @param header                  : The header considered.
      */
-    public CoveredSurfaceOnBody(final Satellite satelliteInput, final FieldOfObservation fieldOfObservationInput,
+    CoveredSurfaceOnBody(final Satellite satelliteInput, final FieldOfObservation fieldOfObservationInput,
                                 final Header header) {
         this(satelliteInput, fieldOfObservationInput,
                 DEFAULT_ID + satelliteInput.getId() + "/" + fieldOfObservationInput.getBody()
@@ -112,7 +114,7 @@ public class CoveredSurfaceOnBody extends AbstractPrimaryObject {
      * @param customID                : The custom ID of the covered surface on body object.
      * @param header                  : The header to consider when several headers are used.
      */
-    public CoveredSurfaceOnBody(final Satellite satelliteInput, final FieldOfObservation fieldOfObservationInput,
+    CoveredSurfaceOnBody(final Satellite satelliteInput, final FieldOfObservation fieldOfObservationInput,
                                 final String customID, final Header header) {
 
         this.setId(customID);

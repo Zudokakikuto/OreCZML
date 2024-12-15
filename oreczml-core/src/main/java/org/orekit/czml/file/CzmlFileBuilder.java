@@ -16,20 +16,20 @@
  */
 package org.orekit.czml.file;
 
-import org.orekit.czml.object.primary.AttitudePointing;
-import org.orekit.czml.object.primary.Body;
-import org.orekit.czml.object.primary.CentralBodyReferenceSystem;
+import org.orekit.czml.object.primary.pointing.AttitudePointing;
+import org.orekit.czml.object.primary.entities.Body;
+import org.orekit.czml.object.primary.systems.CentralBodyReferenceSystem;
 import org.orekit.czml.object.primary.Collision;
 import org.orekit.czml.object.primary.Constellation;
 import org.orekit.czml.object.primary.Covariance;
-import org.orekit.czml.object.primary.CoveredSurfaceOnBody;
-import org.orekit.czml.object.primary.CzmlGroundStation;
+import org.orekit.czml.object.primary.pointing.CoveredSurfaceOnBody;
+import org.orekit.czml.object.primary.entities.CzmlGroundStation;
 import org.orekit.czml.object.primary.GroundTrack;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.LatLongLines;
+import org.orekit.czml.object.primary.systems.LatLongLines;
 import org.orekit.czml.object.primary.ManeuverSequence;
-import org.orekit.czml.object.primary.Satellite;
-import org.orekit.czml.object.primary.SatelliteReferenceSystem;
+import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.systems.SatelliteReferenceSystem;
 import org.orekit.czml.object.primary.visu.FieldOfObservation;
 import org.orekit.czml.object.primary.visu.InterSatVisu;
 import org.orekit.czml.object.primary.visu.LineOfVisibility;

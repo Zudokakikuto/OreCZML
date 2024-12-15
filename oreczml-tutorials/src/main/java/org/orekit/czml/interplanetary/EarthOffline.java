@@ -20,7 +20,7 @@ package org.orekit.czml.interplanetary;
 import org.orekit.czml.TutorialUtils;
 import org.orekit.czml.archi.factory.BodyFactory;
 import org.orekit.czml.file.CzmlFile;
-import org.orekit.czml.object.primary.Body;
+import org.orekit.czml.object.primary.entities.Body;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.time.AbsoluteDate;
