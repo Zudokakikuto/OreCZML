@@ -176,7 +176,7 @@ public class SatTrackingExample {
         //// Creation of a line of visu between the satellite and all the ground stations
         final CzmlFile file = CzmlFile.builder()
                                       .withHeader(header)
-                                      .withSatellite(satellite)
+                                      .withSpacecraft(satellite)
                                       .withCzmlGroundStation(groundStations)
                                       .withLineOfVisibility(lineOfVisibility)
                                       .build();

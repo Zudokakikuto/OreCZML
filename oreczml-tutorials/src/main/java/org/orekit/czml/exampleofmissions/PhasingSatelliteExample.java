@@ -149,8 +149,8 @@ public class PhasingSatelliteExample {
 
         final CzmlFile file = CzmlFile.builder()
                                       .withHeader(header)
-                                      .withSatellite(satellitePhased)
-                                      .withSatellite(satellitePhasing)
+                                      .withSpacecraft(satellitePhased)
+                                      .withSpacecraft(satellitePhasing)
                                       .build();
 
         file.write(output);

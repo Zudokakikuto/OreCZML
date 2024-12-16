@@ -144,7 +144,7 @@ public class AttitudePointingExample {
         // Creation of the file
         final CzmlFile file = CzmlFile.builder()
                                       .withHeader(header)
-                                      .withSatellite(satellite)
+                                      .withSpacecraft(satellite)
                                       .withAttitudePointing(pointing)
                                       .build();
 

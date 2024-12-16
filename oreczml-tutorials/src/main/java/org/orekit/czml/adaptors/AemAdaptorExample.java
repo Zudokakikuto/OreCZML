@@ -115,7 +115,7 @@ public class AemAdaptorExample {
 
         final CzmlFile file = CzmlFile.builder()
                                       .withHeader(header)
-                                      .withSatellite(satellite)
+                                      .withSpacecraft(satellite)
                                       .withCzmlGroundStation(groundStation)
                                       .build();
 

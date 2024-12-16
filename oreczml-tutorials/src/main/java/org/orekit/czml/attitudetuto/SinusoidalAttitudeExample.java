@@ -168,7 +168,7 @@ public class SinusoidalAttitudeExample {
         // Creation of the file
         final CzmlFile file = CzmlFile.builder()
                                       .withHeader(header)
-                                      .withSatellite(satellite)
+                                      .withSpacecraft(satellite)
                                       .withAttitudePointing(pointing)
                                       .withCentralBodyReferenceSystem(system)
                                       .withFieldOfObservation(fieldOfObservation)

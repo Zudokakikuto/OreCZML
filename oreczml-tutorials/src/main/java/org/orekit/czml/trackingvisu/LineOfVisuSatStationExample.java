@@ -140,7 +140,7 @@ public class LineOfVisuSatStationExample {
         final CzmlFile file = CzmlFile.builder().
                                       withHeader(header).
                                       withCzmlGroundStation(toulouseStation).
-                                      withSatellite(satellite).
+                                      withSpacecraft(satellite).
                                       withLineOfVisibility(lineOfVisibility).
                                       build();
 

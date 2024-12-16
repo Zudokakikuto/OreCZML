@@ -156,7 +156,7 @@ public class FieldOfObservationExample {
         // Creation of the file
         final CzmlFile file = CzmlFile.builder()
                                       .withHeader(header)
-                                      .withSatellite(satellite)
+                                      .withSpacecraft(satellite)
                                       .withFieldOfObservation(fieldOfObservation)
                                       .build();
 

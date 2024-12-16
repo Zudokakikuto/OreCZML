@@ -169,8 +169,8 @@ public class CollisionExample {
         // Creation of the file
         final CzmlFile file = CzmlFile.builder()
                                       .withHeader(header)
-                                      .withSatellite(satellite1)
-                                      .withSatellite(satellite2)
+                                      .withSpacecraft(satellite1)
+                                      .withSpacecraft(satellite2)
                                       .withCollision(collision)
                                       .build();
 

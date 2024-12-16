@@ -150,8 +150,8 @@ public class InterVisuSatExample {
         // Creation of the file
         final CzmlFile file = CzmlFile.builder()
                                       .withHeader(header)
-                                      .withSatellite(firstSatellite)
-                                      .withSatellite(secondSatellite)
+                                      .withSpacecraft(firstSatellite)
+                                      .withSpacecraft(secondSatellite)
                                       .withInterSatVisu(interSatVisu)
                                       .build();
         // Writing in the file

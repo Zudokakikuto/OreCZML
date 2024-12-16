@@ -68,12 +68,15 @@ public class CzmlGroundStationBuilder {
     private final boolean multipleStations;
 
     /** The header to consider when several are used. */
-    private Header header = null;
+    private Header header;
 
+    /** A boolean to display or not the circle of visibility of the ground station. */
     private boolean displayCircle = false;
 
-    private Spacecraft satellite;
+    /** The spacecraft considered. */
+    private Spacecraft spacecraft;
 
+    /** The angle of aperture of the ground station. */
     private double angleOfAperture;
 
     // Constructor
@@ -104,8 +107,8 @@ public class CzmlGroundStationBuilder {
 
 
     public CzmlGroundStationBuilder displayCircle(final Spacecraft satellite, final double angleOfAperture) {
-        displayCircle = true;
-        this.satellite = satellite;
+        displayCircle        = true;
+        this.spacecraft      = satellite;
         this.angleOfAperture = angleOfAperture;
         return this;
     }
@@ -194,7 +197,7 @@ public class CzmlGroundStationBuilder {
             }
         }
         if (displayCircle) {
-            toReturn.displayCircle(satellite, angleOfAperture);
+            toReturn.displayCircle(spacecraft, angleOfAperture);
         }
         return toReturn;
     }

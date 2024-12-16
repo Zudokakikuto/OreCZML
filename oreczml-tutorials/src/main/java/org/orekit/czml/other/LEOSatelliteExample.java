@@ -119,7 +119,7 @@ public class LEOSatelliteExample {
         // Creation of the file
         final CzmlFile file = CzmlFile.builder()
                                       .withHeader(header)
-                                      .withSatellite(leoSatellite)
+                                      .withSpacecraft(leoSatellite)
                                       .build();
 
         // Write inside the CzmlFile the objects

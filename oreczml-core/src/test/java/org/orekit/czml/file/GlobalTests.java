@@ -210,7 +210,7 @@ class GlobalTests extends AbstractTest {
                                       .withAttitudePointing(pointing)
                                       .withBody(jupiter)
                                       .withCzmlGroundStation(groundStation)
-                                      .withSatellite(satellite)
+                                      .withSpacecraft(satellite)
                                       .withCentralBodyReferenceSystem(system)
                                       .withLatLong(latLong)
                                       .build();
@@ -218,7 +218,7 @@ class GlobalTests extends AbstractTest {
         // Coverage for CzmlFile
         final CzmlFile coverageFile = CzmlFile.builder()
                                               .withHeader(header)
-                                              .withSatellite(satellites)
+                                              .withSpacecraft(satellites)
                                               .withConstellation(constellations)
                                               .withAttitudePointing(pointings)
                                               .withLatLong(lines)
@@ -459,7 +459,7 @@ class GlobalTests extends AbstractTest {
 
         final CzmlFile file = CzmlFile.builder()
                                       .withHeader(header)
-                                      .withSatellite(firstSatellite)
+                                      .withSpacecraft(firstSatellite)
                                       .withFieldOfObservation(fieldOfObservation)
                                       .withGroundTrack(groundTrack)
                                       .withGroundTrack(groundTrackConstellation)
@@ -472,7 +472,7 @@ class GlobalTests extends AbstractTest {
 
         final CzmlFile coverageFile = CzmlFile.builder()
                                               .withHeader(header)
-                                              .withSatellite(firstSatellite)
+                                              .withSpacecraft(firstSatellite)
                                               .withGroundTrack(groundTracks)
                                               .withFieldOfObservation(fields)
                                               .withInterSatVisu(interSatVisusList)
@@ -724,7 +724,7 @@ class GlobalTests extends AbstractTest {
 
         final CzmlFile file = CzmlFile.builder()
                                       .withHeader(header)
-                                      .withSatellite(satellite)
+                                      .withSpacecraft(satellite)
                                       .withManeuverSequence(maneuverSequence)
                                       .withCzmlGroundStation(groundStation)
                                       .withLineOfVisibility(lineToulouse)

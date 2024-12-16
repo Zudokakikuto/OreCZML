@@ -16,19 +16,19 @@
  */
 package org.orekit.czml.file;
 
-import org.orekit.czml.object.primary.pointing.AttitudePointing;
-import org.orekit.czml.object.primary.entities.Body;
-import org.orekit.czml.object.primary.systems.CentralBodyReferenceSystem;
-import org.orekit.czml.object.primary.covariance.Collision;
-import org.orekit.czml.object.primary.entities.Constellation;
-import org.orekit.czml.object.primary.covariance.Covariance;
-import org.orekit.czml.object.primary.pointing.CoveredSurfaceOnBody;
-import org.orekit.czml.object.primary.entities.CzmlGroundStation;
 import org.orekit.czml.object.primary.GroundTrack;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.systems.LatLongLines;
 import org.orekit.czml.object.primary.ManeuverSequence;
+import org.orekit.czml.object.primary.covariance.Collision;
+import org.orekit.czml.object.primary.covariance.Covariance;
+import org.orekit.czml.object.primary.entities.Body;
+import org.orekit.czml.object.primary.entities.Constellation;
+import org.orekit.czml.object.primary.entities.CzmlGroundStation;
 import org.orekit.czml.object.primary.entities.Spacecraft;
+import org.orekit.czml.object.primary.pointing.AttitudePointing;
+import org.orekit.czml.object.primary.pointing.CoveredSurfaceOnBody;
+import org.orekit.czml.object.primary.systems.CentralBodyReferenceSystem;
+import org.orekit.czml.object.primary.systems.LatLongLines;
 import org.orekit.czml.object.primary.systems.SpacecraftReferenceSystem;
 import org.orekit.czml.object.primary.visu.FieldOfObservation;
 import org.orekit.czml.object.primary.visu.InterSatVisu;
@@ -58,71 +58,71 @@ public class CzmlFileBuilder {
     /**
      * List of all the satellites to write.
      */
-    private List<Spacecraft>    satellites     = new ArrayList<>();
+    private List<Spacecraft>                                           satellites        = new ArrayList<>();
     /**
      * List of all the constellations to write.
      */
-    private List<Constellation> constellations = new ArrayList<>();
+    private List<Constellation>                                        constellations    = new ArrayList<>();
     /**
      * List of all the czml ground stations to write.
      */
-    private List<CzmlGroundStation>        groundStations    = new ArrayList<>();
+    private List<CzmlGroundStation>                                    groundStations    = new ArrayList<>();
     /**
      * List of all the inter-sat visu to write.
      */
-    private List<InterSatVisu>             visus             = new ArrayList<>();
+    private List<InterSatVisu>                                         visus             = new ArrayList<>();
     /**
      * List of all the collision to write.
      */
-    private List<Collision>                                            collisions   = new ArrayList<>();
+    private List<Collision>                                            collisions        = new ArrayList<>();
     /**
      * List of all the lines of visibility to write.
      */
-    private List<org.orekit.czml.object.primary.visu.LineOfVisibility> lines        = new ArrayList<>();
+    private List<org.orekit.czml.object.primary.visu.LineOfVisibility> lines             = new ArrayList<>();
     /**
      * List of all the ground tracks to write.
      */
-    private List<GroundTrack>                                          groundTracks = new ArrayList<>();
+    private List<GroundTrack>                                          groundTracks      = new ArrayList<>();
     /**
      * List of all the attitude pointings to write.
      */
-    private List<AttitudePointing>         attitudePointings = new ArrayList<>();
+    private List<AttitudePointing>                                     attitudePointings = new ArrayList<>();
     /**
      * List of all the covariance display to write.
      */
-    private List<Covariance>               covariances       = new ArrayList<>();
+    private List<Covariance>                                           covariances       = new ArrayList<>();
     /**
      * List of all the fields of observation to write.
      */
-    private List<FieldOfObservation>       fields            = new ArrayList<>();
+    private List<FieldOfObservation>                                   fields            = new ArrayList<>();
     /**
      * List of all the maneuver sequences to write.
      */
-    private List<ManeuverSequence>          maneuverSequences = new ArrayList<>();
+    private List<ManeuverSequence>                                     maneuverSequences = new ArrayList<>();
     /**
      * List of all the satellite reference systems to write.
      */
-    private List<SpacecraftReferenceSystem> satelliteSystems  = new ArrayList<>();
+    private List<SpacecraftReferenceSystem>                            satelliteSystems  = new ArrayList<>();
     /**
      * List of all the covered surfaces on body to write.
      */
-    private List<CoveredSurfaceOnBody>      surfaces          = new ArrayList<>();
+    private List<CoveredSurfaceOnBody>                                 surfaces          = new ArrayList<>();
     /**
      * List of all the latitude longitude lines display to write.
      */
-    private List<LatLongLines>             latLongs          = new ArrayList<>();
+    private List<LatLongLines>                                         latLongs          = new ArrayList<>();
     /**
      * List of all the body to write.
      */
-    private List<Body>                     bodies            = new ArrayList<>();
+    private List<Body>                                                 bodies            = new ArrayList<>();
     /**
      * The header of the czml file.
      */
-    private Header                         header;
+    private Header                                                     header;
     /**
      * The central body reference system to write.
      */
-    private CentralBodyReferenceSystem     system;
+    private CentralBodyReferenceSystem                                 system;
 
 
     // Constructor
@@ -154,7 +154,7 @@ public class CzmlFileBuilder {
      * @param satelliteInput : The satellite to set up.
      * @return : The czml file builder with the given satellite.
      */
-    public CzmlFileBuilder withSatellite(final Spacecraft... satelliteInput) {
+    public CzmlFileBuilder withSpacecraft(final Spacecraft... satelliteInput) {
         this.satellites.addAll(Arrays.asList(satelliteInput));
         return this;
     }
@@ -165,7 +165,7 @@ public class CzmlFileBuilder {
      * @param satellitesInput : The list of satellites to set up.
      * @return : The czml file builder with the given list of satellites.
      */
-    public CzmlFileBuilder withSatellite(final List<Spacecraft> satellitesInput) {
+    public CzmlFileBuilder withSpacecraft(final List<Spacecraft> satellitesInput) {
         this.satellites.addAll(satellitesInput);
         return this;
     }

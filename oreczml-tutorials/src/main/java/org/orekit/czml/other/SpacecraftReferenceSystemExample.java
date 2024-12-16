@@ -122,7 +122,7 @@ public class SpacecraftReferenceSystemExample {
         // Creation of the file
         final CzmlFile file = CzmlFile.builder()
                                       .withHeader(header)
-                                      .withSatellite(satellite)
+                                      .withSpacecraft(satellite)
                                       .build();
 
         // Write inside the CzmlFile the objects

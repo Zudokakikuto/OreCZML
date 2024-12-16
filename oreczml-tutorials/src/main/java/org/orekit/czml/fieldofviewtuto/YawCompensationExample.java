@@ -252,7 +252,7 @@ public class YawCompensationExample {
         // Creation of the file
         final CzmlFile file = CzmlFile.builder()
                                       .withHeader(header)
-                                      .withSatellite(satellites)
+                                      .withSpacecraft(satellites)
                                       .withFieldOfObservation(fobs)
                                       .build();
 

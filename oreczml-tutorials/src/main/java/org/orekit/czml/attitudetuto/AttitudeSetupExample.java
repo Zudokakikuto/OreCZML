@@ -132,7 +132,7 @@ public class AttitudeSetupExample {
         // Creation of the file
         final CzmlFile file = CzmlFile.builder()
                                       .withHeader(header)
-                                      .withSatellite(satellite)
+                                      .withSpacecraft(satellite)
                                       .build();
 
         // Writing in the file

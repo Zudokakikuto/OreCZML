@@ -93,7 +93,7 @@ public class OemAdaptorExample {
 
         final CzmlFile file = CzmlFile.builder()
                                       .withHeader(header)
-                                      .withSatellite(satellite)
+                                      .withSpacecraft(satellite)
                                       .build();
 
         file.write(output);

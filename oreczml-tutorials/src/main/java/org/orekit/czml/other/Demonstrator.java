@@ -201,7 +201,7 @@ public class Demonstrator {
         // Creation of the file
         final CzmlFile file = CzmlFile.builder()
                                       .withHeader(header)
-                                      .withSatellite(satellite)
+                                      .withSpacecraft(satellite)
                                       .withCzmlGroundStation(groundStations)
                                       .withFieldOfObservation(fieldOfObservation)
                                       .withLineOfVisibility(lineOfVisibility)
