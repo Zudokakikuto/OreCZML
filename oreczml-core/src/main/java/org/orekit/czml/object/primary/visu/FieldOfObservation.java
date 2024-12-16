@@ -33,7 +33,7 @@ import org.orekit.czml.object.Utils.DateUtils;
 import org.orekit.czml.object.nonvisual.PointOnBody;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.data.DataContext;
 import org.orekit.frames.TopocentricFrame;
 import org.orekit.frames.Transform;
@@ -177,8 +177,8 @@ public class FieldOfObservation extends AbstractPrimaryObject {
      * @throws IOException        the io exception
      */
     @DefaultDataContext
-    FieldOfObservation(final Satellite satellite, final FieldOfView fovInput, final Transform fovToBodyInput,
-                              final Header header) throws URISyntaxException, IOException {
+    FieldOfObservation(final Spacecraft satellite, final FieldOfView fovInput, final Transform fovToBodyInput,
+                       final Header header) throws URISyntaxException, IOException {
         this(satellite, fovInput, fovToBodyInput,
                 new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS, Constants.WGS84_EARTH_FLATTENING,
                         DataContext.getDefault().getFrames().getITRF(IERSConventions.IERS_2010, true)), DEFAULT_ANGULAR_STEP, DEFAULT_COLOR,
@@ -202,9 +202,9 @@ public class FieldOfObservation extends AbstractPrimaryObject {
      * @throws URISyntaxException the uri syntax exception
      * @throws IOException        the io exception
      */
-    FieldOfObservation(final Satellite satellite, final FieldOfView fovInput, final Transform transformFovToBody,
-                              final OneAxisEllipsoid body, final double angularStepInput, final Color color,
-                              final String customID, final Header header) throws URISyntaxException, IOException {
+    FieldOfObservation(final Spacecraft satellite, final FieldOfView fovInput, final Transform transformFovToBody,
+                       final OneAxisEllipsoid body, final double angularStepInput, final Color color,
+                       final String customID, final Header header) throws URISyntaxException, IOException {
 
         this.setId(customID);
         this.setName(DEFAULT_NAME + satellite.getName());
@@ -260,7 +260,7 @@ public class FieldOfObservation extends AbstractPrimaryObject {
      * @param header                  the header
      * @return the field of observation builder
      */
-    public static FieldOfObservationBuilder builder(final Satellite satellite, final FieldOfView fieldOfView,
+    public static FieldOfObservationBuilder builder(final Spacecraft satellite, final FieldOfView fieldOfView,
                                                     final Transform transformFovToBodyInput, final Header header) {
         return new FieldOfObservationBuilder(satellite, fieldOfView, transformFovToBodyInput, header);
     }

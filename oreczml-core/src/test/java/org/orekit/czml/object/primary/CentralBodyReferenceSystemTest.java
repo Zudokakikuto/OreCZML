@@ -43,7 +43,7 @@ public class CentralBodyReferenceSystemTest extends AbstractTest {
 
         final Header header = dummyHeader();
 
-        final CentralBodyReferenceSystem system = new CentralBodyReferenceSystem(header);
+        final CentralBodyReferenceSystem system = CentralBodyReferenceSystem.builder(header).build();
 
         final CentralBodyReferenceSystem systemBuilder = CentralBodyReferenceSystem.builder(header)
                                                                                    .withHeader(header)

@@ -1,6 +1,6 @@
 {
-  "id":"VIS/Toulouse Frame/Satellite",
-  "name":"Visibility of Toulouse Frame looking at Satellite",
+  "id":"VIS/Toulouse Frame/Spacecraft",
+  "name":"Visibility of Toulouse Frame looking at Spacecraft",
   "availability":"2024-01-01T00:00:00Z/2024-01-01T00:01:00Z",
   "cylinder":{
     "bottomRadius":10,

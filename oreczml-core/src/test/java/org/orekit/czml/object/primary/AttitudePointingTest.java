@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.Utils.DateUtils;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.primary.pointing.AttitudePointing;
 import org.orekit.propagation.BoundedPropagator;
 import org.orekit.time.AbsoluteDate;
@@ -57,9 +57,9 @@ public class AttitudePointingTest extends AbstractTest {
 
         final BoundedPropagator propagator = dummyPropagator(startDate, stopDate);
 
-        final Satellite satellite = Satellite.builder(propagator, header)
-                                             .withDisplayAttitude()
-                                             .build();
+        final Spacecraft satellite = Spacecraft.builder(propagator, header)
+                                               .withDisplayAttitude()
+                                               .build();
 
         final AttitudePointing attitudePointing = AttitudePointing.builder(satellite, getEarth(), Vector3D.MINUS_I, header).build();
         attitudePointing.displayPointingPath();

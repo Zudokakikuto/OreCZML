@@ -23,7 +23,6 @@ import cesiumlanguagewriter.EllipsoidRadiiCesiumWriter;
 import cesiumlanguagewriter.JulianDate;
 import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.TimeInterval;
-import org.orekit.czml.archi.builder.CzmlEllipsoidBuilder;
 import org.orekit.czml.object.primary.Header;
 
 import java.awt.Color;
@@ -206,9 +205,9 @@ public class CzmlEllipsoid extends AbstractSecondaryObject {
      * @param header    the header
      * @return the czml ellipsoid builder
      */
-    public static CzmlEllipsoidBuilder builder(final Cartesian cartesian,
-                                               final Header header) {
-        return new CzmlEllipsoidBuilder(cartesian, header);
+    public static Cylinder.CzmlEllipsoidBuilder builder(final Cartesian cartesian,
+                                                        final Header header) {
+        return new Cylinder.CzmlEllipsoidBuilder(cartesian, header);
     }
 
     /**
@@ -219,9 +218,9 @@ public class CzmlEllipsoid extends AbstractSecondaryObject {
      * @param header      the header
      * @return the czml ellipsoid builder
      */
-    public static CzmlEllipsoidBuilder builder(final List<JulianDate> julianDates, final List<Cartesian> dimensions,
-                                               final Header header) {
-        return new CzmlEllipsoidBuilder(julianDates, dimensions, header);
+    public static Cylinder.CzmlEllipsoidBuilder builder(final List<JulianDate> julianDates, final List<Cartesian> dimensions,
+                                                        final Header header) {
+        return new Cylinder.CzmlEllipsoidBuilder(julianDates, dimensions, header);
     }
 
     // Overrides

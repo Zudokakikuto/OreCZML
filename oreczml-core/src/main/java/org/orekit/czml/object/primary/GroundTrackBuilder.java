@@ -14,13 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.orekit.czml.archi.builder;
+package org.orekit.czml.object.primary;
 
 import org.orekit.bodies.BodyShape;
-import org.orekit.czml.object.primary.Constellation;
-import org.orekit.czml.object.primary.GroundTrack;
-import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.entities.Constellation;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 
 import java.awt.Color;
 
@@ -35,6 +33,9 @@ import java.awt.Color;
 public class GroundTrackBuilder {
 
 
+    /** The default ID for the ground track. */
+    public static final String DEFAULT_ID = "GROUND_TRACK/";
+
     /**
      * The default color of the ground track on the body.
      */
@@ -43,7 +44,7 @@ public class GroundTrackBuilder {
     /**
      * The satellite that will project the ground track on the ground.
      */
-    private Satellite satellite;
+    private Spacecraft satellite;
 
     /**
      * The body where the ground track will be projected on.
@@ -77,7 +78,7 @@ public class GroundTrackBuilder {
      * @param body        : The body where the ground track will be projected on.
      * @param headerInput : The header considered.
      */
-    public GroundTrackBuilder(final Satellite satellite, final BodyShape body, final Header headerInput) {
+    public GroundTrackBuilder(final Spacecraft satellite, final BodyShape body, final Header headerInput) {
         this.satellite = satellite;
         this.body      = body;
         this.customID  = "GROUND_TRACK/" + satellite.getId();
@@ -95,6 +96,7 @@ public class GroundTrackBuilder {
         this.constellation = constellation;
         this.body          = body;
         this.header        = headerInput;
+        this.customID      = DEFAULT_ID + constellation.getId();
     }
 
     /**

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.orekit.czml.object.primary;
+package org.orekit.czml.object.primary.covariance;
 
 import cesiumlanguagewriter.CesiumOutputStream;
 import cesiumlanguagewriter.CesiumStreamWriter;
@@ -23,11 +23,13 @@ import cesiumlanguagewriter.GregorianDate;
 import cesiumlanguagewriter.JulianDate;
 import cesiumlanguagewriter.TimeInterval;
 import org.hipparchus.ode.events.Action;
-import org.orekit.czml.archi.builder.CollisionBuilder;
 import org.orekit.czml.errors.OreCzmlException;
 import org.orekit.czml.errors.OreCzmlMessages;
 import org.orekit.czml.object.Utils.DateUtils;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.AbstractPrimaryObject;
+import org.orekit.czml.object.primary.CzmlPrimaryObject;
+import org.orekit.czml.object.primary.Header;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.errors.OrekitException;
 import org.orekit.frames.LOF;
 import org.orekit.propagation.BoundedPropagator;
@@ -59,7 +61,7 @@ import java.util.List;
  * @author Julien LEBLOND.
  * @since 1.0.0
  */
-public class Collision extends AbstractPrimaryObject {
+public class Collision extends AbstractPrimaryObject implements CzmlPrimaryObject {
 
     /**
      * The default id for the collision object.
@@ -74,12 +76,12 @@ public class Collision extends AbstractPrimaryObject {
     /**
      * The first satellite.
      */
-    private final Satellite firstSatellite;
+    private final Spacecraft firstSatellite;
 
     /**
      * The second satellite.
      */
-    private final Satellite secondSatellite;
+    private final Spacecraft secondSatellite;
 
     /**
      * The covariance computed of the first satellite.
@@ -105,7 +107,7 @@ public class Collision extends AbstractPrimaryObject {
      * @param secondLof            : The local orbital frame of the second satellite.
      * @param header               : The header considered.
      */
-    public Collision(final Satellite firstSatelliteInput, final Satellite secondSatelliteInput,
+    Collision(final Spacecraft firstSatelliteInput, final Spacecraft secondSatelliteInput,
                      final List<StateCovariance> firstCovarianceList,
                      final List<StateCovariance> secondCovarianceList, final LOF firstLof,
                      final LOF secondLof, final Header header) {
@@ -125,7 +127,7 @@ public class Collision extends AbstractPrimaryObject {
      * @param customID             : The custom ID for the collision object.
      * @param header               : The header to set up if several headers are used.
      */
-    public Collision(final Satellite firstSatelliteInput, final Satellite secondSatelliteInput,
+    Collision(final Spacecraft firstSatelliteInput, final Spacecraft secondSatelliteInput,
                      final List<StateCovariance> firstCovarianceList,
                      final List<StateCovariance> secondCovarianceList, final LOF firstLof,
                      final LOF secondLof, final String customID, final Header header) {
@@ -138,8 +140,8 @@ public class Collision extends AbstractPrimaryObject {
                 firstLof, header);
         this.covarianceSecondSatellite = new Covariance(secondSatelliteInput, secondCovarianceList,
                 secondLof, header);
-        final BoundedPropagator propagatorFirstSat  = firstSatelliteInput.getSatelliteBoundedPropagator();
-        final BoundedPropagator propagatorSecondSat = secondSatelliteInput.getSatelliteBoundedPropagator();
+        final BoundedPropagator propagatorFirstSat  = firstSatelliteInput.getSpacecraftBoundedPropagator();
+        final BoundedPropagator propagatorSecondSat = secondSatelliteInput.getSpacecraftBoundedPropagator();
 
         final TimeSpanMap<Boolean> visuMap = new TimeSpanMap<>(null);
         final EventDetector closeApproachDetector = collisionPropagation(propagatorFirstSat, propagatorSecondSat,
@@ -164,8 +166,8 @@ public class Collision extends AbstractPrimaryObject {
      * @return the collision builder
      */
 // Builder
-    public static CollisionBuilder builder(final Satellite firstSatelliteInput,
-                                           final Satellite secondSatelliteInput,
+    public static CollisionBuilder builder(final Spacecraft firstSatelliteInput,
+                                           final Spacecraft secondSatelliteInput,
                                            final List<StateCovariance> firstCovarianceListInput,
                                            final List<StateCovariance> secondCovarianceListInput,
                                            final LOF firstLofInput,
@@ -191,7 +193,7 @@ public class Collision extends AbstractPrimaryObject {
      *
      * @return the first satellite
      */
-    public Satellite getFirstSatellite() {
+    public Spacecraft getFirstSatellite() {
         return firstSatellite;
     }
 
@@ -200,7 +202,7 @@ public class Collision extends AbstractPrimaryObject {
      *
      * @return the second satellite
      */
-    public Satellite getSecondSatellite() {
+    public Spacecraft getSecondSatellite() {
         return secondSatellite;
     }
 
@@ -269,10 +271,10 @@ public class Collision extends AbstractPrimaryObject {
      */
     private List<TimeInterval> postPropagationProcessing(final EventDetector approachDetector,
                                                          final TimeSpanMap<Boolean> visuMap,
-                                                         final Satellite firstSatelliteInput, final Header header) {
+                                                         final Spacecraft firstSatelliteInput, final Header header) {
 
         final List<TimeInterval> toReturn = new ArrayList<>();
-        final SpacecraftState initialState = firstSatelliteInput.getSatellitePropagator()
+        final SpacecraftState initialState = firstSatelliteInput.getSpacecraftPropagator()
                                                                 .getInitialState();
         final JulianDate firstJulianDate = new JulianDate(new GregorianDate(1, 1, 1, 0, 0, 0.0));
 

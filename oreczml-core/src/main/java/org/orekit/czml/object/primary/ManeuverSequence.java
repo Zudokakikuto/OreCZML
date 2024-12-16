@@ -27,10 +27,9 @@ import org.hipparchus.geometry.euclidean.threed.RotationConvention;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.orekit.attitudes.Attitude;
 import org.orekit.attitudes.AttitudesSequence;
-import org.orekit.czml.archi.builder.ManeuverSequenceBuilder;
 import org.orekit.czml.object.Utils.DateUtils;
 import org.orekit.czml.object.nonvisual.CzmlModel;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.secondary.Orientation;
 import org.orekit.forces.maneuvers.Maneuver;
 import org.orekit.forces.maneuvers.trigger.AbstractManeuverTriggers;
@@ -160,17 +159,17 @@ public class ManeuverSequence extends AbstractPrimaryObject {
      * @param customID              : The custom ID of the Maneuver Sequence.
      * @param header                : The header considered if several ared used.
      */
-    public ManeuverSequence(final AttitudesSequence sequenceInput, final Maneuver maneuverInput,
-                            final Satellite satelliteInput, final Vector3D accelerationDirection, final LOF lofInput,
-                            final boolean showTrustInput, final String pathModel, final String customID,
-                            final Header header) {
+    ManeuverSequence(final AttitudesSequence sequenceInput, final Maneuver maneuverInput,
+                     final Spacecraft satelliteInput, final Vector3D accelerationDirection, final LOF lofInput,
+                     final boolean showTrustInput, final String pathModel, final String customID,
+                     final Header header) {
 
         final List<Maneuver> maneuversTemp = new ArrayList<>();
         maneuversTemp.add(maneuverInput);
 
         this.header     = header;
         this.maneuvers  = maneuversTemp;
-        this.propagator = (BoundedPropagator) satelliteInput.getSatellitePropagator();
+        this.propagator = (BoundedPropagator) satelliteInput.getSpacecraftPropagator();
         this.states     = satelliteInput.getSpaceCraftStates();
         this.lof        = lofInput;
         this.sequence   = sequenceInput;
@@ -202,9 +201,9 @@ public class ManeuverSequence extends AbstractPrimaryObject {
      * @param lofInput              : The local orbital frame of the satellite. Check the 'ManeuverSequenceExample' tutorial.
      * @param header                : The header considered.
      */
-    public ManeuverSequence(final AttitudesSequence sequenceInput, final List<Maneuver> maneuversInput,
-                            final Satellite satelliteInput, final Vector3D accelerationDirection, final LOF lofInput,
-                            final Header header) {
+    ManeuverSequence(final AttitudesSequence sequenceInput, final List<Maneuver> maneuversInput,
+                     final Spacecraft satelliteInput, final Vector3D accelerationDirection, final LOF lofInput,
+                     final Header header) {
         this(sequenceInput, maneuversInput, satelliteInput, accelerationDirection, lofInput, false, DEFAULT_PATH_MODEL,
                 ManeuverSequence.DEFAULT_ID + maneuversInput.subList(0, maneuversInput.size() - 1), header);
     }
@@ -224,10 +223,10 @@ public class ManeuverSequence extends AbstractPrimaryObject {
      * @param customID              : The custom ID of the maneuver sequence object.
      * @param header                : The header considered.
      */
-    public ManeuverSequence(final AttitudesSequence sequenceInput, final List<Maneuver> maneuversInput,
-                            final Satellite satelliteInput, final Vector3D accelerationDirection, final LOF lofInput,
-                            final boolean showTrustInput, final String pathModel, final String customID,
-                            final Header header) {
+    ManeuverSequence(final AttitudesSequence sequenceInput, final List<Maneuver> maneuversInput,
+                     final Spacecraft satelliteInput, final Vector3D accelerationDirection, final LOF lofInput,
+                     final boolean showTrustInput, final String pathModel, final String customID,
+                     final Header header) {
         this(sequenceInput, maneuversInput, satelliteInput, Collections.singletonList(accelerationDirection), lofInput,
                 showTrustInput, pathModel, customID, header);
     }
@@ -246,13 +245,13 @@ public class ManeuverSequence extends AbstractPrimaryObject {
      * @param customID              : The custom id of the maneuver sequence object
      * @param header                : The header considered when several are used.
      */
-    public ManeuverSequence(final AttitudesSequence sequenceInput, final List<Maneuver> maneuversInput,
-                            final Satellite satelliteInput, final List<Vector3D> accelerationDirection,
-                            final LOF lofInput, final boolean showTrustInput, final String pathModel,
-                            final String customID, final Header header) {
+    ManeuverSequence(final AttitudesSequence sequenceInput, final List<Maneuver> maneuversInput,
+                     final Spacecraft satelliteInput, final List<Vector3D> accelerationDirection,
+                     final LOF lofInput, final boolean showTrustInput, final String pathModel,
+                     final String customID, final Header header) {
 
         this.maneuvers  = maneuversInput;
-        this.propagator = satelliteInput.getSatelliteBoundedPropagator();
+        this.propagator = satelliteInput.getSpacecraftBoundedPropagator();
         this.states     = satelliteInput.getSpaceCraftStates();
         this.header     = header;
 
@@ -297,7 +296,7 @@ public class ManeuverSequence extends AbstractPrimaryObject {
      * @return the maneuver sequence builder
      */
     public static ManeuverSequenceBuilder builder(final AttitudesSequence sequenceInput, final Maneuver maneuverInput,
-                                                  final Satellite satellite, final Vector3D accelerationDirection,
+                                                  final Spacecraft satellite, final Vector3D accelerationDirection,
                                                   final LOF lofInput, final Header header) {
         return new ManeuverSequenceBuilder(sequenceInput, maneuverInput, satellite, accelerationDirection, lofInput,
                 header);
@@ -315,7 +314,7 @@ public class ManeuverSequence extends AbstractPrimaryObject {
      * @return the maneuver sequence builder
      */
     public static ManeuverSequenceBuilder builder(final AttitudesSequence sequenceInput,
-                                                  final List<Maneuver> maneuversInput, final Satellite satellite,
+                                                  final List<Maneuver> maneuversInput, final Spacecraft satellite,
                                                   final Vector3D accelerationDirection, final LOF lofInput,
                                                   final Header header) {
         return new ManeuverSequenceBuilder(sequenceInput, maneuversInput, satellite, accelerationDirection, lofInput,
@@ -334,7 +333,7 @@ public class ManeuverSequence extends AbstractPrimaryObject {
      * @return the maneuver sequence builder
      */
     public static ManeuverSequenceBuilder builder(final AttitudesSequence sequenceInput,
-                                                  final List<Maneuver> maneuversInput, final Satellite satellite,
+                                                  final List<Maneuver> maneuversInput, final Spacecraft satellite,
                                                   final List<Vector3D> accelerationDirections, final LOF lofInput,
                                                   final Header header) {
         return new ManeuverSequenceBuilder(sequenceInput, maneuversInput, satellite, accelerationDirections, lofInput,

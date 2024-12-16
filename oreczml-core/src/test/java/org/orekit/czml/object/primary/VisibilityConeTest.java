@@ -26,7 +26,7 @@ import org.orekit.czml.object.Position;
 import org.orekit.czml.object.PositionType;
 import org.orekit.czml.object.Utils.DateUtils;
 import org.orekit.czml.object.primary.entities.CzmlGroundStation;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.primary.visu.VisibilityCone;
 import org.orekit.czml.object.secondary.Cylinder;
 import org.orekit.frames.TopocentricFrame;
@@ -67,7 +67,7 @@ public class VisibilityConeTest extends AbstractTest {
                 "Toulouse Frame");
 
         final BoundedPropagator propagator = dummyPropagator(startDate, finalDate);
-        final Satellite         satellite  = new Satellite(propagator, header);
+        final Spacecraft        satellite  = new Spacecraft(propagator, header);
 
         final Cylinder coverageCylinder = new Cylinder(10, 20, 10, Color.RED,
                 new Position(1, 2, 1, PositionType.CARTESIAN_POSITION, header), CesiumHeightReference.CLAMP_TO_GROUND,

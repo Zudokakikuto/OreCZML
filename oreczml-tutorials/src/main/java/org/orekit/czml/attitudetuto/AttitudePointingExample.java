@@ -26,7 +26,7 @@ import org.orekit.czml.TutorialUtils;
 import org.orekit.czml.file.CzmlFile;
 import org.orekit.czml.object.primary.pointing.AttitudePointing;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.forces.ForceModel;
 import org.orekit.forces.gravity.HolmesFeatherstoneAttractionModel;
@@ -126,13 +126,13 @@ public class AttitudePointingExample {
         final BoundedPropagator boundedPropagator = generator.getGeneratedEphemeris();
 
         // Creation of the satellite
-        final Satellite satellite = Satellite.builder(boundedPropagator, header)
-                                             .withModelPath(ISSModel)
-                                             .withColor(Color.RED)
-                                             .withOnlyOnePeriod()
-                                             .withReferenceSystem()
-                                             .withDisplayAttitude()
-                                             .build();
+        final Spacecraft satellite = Spacecraft.builder(boundedPropagator, header)
+                                               .withModelPath(ISSModel)
+                                               .withColor(Color.RED)
+                                               .withOnlyOnePeriod()
+                                               .withReferenceSystem()
+                                               .withDisplayAttitude()
+                                               .build();
 
         final AttitudePointing pointing = AttitudePointing.builder(satellite, TutorialUtils.getEarth(),
                                                                   Vector3D.MINUS_J, header)

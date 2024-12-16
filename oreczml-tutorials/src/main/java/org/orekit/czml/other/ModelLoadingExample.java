@@ -22,7 +22,7 @@ import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
 import org.orekit.czml.file.CzmlFile;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.forces.ForceModel;
 import org.orekit.forces.gravity.HolmesFeatherstoneAttractionModel;
@@ -115,11 +115,11 @@ public class ModelLoadingExample {
         final BoundedPropagator boundedPropagator = generator.getGeneratedEphemeris();
 
         // Build of the satellite
-        final Satellite satellite = Satellite.builder(boundedPropagator, header)
-                                             .withModelPath(IssModel)
-                                             .withOnlyOnePeriod()
-                                             .withReferenceSystem()
-                                             .build();
+        final Spacecraft satellite = Spacecraft.builder(boundedPropagator, header)
+                                               .withModelPath(IssModel)
+                                               .withOnlyOnePeriod()
+                                               .withReferenceSystem()
+                                               .build();
 
         // Creation of the file
         final CzmlFile file = CzmlFile.builder()

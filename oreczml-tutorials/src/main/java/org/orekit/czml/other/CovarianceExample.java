@@ -23,9 +23,9 @@ import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
 import org.orekit.czml.file.CzmlFile;
-import org.orekit.czml.object.primary.Covariance;
+import org.orekit.czml.object.primary.covariance.Covariance;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.forces.ForceModel;
 import org.orekit.forces.gravity.HolmesFeatherstoneAttractionModel;
@@ -125,11 +125,11 @@ public class CovarianceExample {
         propagator.propagate(startDate, finalDate);
         final BoundedPropagator boundedPropagator = generator.getGeneratedEphemeris();
 
-        final Satellite satellite = Satellite.builder(boundedPropagator, header)
-                                             .withModelPath(IssModel)
-                                             .withColor(Color.MAGENTA)
-                                             .withOnlyOnePeriod()
-                                             .build();
+        final Spacecraft satellite = Spacecraft.builder(boundedPropagator, header)
+                                               .withModelPath(IssModel)
+                                               .withColor(Color.MAGENTA)
+                                               .withOnlyOnePeriod()
+                                               .build();
 
         // Build of the covariance
         final RealMatrix realMatrix = MatrixUtils.createRealDiagonalMatrix(
@@ -161,7 +161,7 @@ public class CovarianceExample {
      * @param header         the header
      * @return the list
      */
-    public static List<StateCovariance> covariancePropagation(final Satellite satellite, final Propagator propagator,
+    public static List<StateCovariance> covariancePropagation(final Spacecraft satellite, final Propagator propagator,
                                                               final StateCovariance initCovariance, final Header header) {
 
         final List<StateCovariance> covarianceListTemp = new ArrayList<>();

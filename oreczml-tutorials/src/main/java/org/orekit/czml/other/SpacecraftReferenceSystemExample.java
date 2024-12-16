@@ -23,7 +23,7 @@ import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
 import org.orekit.czml.file.CzmlFile;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.forces.ForceModel;
 import org.orekit.forces.gravity.HolmesFeatherstoneAttractionModel;
@@ -47,9 +47,9 @@ import java.awt.Color;
 /**
  * This tutorial provides an example of how a satellite reference system can be set up.
  */
-public class SatelliteReferenceSystemExample {
+public class SpacecraftReferenceSystemExample {
 
-    private SatelliteReferenceSystemExample () {
+    private SpacecraftReferenceSystemExample() {
         // empty
     }
 
@@ -114,10 +114,10 @@ public class SatelliteReferenceSystemExample {
         final BoundedPropagator boundedPropagator = generator.getGeneratedEphemeris();
 
         // Creation of the satellite
-        final Satellite satellite = Satellite.builder(boundedPropagator, header)
-                                             .withColor(Color.ORANGE)
-                                             .withReferenceSystem()
-                                             .build();
+        final Spacecraft satellite = Spacecraft.builder(boundedPropagator, header)
+                                               .withColor(Color.ORANGE)
+                                               .withReferenceSystem()
+                                               .build();
 
         // Creation of the file
         final CzmlFile file = CzmlFile.builder()

@@ -22,7 +22,7 @@ import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
 import org.orekit.bodies.OneAxisEllipsoid;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.data.DataContext;
 import org.orekit.data.DataProvider;
@@ -186,7 +186,7 @@ public class AbstractTest {
      * @param header         the header
      * @return the list
      */
-    public static List<StateCovariance> covariancePropagation(final Satellite satellite, final Propagator propagator,
+    public static List<StateCovariance> covariancePropagation(final Spacecraft satellite, final Propagator propagator,
                                                               final StateCovariance initCovariance, final Header header) {
 
         final List<StateCovariance> covarianceListTemp = new ArrayList<>();

@@ -1,6 +1,6 @@
 {
   "id":"CustomID",
-  "name":"Covariance of Satellite",
+  "name":"Covariance of Spacecraft",
   "availability":"2024-03-15T00:00:00Z/2024-03-15T05:00:00Z",
   "orientation":{
     "interval":"2024-03-15T00:00:00Z/2024-03-15T05:00:10Z",
@@ -1812,7 +1812,7 @@
     "interpolationDegree":5
   },
   "position":{
-    "reference":"SAT/{P(7.87800000e+06, 0.00000000e+00, 0.00000000e+00), V(-0.00000000e+00, 6.68415814e+03, 2.43283460e+03)}#position"
+    "reference":"SPACECRAFT/{P(7.87800000e+06, 0.00000000e+00, 0.00000000e+00), V(-0.00000000e+00, 6.68415814e+03, 2.43283460e+03)}#position"
   },
   "ellipsoid":{
     "fill":false,

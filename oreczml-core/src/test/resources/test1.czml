@@ -13,10 +13,10 @@
     }
   },
   {
-    "id":"SAT/{P(6.87800000e+06, 0.00000000e+00, 0.00000000e+00), V(0.00000000e+00, 7.61268399e+03, 0.00000000e+00)}",
-    "name":"Satellite",
+    "id":"SPACECRAFT/{P(6.87800000e+06, 0.00000000e+00, 0.00000000e+00), V(0.00000000e+00, 7.61268399e+03, 0.00000000e+00)}",
+    "name":"Spacecraft",
     "availability":"2020-12-01T00:00:00Z/2020-12-01T00:30:00Z",
-    "description":"<!--HTML-->\r\n<p>Id : SAT/{P(6.87800000e+06, 0.00000000e+00, 0.00000000e+00), V(0.00000000e+00, 7.61268399e+03, 0.00000000e+00)}</p>\r\n<p>Simulated from : 2020-12-01T00:00:00.000Z to 2020-12-01T00:30:00.000Z</p>",
+    "description":"<!--HTML-->\r\n<p>Id : SPACECRAFT/{P(6.87800000e+06, 0.00000000e+00, 0.00000000e+00), V(0.00000000e+00, 7.61268399e+03, 0.00000000e+00)}</p>\r\n<p>Simulated from : 2020-12-01T00:00:00.000Z to 2020-12-01T00:30:00.000Z</p>",
     "position":{
       "referenceFrame":"INERTIAL"
     },
@@ -123,14 +123,14 @@
     }
   },
   {
-    "id":"REFERENCE SYSTEM/SAT/{P(6.87800000e+06, 0.00000000e+00, 0.00000000e+00), V(0.00000000e+00, 7.61268399e+03, 0.00000000e+00)}",
-    "name":"Reference system of : Satellite",
+    "id":"REFERENCE SYSTEM/SPACECRAFT/{P(6.87800000e+06, 0.00000000e+00, 0.00000000e+00), V(0.00000000e+00, 7.61268399e+03, 0.00000000e+00)}",
+    "name":"Reference system of : Spacecraft",
     "availability":"2020-12-01T00:00:00Z/2020-12-01T00:30:00Z",
     "position":{
-      "reference":"SAT/{P(6.87800000e+06, 0.00000000e+00, 0.00000000e+00), V(0.00000000e+00, 7.61268399e+03, 0.00000000e+00)}#position"
+      "reference":"SPACECRAFT/{P(6.87800000e+06, 0.00000000e+00, 0.00000000e+00), V(0.00000000e+00, 7.61268399e+03, 0.00000000e+00)}#position"
     },
     "orientation":{
-      "reference":"SAT/{P(6.87800000e+06, 0.00000000e+00, 0.00000000e+00), V(0.00000000e+00, 7.61268399e+03, 0.00000000e+00)}#orientation"
+      "reference":"SPACECRAFT/{P(6.87800000e+06, 0.00000000e+00, 0.00000000e+00), V(0.00000000e+00, 7.61268399e+03, 0.00000000e+00)}#orientation"
     },
     "model":{
       "gltf":"./referenceSystem.glb",
@@ -218,8 +218,8 @@
     }
   },
   {
-    "id":"ATTITUDE_POINTING/SAT/{P(6.87800000e+06, 0.00000000e+00, 0.00000000e+00), V(0.00000000e+00, 7.61268399e+03, 0.00000000e+00)}",
-    "name":"Attitude pointing of : Satellite",
+    "id":"ATTITUDE_POINTING/SPACECRAFT/{P(6.87800000e+06, 0.00000000e+00, 0.00000000e+00), V(0.00000000e+00, 7.61268399e+03, 0.00000000e+00)}",
+    "name":"Attitude pointing of : Spacecraft",
     "availability":"2020-12-01T00:00:00Z/2020-12-01T00:30:00Z",
     "polyline":{
       "width":1,
@@ -235,7 +235,7 @@
       },
       "positions":{
         "references":[
-          "SAT/{P(6.87800000e+06, 0.00000000e+00, 0.00000000e+00), V(0.00000000e+00, 7.61268399e+03, 0.00000000e+00)}#position",
+          "SPACECRAFT/{P(6.87800000e+06, 0.00000000e+00, 0.00000000e+00), V(0.00000000e+00, 7.61268399e+03, 0.00000000e+00)}#position",
           "POINT_ON_BODY/[{lat: 0.1151264055 deg, lon: -70.0449460511 deg, alt: 0}, {lat: 0.1148313633 deg, lon: -66.1919818093 deg, alt: 0}, {lat: 0.1139418291 deg, lon: -62.3360690285 deg, alt: 0}, {lat: 0.1124599182 deg, lon: -58.4741304529 deg, alt: 0}, {lat: 0.110389063 deg, lon: -54.6028260807 deg, alt: 0}, {lat: 0.1077335651 deg, lon: -50.7183903851 deg, alt: 0}, {lat: 0.1044984576 deg, lon: -46.816422895 deg, alt: 0}, {lat: 0.100689065 deg, lon: -42.8916050064 deg, alt: 0}, {lat: 0.0963099465 deg, lon: -38.9372961984 deg, alt: 0}, {lat: 0.0913639159 deg, lon: -34.9449327147 deg, alt: 0}]#position"
         ]
       }

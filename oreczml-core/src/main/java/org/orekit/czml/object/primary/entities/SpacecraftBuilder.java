@@ -27,27 +27,27 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 /**
- * Satellite builder class
+ * Spacecraft builder class
  * <p>
- * Builder for the {@link Satellite} class.
+ * Builder for the {@link Spacecraft} class.
  *
  * @author Julien LEBLOND
  * @since 1.0
  */
-public class SatelliteBuilder {
+public class SpacecraftBuilder {
 
     /**
-     * The default model path of the model for the satellite.
+     * The default model path of the model for the Spacecraft.
      */
     public static final String DEFAULT_MODEL_PATH = "";
 
     /**
-     * The default color of the orbit of the satellite.
+     * The default color of the orbit of the Spacecraft.
      */
     public static final Color DEFAULT_COLOR = new Color(255, 255, 255);
 
     /** The default format for the ID. */
-    public static final String DEFAULT_FORMAT = "SAT/" + "{P(%1.8e, %2.8e, %3.8e), V(%4.8e, %5.8e, %6.8e)}";
+    public static final String DEFAULT_FORMAT = "SPACECRAFT/" + "{P(%1.8e, %2.8e, %3.8e), V(%4.8e, %5.8e, %6.8e)}";
 
     // Optional parameters
     /**
@@ -66,7 +66,7 @@ public class SatelliteBuilder {
     private AbsoluteDate startDate;
 
     /**
-     * The model of the satellite.
+     * The model of the Spacecraft.
      */
     private String modelPath = DEFAULT_MODEL_PATH;
 
@@ -82,12 +82,12 @@ public class SatelliteBuilder {
 
     // Intrinsic parameters
     /**
-     * To display the attitude of the satellite or not.
+     * To display the attitude of the Spacecraft or not.
      */
     private boolean displayAttitude = false;
 
     /**
-     * To display the reference system of the satellite or not.
+     * To display the reference system of the Spacecraft or not.
      */
     private boolean displayReferenceSystem = false;
 
@@ -96,7 +96,7 @@ public class SatelliteBuilder {
      */
     private Orientation orientation;
 
-    /** The custom ID of the satellite. */
+    /** The custom ID of the Spacecraft. */
     private String customID;
 
     /** The header to consider when several are used. */
@@ -110,10 +110,10 @@ public class SatelliteBuilder {
     /**
      * The constructor of the builder.
      *
-     * @param propagator : The propagator used to build the satellite.
+     * @param propagator : The propagator used to build the Spacecraft.
      * @param header     : The header considered.
      */
-    public SatelliteBuilder(final BoundedPropagator propagator, final Header header) {
+    public SpacecraftBuilder(final BoundedPropagator propagator, final Header header) {
         this.propagator = propagator;
         this.finalDate  = propagator.getMaxDate();
         this.startDate  = propagator.getMinDate();
@@ -147,11 +147,11 @@ public class SatelliteBuilder {
      * Function to set up a model.
      *
      * @param modelPathInput : The model to set up.
-     * @return : The satellite builder with the given model.
+     * @return : The Spacecraft builder with the given model.
      * @throws URISyntaxException the uri syntax exception
      * @throws IOException        the io exception
      */
-    public SatelliteBuilder withModelPath(final String modelPathInput) throws URISyntaxException, IOException {
+    public SpacecraftBuilder withModelPath(final String modelPathInput) throws URISyntaxException, IOException {
         this.modelPath = modelPathInput;
         return this;
     }
@@ -160,9 +160,9 @@ public class SatelliteBuilder {
      * Function to set up a color.
      *
      * @param colorInput : The color to set up.
-     * @return : The satellite builder with the given color.
+     * @return : The Spacecraft builder with the given color.
      */
-    public SatelliteBuilder withColor(final Color colorInput) {
+    public SpacecraftBuilder withColor(final Color colorInput) {
         this.color = colorInput;
         return this;
     }
@@ -171,9 +171,9 @@ public class SatelliteBuilder {
      * Function to set up a start date.
      *
      * @param startDateInput : The start date to set up.
-     * @return : The satellite builder with the given start date.
+     * @return : The Spacecraft builder with the given start date.
      */
-    public SatelliteBuilder withStartDate(final AbsoluteDate startDateInput) {
+    public SpacecraftBuilder withStartDate(final AbsoluteDate startDateInput) {
         this.startDate = startDateInput;
         return this;
     }
@@ -182,9 +182,9 @@ public class SatelliteBuilder {
      * Function to set up a stop date.
      *
      * @param stopDateInput : The stop date to set up.
-     * @return : The satellite builder with the given stop date.
+     * @return : The Spacecraft builder with the given stop date.
      */
-    public SatelliteBuilder withFinalDate(final AbsoluteDate stopDateInput) {
+    public SpacecraftBuilder withFinalDate(final AbsoluteDate stopDateInput) {
         this.finalDate = stopDateInput;
         return this;
     }
@@ -192,41 +192,41 @@ public class SatelliteBuilder {
     /**
      * Function to display the period of the orbit.
      *
-     * @return : The satellite builder with the given period for the orbit displayed.
+     * @return : The Spacecraft builder with the given period for the orbit displayed.
      */
-    public SatelliteBuilder withOnlyOnePeriod() {
+    public SpacecraftBuilder withOnlyOnePeriod() {
         displayOnlyOnePeriod = true;
         return this;
     }
 
     /**
-     * Function to set up the orientation of the satellite.
+     * Function to set up the orientation of the Spacecraft.
      *
-     * @return : The satellite builder with the personalized orientation for the satellite.
+     * @return : The Spacecraft builder with the personalized orientation for the Spacecraft.
      */
-    public SatelliteBuilder withDisplayAttitude() {
+    public SpacecraftBuilder withDisplayAttitude() {
         this.displayAttitude = true;
         return this;
     }
 
     /**
-     * With orientation satellite builder.
+     * With orientation Spacecraft builder.
      *
      * @param orientationInput the orientation input
-     * @return the satellite builder
+     * @return the Spacecraft builder
      */
-    public SatelliteBuilder withOrientation(final Orientation orientationInput) {
+    public SpacecraftBuilder withOrientation(final Orientation orientationInput) {
         this.orientation     = orientationInput;
         this.displayAttitude = true;
         return this;
     }
 
     /**
-     * Function to display the reference system of the satellite.
+     * Function to display the reference system of the Spacecraft.
      *
-     * @return : The satellite builder with the reference system displayed.
+     * @return : The Spacecraft builder with the reference system displayed.
      */
-    public SatelliteBuilder withReferenceSystem() {
+    public SpacecraftBuilder withReferenceSystem() {
         displayReferenceSystem = true;
         return this;
     }
@@ -235,9 +235,9 @@ public class SatelliteBuilder {
      * Function to set up a custom ID.
      *
      * @param customIDInput : The custom ID to set up.
-     * @return : The satellite object with a custom ID.
+     * @return : The Spacecraft object with a custom ID.
      */
-    public SatelliteBuilder withCustomID(final String customIDInput) {
+    public SpacecraftBuilder withCustomID(final String customIDInput) {
         this.customID = customIDInput;
         return this;
     }
@@ -246,9 +246,9 @@ public class SatelliteBuilder {
      * Function to set up a custom ID.
      *
      * @param optionalRotationInput : The custom ID to set up.
-     * @return : The satellite object with a custom ID.
+     * @return : The Spacecraft object with a custom ID.
      */
-    public SatelliteBuilder withOptionalRotation(final Rotation optionalRotationInput) {
+    public SpacecraftBuilder withOptionalRotation(final Rotation optionalRotationInput) {
         this.rotation = optionalRotationInput;
         return this;
     }
@@ -257,52 +257,52 @@ public class SatelliteBuilder {
      * Function to set up a header.
      *
      * @param headerInput : The header to set up.
-     * @return : The satellite object with a header.
+     * @return : The Spacecraft object with a header.
      */
-    public SatelliteBuilder withHeader(final Header headerInput) {
+    public SpacecraftBuilder withHeader(final Header headerInput) {
         this.header = headerInput;
         return this;
     }
 
     /**
-     * The build function that generates a satellite object.
+     * The build function that generates a Spacecraft object.
      *
-     * @return : A satellite object with the given parameters of the builder.
+     * @return : A Spacecraft object with the given parameters of the builder.
      * @throws URISyntaxException the uri syntax exception
      * @throws IOException        the io exception
      */
-    public Satellite build() throws URISyntaxException, IOException {
-        final Satellite tempSatellite = new Satellite(propagator, startDate, finalDate, modelPath, color, customID,
+    public Spacecraft build() throws URISyntaxException, IOException {
+        final Spacecraft tempSpacecraft = new Spacecraft(propagator, startDate, finalDate, modelPath, color, customID,
                 header);
-        tempSatellite.getSatelliteBoundedPropagator()
+        tempSpacecraft.getSpacecraftBoundedPropagator()
                      .clearStepHandlers();
-        tempSatellite.getSatelliteBoundedPropagator()
+        tempSpacecraft.getSpacecraftBoundedPropagator()
                      .clearEventsDetectors();
-        return this.checkAttributes(tempSatellite);
+        return this.checkAttributes(tempSpacecraft);
     }
 
     /**
      * This function checks if the reference system, the attitude and the period of the orbit must be displayed or not.
      *
-     * @param satellite : The satellite object build with the build function.
-     * @return : A satellite with a reference system, an attitude and a period of the orbit, displayed or not.
+     * @param spacecraft : The Spacecraft object build with the build function.
+     * @return : A Spacecraft with a reference system, an attitude and a period of the orbit, displayed or not.
      */
-    private Satellite checkAttributes(final Satellite satellite) {
+    private Spacecraft checkAttributes(final Spacecraft spacecraft) {
         if (displayOnlyOnePeriod) {
-            satellite.displayOnlyOnePeriod();
+            spacecraft.displayOnlyOnePeriod();
         }
         if (displayAttitude) {
             if (orientation != null) {
-                satellite.setAttitudes(orientation.getAttitudes());
+                spacecraft.setAttitudes(orientation.getAttitudes());
             }
-            satellite.displaySatelliteAttitude();
+            spacecraft.displaySpacecraftAttitude();
         }
         if (displayReferenceSystem) {
-            satellite.displaySatelliteReferenceSystem();
+            spacecraft.displaySpacecraftReferenceSystem();
         }
         if (rotation != null) {
-            satellite.setOptionalRotation(rotation);
+            spacecraft.setOptionalRotation(rotation);
         }
-        return satellite;
+        return spacecraft;
     }
 }

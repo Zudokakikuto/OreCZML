@@ -14,15 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.orekit.czml.object.primary;
+package org.orekit.czml.object.primary.entities;
 
 import cesiumlanguagewriter.CesiumOutputStream;
 import cesiumlanguagewriter.CesiumStreamWriter;
 import cesiumlanguagewriter.TimeInterval;
-import org.orekit.czml.archi.builder.ConstellationBuilder;
 import org.orekit.czml.errors.OreCzmlException;
 import org.orekit.czml.errors.OreCzmlMessages;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.AbstractPrimaryObject;
+import org.orekit.czml.object.primary.Header;
 import org.orekit.orbits.Orbit;
 import org.orekit.propagation.BoundedPropagator;
 import org.orekit.time.AbsoluteDate;
@@ -39,7 +39,7 @@ import java.util.List;
  * Constellation
  *
  * <p>
- * This class builds several Satellites objects {@link Satellite} at once, with several propagators.
+ * This class builds several Satellites objects {@link Spacecraft} at once, with several propagators.
  *
  * @author Julien LEBLOND.
  * @since 1.0.0
@@ -97,7 +97,7 @@ public class Constellation extends AbstractPrimaryObject {
     /**
      * The list referencing all the satellites.
      */
-    private final List<Satellite> satellites = new ArrayList<>();
+    private final List<Spacecraft> satellites = new ArrayList<>();
 
     /**
      * This boolean allows the constellation to display only the last period and not the entire path.
@@ -124,7 +124,7 @@ public class Constellation extends AbstractPrimaryObject {
      * @throws URISyntaxException the uri syntax exception
      * @throws IOException        the io exception
      */
-    public Constellation(final List<BoundedPropagator> Propagators,
+    Constellation(final List<BoundedPropagator> Propagators,
                          final AbsoluteDate finalDate, final Header header) throws URISyntaxException, IOException {
         this(Propagators, finalDate, DEFAULT_STRING_MODEL,
                 DEFAULT_ID + Propagators.size() + " " + DEFAULT_NUMBER_OF_SAT, header);
@@ -141,14 +141,14 @@ public class Constellation extends AbstractPrimaryObject {
      * @throws URISyntaxException the uri syntax exception
      * @throws IOException        the io exception
      */
-    public Constellation(final List<BoundedPropagator> propagatorsInput, final AbsoluteDate finalDate,
+    Constellation(final List<BoundedPropagator> propagatorsInput, final AbsoluteDate finalDate,
                          final String modelPath, final String customID,
                          final Header header) throws URISyntaxException, IOException {
 
         this(propagatorsInput, finalDate, Collections.singletonList(modelPath), customID, header);
     }
 
-    public Constellation(final List<BoundedPropagator> propagatorsInput, final AbsoluteDate finalDate,
+    Constellation(final List<BoundedPropagator> propagatorsInput, final AbsoluteDate finalDate,
                          final List<String> modelsInput, final String customID,
                          final Header header) throws URISyntaxException, IOException {
 
@@ -223,7 +223,7 @@ public class Constellation extends AbstractPrimaryObject {
      *
      * @return : All the satellites of the constellation.
      */
-    public List<Satellite> getSatellites() {
+    public List<Spacecraft> getSatellites() {
         return Collections.unmodifiableList(satellites);
     }
 
@@ -281,11 +281,11 @@ public class Constellation extends AbstractPrimaryObject {
         for (int i = 0; i < propagators.size(); i++) {
             final BoundedPropagator propagator = propagators.get(i);
             if (!multipleModelsInput) {
-                final Satellite currentSatellite = Satellite.builder(propagator, header)
-                                                            .withFinalDate(finalDate)
-                                                            .withModelPath(models.get(0))
-                                                            .withColor(colorList.get(i))
-                                                            .build();
+                final Spacecraft currentSatellite = Spacecraft.builder(propagator, header)
+                                                              .withFinalDate(finalDate)
+                                                              .withModelPath(models.get(0))
+                                                              .withColor(colorList.get(i))
+                                                              .build();
                 satellites.add(currentSatellite);
                 Ids.add(currentSatellite.getId());
                 InitialOrbits.add(currentSatellite.getOrbits()
@@ -295,11 +295,11 @@ public class Constellation extends AbstractPrimaryObject {
                     throw new OreCzmlException(OreCzmlMessages.NOT_SAME_NUMBER_SAT_MODELS);
                 }
                 final String currentModel = models.get(i);
-                final Satellite currentSatellite = Satellite.builder(propagator, header)
-                                                            .withFinalDate(finalDate)
-                                                            .withModelPath(currentModel)
-                                                            .withColor(colorList.get(i))
-                                                            .build();
+                final Spacecraft currentSatellite = Spacecraft.builder(propagator, header)
+                                                              .withFinalDate(finalDate)
+                                                              .withModelPath(currentModel)
+                                                              .withColor(colorList.get(i))
+                                                              .build();
                 satellites.add(currentSatellite);
                 Ids.add(currentSatellite.getId());
                 InitialOrbits.add(currentSatellite.getOrbits()
@@ -316,9 +316,9 @@ public class Constellation extends AbstractPrimaryObject {
      */
     private void iterateOnSatelliteWriting(final CesiumStreamWriter stream,
                                            final CesiumOutputStream output) throws URISyntaxException, IOException {
-        for (final Satellite satelliteToOutput : satellites) {
+        for (final Spacecraft satelliteToOutput : satellites) {
             if (displayAttitude) {
-                satelliteToOutput.displaySatelliteAttitude();
+                satelliteToOutput.displaySpacecraftAttitude();
             }
             if (displayOnlyLastPeriod) {
                 satelliteToOutput.displayOnlyOnePeriod();

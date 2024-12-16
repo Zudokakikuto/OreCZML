@@ -16,9 +16,9 @@
  */
 package org.orekit.czml.object.primary.visu;
 
-import org.orekit.czml.object.primary.Constellation;
+import org.orekit.czml.object.primary.entities.Constellation;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.frames.TopocentricFrame;
 
 import java.io.IOException;
@@ -55,7 +55,7 @@ public class LineOfVisibilityBuilder {
     /**
      * The satellite observed.
      */
-    private Satellite satellite;
+    private Spacecraft satellite;
 
     // Optional parameters
     /**
@@ -86,7 +86,7 @@ public class LineOfVisibilityBuilder {
      * @param satelliteInput        : The satellite observed.
      * @param headerInput           : The header considered.
      */
-    public LineOfVisibilityBuilder(final TopocentricFrame topocentricFrameInput, final Satellite satelliteInput,
+    public LineOfVisibilityBuilder(final TopocentricFrame topocentricFrameInput, final Spacecraft satelliteInput,
                                    final Header headerInput) {
         this.satellite        = satelliteInput;
         this.topocentricFrame = topocentricFrameInput;
@@ -102,7 +102,7 @@ public class LineOfVisibilityBuilder {
         this.header           = headerInput;
     }
 
-    public LineOfVisibilityBuilder(final List<TopocentricFrame> topocentricFramesInput, final Satellite satellite,
+    public LineOfVisibilityBuilder(final List<TopocentricFrame> topocentricFramesInput, final Spacecraft satellite,
                                    final Header headerInput) {
         this.satellite = satellite;
         this.topocentricFrames.addAll(topocentricFramesInput);

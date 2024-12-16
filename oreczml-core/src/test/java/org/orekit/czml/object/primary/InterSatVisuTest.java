@@ -23,7 +23,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.Polyline;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.entities.Constellation;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.primary.visu.InterSatVisu;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.forces.ForceModel;
@@ -129,21 +130,21 @@ public class InterSatVisuTest extends AbstractTest {
         propagators.add(firstBoundedPropagator);
         propagators.add(secondBoundedPropagator);
 
-        final List<Satellite> satellites = new ArrayList<>();
-        final Satellite       firstSat   = new Satellite(firstBoundedPropagator, header);
-        final Satellite       secondSat  = new Satellite(secondBoundedPropagator, header);
+        final List<Spacecraft> satellites = new ArrayList<>();
+        final Spacecraft       firstSat   = new Spacecraft(firstBoundedPropagator, header);
+        final Spacecraft       secondSat  = new Spacecraft(secondBoundedPropagator, header);
         firstSat.setOrbitColor(new Color(255, 0, 0, 255));
         secondSat.setOrbitColor(new Color(255, 127, 0, 255));
         satellites.add(firstSat);
         satellites.add(secondSat);
 
-        final InterSatVisu interSatVisu        = InterSatVisu.builder(firstSat, secondSat, finalDate, header)
-                                                             .build();
+        final InterSatVisu interSatVisu = InterSatVisu.builder(firstSat, secondSat, finalDate, header)
+                                                      .build();
         final InterSatVisu interSatVisuBuilder = InterSatVisu.builder(firstSat, secondSat, finalDate, header)
                                                              .build();
 
-        final InterSatVisu interSatVisuPropagators        = InterSatVisu.builder(propagators, finalDate, header)
-                                                                        .build();
+        final InterSatVisu interSatVisuPropagators = InterSatVisu.builder(propagators, finalDate, header)
+                                                                 .build();
         final InterSatVisu interSatVisuPropagatorsBuilder = InterSatVisu.builder(propagators, finalDate, header)
                                                                         .build();
 
@@ -152,7 +153,8 @@ public class InterSatVisuTest extends AbstractTest {
                                                                    .build();
 
         final InterSatVisu interSatVisuFromConstellationBuilder = InterSatVisu.builder(
-                                                                                      new Constellation(propagators, finalDate, header), finalDate, header)
+                                                                                      Constellation.builder(propagators, finalDate, header)
+                                                                                                   .build(), finalDate, header)
                                                                               .build();
 
         final String pathFile = loadResources("templateFile/primary/InterSatVisuTemplate.txt");
@@ -198,7 +200,7 @@ public class InterSatVisuTest extends AbstractTest {
         Assertions.assertEquals(propagators, interSatVisuPropagators.getPropagators());
         Assertions.assertEquals(new ArrayList<>(Arrays.asList(firstSat.getId(), secondSat.getId())),
                 interSatVisuFromConstellationBuilder.getIdsSatellites());
-        Assertions.assertEquals(new Polyline(header).getAvailability(), interSatVisu.getPolyline()
+        Assertions.assertEquals(Polyline.nonVectorBuilder(header).build().getAvailability(), interSatVisu.getPolyline()
                                                                                     .getAvailability());
         Assertions.assertEquals(new ArrayList<>(
                 Arrays.asList(true, false, true, false, true, false, false, true, false, true, false, true, false, true,

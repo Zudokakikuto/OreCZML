@@ -14,11 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.orekit.czml.archi.builder;
+package org.orekit.czml.object.secondary;
 
 import cesiumlanguagewriter.Cartesian;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.secondary.Polygon;
 
 import java.awt.Color;
 import java.util.ArrayList;

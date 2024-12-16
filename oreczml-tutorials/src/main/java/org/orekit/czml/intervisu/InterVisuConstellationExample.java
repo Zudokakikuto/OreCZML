@@ -21,7 +21,7 @@ import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
 import org.orekit.czml.file.CzmlFile;
-import org.orekit.czml.object.primary.Constellation;
+import org.orekit.czml.object.primary.entities.Constellation;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.primary.visu.InterSatVisu;
 import org.orekit.czml.object.secondary.Clock;
@@ -193,7 +193,7 @@ public class InterVisuConstellationExample {
         propagators.add(fourthBoundedPropagator);
         propagators.add(fifthBoundedPropagator);
 
-        final Constellation constellation = new Constellation(propagators, finalDate, header);
+        final Constellation constellation = Constellation.builder(propagators, finalDate, header).build();
         constellation.displayOnlyOnePeriod();
 
         // Creation of the inter-sat visualization

@@ -28,7 +28,7 @@ import org.orekit.bodies.CelestialBodyFactory;
 import org.orekit.czml.file.CzmlFile;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.primary.ManeuverSequence;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.forces.ForceModel;
 import org.orekit.forces.gravity.HolmesFeatherstoneAttractionModel;
@@ -204,11 +204,11 @@ public class ManeuverSequenceExample {
         final BoundedPropagator boundedPropagator = generator.getGeneratedEphemeris();
 
         // Build of the satellite
-        final Satellite satellite = Satellite.builder(boundedPropagator, header)
-                                             .withModelPath(IssModel)
-                                             .withReferenceSystem()
-                                             .withDisplayAttitude()
-                                             .build();
+        final Spacecraft satellite = Spacecraft.builder(boundedPropagator, header)
+                                               .withModelPath(IssModel)
+                                               .withReferenceSystem()
+                                               .withDisplayAttitude()
+                                               .build();
 
         // Creation of the display of the maneuvers
         final ManeuverSequence maneuverSequence = ManeuverSequence.builder(sequence, maneuvers, satellite,

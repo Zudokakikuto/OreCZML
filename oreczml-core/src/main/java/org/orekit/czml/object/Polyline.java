@@ -28,8 +28,6 @@ import cesiumlanguagewriter.PositionListCesiumWriter;
 import cesiumlanguagewriter.Reference;
 import cesiumlanguagewriter.SolidColorMaterialCesiumWriter;
 import cesiumlanguagewriter.TimeInterval;
-import org.orekit.czml.archi.builder.NonVectorPolylineBuilder;
-import org.orekit.czml.archi.builder.VectorPolylineBuilder;
 import org.orekit.czml.errors.OreCzmlException;
 import org.orekit.czml.errors.OreCzmlMessages;
 import org.orekit.czml.object.primary.Header;
@@ -163,7 +161,7 @@ public class Polyline {
      *
      * @param header : The header considered.
      */
-    public Polyline(final Header header) {
+    Polyline(final Header header) {
         this(DEFAULT_REFERENCE, DEFAULT_REFERENCE, DEFAULT_COLOR, DEFAULT_WIDTH, DEFAULT_SHOW, DEFAULT_ARC_TYPE,
                 DEFAULT_NEAR_DISTANCE, DEFAULT_FAR_DISTANCE, header);
     }
@@ -181,7 +179,7 @@ public class Polyline {
      * @param farDistance     : The far distance where the polyline must not be displayed anymore.
      * @param header          : The header considered.
      */
-    public Polyline(final Reference firstReference, final Reference secondReference, final Color color,
+    Polyline(final Reference firstReference, final Reference secondReference, final Color color,
                     final double width, final boolean show, final CesiumArcType arcType, final double nearDistance,
                     final double farDistance, final Header header) {
         this.firstReference  = firstReference;
@@ -204,7 +202,7 @@ public class Polyline {
      * @param cartesians : A list of cartesians with size 2, containing the first and the second position of the polyline
      * @param header     : The header considered.
      */
-    public Polyline(final List<Cartesian> cartesians, final Header header) {
+    Polyline(final List<Cartesian> cartesians, final Header header) {
         this(cartesians, DEFAULT_COLOR, DEFAULT_NEAR_DISTANCE, DEFAULT_FAR_DISTANCE, header);
     }
 
@@ -217,7 +215,7 @@ public class Polyline {
      * @param farDistance  : The fairest distance where the polyline is displayed
      * @param header       : The header considered
      */
-    public Polyline(final List<Cartesian> cartesians, final Color color, final double nearDistance,
+    Polyline(final List<Cartesian> cartesians, final Color color, final double nearDistance,
                     final double farDistance, final Header header) {
         if (cartesians.size() != 2) {
             throw new OreCzmlException(OreCzmlMessages.MORE_THAN_2_CARTESIAN_POLYLINE);

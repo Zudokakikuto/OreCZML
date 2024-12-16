@@ -32,17 +32,17 @@ import org.orekit.bodies.GeodeticPoint;
 import org.orekit.bodies.OneAxisEllipsoid;
 import org.orekit.czml.archi.adaptor.AemAdaptor;
 import org.orekit.czml.archi.adaptor.OemAdaptor;
-import org.orekit.czml.object.primary.entities.SatelliteBuilder;
+import org.orekit.czml.object.primary.entities.SpacecraftBuilder;
 import org.orekit.czml.archi.factory.BodyFactory;
 import org.orekit.czml.object.primary.entities.Body;
-import org.orekit.czml.object.primary.Collision;
-import org.orekit.czml.object.primary.Constellation;
-import org.orekit.czml.object.primary.Covariance;
+import org.orekit.czml.object.primary.covariance.Collision;
+import org.orekit.czml.object.primary.entities.Constellation;
+import org.orekit.czml.object.primary.covariance.Covariance;
 import org.orekit.czml.object.primary.entities.CzmlGroundStation;
 import org.orekit.czml.object.primary.GroundTrack;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.primary.ManeuverSequence;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.primary.pointing.AttitudePointing;
 import org.orekit.czml.object.primary.pointing.CoveredSurfaceOnBody;
 import org.orekit.czml.object.primary.systems.CentralBodyReferenceSystem;
@@ -166,10 +166,10 @@ class GlobalTests extends AbstractTest {
         final Orientation orientation = aemAdaptor.buildOrientation(oemBoundedPropagator, header);
 
         // Creation of the satellite
-        final Satellite satellite = new SatelliteBuilder(oemBoundedPropagator, header).withModelPath(IssModel)
-                                                                                      .withOrientation(orientation)
-                                                                                      .withReferenceSystem()
-                                                                                      .build();
+        final Spacecraft satellite = new SpacecraftBuilder(oemBoundedPropagator, header).withModelPath(IssModel)
+                                                                                        .withOrientation(orientation)
+                                                                                        .withReferenceSystem()
+                                                                                        .build();
 
         final TopocentricFrame topocentricForStation = new TopocentricFrame(earth, new GeodeticPoint(0, 0, 0),
                 "Station");
@@ -183,18 +183,18 @@ class GlobalTests extends AbstractTest {
         final Body jupiter = BodyFactory.getJupiter(header);
 
         // CentralBodyReferenceSystem
-        final CentralBodyReferenceSystem system = new CentralBodyReferenceSystem(header);
+        final CentralBodyReferenceSystem system = CentralBodyReferenceSystem.builder(header).build();
 
         // Latitude longitude lines display
         final LatLongLines latLong = LatLongLines.builder(header)
                                                  .build();
 
-        final List<Satellite> satellites = new ArrayList<>();
+        final List<Spacecraft> satellites = new ArrayList<>();
         satellites.add(satellite);
 
         final List<BoundedPropagator> propagators = new ArrayList<>();
         propagators.add(oemBoundedPropagator);
-        final Constellation       constellation  = new Constellation(propagators, finalDate, header);
+        final Constellation       constellation  = Constellation.builder(propagators, finalDate, header).build();
         final List<Constellation> constellations = new ArrayList<>();
         constellations.add(constellation);
 
@@ -376,21 +376,21 @@ class GlobalTests extends AbstractTest {
         listForConstellation.add(secondGeneratorConstellation.getGeneratedEphemeris());
 
         // Creation of the satellite
-        final Satellite firstSatellite = Satellite.builder(firstBoundedPropagator, header)
-                                                  .withModelPath(IssModel)
-                                                  .withColor(Color.RED)
-                                                  .withOnlyOnePeriod()
-                                                  .withDisplayAttitude()
-                                                  .build();
+        final Spacecraft firstSatellite = Spacecraft.builder(firstBoundedPropagator, header)
+                                                    .withModelPath(IssModel)
+                                                    .withColor(Color.RED)
+                                                    .withOnlyOnePeriod()
+                                                    .withDisplayAttitude()
+                                                    .build();
 
-        final Satellite secondSatellite = Satellite.builder(secondBoundedPropagator, header)
-                                                   .withColor(Color.RED)
-                                                   .withOnlyOnePeriod()
-                                                   .withDisplayAttitude()
-                                                   .build();
+        final Spacecraft secondSatellite = Spacecraft.builder(secondBoundedPropagator, header)
+                                                     .withColor(Color.RED)
+                                                     .withOnlyOnePeriod()
+                                                     .withDisplayAttitude()
+                                                     .build();
 
         // Constellation
-        final Constellation constellation = new Constellation(listForConstellation, finalDate, header);
+        final Constellation constellation = Constellation.builder(listForConstellation, finalDate, header).build();
 
         // Covariance display
         final RealMatrix realMatrix = MatrixUtils.createRealDiagonalMatrix(
@@ -422,9 +422,9 @@ class GlobalTests extends AbstractTest {
                                                                         .build();
 
         // Ground track
-        final GroundTrack groundTrack = new GroundTrack(firstSatellite, earth, header);
+        final GroundTrack groundTrack = GroundTrack.builder(firstSatellite, earth, header).build();
 
-        final GroundTrack groundTrackConstellation = new GroundTrack(constellation, earth, header);
+        final GroundTrack groundTrackConstellation = GroundTrack.builder(constellation, earth, header).build();
 
         // Covered surface on body
         final CoveredSurfaceOnBody surface = CoveredSurfaceOnBody.builder(firstSatellite, fieldOfObservation, header)
@@ -435,8 +435,8 @@ class GlobalTests extends AbstractTest {
                                                    .build();
 
         // collision
-        final Collision collision = new Collision(firstSatellite, secondSatellite, covariances1,
-                covariances2, LOFType.TNW, LOFType.TNW, header);
+        final Collision collision = Collision.builder(firstSatellite, secondSatellite, covariances1,
+                covariances2, LOFType.TNW, LOFType.TNW, header).build();
 
 
         final List<GroundTrack> groundTracks = new ArrayList<>();
@@ -633,11 +633,11 @@ class GlobalTests extends AbstractTest {
         final BoundedPropagator boundedPropagator = generator.getGeneratedEphemeris();
 
         // Build of the satellite
-        final Satellite satellite = Satellite.builder(boundedPropagator, header)
-                                             .withModelPath(IssModel)
-                                             .withReferenceSystem()
-                                             .withDisplayAttitude()
-                                             .build();
+        final Spacecraft satellite = Spacecraft.builder(boundedPropagator, header)
+                                               .withModelPath(IssModel)
+                                               .withReferenceSystem()
+                                               .withDisplayAttitude()
+                                               .build();
 
         final Orientation orientationSatelliteToStock = satellite.getOrientation();
         final double      periodSatelliteToStock      = satellite.getPeriod();
@@ -688,7 +688,7 @@ class GlobalTests extends AbstractTest {
 
         final List<BoundedPropagator> propagators = new ArrayList<>();
         propagators.add(boundedPropagator);
-        final Constellation constellation = new Constellation(propagators, finalDate, header);
+        final Constellation constellation = Constellation.builder(propagators, finalDate, header).build();
 
         final LineOfVisibility lineToulouse = LineOfVisibility.builder(topocentricToulouse, satellite,
                                                                       header)

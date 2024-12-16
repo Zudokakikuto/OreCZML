@@ -24,7 +24,8 @@ import org.hipparchus.util.FastMath;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.czml.file.AbstractTest;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.covariance.Collision;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.forces.ForceModel;
 import org.orekit.forces.gravity.HolmesFeatherstoneAttractionModel;
 import org.orekit.forces.gravity.potential.GravityFieldFactory;
@@ -118,12 +119,12 @@ public class CollisionTest extends AbstractTest {
         final BoundedPropagator boundedPropagator1 = generator1.getGeneratedEphemeris();
         final BoundedPropagator boundedPropagator2 = generator2.getGeneratedEphemeris();
 
-        final Satellite satellite1 = Satellite.builder(boundedPropagator1, header)
-                                              .withOnlyOnePeriod()
-                                              .build();
-        final Satellite satellite2 = Satellite.builder(boundedPropagator2, header)
-                                              .withOnlyOnePeriod()
-                                              .build();
+        final Spacecraft satellite1 = Spacecraft.builder(boundedPropagator1, header)
+                                                .withOnlyOnePeriod()
+                                                .build();
+        final Spacecraft satellite2 = Spacecraft.builder(boundedPropagator2, header)
+                                                .withOnlyOnePeriod()
+                                                .build();
 
 
         final RealMatrix realMatrix = MatrixUtils.createRealDiagonalMatrix(
@@ -135,8 +136,8 @@ public class CollisionTest extends AbstractTest {
         final List<StateCovariance> covariances2 = covariancePropagation(satellite2, propagator2, stateCovariance,
                 header);
 
-        final Collision collision = new Collision(satellite1, satellite2, covariances1, covariances2, LOFType.TNW,
-                LOFType.TNW, header);
+        final Collision collision = Collision.builder(satellite1, satellite2, covariances1, covariances2, LOFType.TNW,
+                LOFType.TNW, header).build();
 
         final Collision collisionBuilder = Collision.builder(satellite1, satellite2, covariances1, covariances2,
                                                             LOFType.TNW, LOFType.TNW, header)

@@ -1,6 +1,6 @@
 {
-  "id":"VIS/Toulouse Frame/Satellite",
-  "name":"Visibility of Toulouse Frame looking at Satellite",
+  "id":"VIS/Toulouse Frame/Spacecraft",
+  "name":"Visibility of Toulouse Frame looking at Spacecraft",
   "availability":"2024-01-01T00:00:00Z/2024-01-01T00:01:00Z",
   "cylinder":{
     "bottomRadius":10,
@@ -26,7 +26,7 @@
 },
 {
   "id":"CustomID",
-  "name":"Line between Toulouse Frame and Satellite",
+  "name":"Line between Toulouse Frame and Spacecraft",
   "availability":[
     "0001-01-01T00:00:00Z/2024-03-15T00:00:00Z",
     "2024-03-15T00:00:00Z/2024-01-01T00:01:00Z",
@@ -54,8 +54,8 @@
     "arcType":"NONE",
     "positions":{
       "references":[
-        "VIS/Toulouse Frame/Satellite#position",
-        "SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-1.23518250e+03, 7.56331147e-14, 7.00506805e+03)}#position"
+        "VIS/Toulouse Frame/Spacecraft#position",
+        "SPACECRAFT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-1.23518250e+03, 7.56331147e-14, 7.00506805e+03)}#position"
       ]
     },
     "show":[

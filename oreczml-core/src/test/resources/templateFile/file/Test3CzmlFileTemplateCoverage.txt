@@ -13,8 +13,8 @@
     }
   },
   {
-    "id":"VIS/Las Vegas Frame/Satellite",
-    "name":"Visibility of Las Vegas Frame looking at Satellite",
+    "id":"VIS/Las Vegas Frame/Spacecraft",
+    "name":"Visibility of Las Vegas Frame looking at Spacecraft",
     "availability":"2024-03-15T00:00:00Z/2024-03-15T05:00:00Z",
     "cylinder":{
       "bottomRadius":10,
@@ -39,8 +39,8 @@
     }
   },
   {
-    "id":"LINE_VISU/Las Vegas Frame/SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}",
-    "name":"Line between Las Vegas Frame and Satellite",
+    "id":"LINE_VISU/Las Vegas Frame/SPACECRAFT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}",
+    "name":"Line between Las Vegas Frame and Spacecraft",
     "availability":[
       "0001-01-01T00:00:00Z/2024-03-15T00:00:00Z",
       "2024-03-15T00:00:00Z/2024-03-15T01:55:56Z",
@@ -62,8 +62,8 @@
       "arcType":"NONE",
       "positions":{
         "references":[
-          "VIS/Las Vegas Frame/Satellite#position",
-          "SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}#position"
+          "VIS/Las Vegas Frame/Spacecraft#position",
+          "SPACECRAFT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}#position"
         ]
       },
       "show":[
@@ -87,8 +87,8 @@
     }
   },
   {
-    "id":"VIS/Las Vegas Frame/Satellite",
-    "name":"Visibility of Las Vegas Frame looking at Satellite",
+    "id":"VIS/Las Vegas Frame/Spacecraft",
+    "name":"Visibility of Las Vegas Frame looking at Spacecraft",
     "availability":"2024-03-15T00:00:00Z/2024-03-15T05:00:00Z",
     "cylinder":{
       "bottomRadius":10,
@@ -113,8 +113,8 @@
     }
   },
   {
-    "id":"Las Vegas FrameSAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}LINE_VISU/Las Vegas Frame/Constellation/1  satellites ",
-    "name":"Line between Las Vegas Frame and Satellite",
+    "id":"Las Vegas FrameSPACECRAFT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}LINE_VISU/Las Vegas Frame/Constellation/1  satellites ",
+    "name":"Line between Las Vegas Frame and Spacecraft",
     "availability":[
       "0001-01-01T00:00:00Z/2024-03-15T00:00:00Z",
       "2024-03-15T00:00:00Z/2024-03-15T05:00:00Z",
@@ -135,8 +135,8 @@
       "arcType":"NONE",
       "positions":{
         "references":[
-          "VIS/Las Vegas Frame/Satellite#position",
-          "SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}#position"
+          "VIS/Las Vegas Frame/Spacecraft#position",
+          "SPACECRAFT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}#position"
         ]
       },
       "show":[
@@ -156,8 +156,8 @@
     }
   },
   {
-    "id":"VIS/Toulouse Frame/Satellite",
-    "name":"Visibility of Toulouse Frame looking at Satellite",
+    "id":"VIS/Toulouse Frame/Spacecraft",
+    "name":"Visibility of Toulouse Frame looking at Spacecraft",
     "availability":"2024-03-15T00:00:00Z/2024-03-15T05:00:00Z",
     "cylinder":{
       "bottomRadius":10,
@@ -182,8 +182,8 @@
     }
   },
   {
-    "id":"Toulouse FrameSAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}LINE_VISU/STATIONS : 2/SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}",
-    "name":"Line between Toulouse Frame and Satellite",
+    "id":"Toulouse FrameSPACECRAFT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}LINE_VISU/STATIONS : 2/SPACECRAFT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}",
+    "name":"Line between Toulouse Frame and Spacecraft",
     "availability":[
       "0001-01-01T00:00:00Z/2024-03-15T00:00:00Z",
       "2024-03-15T00:00:00Z/2024-03-15T00:24:40Z",
@@ -207,8 +207,8 @@
       "arcType":"NONE",
       "positions":{
         "references":[
-          "VIS/Toulouse Frame/Satellite#position",
-          "SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}#position"
+          "VIS/Toulouse Frame/Spacecraft#position",
+          "SPACECRAFT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}#position"
         ]
       },
       "show":[
@@ -240,8 +240,8 @@
     }
   },
   {
-    "id":"VIS/Las Vegas Frame/Satellite",
-    "name":"Visibility of Las Vegas Frame looking at Satellite",
+    "id":"VIS/Las Vegas Frame/Spacecraft",
+    "name":"Visibility of Las Vegas Frame looking at Spacecraft",
     "availability":"2024-03-15T00:00:00Z/2024-03-15T05:00:00Z",
     "cylinder":{
       "bottomRadius":10,
@@ -266,8 +266,8 @@
     }
   },
   {
-    "id":"Las Vegas FrameSAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}LINE_VISU/STATIONS : 2/SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}",
-    "name":"Line between Las Vegas Frame and Satellite",
+    "id":"Las Vegas FrameSPACECRAFT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}LINE_VISU/STATIONS : 2/SPACECRAFT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}",
+    "name":"Line between Las Vegas Frame and Spacecraft",
     "availability":[
       "0001-01-01T00:00:00Z/2024-03-15T00:00:00Z",
       "2024-03-15T00:00:00Z/2024-03-15T05:00:00Z",
@@ -288,8 +288,8 @@
       "arcType":"NONE",
       "positions":{
         "references":[
-          "VIS/Las Vegas Frame/Satellite#position",
-          "SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}#position"
+          "VIS/Las Vegas Frame/Spacecraft#position",
+          "SPACECRAFT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}#position"
         ]
       },
       "show":[
@@ -309,8 +309,8 @@
     }
   },
   {
-    "id":"VIS/Toulouse Frame/Satellite",
-    "name":"Visibility of Toulouse Frame looking at Satellite",
+    "id":"VIS/Toulouse Frame/Spacecraft",
+    "name":"Visibility of Toulouse Frame looking at Spacecraft",
     "availability":"2024-03-15T00:00:00Z/2024-03-15T05:00:00Z",
     "cylinder":{
       "bottomRadius":10,
@@ -335,8 +335,8 @@
     }
   },
   {
-    "id":"Toulouse FrameSAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}LINE_VISU/STATIONS : 2/[SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}]",
-    "name":"Line between Toulouse Frame and Satellite",
+    "id":"Toulouse FrameSPACECRAFT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}LINE_VISU/STATIONS : 2/[SPACECRAFT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}]",
+    "name":"Line between Toulouse Frame and Spacecraft",
     "availability":[
       "0001-01-01T00:00:00Z/2024-03-15T00:00:00Z",
       "2024-03-15T00:00:00Z/2024-03-15T00:24:40Z",
@@ -360,8 +360,8 @@
       "arcType":"NONE",
       "positions":{
         "references":[
-          "VIS/Toulouse Frame/Satellite#position",
-          "SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}#position"
+          "VIS/Toulouse Frame/Spacecraft#position",
+          "SPACECRAFT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}#position"
         ]
       },
       "show":[
@@ -393,8 +393,8 @@
     }
   },
   {
-    "id":"VIS/Las Vegas Frame/Satellite",
-    "name":"Visibility of Las Vegas Frame looking at Satellite",
+    "id":"VIS/Las Vegas Frame/Spacecraft",
+    "name":"Visibility of Las Vegas Frame looking at Spacecraft",
     "availability":"2024-03-15T00:00:00Z/2024-03-15T05:00:00Z",
     "cylinder":{
       "bottomRadius":10,
@@ -419,8 +419,8 @@
     }
   },
   {
-    "id":"Las Vegas FrameSAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}LINE_VISU/STATIONS : 2/[SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}]",
-    "name":"Line between Las Vegas Frame and Satellite",
+    "id":"Las Vegas FrameSPACECRAFT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}LINE_VISU/STATIONS : 2/[SPACECRAFT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}]",
+    "name":"Line between Las Vegas Frame and Spacecraft",
     "availability":[
       "0001-01-01T00:00:00Z/2024-03-15T00:00:00Z",
       "2024-03-15T00:00:00Z/2024-03-15T05:00:00Z",
@@ -441,8 +441,8 @@
       "arcType":"NONE",
       "positions":{
         "references":[
-          "VIS/Las Vegas Frame/Satellite#position",
-          "SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}#position"
+          "VIS/Las Vegas Frame/Spacecraft#position",
+          "SPACECRAFT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}#position"
         ]
       },
       "show":[
@@ -462,11 +462,11 @@
     }
   },
   {
-    "id":"MANEUVER/SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}#position 0",
-    "name":"Maneuvers : SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}#position",
+    "id":"MANEUVER/SPACECRAFT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}#position 0",
+    "name":"Maneuvers : SPACECRAFT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}#position",
     "availability":"2024-03-15T02:00:00Z/2024-03-15T03:00:00Z",
     "position":{
-      "reference":"SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}#position"
+      "reference":"SPACECRAFT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}#position"
     },
     "orientation":{
       "interval":"2024-03-15T02:00:00Z/2024-03-15T03:00:30Z",
@@ -607,11 +607,11 @@
     }
   },
   {
-    "id":"MANEUVER/SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}#position 1",
-    "name":"Maneuvers : SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}#position",
+    "id":"MANEUVER/SPACECRAFT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}#position 1",
+    "name":"Maneuvers : SPACECRAFT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}#position",
     "availability":"2024-03-15T03:00:00Z/2024-03-15T04:00:00Z",
     "position":{
-      "reference":"SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}#position"
+      "reference":"SPACECRAFT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}#position"
     },
     "orientation":{
       "interval":"2024-03-15T03:00:00Z/2024-03-15T04:00:30Z",

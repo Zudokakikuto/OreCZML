@@ -23,21 +23,21 @@ import cesiumlanguagewriter.Reference;
 import org.orekit.czml.object.nonvisual.CzmlModel;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Objects;
 
 /**
- * Satellite reference system class
+ * Spacecraft reference system class
  *
- * <p> The reference system of the satellite and its axis. By default a 3D model of 3 axis is used to define it. </p>
+ * <p> The reference system of the Spacecraft and its axis. By default a 3D model of 3 axis is used to define it. </p>
  *
  * @author Julien LEBLOND.
  * @since 1.0.0
  */
-public class SatelliteReferenceSystem extends AbstractPrimaryObject {
+public class SpacecraftReferenceSystem extends AbstractPrimaryObject {
 
     /**
      * The default ID for the reference system.
@@ -60,7 +60,7 @@ public class SatelliteReferenceSystem extends AbstractPrimaryObject {
     public static final String DEFAULT_H_ORIENTATION = "#orientation";
 
     /**
-     * The default 3D model used to represent the satellite reference system.
+     * The default 3D model used to represent the Spacecraft reference system.
      */
     public static final String PATH_TO_REFERENCE_SYSTEM = Objects.requireNonNull(CzmlModel.class.getClassLoader()
                                                                                                 .getResource(
@@ -70,19 +70,19 @@ public class SatelliteReferenceSystem extends AbstractPrimaryObject {
     // Intrinsic parameters
 
     /**
-     * The satellite which the system will be around.
+     * The Spacecraft which the system will be around.
      */
-    private final Satellite satellite;
+    private final Spacecraft spacecraft;
 
 
     // Other parameters
     /**
-     * The reference in position of the satellite.
+     * The reference in position of the Spacecraft.
      */
     private final Reference referencePosition;
 
     /**
-     * The reference in orientation of the satellite.
+     * The reference in orientation of the Spacecraft.
      */
     private final Reference referenceOrientation;
 
@@ -95,33 +95,33 @@ public class SatelliteReferenceSystem extends AbstractPrimaryObject {
     // Constructors
 
     /**
-     * The basic constructor for the satellite reference system, it uses default parameters.
+     * The basic constructor for the Spacecraft reference system, it uses default parameters.
      *
-     * @param satellite : The satellite around which the reference system must be.
+     * @param spacecraft : The Spacecraft around which the reference system must be.
      * @param header    : The header considered.
      */
-    public SatelliteReferenceSystem(final Satellite satellite, final Header header) {
-        this(satellite, 0.02, 200000, 250, DEFAULT_ID + satellite.getId(), header);
+    public SpacecraftReferenceSystem(final Spacecraft spacecraft, final Header header) {
+        this(spacecraft, 0.02, 200000, 250, DEFAULT_ID + spacecraft.getId(), header);
     }
 
     /**
-     * The constructor for the satellite reference system with no default parameters.
+     * The constructor for the Spacecraft reference system with no default parameters.
      *
-     * @param satellite        : The satellite around which the reference system must be.
+     * @param spacecraft        : The Spacecraft around which the reference system must be.
      * @param scale            : The scale of the model to be loaded to define the reference system.
      * @param maximumScale     : The maximum scale that the mode can take.
      * @param minimumPixelSize : The minimum pixel sie of the model.
-     * @param customID         : The custom ID of the satellite reference system.
+     * @param customID         : The custom ID of the Spacecraft reference system.
      * @param header           : The header considered.
      */
-    public SatelliteReferenceSystem(final Satellite satellite, final double scale, final double maximumScale,
-                                    final double minimumPixelSize, final String customID, final Header header) {
-        this.satellite = satellite;
+    public SpacecraftReferenceSystem(final Spacecraft spacecraft, final double scale, final double maximumScale,
+                                     final double minimumPixelSize, final String customID, final Header header) {
+        this.spacecraft = spacecraft;
         this.setId(customID);
-        this.setName(DEFAULT_NAME + satellite.getName());
-        this.setAvailability(satellite.getAvailability());
-        this.referencePosition    = new Reference(satellite.getId() + DEFAULT_H_POSITION);
-        this.referenceOrientation = new Reference(satellite.getId() + DEFAULT_H_ORIENTATION);
+        this.setName(DEFAULT_NAME + spacecraft.getName());
+        this.setAvailability(spacecraft.getAvailability());
+        this.referencePosition    = new Reference(spacecraft.getId() + DEFAULT_H_POSITION);
+        this.referenceOrientation = new Reference(spacecraft.getId() + DEFAULT_H_ORIENTATION);
         this.referenceSystemModel = new CzmlModel(PATH_TO_REFERENCE_SYSTEM, maximumScale, minimumPixelSize, scale,
                 false, header);
     }
@@ -149,12 +149,12 @@ public class SatelliteReferenceSystem extends AbstractPrimaryObject {
     // Getters
 
     /**
-     * Gets satellite.
+     * Gets Spacecraft.
      *
-     * @return the satellite
+     * @return the Spacecraft
      */
-    public Satellite getSatellite() {
-        return satellite;
+    public Spacecraft getSpacecraft() {
+        return spacecraft;
     }
 
     /**

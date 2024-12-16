@@ -22,12 +22,12 @@ import cesiumlanguagewriter.CesiumOutputStream;
 import cesiumlanguagewriter.CesiumStreamWriter;
 import cesiumlanguagewriter.PacketCesiumWriter;
 import org.orekit.bodies.GeodeticPoint;
-import org.orekit.czml.archi.builder.PolygonBuilder;
 import org.orekit.czml.object.nonvisual.PointOnBody;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.primary.visu.FieldOfObservation;
+import org.orekit.czml.object.secondary.Label;
 import org.orekit.czml.object.secondary.Polygon;
 import org.orekit.frames.Transform;
 import org.orekit.geometry.fov.FieldOfView;
@@ -57,7 +57,7 @@ public class CoveredSurfaceOnBody extends AbstractPrimaryObject {
     /**
      * The satellite that will cover the surface.
      */
-    private final Satellite satellite;
+    private final Spacecraft satellite;
 
     /**
      * The field of view of the satellite that will observe the body.
@@ -98,8 +98,8 @@ public class CoveredSurfaceOnBody extends AbstractPrimaryObject {
      * @param fieldOfObservationInput : The field of observation of the satellite that will define the surface covered.
      * @param header                  : The header considered.
      */
-    CoveredSurfaceOnBody(final Satellite satelliteInput, final FieldOfObservation fieldOfObservationInput,
-                                final Header header) {
+    CoveredSurfaceOnBody(final Spacecraft satelliteInput, final FieldOfObservation fieldOfObservationInput,
+                         final Header header) {
         this(satelliteInput, fieldOfObservationInput,
                 DEFAULT_ID + satelliteInput.getId() + "/" + fieldOfObservationInput.getBody()
                                                                                    .getBodyFrame()
@@ -114,8 +114,8 @@ public class CoveredSurfaceOnBody extends AbstractPrimaryObject {
      * @param customID                : The custom ID of the covered surface on body object.
      * @param header                  : The header to consider when several headers are used.
      */
-    CoveredSurfaceOnBody(final Satellite satelliteInput, final FieldOfObservation fieldOfObservationInput,
-                                final String customID, final Header header) {
+    CoveredSurfaceOnBody(final Spacecraft satelliteInput, final FieldOfObservation fieldOfObservationInput,
+                         final String customID, final Header header) {
 
         this.setId(customID);
         this.setName(DEFAULT_NAME + satelliteInput.getId() + " on : " + fieldOfObservationInput.getBody()
@@ -140,10 +140,10 @@ public class CoveredSurfaceOnBody extends AbstractPrimaryObject {
             cartesiansToBuildOnePolygon.addAll(currentCartesianList);
         }
 
-        this.polygon = new PolygonBuilder(cartesiansToBuildOnePolygon, header).withColor(new Color(34, 155, 83))
-                                                                              .withOutline(true)
-                                                                              .withFill(false)
-                                                                              .build();
+        this.polygon = new Label.PolygonBuilder(cartesiansToBuildOnePolygon, header).withColor(new Color(34, 155, 83))
+                                                                                    .withOutline(true)
+                                                                                    .withFill(false)
+                                                                                    .build();
     }
 
 
@@ -155,7 +155,7 @@ public class CoveredSurfaceOnBody extends AbstractPrimaryObject {
      * @param header                  the header
      * @return the covered surface on body builder
      */
-    public static CoveredSurfaceOnBodyBuilder builder(final Satellite satelliteInput,
+    public static CoveredSurfaceOnBodyBuilder builder(final Spacecraft satelliteInput,
                                                       final FieldOfObservation fieldOfObservationInput, final Header header) {
         return new CoveredSurfaceOnBodyBuilder(satelliteInput, fieldOfObservationInput, header);
     }
@@ -186,7 +186,7 @@ public class CoveredSurfaceOnBody extends AbstractPrimaryObject {
      *
      * @return the satellite
      */
-    public Satellite getSatellite() {
+    public Spacecraft getSatellite() {
         return satellite;
     }
 

@@ -31,9 +31,9 @@ import org.orekit.czml.object.CzmlShow;
 import org.orekit.czml.object.Polyline;
 import org.orekit.czml.object.Utils.DateUtils;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
-import org.orekit.czml.object.primary.Constellation;
+import org.orekit.czml.object.primary.entities.Constellation;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.frames.TopocentricFrame;
 import org.orekit.propagation.BoundedPropagator;
 import org.orekit.propagation.SpacecraftState;
@@ -95,10 +95,10 @@ public class LineOfVisibility extends AbstractPrimaryObject {
     /**
      * The satellite observed.
      */
-    private Satellite satellite;
+    private Spacecraft satellite;
 
     /** The satellites when a constellation is used. */
-    private List<Satellite> satellites = new ArrayList<>();
+    private List<Spacecraft> satellites = new ArrayList<>();
 
     /**
      * A list of CzmlShow that contains all the information about the satellite's visualization by the station.
@@ -152,7 +152,7 @@ public class LineOfVisibility extends AbstractPrimaryObject {
      * @param satellite        : The satellite that will be observed by the station.
      * @param header           : The header considered.S
      */
-    LineOfVisibility(final TopocentricFrame topocentricFrame, final Satellite satellite, final Header header) {
+    LineOfVisibility(final TopocentricFrame topocentricFrame, final Spacecraft satellite, final Header header) {
         this(topocentricFrame, satellite, DEFAULT_ANGLE_OF_APERTURE,
                 DEFAULT_ID + topocentricFrame.getName() + "/" + DEFAULT_AND + satellite.getName(), header);
     }
@@ -166,7 +166,7 @@ public class LineOfVisibility extends AbstractPrimaryObject {
      * @param customID         : The custom ID of the line of visibility object.
      * @param header           : The header considered when several are used.
      */
-    LineOfVisibility(final TopocentricFrame topocentricFrame, final Satellite satellite,
+    LineOfVisibility(final TopocentricFrame topocentricFrame, final Spacecraft satellite,
                      final double angleOfAperture, final String customID, final Header header) {
 
         this.angleOfAperture  = angleOfAperture;
@@ -200,15 +200,15 @@ public class LineOfVisibility extends AbstractPrimaryObject {
         this.topocentricFrame = topocentricFrame;
         this.satellites       = constellation.getSatellites();
         for (int i = 0; i < constellation.getTotalOfSatellite(); i++) {
-            final Satellite currentSatellite = constellation.getSatellites()
-                                                            .get(i);
+            final Spacecraft currentSatellite = constellation.getSatellites()
+                                                             .get(i);
             final LineOfVisibility currentLine = new LineOfVisibility(topocentricFrame, currentSatellite,
                     angleOfAperture, topocentricFrame.getName() + currentSatellite.getId() + customID, header);
             lines.add(currentLine);
         }
     }
 
-    LineOfVisibility(final List<TopocentricFrame> topocentricFrames, final Satellite satellite,
+    LineOfVisibility(final List<TopocentricFrame> topocentricFrames, final Spacecraft satellite,
                      final double angleOfAperture, final String customID, final Header header) {
         this.setId(customID);
         this.header = header;
@@ -229,8 +229,8 @@ public class LineOfVisibility extends AbstractPrimaryObject {
         this.satellites = constellation.getSatellites();
         for (final TopocentricFrame currentTopocentric : topocentricFrames) {
             for (int j = 0; j < constellation.getTotalOfSatellite(); j++) {
-                final Satellite currentSatellite = constellation.getSatellites()
-                                                                .get(j);
+                final Spacecraft currentSatellite = constellation.getSatellites()
+                                                                 .get(j);
                 final LineOfVisibility currentLine = new LineOfVisibility(currentTopocentric, currentSatellite,
                         angleOfAperture, currentTopocentric.getName() + currentSatellite.getId() + customID, header);
                 this.lines.add(currentLine);
@@ -249,7 +249,7 @@ public class LineOfVisibility extends AbstractPrimaryObject {
      * @return the line of visibility builder
      */
     public static LineOfVisibilityBuilder builder(final TopocentricFrame topocentricFrameInput,
-                                                  final Satellite satelliteInput, final Header header) {
+                                                  final Spacecraft satelliteInput, final Header header) {
         return new LineOfVisibilityBuilder(topocentricFrameInput, satelliteInput, header);
     }
 
@@ -260,7 +260,7 @@ public class LineOfVisibility extends AbstractPrimaryObject {
     }
 
     public static LineOfVisibilityBuilder builder(final List<TopocentricFrame> topocentricFramesInput,
-                                                  final Satellite satellite, final Header header) {
+                                                  final Spacecraft satellite, final Header header) {
         return new LineOfVisibilityBuilder(topocentricFramesInput, satellite, header);
     }
 
@@ -343,7 +343,7 @@ public class LineOfVisibility extends AbstractPrimaryObject {
      *
      * @return the satellite
      */
-    public Satellite getSatellite() {
+    public Spacecraft getSatellite() {
         return satellite;
     }
 
@@ -419,7 +419,7 @@ public class LineOfVisibility extends AbstractPrimaryObject {
      *
      * @return : The list of the satellites
      */
-    public List<Satellite> getSatellites() {
+    public List<Spacecraft> getSatellites() {
         return Collections.unmodifiableList(satellites);
     }
 
@@ -476,9 +476,9 @@ public class LineOfVisibility extends AbstractPrimaryObject {
      * @param headerInput           : The header considered when several are used.
      */
     private void buildSingleTimeIntervalsAndVisu(final TopocentricFrame topocentricFrameInput,
-                                                 final Satellite satellite_input, final Header headerInput) {
+                                                 final Spacecraft satellite_input, final Header headerInput) {
 
-        final BoundedPropagator propagator         = (BoundedPropagator) satellite_input.getSatellitePropagator();
+        final BoundedPropagator propagator         = (BoundedPropagator) satellite_input.getSpacecraftPropagator();
         final GregorianDate     firstGregorianDate = new GregorianDate(1, 1, 1, 0, 0, 0.0);
         final JulianDate        firstStartDate     = new JulianDate(firstGregorianDate);
         final JulianDate lastDate = DateUtils.toJulianDate(satellite_input.getOrbits()
@@ -551,7 +551,7 @@ public class LineOfVisibility extends AbstractPrimaryObject {
      * @param satelliteInput        : The satellite related to the Czml show.
      * @param topocentricFrameInput : The topocentric frame related to the Czml show.
      */
-    private void buildShowList(final Satellite satelliteInput, final TopocentricFrame topocentricFrameInput) {
+    private void buildShowList(final Spacecraft satelliteInput, final TopocentricFrame topocentricFrameInput) {
         showList = new ArrayList<>();
         for (int i = 0; i < visuList.size(); i++) {
             final CzmlShow showTemp = new CzmlShow(visuList.get(i), timeIntervals.get(i), satelliteInput,
@@ -569,7 +569,7 @@ public class LineOfVisibility extends AbstractPrimaryObject {
      */
     private void writePolyline(final PacketCesiumWriter packet, final CesiumOutputStream output,
                                final Header headerInput) {
-        final Polyline polylineInput = new Polyline(headerInput);
+        final Polyline polylineInput = Polyline.nonVectorBuilder(headerInput).build();
         polylineInput.writePolylineOfVisibility(packet, output, references, showList);
     }
 

@@ -319,7 +319,7 @@ public class CzmlGroundStation extends AbstractPrimaryObject {
     }
 
 
-    public void displayCircle(final Satellite satellite, final double angleOfAperture) {
+    public void displayCircle(final Spacecraft satellite, final double angleOfAperture) {
         for (TopocentricFrame topocentricFrame : topocentricFrames) {
             visibilityCircles.add(StationVisibilityCircle.builder(topocentricFrame, satellite, header)
                                                          .withAngleOfAperture(angleOfAperture)

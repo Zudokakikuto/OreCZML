@@ -19,7 +19,7 @@ package org.orekit.czml.object.primary.pointing;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.orekit.bodies.OneAxisEllipsoid;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 
 import java.awt.Color;
 
@@ -41,7 +41,7 @@ public class AttitudePointingBuilder {
     /**
      * The satellite that has a pointing to the ground.
      */
-    private final Satellite satellite;
+    private final Spacecraft satellite;
 
     /**
      * The body that is pointed at.
@@ -96,7 +96,7 @@ public class AttitudePointingBuilder {
      * @param directionInput : The direction of the pointing.
      * @param headerInput    : The header considered.
      */
-    public AttitudePointingBuilder(final Satellite satelliteInput, final OneAxisEllipsoid bodyInput,
+    public AttitudePointingBuilder(final Spacecraft satelliteInput, final OneAxisEllipsoid bodyInput,
                                    final Vector3D directionInput, final Header headerInput) {
         this.satellite = satelliteInput;
         this.body      = bodyInput;

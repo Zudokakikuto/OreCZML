@@ -31,7 +31,7 @@ import org.orekit.czml.object.primary.pointing.AttitudePointing;
 import org.orekit.czml.object.primary.systems.CentralBodyReferenceSystem;
 import org.orekit.czml.object.primary.visu.FieldOfObservation;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.forces.ForceModel;
 import org.orekit.forces.gravity.HolmesFeatherstoneAttractionModel;
@@ -136,13 +136,13 @@ public class SinusoidalAttitudeExample {
         final BoundedPropagator boundedPropagator = generator.getGeneratedEphemeris();
 
         // Creation of the satellite
-        final Satellite satellite = Satellite.builder(boundedPropagator, header)
-                                             .withModelPath(IssModel)
-                                             .withColor(Color.RED)
-                                             .withOnlyOnePeriod()
-                                             .withDisplayAttitude()
-                                             .withReferenceSystem()
-                                             .build();
+        final Spacecraft satellite = Spacecraft.builder(boundedPropagator, header)
+                                               .withModelPath(IssModel)
+                                               .withColor(Color.RED)
+                                               .withOnlyOnePeriod()
+                                               .withDisplayAttitude()
+                                               .withReferenceSystem()
+                                               .build();
 
         final AttitudePointing pointing = AttitudePointing.builder(satellite, TutorialUtils.getEarth(),
                                                                   Vector3D.MINUS_K, header)
@@ -151,7 +151,7 @@ public class SinusoidalAttitudeExample {
                                                           .displayPeriodPointingPath()
                                                           .build();
 
-        final CentralBodyReferenceSystem system = new CentralBodyReferenceSystem(header);
+        final CentralBodyReferenceSystem system = CentralBodyReferenceSystem.builder(header).build();
 
         // Creation of the field of observation of the satellite, it describes the area the satellite see
         final Transform initialInertToBody = initialState.getFrame()

@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.orekit.czml.archi.builder;
+package org.orekit.czml.object.primary.entities;
 
-import org.orekit.czml.object.primary.Constellation;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.propagation.BoundedPropagator;
 import org.orekit.time.AbsoluteDate;
@@ -37,6 +36,13 @@ import java.util.List;
  */
 public class ConstellationBuilder {
 
+    /** Default Id of the constellation. */
+    public static final String DEFAULT_ID = "Constellation/";
+
+    /**
+     * A default string to give the number of satellites in the constellation.
+     */
+    public static final String DEFAULT_NUMBER_OF_SAT = " satellites ";
 
     /**
      * List of propagators representing the satellites.
@@ -74,11 +80,12 @@ public class ConstellationBuilder {
      * @param finalDateInput   : The final date of the propagation.
      * @param headerInput      : The header considered.
      */
-    public ConstellationBuilder(final List<BoundedPropagator> propagatorsInput,
-                                final AbsoluteDate finalDateInput, final Header headerInput) {
+    public ConstellationBuilder(final List<BoundedPropagator> propagatorsInput, final AbsoluteDate finalDateInput,
+                                final Header headerInput) {
         this.propagators = new ArrayList<>(propagatorsInput);
         this.finalDate   = finalDateInput;
         this.header      = headerInput;
+        this.customID    = DEFAULT_ID + propagatorsInput.size() + " " + DEFAULT_NUMBER_OF_SAT;
     }
 
     /**
@@ -132,7 +139,8 @@ public class ConstellationBuilder {
      * @throws IOException        the io exception
      */
     public Constellation build() throws URISyntaxException, IOException {
-        final Constellation tempConstellation = new Constellation(propagators, finalDate, pathToModel, customID, header);
+        final Constellation tempConstellation = new Constellation(propagators, finalDate, pathToModel, customID,
+                header);
         return checkAttributes(tempConstellation);
     }
 

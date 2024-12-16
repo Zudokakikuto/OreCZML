@@ -19,7 +19,7 @@ package org.orekit.czml.object.primary.pointing;
 
 import org.orekit.czml.object.primary.visu.FieldOfObservation;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 
 /**
  * Covered Surface On Body Builder class
@@ -32,7 +32,7 @@ import org.orekit.czml.object.primary.entities.Satellite;
 public class CoveredSurfaceOnBodyBuilder {
 
     /** The satellite considered for the coverage. */
-    private final Satellite satellite;
+    private final Spacecraft satellite;
 
     /** The field of observation of the satellite. */
     private final FieldOfObservation fieldOfObservation;
@@ -51,7 +51,7 @@ public class CoveredSurfaceOnBodyBuilder {
      * @param fieldOfObservationInput : The field of observation of the satellite.
      * @param headerInput             : The header considered.
      */
-    public CoveredSurfaceOnBodyBuilder(final Satellite satelliteInput,
+    public CoveredSurfaceOnBodyBuilder(final Spacecraft satelliteInput,
                                        final FieldOfObservation fieldOfObservationInput, final Header headerInput) {
         this.satellite          = satelliteInput;
         this.fieldOfObservation = fieldOfObservationInput;

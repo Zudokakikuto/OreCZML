@@ -22,7 +22,7 @@ import org.hipparchus.util.FastMath;
 import org.orekit.czml.TutorialUtils;
 import org.orekit.czml.file.CzmlFile;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.forces.ForceModel;
 import org.orekit.forces.gravity.HolmesFeatherstoneAttractionModel;
@@ -114,7 +114,7 @@ public class LEOSatelliteExample {
         final BoundedPropagator boundedPropagator = generator.getGeneratedEphemeris();
 
         // Build the LEO Satellite
-        final Satellite leoSatellite = new Satellite(boundedPropagator, header);
+        final Spacecraft leoSatellite = new Spacecraft(boundedPropagator, header);
 
         // Creation of the file
         final CzmlFile file = CzmlFile.builder()

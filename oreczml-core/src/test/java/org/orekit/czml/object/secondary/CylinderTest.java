@@ -27,7 +27,7 @@ import org.orekit.czml.object.PositionType;
 import org.orekit.czml.object.Utils.DateUtils;
 import org.orekit.czml.object.primary.entities.CzmlGroundStation;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.frames.TopocentricFrame;
 import org.orekit.propagation.BoundedPropagator;
 import org.orekit.time.AbsoluteDate;
@@ -65,7 +65,7 @@ public class CylinderTest extends AbstractTest {
                 "Toulouse Frame");
 
         final BoundedPropagator propagator = dummyPropagator(startDate, finalDate);
-        final Satellite         satellite  = new Satellite(propagator, header);
+        final Spacecraft        satellite  = new Spacecraft(propagator, header);
 
         final Cylinder cylinder = new Cylinder(topocentricToulouse, satellite, 90.0, header);
 

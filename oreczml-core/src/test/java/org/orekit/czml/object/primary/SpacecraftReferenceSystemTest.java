@@ -20,8 +20,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.Utils.DateUtils;
-import org.orekit.czml.object.primary.entities.Satellite;
-import org.orekit.czml.object.primary.systems.SatelliteReferenceSystem;
+import org.orekit.czml.object.primary.entities.Spacecraft;
+import org.orekit.czml.object.primary.systems.SpacecraftReferenceSystem;
 import org.orekit.propagation.BoundedPropagator;
 import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScalesFactory;
@@ -34,7 +34,7 @@ import java.nio.file.Path;
 /**
  * The type Satellite reference system test.
  */
-public class SatelliteReferenceSystemTest extends AbstractTest {
+public class SpacecraftReferenceSystemTest extends AbstractTest {
 
     /**
      * Satellite reference systemc constructor test.
@@ -52,11 +52,11 @@ public class SatelliteReferenceSystemTest extends AbstractTest {
         final AbsoluteDate finalDate = startDate.shiftedBy(60.0);
 
         final BoundedPropagator propagator = dummyPropagator(startDate, finalDate);
-        final Satellite         satellite  = new Satellite(propagator, header);
+        final Spacecraft        satellite  = new Spacecraft(propagator, header);
 
-        final SatelliteReferenceSystem system = new SatelliteReferenceSystem(satellite, header);
+        final SpacecraftReferenceSystem system = new SpacecraftReferenceSystem(satellite, header);
 
-        final String pathFile = loadResources("templateFile/primary/SatelliteReferenceSystemTemplate.txt");
+        final String pathFile = loadResources("templateFile/primary/SpacecraftReferenceSystemTemplate.txt");
 
         Assertions.assertEquals(Files.readString(Path.of(pathFile)), system.toString());
     }

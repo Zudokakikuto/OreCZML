@@ -42,3 +42,4 @@ build/
 /oreczml-core/target/
 /oreczml-tutorials/target/
 /target/
+/oreczml-tutorials/src/main/java/org/orekit/czml/demonstratorOrekitTalk/

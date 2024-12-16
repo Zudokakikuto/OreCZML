@@ -111,6 +111,16 @@ public abstract class AbstractPrimaryObject implements CzmlPrimaryObject {
         this.availability = a;
     }
 
+    /**
+     * Sets availabilities.
+     *
+     * @param a the a
+     */
+    public void setAvailabilities(final List<TimeInterval> a) {
+        this.availabilities.clear();
+        this.availabilities.addAll(a);
+    }
+
     //// Public functions
 
     /**
@@ -124,16 +134,6 @@ public abstract class AbstractPrimaryObject implements CzmlPrimaryObject {
     }
 
     // Protected methods
-
-    /**
-     * Sets availabilities.
-     *
-     * @param a the a
-     */
-    protected void setAvailabilities(final List<TimeInterval> a) {
-        this.availabilities.clear();
-        this.availabilities.addAll(a);
-    }
 
     /**
      * Pre made color list java . util . list.

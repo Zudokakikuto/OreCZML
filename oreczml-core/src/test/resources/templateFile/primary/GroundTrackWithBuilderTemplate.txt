@@ -1,6 +1,6 @@
 {
   "id":"CustomID",
-  "name":"Ground track of : Satellite",
+  "name":"Ground track of : Spacecraft",
   "availability":"2024-01-01T00:00:00Z/2024-01-01T00:01:00Z",
   "position":{
     "referenceFrame":"INERTIAL",
