@@ -51,7 +51,7 @@ public class LatLongLinesBuilder {
      * @param headerInput : The header considered.
      */
     public LatLongLinesBuilder(final Header headerInput) {
-        this.customID = "LAT_LONG_DISP";
+        this.customID = "LAT_LONG";
         this.header   = headerInput;
     }
 

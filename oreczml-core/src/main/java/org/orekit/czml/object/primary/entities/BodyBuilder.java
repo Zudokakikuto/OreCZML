@@ -203,7 +203,7 @@ public class BodyBuilder {
         if (modelMinimumPixelSize != 0.0) {
             bodyInput.withModelMinimumPixelSize(modelMinimumPixelSize);
         }
-        if (!description.isEmpty()) {
+        if (!(description == null)) {
             bodyInput.withDescription(description);
         }
         if (noOrbitDisplay) {
