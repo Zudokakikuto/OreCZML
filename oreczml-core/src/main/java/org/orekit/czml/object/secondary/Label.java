@@ -17,14 +17,18 @@
 
 package org.orekit.czml.object.secondary;
 
+import cesiumlanguagewriter.Cartesian;
 import cesiumlanguagewriter.CesiumHorizontalOrigin;
 import cesiumlanguagewriter.CesiumLabelStyle;
 import cesiumlanguagewriter.CesiumOutputStream;
 import cesiumlanguagewriter.CesiumVerticalOrigin;
 import cesiumlanguagewriter.LabelCesiumWriter;
 import cesiumlanguagewriter.PacketCesiumWriter;
+import org.orekit.czml.object.primary.Header;
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Label class
@@ -195,6 +199,112 @@ public class Label extends AbstractSecondaryObject {
      */
     public boolean getShow() {
         return show;
+    }
+
+    /**
+     * Polygon Builder class
+     * <p>
+     * Builder for the {@link Polygon} class.
+     *
+     * @author Julien LEBLOND
+     * @since 1.0
+     */
+    public static class PolygonBuilder {
+
+        /**
+         * The default color.
+         */
+        public static final Color DEFAULT_COLOR = new Color(243, 194, 32);
+
+        /**
+         * Positions of the polygon.
+         */
+        private final List<Cartesian> cartesians;
+
+        /**
+         * The color of the polygon.
+         */
+        private Color color = DEFAULT_COLOR;
+
+        /**
+         * To display the outline or not.
+         */
+        private boolean outline = false;
+
+        /**
+         * To fill or not the polygon.
+         */
+        private boolean fill = true;
+
+        /** The header considered. */
+        private Header header;
+
+        // Constructor
+
+        /**
+         * The constructor of the polygon builder.
+         *
+         * @param cartesiansInput : The list of cartesians that will build the polygon.
+         * @param headerInput     : The header considered.
+         */
+        public PolygonBuilder(final List<Cartesian> cartesiansInput, final Header headerInput) {
+            this.header     = headerInput;
+            this.cartesians = new ArrayList<>(cartesiansInput);
+        }
+
+        /**
+         * Function to set up a color.
+         *
+         * @param colorInput : The color to set up.
+         * @return : The polygon builder with the given color.
+         */
+        public PolygonBuilder withColor(final Color colorInput) {
+            this.color = colorInput;
+            return this;
+        }
+
+        /**
+         * Function to set up the outline of the polygon.
+         *
+         * @param outlineInput : The outline to set up.
+         * @return : The polygon builder with the given outline.
+         */
+        public PolygonBuilder withOutline(final boolean outlineInput) {
+            this.outline = outlineInput;
+            return this;
+        }
+
+        /**
+         * Function to set up the fill of the polygon.
+         *
+         * @param fillInput : The fill to set up.
+         * @return : The polygon builder with the given fill.
+         */
+        public PolygonBuilder withFill(final boolean fillInput) {
+            this.fill = fillInput;
+            return this;
+        }
+
+        /**
+         * Function to set up the header of the polygon.
+         *
+         * @param headerInput : The header considered to set up.
+         * @return : The polygon builder with a header considered.
+         */
+        public PolygonBuilder withHeader(final Header headerInput) {
+            this.header = headerInput;
+            return this;
+        }
+
+        /**
+         * The build function that generates a polygon object.
+         *
+         * @return : A polygon object with the given parameters of the builder.
+         */
+        public Polygon build() {
+            return new Polygon(cartesians, color, outline, fill, header);
+        }
+
     }
 }
 

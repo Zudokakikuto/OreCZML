@@ -13,10 +13,10 @@
     }
   },
   {
-    "id":"SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}",
-    "name":"Satellite",
+    "id":"SPACECRAFT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}",
+    "name":"Spacecraft",
     "availability":"2024-03-15T00:00:00Z/2024-03-15T05:00:00Z",
-    "description":"<!--HTML-->\r\n<p>Id : SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}</p>\r\n<p>Simulated from : 2024-03-15T00:00:00.000Z to 2024-03-15T05:00:00.000Z</p>",
+    "description":"<!--HTML-->\r\n<p>Id : SPACECRAFT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}</p>\r\n<p>Simulated from : 2024-03-15T00:00:00.000Z to 2024-03-15T05:00:00.000Z</p>",
     "position":{
       "referenceFrame":"INERTIAL"
     },
@@ -1263,14 +1263,14 @@
     }
   },
   {
-    "id":"REFERENCE SYSTEM/SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}",
-    "name":"Reference system of : Satellite",
+    "id":"REFERENCE SYSTEM/SPACECRAFT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}",
+    "name":"Reference system of : Spacecraft",
     "availability":"2024-03-15T00:00:00Z/2024-03-15T05:00:00Z",
     "position":{
-      "reference":"SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}#position"
+      "reference":"SPACECRAFT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}#position"
     },
     "orientation":{
-      "reference":"SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}#orientation"
+      "reference":"SPACECRAFT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}#orientation"
     },
     "model":{
       "gltf":"./referenceSystem.glb",
@@ -1350,8 +1350,8 @@
     }
   },
   {
-    "id":"VIS/Toulouse Frame/Satellite",
-    "name":"Visibility of Toulouse Frame looking at Satellite",
+    "id":"VIS/Toulouse Frame/Spacecraft",
+    "name":"Visibility of Toulouse Frame looking at Spacecraft",
     "availability":"2024-03-15T00:00:00Z/2024-03-15T05:00:00Z",
     "cylinder":{
       "bottomRadius":10,
@@ -1376,8 +1376,8 @@
     }
   },
   {
-    "id":"LINE_VISU/Toulouse Frame/SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}",
-    "name":"Line between Toulouse Frame and Satellite",
+    "id":"LINE_VISU/Toulouse Frame/SPACECRAFT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}",
+    "name":"Line between Toulouse Frame and Spacecraft",
     "availability":[
       "0001-01-01T00:00:00Z/2024-03-15T00:00:00Z",
       "2024-03-15T00:00:00Z/2024-03-15T00:24:40Z",
@@ -1401,8 +1401,8 @@
       "arcType":"NONE",
       "positions":{
         "references":[
-          "VIS/Toulouse Frame/Satellite#position",
-          "SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}#position"
+          "VIS/Toulouse Frame/Spacecraft#position",
+          "SPACECRAFT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}#position"
         ]
       },
       "show":[
@@ -1434,11 +1434,11 @@
     }
   },
   {
-    "id":"MANEUVER/SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}#position 0",
-    "name":"Maneuvers : SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}#position",
+    "id":"MANEUVER/SPACECRAFT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}#position 0",
+    "name":"Maneuvers : SPACECRAFT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}#position",
     "availability":"2024-03-15T02:00:00Z/2024-03-15T03:00:00Z",
     "position":{
-      "reference":"SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}#position"
+      "reference":"SPACECRAFT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}#position"
     },
     "orientation":{
       "interval":"2024-03-15T02:00:00Z/2024-03-15T03:00:30Z",
@@ -1579,11 +1579,11 @@
     }
   },
   {
-    "id":"MANEUVER/SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}#position 1",
-    "name":"Maneuvers : SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}#position",
+    "id":"MANEUVER/SPACECRAFT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}#position 1",
+    "name":"Maneuvers : SPACECRAFT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}#position",
     "availability":"2024-03-15T03:00:00Z/2024-03-15T04:00:00Z",
     "position":{
-      "reference":"SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}#position"
+      "reference":"SPACECRAFT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}#position"
     },
     "orientation":{
       "interval":"2024-03-15T03:00:00Z/2024-03-15T04:00:30Z",

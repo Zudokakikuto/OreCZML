@@ -23,7 +23,7 @@ import org.hipparchus.util.FastMath;
 import org.orekit.attitudes.LofOffset;
 import org.orekit.czml.file.CzmlFile;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.forces.ForceModel;
 import org.orekit.forces.gravity.HolmesFeatherstoneAttractionModel;
@@ -122,12 +122,12 @@ public class AttitudeSetupExample {
         final BoundedPropagator boundedPropagator = generator.getGeneratedEphemeris();
 
         // Creation of the satellite
-        final Satellite satellite = Satellite.builder(boundedPropagator, header)
-                                             .withModelPath(IssModel)
-                                             .withColor(Color.RED)
-                                             .withOnlyOnePeriod()
-                                             .withDisplayAttitude()
-                                             .build();
+        final Spacecraft satellite = Spacecraft.builder(boundedPropagator, header)
+                                               .withModelPath(IssModel)
+                                               .withColor(Color.RED)
+                                               .withOnlyOnePeriod()
+                                               .withDisplayAttitude()
+                                               .build();
 
         // Creation of the file
         final CzmlFile file = CzmlFile.builder()

@@ -17,9 +17,9 @@
 
 package org.orekit.czml.object.primary.visu;
 
-import org.orekit.czml.object.primary.Constellation;
+import org.orekit.czml.object.primary.entities.Constellation;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.propagation.BoundedPropagator;
 import org.orekit.time.AbsoluteDate;
 
@@ -41,10 +41,10 @@ public class InterSatVisuBuilder {
     public static final String DEFAULT_ID = "INTER_SAT_VISU/";
 
     /** The first satellite to consider for the inter sat visu. */
-    private Satellite satellite1;
+    private Spacecraft satellite1;
 
     /** The second satellite to consider for the inter sat visu. */
-    private Satellite satellite2;
+    private Spacecraft satellite2;
 
     /** The final date of the propagation. */
     private final AbsoluteDate finalDate;
@@ -66,7 +66,7 @@ public class InterSatVisuBuilder {
      * @param finalDateInput  the final date input
      * @param headerInput     the header input
      */
-    public InterSatVisuBuilder(final Satellite satellite1Input, final Satellite satellite2Input,
+    public InterSatVisuBuilder(final Spacecraft satellite1Input, final Spacecraft satellite2Input,
                                final AbsoluteDate finalDateInput, final Header headerInput) {
         this.satellite1 = satellite1Input;
         this.satellite2 = satellite2Input;
@@ -87,7 +87,7 @@ public class InterSatVisuBuilder {
     public InterSatVisuBuilder(final List<BoundedPropagator> propagatorsInput,
                                final AbsoluteDate finalDateInput,
                                final Header headerInput) throws URISyntaxException, IOException {
-        this(new Constellation(propagatorsInput, finalDateInput, headerInput), finalDateInput, headerInput);
+        this(Constellation.builder(propagatorsInput, finalDateInput, headerInput).build(), finalDateInput, headerInput);
     }
 
     /**

@@ -20,7 +20,7 @@ import org.orekit.czml.TutorialUtils;
 import org.orekit.czml.archi.adaptor.OemAdaptor;
 import org.orekit.czml.file.CzmlFile;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.data.DataSource;
 import org.orekit.files.ccsds.ndm.ParserBuilder;
@@ -86,10 +86,10 @@ public class OemAdaptorExample {
         final Header header = new Header("Oem Adaptor Example", clock, pathToJSFolder);
 
         // Creation of the satellite
-        final Satellite satellite = Satellite.builder(oemBoundedPropagator, header)
-                                             .withModelPath(IssModel)
-                                             .withOnlyOnePeriod()
-                                             .build();
+        final Spacecraft satellite = Spacecraft.builder(oemBoundedPropagator, header)
+                                               .withModelPath(IssModel)
+                                               .withOnlyOnePeriod()
+                                               .build();
 
         final CzmlFile file = CzmlFile.builder()
                                       .withHeader(header)

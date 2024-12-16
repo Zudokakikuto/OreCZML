@@ -31,9 +31,9 @@ import org.orekit.czml.object.CzmlShow;
 import org.orekit.czml.object.Polyline;
 import org.orekit.czml.object.Utils.DateUtils;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
-import org.orekit.czml.object.primary.Constellation;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.entities.Constellation;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.data.DataContext;
 import org.orekit.frames.Frame;
 import org.orekit.orbits.Orbit;
@@ -96,12 +96,12 @@ public class InterSatVisu extends AbstractPrimaryObject {
     /**
      * The first satellite for the visu.
      */
-    private Satellite satellite1;
+    private Spacecraft satellite1;
 
     /**
      * The second satellite for the visu.
      */
-    private Satellite satellite2;
+    private Spacecraft satellite2;
 
     /**
      * The body which the satellites are orbiting around (future implementation around several bodies).
@@ -162,7 +162,7 @@ public class InterSatVisu extends AbstractPrimaryObject {
     /**
      * All the satellites of the constellation.
      */
-    private List<Satellite> constellationSatellites = new ArrayList<>();
+    private List<Spacecraft> constellationSatellites = new ArrayList<>();
 
     /**
      * All the ids of the satellites of the constellation.
@@ -207,7 +207,7 @@ public class InterSatVisu extends AbstractPrimaryObject {
     /**
      * All the pairs of satellites.
      */
-    private List<List<Satellite>> pairsOfSatellites = new ArrayList<>();
+    private List<List<Spacecraft>> pairsOfSatellites = new ArrayList<>();
 
     /** The header used. */
     private final Header header;
@@ -222,7 +222,7 @@ public class InterSatVisu extends AbstractPrimaryObject {
      * @param finalDate       : The final date for the propagation.
      * @param header          : The header considered.
      */
-    InterSatVisu(final Satellite satellite1Input, final Satellite satellite2Input, final AbsoluteDate finalDate,
+    InterSatVisu(final Spacecraft satellite1Input, final Spacecraft satellite2Input, final AbsoluteDate finalDate,
                  final Header header) {
         this(satellite1Input, satellite2Input, finalDate,
                 DEFAULT_ID + satellite1Input.getId() + "/" + satellite2Input.getId(), header);
@@ -238,7 +238,7 @@ public class InterSatVisu extends AbstractPrimaryObject {
      * @param header          : The header of the
      */
     @DefaultDataContext
-    InterSatVisu(final Satellite satellite1Input, final Satellite satellite2Input, final AbsoluteDate finalDate,
+    InterSatVisu(final Spacecraft satellite1Input, final Spacecraft satellite2Input, final AbsoluteDate finalDate,
                  final String customID, final Header header) {
 
         this.satellite1 = satellite1Input;
@@ -286,7 +286,8 @@ public class InterSatVisu extends AbstractPrimaryObject {
      */
     InterSatVisu(final List<BoundedPropagator> propagators, final AbsoluteDate finalDate,
                  final Header header) throws URISyntaxException, IOException {
-        this(new Constellation(propagators, finalDate, header), finalDate, header);
+        this(Constellation.builder(propagators, finalDate, header)
+                          .build(), finalDate, header);
     }
 
     /**
@@ -301,7 +302,7 @@ public class InterSatVisu extends AbstractPrimaryObject {
      */
     InterSatVisu(final List<BoundedPropagator> propagators, final AbsoluteDate finalDate, final String customID,
                  final Header header) throws URISyntaxException, IOException {
-        this(new Constellation(propagators, finalDate, header), finalDate, customID, header);
+        this(Constellation.builder(propagators, finalDate, header).build(), finalDate, customID, header);
     }
 
     /**
@@ -351,16 +352,17 @@ public class InterSatVisu extends AbstractPrimaryObject {
         this.propagationInterConstellation(finalDate, header);
 
         for (int i = 0; i < constellationSatellites.size(); i++) {
-            final Satellite firstSatellite          = constellationSatellites.get(i);
-            final String    currentIdFirstSatellite = idsSatellites.get(i);
-            final Reference firstReferenceSatellite = new Reference(currentIdFirstSatellite + DEFAULT_H_POSITION);
+            final Spacecraft firstSatellite          = constellationSatellites.get(i);
+            final String     currentIdFirstSatellite = idsSatellites.get(i);
+            final Reference  firstReferenceSatellite = new Reference(currentIdFirstSatellite + DEFAULT_H_POSITION);
 
-            final List<Satellite> currentPairOfSatellites = new ArrayList<>();
+            final List<Spacecraft> currentPairOfSatellites = new ArrayList<>();
 
             for (int j = i + 1; j < constellationSatellites.size(); j++) {
-                final Satellite secondSatellite          = constellationSatellites.get(j);
-                final String    currentIdSecondSatellite = idsSatellites.get(j);
-                final Reference secondReferenceSatellite = new Reference(currentIdSecondSatellite + DEFAULT_H_POSITION);
+                final Spacecraft secondSatellite          = constellationSatellites.get(j);
+                final String     currentIdSecondSatellite = idsSatellites.get(j);
+                final Reference  secondReferenceSatellite = new Reference(
+                        currentIdSecondSatellite + DEFAULT_H_POSITION);
                 final Reference[] referenceList = Arrays.asList(firstReferenceSatellite, secondReferenceSatellite)
                                                         .toArray(new Reference[0]);
                 referencesList.add(convertToIterable(referenceList));
@@ -394,7 +396,7 @@ public class InterSatVisu extends AbstractPrimaryObject {
      * @param header          the header
      * @return the inter sat visu builder
      */
-    public static InterSatVisuBuilder builder(final Satellite satellite1Input, final Satellite satellite2Input,
+    public static InterSatVisuBuilder builder(final Spacecraft satellite1Input, final Spacecraft satellite2Input,
                                               final AbsoluteDate finalDate, final Header header) {
         return new InterSatVisuBuilder(satellite1Input, satellite2Input, finalDate, header);
     }
@@ -458,7 +460,7 @@ public class InterSatVisu extends AbstractPrimaryObject {
      *
      * @return the satellite 1
      */
-    public Satellite getSatellite1() {
+    public Spacecraft getSatellite1() {
         return satellite1;
     }
 
@@ -470,7 +472,7 @@ public class InterSatVisu extends AbstractPrimaryObject {
      *
      * @return the satellite 2
      */
-    public Satellite getSatellite2() {
+    public Spacecraft getSatellite2() {
         return satellite2;
     }
 
@@ -590,7 +592,7 @@ public class InterSatVisu extends AbstractPrimaryObject {
      *
      * @return the constellation satellites
      */
-    public List<Satellite> getConstellationSatellites() {
+    public List<Spacecraft> getConstellationSatellites() {
         return Collections.unmodifiableList(constellationSatellites);
     }
 
@@ -671,7 +673,7 @@ public class InterSatVisu extends AbstractPrimaryObject {
      *
      * @return the pairs of satellites
      */
-    public List<List<Satellite>> getPairsOfSatellites() {
+    public List<List<Spacecraft>> getPairsOfSatellites() {
         return Collections.unmodifiableList(pairsOfSatellites);
     }
 
@@ -684,7 +686,7 @@ public class InterSatVisu extends AbstractPrimaryObject {
      * @param headerInput     : The header to consider when several are used.
      * @return : The lowest time interval between the two satellites.
      */
-    private TimeInterval findMinimumAvailability(final Satellite satellite1Input, final Satellite satellite2Input,
+    private TimeInterval findMinimumAvailability(final Spacecraft satellite1Input, final Spacecraft satellite2Input,
                                                  final Header headerInput) {
 
         final double durationAvailabilityFirstSat = satellite1Input.getAvailability()
@@ -725,11 +727,11 @@ public class InterSatVisu extends AbstractPrimaryObject {
      * @param satellite2Input : The second satellite of the couple
      * @param headerInput     : The header to consider when several are used.
      */
-    private void propagationInterSat(final AbsoluteDate finalDate, final Satellite satellite1Input,
-                                     final Satellite satellite2Input, final Header headerInput) {
+    private void propagationInterSat(final AbsoluteDate finalDate, final Spacecraft satellite1Input,
+                                     final Spacecraft satellite2Input, final Header headerInput) {
 
-        final BoundedPropagator boundedPropagatorSat1 = satellite1Input.getSatelliteBoundedPropagator();
-        final BoundedPropagator boundedPropagatorSat2 = satellite2Input.getSatelliteBoundedPropagator();
+        final BoundedPropagator boundedPropagatorSat1 = satellite1Input.getSpacecraftBoundedPropagator();
+        final BoundedPropagator boundedPropagatorSat2 = satellite2Input.getSpacecraftBoundedPropagator();
 
         final InterSatDirectViewDetector detector = new InterSatDirectViewDetector(this.getBody(),
                 boundedPropagatorSat2).withHandler((spacecraftState, currentDetector, increasing) -> {
@@ -1016,13 +1018,13 @@ public class InterSatVisu extends AbstractPrimaryObject {
      * @param inputList : The list of list of satellite not organized by pair.
      * @return : A list of pairs of satellites.
      */
-    private List<List<Satellite>> reorganiseSatelliteList(final List<List<Satellite>> inputList) {
-        final List<List<Satellite>> toReturn = new ArrayList<>();
-        for (List<Satellite> satellites : inputList) {
-            List<Satellite> tempPairOfSatellite = new ArrayList<>();
+    private List<List<Spacecraft>> reorganiseSatelliteList(final List<List<Spacecraft>> inputList) {
+        final List<List<Spacecraft>> toReturn = new ArrayList<>();
+        for (List<Spacecraft> satellites : inputList) {
+            List<Spacecraft> tempPairOfSatellite = new ArrayList<>();
             for (int j = 0; j < satellites.size(); j = j + 2) {
-                final Satellite currentFirstSatellite  = satellites.get(j);
-                final Satellite currentSecondSatellite = satellites.get(j + 1);
+                final Spacecraft currentFirstSatellite  = satellites.get(j);
+                final Spacecraft currentSecondSatellite = satellites.get(j + 1);
                 tempPairOfSatellite.add(currentFirstSatellite);
                 tempPairOfSatellite.add(currentSecondSatellite);
                 toReturn.add(tempPairOfSatellite);
@@ -1046,10 +1048,10 @@ public class InterSatVisu extends AbstractPrimaryObject {
         try (PacketCesiumWriter packet = stream.openPacket(output)) {
             final List<CzmlShow> currentShowList = showsList.get(iterationNumber);
             if (!(currentShowList == null)) {
-                final Satellite currentFirstSatellite = pairsOfSatellites.get(iterationNumber)
-                                                                         .get(0);
-                final Satellite currentSecondSatellite = pairsOfSatellites.get(iterationNumber)
-                                                                          .get(1);
+                final Spacecraft currentFirstSatellite = pairsOfSatellites.get(iterationNumber)
+                                                                          .get(0);
+                final Spacecraft currentSecondSatellite = pairsOfSatellites.get(iterationNumber)
+                                                                           .get(1);
                 packet.writeId(DEFAULT_ID + currentFirstSatellite.getId() + "/" + currentSecondSatellite.getId());
                 packet.writeName(
                         DEFAULT_CONSTELLATION_NAME + currentFirstSatellite.getName() + " " + currentSecondSatellite.getName());

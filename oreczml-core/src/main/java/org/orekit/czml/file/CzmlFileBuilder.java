@@ -19,17 +19,17 @@ package org.orekit.czml.file;
 import org.orekit.czml.object.primary.pointing.AttitudePointing;
 import org.orekit.czml.object.primary.entities.Body;
 import org.orekit.czml.object.primary.systems.CentralBodyReferenceSystem;
-import org.orekit.czml.object.primary.Collision;
-import org.orekit.czml.object.primary.Constellation;
-import org.orekit.czml.object.primary.Covariance;
+import org.orekit.czml.object.primary.covariance.Collision;
+import org.orekit.czml.object.primary.entities.Constellation;
+import org.orekit.czml.object.primary.covariance.Covariance;
 import org.orekit.czml.object.primary.pointing.CoveredSurfaceOnBody;
 import org.orekit.czml.object.primary.entities.CzmlGroundStation;
 import org.orekit.czml.object.primary.GroundTrack;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.primary.systems.LatLongLines;
 import org.orekit.czml.object.primary.ManeuverSequence;
-import org.orekit.czml.object.primary.entities.Satellite;
-import org.orekit.czml.object.primary.systems.SatelliteReferenceSystem;
+import org.orekit.czml.object.primary.entities.Spacecraft;
+import org.orekit.czml.object.primary.systems.SpacecraftReferenceSystem;
 import org.orekit.czml.object.primary.visu.FieldOfObservation;
 import org.orekit.czml.object.primary.visu.InterSatVisu;
 import org.orekit.czml.object.primary.visu.LineOfVisibility;
@@ -58,11 +58,11 @@ public class CzmlFileBuilder {
     /**
      * List of all the satellites to write.
      */
-    private List<Satellite>                satellites        = new ArrayList<>();
+    private List<Spacecraft>    satellites     = new ArrayList<>();
     /**
      * List of all the constellations to write.
      */
-    private List<Constellation>            constellations    = new ArrayList<>();
+    private List<Constellation> constellations = new ArrayList<>();
     /**
      * List of all the czml ground stations to write.
      */
@@ -98,15 +98,15 @@ public class CzmlFileBuilder {
     /**
      * List of all the maneuver sequences to write.
      */
-    private List<ManeuverSequence>         maneuverSequences = new ArrayList<>();
+    private List<ManeuverSequence>          maneuverSequences = new ArrayList<>();
     /**
      * List of all the satellite reference systems to write.
      */
-    private List<SatelliteReferenceSystem> satelliteSystems  = new ArrayList<>();
+    private List<SpacecraftReferenceSystem> satelliteSystems  = new ArrayList<>();
     /**
      * List of all the covered surfaces on body to write.
      */
-    private List<CoveredSurfaceOnBody>     surfaces          = new ArrayList<>();
+    private List<CoveredSurfaceOnBody>      surfaces          = new ArrayList<>();
     /**
      * List of all the latitude longitude lines display to write.
      */
@@ -154,7 +154,7 @@ public class CzmlFileBuilder {
      * @param satelliteInput : The satellite to set up.
      * @return : The czml file builder with the given satellite.
      */
-    public CzmlFileBuilder withSatellite(final Satellite... satelliteInput) {
+    public CzmlFileBuilder withSatellite(final Spacecraft... satelliteInput) {
         this.satellites.addAll(Arrays.asList(satelliteInput));
         return this;
     }
@@ -165,7 +165,7 @@ public class CzmlFileBuilder {
      * @param satellitesInput : The list of satellites to set up.
      * @return : The czml file builder with the given list of satellites.
      */
-    public CzmlFileBuilder withSatellite(final List<Satellite> satellitesInput) {
+    public CzmlFileBuilder withSatellite(final List<Spacecraft> satellitesInput) {
         this.satellites.addAll(satellitesInput);
         return this;
     }
@@ -429,7 +429,7 @@ public class CzmlFileBuilder {
      * @param systemInput : The satellite reference system to set up.
      * @return : The czml file builder with the given satellite reference system.
      */
-    public CzmlFileBuilder withSatelliteReferenceSystem(final SatelliteReferenceSystem... systemInput) {
+    public CzmlFileBuilder withSatelliteReferenceSystem(final SpacecraftReferenceSystem... systemInput) {
         this.satelliteSystems.addAll(Arrays.asList(systemInput));
         return this;
     }
@@ -440,7 +440,7 @@ public class CzmlFileBuilder {
      * @param systemsInput : The list of satellite reference systems to set up.
      * @return : The czml file builder with the given list of satellite reference systems.
      */
-    public CzmlFileBuilder withSatelliteReferenceSystem(final List<SatelliteReferenceSystem> systemsInput) {
+    public CzmlFileBuilder withSatelliteReferenceSystem(final List<SpacecraftReferenceSystem> systemsInput) {
         this.satelliteSystems.addAll(systemsInput);
         return this;
     }
@@ -575,7 +575,7 @@ public class CzmlFileBuilder {
      * @param file : The czml file that will be written.
      */
     private void addSatellites(final CzmlFile file) {
-        for (Satellite satellite : satellites) {
+        for (Spacecraft satellite : satellites) {
             file.addObject(satellite);
         }
     }
@@ -696,7 +696,7 @@ public class CzmlFileBuilder {
      * @param file : The czml file that will be written.
      */
     private void addSatelliteReferenceSystem(final CzmlFile file) {
-        for (SatelliteReferenceSystem systemInput : satelliteSystems) {
+        for (SpacecraftReferenceSystem systemInput : satelliteSystems) {
             file.addObject(systemInput);
         }
     }

@@ -33,7 +33,7 @@ import org.orekit.czml.object.Polyline;
 import org.orekit.czml.object.nonvisual.PointOnBody;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.secondary.Orientation;
 import org.orekit.frames.Frame;
 import org.orekit.propagation.SpacecraftState;
@@ -81,7 +81,7 @@ public class AttitudePointing extends AbstractPrimaryObject {
     /**
      * The satellite which attitude will be pointed.
      */
-    private final Satellite satellite;
+    private final Spacecraft satellite;
 
     /**
      * The list of the attitude of the satellite.
@@ -144,8 +144,8 @@ public class AttitudePointing extends AbstractPrimaryObject {
      * @param direction : The direction to point to.
      * @param header    : The header considered.
      */
-    AttitudePointing(final Satellite satellite, final OneAxisEllipsoid body, final Vector3D direction,
-                            final Header header) {
+    AttitudePointing(final Spacecraft satellite, final OneAxisEllipsoid body, final Vector3D direction,
+                     final Header header) {
         this(satellite, body, direction, DEFAULT_COLOR, false, DEFAULT_ID + satellite.getId(),
                 header);
     }
@@ -161,9 +161,9 @@ public class AttitudePointing extends AbstractPrimaryObject {
      * @param ID                    : The ID of the attitude pointing object
      * @param header                : The header to set up if several headers are used, else way put null.
      */
-    AttitudePointing(final Satellite satellite, final OneAxisEllipsoid body, final Vector3D direction,
-                            final Color color, final boolean alwaysDisplayOnGround,
-                            final String ID, final Header header) {
+    AttitudePointing(final Spacecraft satellite, final OneAxisEllipsoid body, final Vector3D direction,
+                     final Color color, final boolean alwaysDisplayOnGround,
+                     final String ID, final Header header) {
         this.setId(ID);
         this.satellite = satellite;
         this.setName(DEFAULT_NAME + satellite.getName());
@@ -200,7 +200,7 @@ public class AttitudePointing extends AbstractPrimaryObject {
      * @param header         the header
      * @return the attitude pointing builder
      */
-    public static AttitudePointingBuilder builder(final Satellite satelliteInput, final OneAxisEllipsoid bodyInput,
+    public static AttitudePointingBuilder builder(final Spacecraft satelliteInput, final OneAxisEllipsoid bodyInput,
                                                   final Vector3D directionInput, final Header header) {
         return new AttitudePointingBuilder(satelliteInput, bodyInput, directionInput, header);
     }
@@ -258,7 +258,7 @@ public class AttitudePointing extends AbstractPrimaryObject {
      *
      * @return the satellite
      */
-    public Satellite getSatellite() {
+    public Spacecraft getSatellite() {
         return satellite;
     }
 
@@ -374,7 +374,7 @@ public class AttitudePointing extends AbstractPrimaryObject {
                                                                final boolean alwaysDisplayOnGroundInput,
                                                                final List<Attitude> satelliteAttitudesInput,
                                                                final List<SpacecraftState> statesInput,
-                                                               final Satellite satelliteInput,
+                                                               final Spacecraft satelliteInput,
                                                                final OneAxisEllipsoid bodyInput) {
 
         final List<GeodeticPoint> toReturn = new ArrayList<>();

@@ -34,7 +34,7 @@ import org.orekit.czml.file.CzmlFile;
 import org.orekit.czml.object.primary.pointing.AttitudePointing;
 import org.orekit.czml.object.primary.entities.CzmlGroundStation;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.forces.ForceModel;
 import org.orekit.forces.gravity.HolmesFeatherstoneAttractionModel;
@@ -244,12 +244,12 @@ public class AttitudePathAlongOrbit {
         propagator.propagate(startDate, finalDate);
         final BoundedPropagator boundedPropagator = generator.getGeneratedEphemeris();
 
-        final Satellite satellite = Satellite.builder(boundedPropagator, header)
-                                             .withModelPath(IssModel)
-                                             .withColor(Color.PINK)
-                                             .withOnlyOnePeriod()
-                                             .withDisplayAttitude()
-                                             .build();
+        final Spacecraft satellite = Spacecraft.builder(boundedPropagator, header)
+                                               .withModelPath(IssModel)
+                                               .withColor(Color.PINK)
+                                               .withOnlyOnePeriod()
+                                               .withDisplayAttitude()
+                                               .build();
 
         final AttitudePointing attitudePointing = AttitudePointing.builder(satellite, TutorialUtils.getEarth(),
                                                                           Vector3D.PLUS_I, header)

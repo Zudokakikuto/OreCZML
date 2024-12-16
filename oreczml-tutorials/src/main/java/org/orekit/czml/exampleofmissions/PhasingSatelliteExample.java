@@ -23,7 +23,7 @@ import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
 import org.orekit.czml.file.CzmlFile;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.forces.ForceModel;
 import org.orekit.forces.gravity.HolmesFeatherstoneAttractionModel;
@@ -135,17 +135,17 @@ public class PhasingSatelliteExample {
         final BoundedPropagator boundedPropagatorPhasing = generatorPhasing.getGeneratedEphemeris();
 
         // Creation of the two satellites
-        final Satellite satellitePhased = Satellite.builder(boundedPropagatorPhased, header)
-                                                   .withColor(Color.RED)
-                                                   .withOnlyOnePeriod()
-                                                   .withDisplayAttitude()
-                                                   .build();
+        final Spacecraft satellitePhased = Spacecraft.builder(boundedPropagatorPhased, header)
+                                                     .withColor(Color.RED)
+                                                     .withOnlyOnePeriod()
+                                                     .withDisplayAttitude()
+                                                     .build();
 
-        final Satellite satellitePhasing = Satellite.builder(boundedPropagatorPhasing, header)
-                                                    .withColor(Color.GREEN)
-                                                    .withOnlyOnePeriod()
-                                                    .withDisplayAttitude()
-                                                    .build();
+        final Spacecraft satellitePhasing = Spacecraft.builder(boundedPropagatorPhasing, header)
+                                                      .withColor(Color.GREEN)
+                                                      .withOnlyOnePeriod()
+                                                      .withDisplayAttitude()
+                                                      .build();
 
         final CzmlFile file = CzmlFile.builder()
                                       .withHeader(header)

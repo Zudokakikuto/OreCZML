@@ -23,8 +23,8 @@
   }
 },
 {
-  "id":"ATTITUDE_POINTING/SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-7.00506805e+03, 4.28936708e-13, 1.23518250e+03)}",
-  "name":"Attitude pointing of : Satellite",
+  "id":"ATTITUDE_POINTING/SPACECRAFT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-7.00506805e+03, 4.28936708e-13, 1.23518250e+03)}",
+  "name":"Attitude pointing of : Spacecraft",
   "availability":"2024-01-01T00:00:00Z/2024-01-01T00:01:00Z",
   "polyline":{
     "width":1,
@@ -40,7 +40,7 @@
     },
     "positions":{
       "references":[
-        "SAT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-7.00506805e+03, 4.28936708e-13, 1.23518250e+03)}#position",
+        "SPACECRAFT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-7.00506805e+03, 4.28936708e-13, 1.23518250e+03)}#position",
         "POINT_ON_BODY/[null, null, null, null, null, null, null, null, null, null]#position"
       ]
     }

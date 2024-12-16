@@ -24,7 +24,6 @@ import cesiumlanguagewriter.PolygonCesiumWriter;
 import cesiumlanguagewriter.PositionListCesiumWriter;
 import cesiumlanguagewriter.SolidColorMaterialCesiumWriter;
 import cesiumlanguagewriter.TimeInterval;
-import org.orekit.czml.archi.builder.PolygonBuilder;
 import org.orekit.czml.object.primary.Header;
 
 import java.awt.Color;
@@ -141,8 +140,8 @@ public class Polygon extends AbstractSecondaryObject {
      * @param header          the header
      * @return the polygon builder
      */
-    public PolygonBuilder builder(final List<Cartesian> cartesiansInput, final Header header) {
-        return new PolygonBuilder(cartesiansInput, header);
+    public Label.PolygonBuilder builder(final List<Cartesian> cartesiansInput, final Header header) {
+        return new Label.PolygonBuilder(cartesiansInput, header);
     }
 
 

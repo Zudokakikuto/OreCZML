@@ -19,7 +19,7 @@ package org.orekit.czml.object.primary.visu;
 import org.hipparchus.util.FastMath;
 import org.orekit.bodies.OneAxisEllipsoid;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.frames.FramesFactory;
 import org.orekit.frames.Transform;
 import org.orekit.geometry.fov.FieldOfView;
@@ -53,7 +53,7 @@ public class FieldOfObservationBuilder {
     /**
      * The satellite that is observing the body.
      */
-    private final Satellite satellite;
+    private final Spacecraft satellite;
 
     /**
      * The field of view of the satellite.
@@ -102,7 +102,7 @@ public class FieldOfObservationBuilder {
      * @param fovToBodyInput   : The transform between the frame of the fov to the frame of the body.
      * @param headerInput      : The header considered.
      */
-    public FieldOfObservationBuilder(final Satellite satelliteInput, final FieldOfView fieldOfViewInput,
+    public FieldOfObservationBuilder(final Spacecraft satelliteInput, final FieldOfView fieldOfViewInput,
                                      final Transform fovToBodyInput, final Header headerInput) {
         this.satellite   = satelliteInput;
         this.fieldOfView = fieldOfViewInput;

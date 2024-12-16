@@ -21,7 +21,7 @@ import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
 import org.orekit.czml.file.CzmlFile;
-import org.orekit.czml.object.primary.Constellation;
+import org.orekit.czml.object.primary.entities.Constellation;
 import org.orekit.czml.object.primary.GroundTrack;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.secondary.Clock;
@@ -118,11 +118,11 @@ public class GroundTrackConstellationExample {
         }
 
         // Creation of the Constellation
-        final Constellation constellation = new Constellation(propagators, finalDate, header);
+        final Constellation constellation = Constellation.builder(propagators, finalDate, header).build();
 
 
         // Build of the ground track
-        final GroundTrack groundTrack = new GroundTrack(constellation, TutorialUtils.getEarth(), header);
+        final GroundTrack groundTrack = GroundTrack.builder(constellation, TutorialUtils.getEarth(), header).build();
         groundTrack.displayLinkSatellite();
 
         final CzmlFile file = CzmlFile.builder()

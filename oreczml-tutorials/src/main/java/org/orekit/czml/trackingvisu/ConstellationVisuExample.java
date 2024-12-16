@@ -22,7 +22,7 @@ import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.czml.file.CzmlFile;
-import org.orekit.czml.object.primary.Constellation;
+import org.orekit.czml.object.primary.entities.Constellation;
 import org.orekit.czml.object.primary.entities.CzmlGroundStation;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.primary.visu.LineOfVisibility;
@@ -121,7 +121,7 @@ public class ConstellationVisuExample {
         }
 
         // Build of the constellation
-        final Constellation constellation = new Constellation(propagators, finalDate, header);
+        final Constellation constellation = Constellation.builder(propagators, finalDate, header).build();
 
         //// Creation of the ground station
 

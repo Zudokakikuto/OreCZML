@@ -27,7 +27,7 @@ import org.orekit.attitudes.CelestialBodyPointed;
 import org.orekit.attitudes.LofOffset;
 import org.orekit.bodies.CelestialBodyFactory;
 import org.orekit.czml.file.AbstractTest;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.forces.ForceModel;
 import org.orekit.forces.gravity.HolmesFeatherstoneAttractionModel;
 import org.orekit.forces.gravity.potential.GravityFieldFactory;
@@ -183,7 +183,7 @@ public class ManeuverSequenceTest extends AbstractTest {
         propagator.propagate(startDate, finalDate);
         final BoundedPropagator boundedPropagator = generator.getGeneratedEphemeris();
 
-        final Satellite satellite = new Satellite(boundedPropagator, header);
+        final Spacecraft satellite = new Spacecraft(boundedPropagator, header);
 
         final List<Vector3D> accelerations = new ArrayList<>();
         accelerations.add(Vector3D.PLUS_I);

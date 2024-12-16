@@ -23,7 +23,7 @@ import org.orekit.attitudes.Attitude;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.Utils.DateUtils;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.frames.FramesFactory;
 import org.orekit.propagation.BoundedPropagator;
 import org.orekit.time.AbsoluteDate;
@@ -56,7 +56,7 @@ public class OrientationTest extends AbstractTest {
         final AbsoluteDate stopDate = startDate.shiftedBy(60.0);
 
         final BoundedPropagator propagator = dummyPropagator(startDate, stopDate);
-        final Satellite satellite = new Satellite(propagator, header);
+        final Spacecraft        satellite  = new Spacecraft(propagator, header);
 
         final List<Attitude> attitudes = satellite.getAttitudes();
 

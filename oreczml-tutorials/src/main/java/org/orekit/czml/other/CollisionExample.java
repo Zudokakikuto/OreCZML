@@ -23,9 +23,9 @@ import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
 import org.orekit.czml.file.CzmlFile;
-import org.orekit.czml.object.primary.Collision;
+import org.orekit.czml.object.primary.covariance.Collision;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.forces.ForceModel;
 import org.orekit.forces.gravity.HolmesFeatherstoneAttractionModel;
@@ -143,17 +143,17 @@ public class CollisionExample {
         final BoundedPropagator boundedPropagator1 = generator1.getGeneratedEphemeris();
         final BoundedPropagator boundedPropagator2 = generator2.getGeneratedEphemeris();
 
-        final Satellite satellite1 = Satellite.builder(boundedPropagator1, header)
-                                              .withModelPath(IssModel)
-                                              .withColor(Color.MAGENTA)
-                                              .withOnlyOnePeriod()
-                                              .build();
+        final Spacecraft satellite1 = Spacecraft.builder(boundedPropagator1, header)
+                                                .withModelPath(IssModel)
+                                                .withColor(Color.MAGENTA)
+                                                .withOnlyOnePeriod()
+                                                .build();
 
-        final Satellite satellite2 = Satellite.builder(boundedPropagator2, header)
-                                              .withModelPath(IssModel)
-                                              .withColor(Color.MAGENTA)
-                                              .withOnlyOnePeriod()
-                                              .build();
+        final Spacecraft satellite2 = Spacecraft.builder(boundedPropagator2, header)
+                                                .withModelPath(IssModel)
+                                                .withColor(Color.MAGENTA)
+                                                .withOnlyOnePeriod()
+                                                .build();
 
         // Build of the covariance
         final RealMatrix realMatrix = MatrixUtils.createRealDiagonalMatrix(
@@ -163,8 +163,8 @@ public class CollisionExample {
         final List<StateCovariance> covariances1 = covariancePropagation(satellite1, propagator1, stateCovariance, header);
         final List<StateCovariance> covariances2 = covariancePropagation(satellite2, propagator2, stateCovariance, header);
 
-        final Collision collision = new Collision(satellite1, satellite2, covariances1,
-                covariances2, LOFType.TNW, LOFType.TNW, header);
+        final Collision collision = Collision.builder(satellite1, satellite2, covariances1,
+                covariances2, LOFType.TNW, LOFType.TNW, header).build();
 
         // Creation of the file
         final CzmlFile file = CzmlFile.builder()
@@ -187,7 +187,7 @@ public class CollisionExample {
      * @param header         the header
      * @return the list
      */
-    public static List<StateCovariance> covariancePropagation (final Satellite satellite, final Propagator propagator,
+    public static List<StateCovariance> covariancePropagation (final Spacecraft satellite, final Propagator propagator,
                                                                final StateCovariance initCovariance, final Header header) {
 
         final List<StateCovariance> covarianceListTemp = new ArrayList<>();

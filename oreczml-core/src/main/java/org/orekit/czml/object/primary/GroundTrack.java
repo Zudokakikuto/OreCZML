@@ -28,11 +28,11 @@ import cesiumlanguagewriter.Reference;
 import cesiumlanguagewriter.SolidColorMaterialCesiumWriter;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.orekit.bodies.BodyShape;
-import org.orekit.czml.archi.builder.GroundTrackBuilder;
 import org.orekit.czml.object.CzmlShow;
 import org.orekit.czml.object.Path;
 import org.orekit.czml.object.Polyline;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.entities.Constellation;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.secondary.TimePosition;
 import org.orekit.propagation.SpacecraftState;
 import org.orekit.time.AbsoluteDate;
@@ -86,7 +86,7 @@ public class GroundTrack extends AbstractPrimaryObject {
     /**
      * The satellite which the ground track is computed.
      */
-    private Satellite satellite;
+    private Spacecraft satellite;
 
     /**
      * The color of the ground track.
@@ -127,7 +127,7 @@ public class GroundTrack extends AbstractPrimaryObject {
      * @param body      : The body in which the ground track must be projected to.
      * @param header    : The header considered.
      */
-    public GroundTrack(final Satellite satellite, final BodyShape body, final Header header) {
+    GroundTrack(final Spacecraft satellite, final BodyShape body, final Header header) {
         this(satellite, body, DEFAULT_COLOR, DEFAULT_ID + satellite.getId(), header);
     }
 
@@ -140,7 +140,7 @@ public class GroundTrack extends AbstractPrimaryObject {
      * @param customID  : The custom ID for the ground track
      * @param header    : The header to consider when several headers are used.
      */
-    public GroundTrack(final Satellite satellite, final BodyShape body, final Color color, final String customID,
+    GroundTrack(final Spacecraft satellite, final BodyShape body, final Color color, final String customID,
                        final Header header) {
 
         this.satellite = satellite;
@@ -169,7 +169,7 @@ public class GroundTrack extends AbstractPrimaryObject {
      * @param body          : The body in which the ground track must be projected to.
      * @param header        : The header considered.
      */
-    public GroundTrack(final Constellation constellation, final BodyShape body, final Header header) {
+    GroundTrack(final Constellation constellation, final BodyShape body, final Header header) {
         this(constellation, body, DEFAULT_COLOR, DEFAULT_ID + constellation.getId(), header);
     }
 
@@ -182,17 +182,17 @@ public class GroundTrack extends AbstractPrimaryObject {
      * @param customID      : The custom ID for the ground track
      * @param header        : The header considered when several header are used.
      */
-    public GroundTrack(final Constellation constellation, final BodyShape body, final Color color,
+    GroundTrack(final Constellation constellation, final BodyShape body, final Color color,
                        final String customID, final Header header) {
 
-        final List<Satellite> satellites = constellation.getSatellites();
+        final List<Spacecraft> satellites = constellation.getSatellites();
         this.color        = color;
         this.groundTracks = new ArrayList<>();
         this.header       = header;
         this.setId(customID);
         this.setName(DEFAULT_NAME + constellation.getTotalOfSatellite() + DEFAULT_CONSTELLATION_NUMBER_OF_SAT);
         this.setAvailability(header.getAvailability());
-        for (final Satellite currentSat : satellites) {
+        for (final Spacecraft currentSat : satellites) {
             final GroundTrack currentGroundTrack = new GroundTrack(currentSat, body, currentSat.getColor(),
                     customID + currentSat.getId(), header);
             groundTracks.add(currentGroundTrack);
@@ -210,7 +210,7 @@ public class GroundTrack extends AbstractPrimaryObject {
      * @param header    the header
      * @return the ground track builder
      */
-    public static GroundTrackBuilder builder(final Satellite satellite, final BodyShape body, final Header header) {
+    public static GroundTrackBuilder builder(final Spacecraft satellite, final BodyShape body, final Header header) {
         return new GroundTrackBuilder(satellite, body, header);
     }
 
@@ -251,7 +251,7 @@ public class GroundTrack extends AbstractPrimaryObject {
                     final CzmlShow            show              = new CzmlShow(true, header.getAvailability());
                     final List<CzmlShow>      shows             = new ArrayList<>();
                     shows.add(show);
-                    final Polyline polylineInput = new Polyline(header);
+                    final Polyline polylineInput = Polyline.nonVectorBuilder(header).build();
                     polylineInput.writePolylineOfVisibility(packet, output, referenceIterable, shows);
                 }
             }
@@ -297,7 +297,7 @@ public class GroundTrack extends AbstractPrimaryObject {
      *
      * @return the satellite
      */
-    public Satellite getSatellite() {
+    public Spacecraft getSatellite() {
         return satellite;
     }
 

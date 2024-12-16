@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.orekit.czml.object.primary;
+package org.orekit.czml.object.primary.covariance;
 
 import cesiumlanguagewriter.Cartesian;
 import cesiumlanguagewriter.CesiumOutputStream;
@@ -29,9 +29,10 @@ import org.hipparchus.linear.RealMatrix;
 import org.hipparchus.linear.RealVector;
 import org.hipparchus.util.FastMath;
 import org.orekit.attitudes.Attitude;
-import org.orekit.czml.archi.builder.CovarianceBuilder;
 import org.orekit.czml.object.Utils.DateUtils;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.AbstractPrimaryObject;
+import org.orekit.czml.object.primary.Header;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.secondary.CzmlEllipsoid;
 import org.orekit.czml.object.secondary.Orientation;
 import org.orekit.frames.LOF;
@@ -98,7 +99,7 @@ public class Covariance extends AbstractPrimaryObject {
     /**
      * The satellite which the ellipsoid will be around.
      */
-    private Satellite satellite;
+    private Spacecraft satellite;
 
     // Other arguments
 
@@ -142,7 +143,7 @@ public class Covariance extends AbstractPrimaryObject {
      * @param lof         : The lof of the satellite
      * @param header      : The header to consider when several are used.
      */
-    public Covariance(final Satellite satellite, final List<StateCovariance> covariances, final LOF lof,
+    Covariance(final Spacecraft satellite, final List<StateCovariance> covariances, final LOF lof,
                       final Header header) {
 
         this(satellite, covariances, lof, DEFAULT_COLOR, DEFAULT_ID + satellite.getId(), header);
@@ -158,7 +159,7 @@ public class Covariance extends AbstractPrimaryObject {
      * @param customID    : The custom ID of the covariance object
      * @param header      : The header to consider when several are used.
      */
-    public Covariance(final Satellite satellite, final List<StateCovariance> covariances, final LOF lof,
+    Covariance(final Spacecraft satellite, final List<StateCovariance> covariances, final LOF lof,
                       final Color color, final String customID, final Header header) {
 
         this.satellite        = satellite;
@@ -186,7 +187,7 @@ public class Covariance extends AbstractPrimaryObject {
      * @param header           the header
      * @return the covariance builder
      */
-    public static CovarianceBuilder builder(final Satellite satelliteInput,
+    public static CovarianceBuilder builder(final Spacecraft satelliteInput,
                                             final List<StateCovariance> covariancesInput, final LOF lofInput,
                                             final Header header) {
         return new CovarianceBuilder(satelliteInput, covariancesInput, lofInput, header);
@@ -225,7 +226,7 @@ public class Covariance extends AbstractPrimaryObject {
      *
      * @return : The satellite used.
      */
-    public Satellite getSatellite() {
+    public Spacecraft getSatellite() {
         return satellite;
     }
 

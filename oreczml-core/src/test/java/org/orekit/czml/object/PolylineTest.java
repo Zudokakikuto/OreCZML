@@ -45,7 +45,7 @@ public class PolylineTest extends AbstractTest {
 
         final Header header = dummyHeader();
 
-        final Polyline polyline = new Polyline(header);
+        final Polyline polyline = Polyline.nonVectorBuilder(header).build();
 
         final Polyline polylineNonVector = Polyline.nonVectorBuilder(header)
                                                    .withColor(Color.ORANGE)

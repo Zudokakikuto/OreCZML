@@ -25,11 +25,11 @@ import org.orekit.attitudes.NadirPointing;
 import org.orekit.attitudes.YawCompensation;
 import org.orekit.attitudes.YawSteering;
 import org.orekit.bodies.CelestialBodyFactory;
-import org.orekit.czml.object.primary.entities.SatelliteBuilder;
+import org.orekit.czml.object.primary.entities.SpacecraftBuilder;
 import org.orekit.czml.file.CzmlFile;
 import org.orekit.czml.object.primary.visu.FieldOfObservation;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.forces.ForceModel;
 import org.orekit.forces.gravity.HolmesFeatherstoneAttractionModel;
@@ -178,24 +178,24 @@ public class YawCompensationExample {
         final BoundedPropagator boundedPropagator3 = generator3.getGeneratedEphemeris();
 
         // Build of satellites
-        final List<Satellite> satellites = new ArrayList<>();
-        final Satellite satellite1 = new SatelliteBuilder(boundedPropagator1, header).withColor(Color.PINK)
-                                                                                     .withOnlyOnePeriod()
-                                                                                     .withDisplayAttitude()
-                                                                                     .withReferenceSystem()
-                                                                                     .build();
+        final List<Spacecraft> satellites = new ArrayList<>();
+        final Spacecraft satellite1 = new SpacecraftBuilder(boundedPropagator1, header).withColor(Color.PINK)
+                                                                                       .withOnlyOnePeriod()
+                                                                                       .withDisplayAttitude()
+                                                                                       .withReferenceSystem()
+                                                                                       .build();
 
-        final Satellite satellite2 = new SatelliteBuilder(boundedPropagator2, header).withColor(Color.BLUE)
-                                                                                     .withOnlyOnePeriod()
-                                                                                     .withDisplayAttitude()
-                                                                                     .withReferenceSystem()
-                                                                                     .build();
+        final Spacecraft satellite2 = new SpacecraftBuilder(boundedPropagator2, header).withColor(Color.BLUE)
+                                                                                       .withOnlyOnePeriod()
+                                                                                       .withDisplayAttitude()
+                                                                                       .withReferenceSystem()
+                                                                                       .build();
 
-        final Satellite satellite3 = new SatelliteBuilder(boundedPropagator3, header).withColor(Color.WHITE)
-                                                                                     .withOnlyOnePeriod()
-                                                                                     .withDisplayAttitude()
-                                                                                     .withReferenceSystem()
-                                                                                     .build();
+        final Spacecraft satellite3 = new SpacecraftBuilder(boundedPropagator3, header).withColor(Color.WHITE)
+                                                                                       .withOnlyOnePeriod()
+                                                                                       .withDisplayAttitude()
+                                                                                       .withReferenceSystem()
+                                                                                       .build();
         satellites.add(satellite1);
         satellites.add(satellite2);
         satellites.add(satellite3);

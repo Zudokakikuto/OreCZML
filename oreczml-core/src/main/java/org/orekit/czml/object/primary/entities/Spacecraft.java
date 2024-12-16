@@ -40,7 +40,7 @@ import org.orekit.czml.object.Utils.DateUtils;
 import org.orekit.czml.object.nonvisual.CzmlModel;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.systems.SatelliteReferenceSystem;
+import org.orekit.czml.object.primary.systems.SpacecraftReferenceSystem;
 import org.orekit.czml.object.secondary.Orientation;
 import org.orekit.czml.object.secondary.TimePosition;
 import org.orekit.errors.OrekitException;
@@ -59,21 +59,21 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Satellite class.
+ * Spacecraft class.
  *
- * <p> This class represents the satellite object to be displayed. It can be build from many orekit outputs and admits
+ * <p> This class represents the Spacecraft object to be displayed. It can be build from many orekit outputs and admits
  * several functions to display or not intrinsic parameters.</p>
  *
- * <p> Each satellite object created will imply a propagation with default parameters, if you want you own parameters
- * in the propagator, you can still build a satellite with a propagator to do so.</p>
+ * <p> Each Spacecraft object created will imply a propagation with default parameters, if you want you own parameters
+ * in the propagator, you can still build a Spacecraft with a propagator to do so.</p>
  *
- * <p> The satellite object admits also 2D and 3D models. By default builders will load a 2D image to represent the satellite,
+ * <p> The Spacecraft object admits also 2D and 3D models. By default builders will load a 2D image to represent the Spacecraft,
  * but each builder is overloaded with a path to the 3D model to charge your own 2D or 3D model.</p>
  *
  * @author Julien LEBLOND
  * @since 1.0.0
  */
-public class Satellite extends AbstractPrimaryObject {
+public class Spacecraft extends AbstractPrimaryObject {
 
     /**
      * The default model path, empty.
@@ -81,14 +81,14 @@ public class Satellite extends AbstractPrimaryObject {
     public static final String DEFAULT_MODEL_PATH = "";
 
     /**
-     * The default id of the satellite.
+     * The default id of the Spacecraft.
      */
-    public static final String DEFAULT_ID = "SAT/";
+    public static final String DEFAULT_ID = "SPACECRAFT/";
 
     /**
-     * The default name of the satellite.
+     * The default name of the Spacecraft.
      */
-    public static final String DEFAULT_NAME = "Satellite";
+    public static final String DEFAULT_NAME = "Spacecraft";
 
     /** The default format for the formatted ID. */
     public static final String DEFAULT_FORMAT = DEFAULT_ID + "{P(%1.8e, %2.8e, %3.8e), V(%4.8e, %5.8e, %6.8e)}";
@@ -97,12 +97,12 @@ public class Satellite extends AbstractPrimaryObject {
     public static final String DEFAULT_INERTIAL = "INERTIAL";
 
     /**
-     * The default orbit color of the satellite.
+     * The default orbit color of the Spacecraft.
      */
     public static final Color DEFAULT_COLOR = new Color(255, 255, 255);
 
     /**
-     * If the satellite already has an attitude defined or not.
+     * If the Spacecraft already has an attitude defined or not.
      */
     private boolean oriented = false;
 
@@ -113,33 +113,33 @@ public class Satellite extends AbstractPrimaryObject {
     private boolean displayOnlyOnePeriod = false;
 
     /**
-     * To display or not the attitude of the satellite. By default, the satellite is oriented in TNW in the local orbital frame.
+     * To display or not the attitude of the Spacecraft. By default, the Spacecraft is oriented in TNW in the local orbital frame.
      */
     private boolean displayAttitude = false;
 
     /**
-     * To display or not the satellite reference system.
+     * To display or not the Spacecraft reference system.
      */
     private boolean displayReferenceSystem = false;
 
     // Orekit arguments
     /**
-     * The list of the attitudes of the satellite.
+     * The list of the attitudes of the Spacecraft.
      */
     private List<Attitude> attitudes = new ArrayList<>();
 
     /**
-     * The list of the spacecraft states of the satellite.
+     * The list of the spacecraft states of the Spacecraft.
      */
     private final List<SpacecraftState> spaceCraftStates = new ArrayList<>();
 
     /**
-     * The optional rotation applied to the attitude of the satellite.
+     * The optional rotation applied to the attitude of the Spacecraft.
      */
     private Rotation optionalRotation;
 
     /**
-     * The frame in which the satellite is computed.
+     * The frame in which the Spacecraft is computed.
      */
     private final Frame frame;
 
@@ -150,19 +150,19 @@ public class Satellite extends AbstractPrimaryObject {
     private double period;
 
     /**
-     * The orientation in the local orbital frame of the satellite.
+     * The orientation in the local orbital frame of the Spacecraft.
      */
     private Orientation orientation;
 
     /**
-     * The propagator of the satellite.
+     * The propagator of the Spacecraft.
      */
-    private Propagator satellitePropagator;
+    private Propagator spacecraftPropagator;
 
     /**
-     * The satellite reference system object.
+     * The Spacecraft reference system object.
      */
-    private SatelliteReferenceSystem satelliteReferenceSystem = null;
+    private SpacecraftReferenceSystem spacecraftReferenceSystem = null;
 
     /**
      * The color of the orbit.
@@ -185,24 +185,24 @@ public class Satellite extends AbstractPrimaryObject {
     /** The final date of the propagation. */
     private final AbsoluteDate finalDate;
 
-    /** The header used for the satellite. */
+    /** The header used for the Spacecraft. */
     private final Header header;
 
-    /** The description of the satellite. */
+    /** The description of the Spacecraft. */
     private String description;
 
 
     // Constructor
 
     /**
-     * The basic satellite constructor, it only needs one bounded propagator. It uses default parameters.
+     * The basic Spacecraft constructor, it only needs one bounded propagator. It uses default parameters.
      *
      * @param propagator : A bounded propagator resulting from an already done propagation.
      * @param header     : The header considered.
      * @throws URISyntaxException the uri syntax exception
      * @throws IOException        the io exception
      */
-    public Satellite(final BoundedPropagator propagator, final Header header) throws URISyntaxException, IOException {
+    public Spacecraft(final BoundedPropagator propagator, final Header header) throws URISyntaxException, IOException {
         this(propagator, propagator.getMinDate(), propagator.getMaxDate(), DEFAULT_MODEL_PATH, DEFAULT_COLOR,
                 String.format(DEFAULT_FORMAT,
                         propagator.getInitialState()
@@ -229,28 +229,28 @@ public class Satellite extends AbstractPrimaryObject {
     }
 
     /**
-     * The satellite constructor with no default parameters.
+     * The Spacecraft constructor with no default parameters.
      *
      * @param propagator     : A bounded propagator resulting from an already done propagation.
-     * @param startDateInput : The start date to consider for the start of the propagation and the availability of the satellite.
-     * @param finalDateInput : The stop date to consider for the stop the propagation and the availability of the satellite.
+     * @param startDateInput : The start date to consider for the start of the propagation and the availability of the Spacecraft.
+     * @param finalDateInput : The stop date to consider for the stop the propagation and the availability of the Spacecraft.
      * @param modelPath      : The path to the model to load.
      * @param color          : The color of the orbit.
-     * @param customID       : The custom ID of the satellite.
+     * @param customID       : The custom ID of the Spacecraft.
      * @param header         : The header considered when several are used.
      * @throws URISyntaxException the uri syntax exception
      * @throws IOException        the io exception
      */
-    public Satellite(final BoundedPropagator propagator, final AbsoluteDate startDateInput,
-                     final AbsoluteDate finalDateInput, final String modelPath, final Color color,
-                     final String customID, final Header header) throws URISyntaxException, IOException {
+    public Spacecraft(final BoundedPropagator propagator, final AbsoluteDate startDateInput,
+                      final AbsoluteDate finalDateInput, final String modelPath, final Color color,
+                      final String customID, final Header header) throws URISyntaxException, IOException {
 
         this.setId(customID);
         this.setName(DEFAULT_NAME);
         this.setAvailability(new TimeInterval(DateUtils.toJulianDate(startDateInput, header.getTimeScale()),
                 DateUtils.toJulianDate(finalDateInput, header.getTimeScale())));
-        this.satellitePropagator = propagator;
-        this.description         = "<!--HTML-->\r\n<p>Id : " + customID + "</p>\r\n<p>" + "Simulated from : " + startDateInput + " to " + finalDateInput + "</p>";
+        this.spacecraftPropagator = propagator;
+        this.description          = "<!--HTML-->\r\n<p>Id : " + customID + "</p>\r\n<p>" + "Simulated from : " + startDateInput + " to " + finalDateInput + "</p>";
         this.frame               = propagator.getFrame();
         this.color               = color;
         this.model               = new CzmlModel(modelPath, true, header);
@@ -261,7 +261,7 @@ public class Satellite extends AbstractPrimaryObject {
         // Setup propagator
         multiplexerSetup(propagator);
         // Propagation
-        satellitePropagator.propagate(startDate, finalDate);
+        spacecraftPropagator.propagate(startDate, finalDate);
         propagator.clearStepHandlers();
     }
 
@@ -269,14 +269,14 @@ public class Satellite extends AbstractPrimaryObject {
     // Builder
 
     /**
-     * Builder satellite builder.
+     * Builder Spacecraft builder.
      *
      * @param propagator the propagator
      * @param header     the header
-     * @return the satellite builder
+     * @return the Spacecraft builder
      */
-    public static SatelliteBuilder builder(final BoundedPropagator propagator, final Header header) {
-        return new SatelliteBuilder(propagator, header);
+    public static SpacecraftBuilder builder(final BoundedPropagator propagator, final Header header) {
+        return new SpacecraftBuilder(propagator, header);
     }
 
 
@@ -303,7 +303,7 @@ public class Satellite extends AbstractPrimaryObject {
             throw new RuntimeException(e);
         }
         if (getDisplayReferenceSystem()) {
-            getSatelliteReferenceSystem().writeCzmlBlock(stream, output);
+            getSpacecraftReferenceSystem().writeCzmlBlock(stream, output);
         }
     }
 
@@ -318,19 +318,19 @@ public class Satellite extends AbstractPrimaryObject {
     }
 
     /**
-     * Display satellite attitude.
+     * Display Spacecraft attitude.
      */
-    public void displaySatelliteAttitude() {
+    public void displaySpacecraftAttitude() {
         this.displayAttitude = true;
         orientationSetup();
     }
 
     /**
-     * Display satellite reference system.
+     * Display Spacecraft reference system.
      */
-    public void displaySatelliteReferenceSystem() {
-        this.displayReferenceSystem   = true;
-        this.satelliteReferenceSystem = new SatelliteReferenceSystem(this, header);
+    public void displaySpacecraftReferenceSystem() {
+        this.displayReferenceSystem    = true;
+        this.spacecraftReferenceSystem = new SpacecraftReferenceSystem(this, header);
     }
 
 
@@ -412,21 +412,21 @@ public class Satellite extends AbstractPrimaryObject {
     }
 
     /**
-     * Gets satellite propagator.
+     * Gets Spacecraft propagator.
      *
-     * @return the satellite propagator
+     * @return the Spacecraft propagator
      */
-    public Propagator getSatellitePropagator() {
-        return satellitePropagator;
+    public Propagator getSpacecraftPropagator() {
+        return spacecraftPropagator;
     }
 
     /**
-     * Gets satellite bounded propagator.
+     * Gets Spacecraft bounded propagator.
      *
-     * @return the satellite bounded propagator
+     * @return the Spacecraft bounded propagator
      */
-    public BoundedPropagator getSatelliteBoundedPropagator() {
-        return (BoundedPropagator) satellitePropagator;
+    public BoundedPropagator getSpacecraftBoundedPropagator() {
+        return (BoundedPropagator) spacecraftPropagator;
     }
 
     /**
@@ -488,12 +488,12 @@ public class Satellite extends AbstractPrimaryObject {
     }
 
     /**
-     * Gets satellite reference system.
+     * Gets Spacecraft reference system.
      *
-     * @return the satellite reference system
+     * @return the Spacecraft reference system
      */
-    public SatelliteReferenceSystem getSatelliteReferenceSystem() {
-        return satelliteReferenceSystem;
+    public SpacecraftReferenceSystem getSpacecraftReferenceSystem() {
+        return spacecraftReferenceSystem;
     }
 
     /**
@@ -521,8 +521,8 @@ public class Satellite extends AbstractPrimaryObject {
      */
     public double getPeriod() {
         try {
-            this.period = satellitePropagator.getInitialState()
-                                             .getKeplerianPeriod();
+            this.period = spacecraftPropagator.getInitialState()
+                                              .getKeplerianPeriod();
         } catch (OrekitException e) {
             throw new OreCzmlException(OreCzmlMessages.NO_ORBIT_FOR_KEPLERIAN_PERIOD);
         }
@@ -537,7 +537,7 @@ public class Satellite extends AbstractPrimaryObject {
      * @param boundedPropagator the bounded propagator
      */
     public void setPropagator(final BoundedPropagator boundedPropagator) {
-        this.satellitePropagator = boundedPropagator;
+        this.spacecraftPropagator = boundedPropagator;
     }
 
     /**
@@ -590,10 +590,10 @@ public class Satellite extends AbstractPrimaryObject {
     // Private functions
 
     /**
-     * This function set a multiplexer for the propagator of the satellite. It will handle the retrieving of the
+     * This function set a multiplexer for the propagator of the Spacecraft. It will handle the retrieving of the
      * spacecraft states and of the attitudes.
      *
-     * @param propagator : The propagator of the satellite.
+     * @param propagator : The propagator of the Spacecraft.
      */
     private void multiplexerSetup(final Propagator propagator) {
         propagator.getMultiplexer()
@@ -607,7 +607,7 @@ public class Satellite extends AbstractPrimaryObject {
     }
 
     /**
-     * This function aims at writing the global display of the satellite, it ensures that the model loaded and the orientation are correct.
+     * This function aims at writing the global display of the Spacecraft, it ensures that the model loaded and the orientation are correct.
      *
      * @param packet : The packet that will write in the czml file.
      * @param output : The output stream of cesium that will contain the strings to write into the CzmLFile.
@@ -649,7 +649,7 @@ public class Satellite extends AbstractPrimaryObject {
     }
 
     /**
-     * This function writes the path of the satellite to display the orbit.
+     * This function writes the path of the Spacecraft to display the orbit.
      *
      * @param packet : The packet that will write in the czml file.
      * @param output : The output stream of cesium that will contain the strings to write into the CzmLFile.
@@ -692,7 +692,7 @@ public class Satellite extends AbstractPrimaryObject {
     }
 
     /**
-     * This function writes the position of the satellite in time.
+     * This function writes the position of the Spacecraft in time.
      *
      * @param packet : The packet that will write in the czml file.
      * @param output : The output stream of cesium that will contain the strings to write into the CzmLFile.
@@ -704,7 +704,7 @@ public class Satellite extends AbstractPrimaryObject {
     }
 
     /**
-     * This function is used when the attitude of the satellite must be displayed. To do so, this function defines an
+     * This function is used when the attitude of the Spacecraft must be displayed. To do so, this function defines an
      * orientation object depending on the type of the model loaded.s
      */
     private void orientationSetup() {

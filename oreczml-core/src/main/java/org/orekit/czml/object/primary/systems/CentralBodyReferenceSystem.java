@@ -23,7 +23,6 @@ import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.PositionCesiumWriter;
 import org.orekit.bodies.OneAxisEllipsoid;
 import org.orekit.annotation.DefaultDataContext;
-import org.orekit.czml.archi.builder.CentralBodyReferenceSystemBuilder;
 import org.orekit.czml.object.Polyline;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
 import org.orekit.czml.object.primary.Header;
@@ -86,7 +85,7 @@ public class CentralBodyReferenceSystem extends AbstractPrimaryObject {
      * @param header : The header considered.
      */
     @DefaultDataContext
-    public CentralBodyReferenceSystem(final Header header) {
+    CentralBodyReferenceSystem(final Header header) {
         this(new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS, Constants.WGS84_EARTH_FLATTENING,
                         DataContext.getDefault().getFrames().getITRF(IERSConventions.IERS_2010, true)), DEFAULT_ID, DEFAULT_NAME, DEFAULT_RED,
                 DEFAULT_GREEN, DEFAULT_BLUE, header);
@@ -103,7 +102,7 @@ public class CentralBodyReferenceSystem extends AbstractPrimaryObject {
      * @param color3 : The color of the z-axis.
      * @param header : The header to use is several headers are used.
      */
-    public CentralBodyReferenceSystem(final OneAxisEllipsoid body, final String id, final String name,
+    CentralBodyReferenceSystem(final OneAxisEllipsoid body, final String id, final String name,
                                       final Color color1, final Color color2, final Color color3, final Header header) {
 
         this.setId(id);

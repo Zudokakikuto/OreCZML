@@ -23,7 +23,7 @@ import org.hipparchus.util.FastMath;
 import org.orekit.czml.file.CzmlFile;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.primary.visu.InterSatVisu;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.forces.ForceModel;
 import org.orekit.forces.gravity.HolmesFeatherstoneAttractionModel;
@@ -134,15 +134,15 @@ public class InterVisuSatExample {
         final BoundedPropagator secondBoundedPropagator = secondGenerator.getGeneratedEphemeris();
 
         // Creation of the satellites
-        final Satellite firstSatellite = Satellite.builder(firstBoundedPropagator, header)
-                                                  .withColor(Color.MAGENTA)
-                                                  .withOnlyOnePeriod()
-                                                  .build();
+        final Spacecraft firstSatellite = Spacecraft.builder(firstBoundedPropagator, header)
+                                                    .withColor(Color.MAGENTA)
+                                                    .withOnlyOnePeriod()
+                                                    .build();
 
-        final Satellite secondSatellite = Satellite.builder(secondBoundedPropagator, header)
-                                                   .withColor(Color.GREEN)
-                                                   .withOnlyOnePeriod()
-                                                   .build();
+        final Spacecraft secondSatellite = Spacecraft.builder(secondBoundedPropagator, header)
+                                                     .withColor(Color.GREEN)
+                                                     .withOnlyOnePeriod()
+                                                     .build();
 
         // Creation of the inter-sat visualisation
         final InterSatVisu interSatVisu = InterSatVisu.builder(firstSatellite, secondSatellite, finalDate, header).build();

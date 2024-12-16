@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.Utils.DateUtils;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.propagation.BoundedPropagator;
 import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScalesFactory;
@@ -33,7 +33,7 @@ import java.nio.file.Path;
 /**
  * The type Satellite test.
  */
-public class SatelliteTest extends AbstractTest {
+public class SpacecraftTest extends AbstractTest {
 
     /**
      * Satellite constructor test.
@@ -52,9 +52,9 @@ public class SatelliteTest extends AbstractTest {
         final AbsoluteDate finalDate = startDate.shiftedBy(60.0);
 
         final BoundedPropagator propagator = dummyPropagator(startDate, finalDate);
-        final Satellite         satellite  = new Satellite(propagator, header);
+        final Spacecraft        satellite  = new Spacecraft(propagator, header);
 
-        final String pathFile = loadResources("templateFile/primary/SatelliteTemplate.txt");
+        final String pathFile = loadResources("templateFile/primary/SpacecraftTemplate.txt");
 
         Assertions.assertEquals(Files.readString(Path.of(pathFile)), satellite.toString());
     }
@@ -78,9 +78,9 @@ public class SatelliteTest extends AbstractTest {
 
         final BoundedPropagator propagator = dummyPropagator(startDate, finalDate);
 
-        final Satellite satellite = Satellite.builder(propagator, header).withDisplayAttitude().build();
+        final Spacecraft satellite = Spacecraft.builder(propagator, header).withDisplayAttitude().build();
 
-        final String pathFile = loadResources("templateFile/primary/SatelliteAttitudeTemplate.txt");
+        final String pathFile = loadResources("templateFile/primary/SpacecraftAttitudeTemplate.txt");
 
         Assertions.assertEquals(Files.readString(Path.of(pathFile)), satellite.toString());
     }

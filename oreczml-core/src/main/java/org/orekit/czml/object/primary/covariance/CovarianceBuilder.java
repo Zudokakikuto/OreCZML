@@ -14,11 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.orekit.czml.archi.builder;
+package org.orekit.czml.object.primary.covariance;
 
-import org.orekit.czml.object.primary.Covariance;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.frames.LOF;
 import org.orekit.propagation.StateCovariance;
 
@@ -50,7 +49,7 @@ public class CovarianceBuilder {
     /**
      * The satellite used for the covariance.
      */
-    private final Satellite satellite;
+    private final Spacecraft satellite;
 
     /** The custom ID for the covariance display. */
     private String customID;
@@ -78,7 +77,7 @@ public class CovarianceBuilder {
      * @param lofInput         : The local orbital frame of the satellite.
      * @param headerInput      : The header considered.
      */
-    public CovarianceBuilder(final Satellite satelliteInput, final List<StateCovariance> covariancesInput,
+    public CovarianceBuilder(final Spacecraft satelliteInput, final List<StateCovariance> covariancesInput,
                              final LOF lofInput, final Header headerInput) {
         this.satellite   = satelliteInput;
         this.covariances = covariancesInput;

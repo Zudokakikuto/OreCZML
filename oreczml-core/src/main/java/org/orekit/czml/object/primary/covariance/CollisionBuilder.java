@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.orekit.czml.archi.builder;
+package org.orekit.czml.object.primary.covariance;
 
-import org.orekit.czml.object.primary.Collision;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.frames.LOF;
 import org.orekit.propagation.StateCovariance;
 
@@ -36,10 +35,10 @@ import java.util.List;
 public class CollisionBuilder {
 
     /** The first satellite to consider. */
-    private final Satellite firstSatellite;
+    private final Spacecraft firstSatellite;
 
     /** The second satellite to consider. */
-    private final Satellite secondSatellite;
+    private final Spacecraft secondSatellite;
 
     /** The list of state covariances of the first satellite. */
     private final List<StateCovariance> firstCovarianceList;
@@ -70,7 +69,7 @@ public class CollisionBuilder {
      * @param secondLofInput            : The local orbital frame of the second satellite.
      * @param header                    : The header considered.
      */
-    public CollisionBuilder(final Satellite firstSatelliteInput, final Satellite secondSatelliteInput,
+    public CollisionBuilder(final Spacecraft firstSatelliteInput, final Spacecraft secondSatelliteInput,
                             final List<StateCovariance> firstCovarianceListInput,
                             final List<StateCovariance> secondCovarianceListInput, final LOF firstLofInput,
                             final LOF secondLofInput, final Header header) {

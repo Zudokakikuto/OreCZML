@@ -1,7 +1,7 @@
 package org.orekit.czml.object.primary.visu;
 
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.frames.TopocentricFrame;
 
 public class StationVisibilityCircleBuilder {
@@ -13,7 +13,7 @@ public class StationVisibilityCircleBuilder {
     private TopocentricFrame topocentricFrame;
 
     /** The satellite observed. */
-    private Satellite satellite;
+    private Spacecraft satellite;
 
     /** The angle of aperture of the station. */
     private double angleOfAperture = DEFAULT_ANGLE_OF_APERTURE;
@@ -28,7 +28,7 @@ public class StationVisibilityCircleBuilder {
      * @param satelliteInput        : The satellite observed.
      * @param headerInput           : The header considered.
      */
-    public StationVisibilityCircleBuilder(final TopocentricFrame topocentricFrameInput, final Satellite satelliteInput,
+    public StationVisibilityCircleBuilder(final TopocentricFrame topocentricFrameInput, final Spacecraft satelliteInput,
                                           final Header headerInput) {
         this.topocentricFrame = topocentricFrameInput;
         this.satellite        = satelliteInput;

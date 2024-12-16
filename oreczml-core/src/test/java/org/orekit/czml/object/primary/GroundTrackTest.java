@@ -20,7 +20,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.Utils.DateUtils;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.entities.Constellation;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.propagation.BoundedPropagator;
 import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScalesFactory;
@@ -56,11 +57,12 @@ public class GroundTrackTest extends AbstractTest {
 
         final BoundedPropagator propagator = dummyPropagator(startDate, finalDate);
 
-        final Satellite satellite = new Satellite(propagator, header);
+        final Spacecraft satellite = new Spacecraft(propagator, header);
 
         final List<BoundedPropagator> propagators = new ArrayList<>(List.of(propagator));
 
-        final Constellation constellation = new Constellation(propagators, finalDate, header);
+        final Constellation constellation = Constellation.builder(propagators, finalDate, header)
+                                                         .build();
 
         final GroundTrack groundTrack = new GroundTrack(satellite, getEarth(), header);
         groundTrack.displayLinkSatellite();

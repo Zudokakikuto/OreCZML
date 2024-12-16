@@ -26,7 +26,7 @@ import org.orekit.czml.object.Position;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
 import org.orekit.czml.object.primary.entities.CzmlGroundStation;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.secondary.Cylinder;
 import org.orekit.frames.TopocentricFrame;
 
@@ -53,7 +53,7 @@ public class VisibilityCone extends AbstractPrimaryObject {
     /**
      * The default satellite (null), uses this to create a visibility cone not limited by the altitude of a satellite.
      */
-    public static final Satellite DEFAULT_SATELLITE_PARAMETER = null;
+    public static final Spacecraft DEFAULT_SPACECRAFT_PARAMETER = null;
 
     /**
      * The default ID of the visibility cone.
@@ -83,7 +83,7 @@ public class VisibilityCone extends AbstractPrimaryObject {
     /**
      * The satellite that enters the visibility cone.
      */
-    private Satellite satellite;
+    private Spacecraft satellite;
 
     // Constructors
 
@@ -96,7 +96,7 @@ public class VisibilityCone extends AbstractPrimaryObject {
      * @param header   : The header considered.
      */
     public VisibilityCone(final String id, final String name, final Cylinder cylinder, final Header header) {
-        this(id, name, cylinder, DEFAULT_SATELLITE_PARAMETER, header);
+        this(id, name, cylinder, DEFAULT_SPACECRAFT_PARAMETER, header);
     }
 
     /**
@@ -109,7 +109,7 @@ public class VisibilityCone extends AbstractPrimaryObject {
      * @param header    : The header considered.
      */
     public VisibilityCone(final String id, final String name, final Cylinder cylinder,
-                          final Satellite satellite, final Header header) {
+                          final Spacecraft satellite, final Header header) {
         this.setId(id);
         this.setName(name);
         this.setAvailability(header.getAvailability());
@@ -140,7 +140,7 @@ public class VisibilityCone extends AbstractPrimaryObject {
      * @param satellite     : The satellite that will go to the visibility cone, the height of the cone will be limited to the altitude of the satellite.
      * @param header        : The header considered.
      */
-    public VisibilityCone(final CzmlGroundStation groundStation, final Satellite satellite, final Header header) {
+    public VisibilityCone(final CzmlGroundStation groundStation, final Spacecraft satellite, final Header header) {
         this(groundStation, satellite, DEFAULT_ANGLE_OF_APERTURE, header);
     }
 
@@ -153,7 +153,7 @@ public class VisibilityCone extends AbstractPrimaryObject {
      * @param angleOfAperture : The angle of aperture of the ground station.
      * @param header          : The header considered.
      */
-    public VisibilityCone(final CzmlGroundStation groundStation, final Satellite satellite,
+    public VisibilityCone(final CzmlGroundStation groundStation, final Spacecraft satellite,
                           final double angleOfAperture, final Header header) {
 
         this.setId(DEFAULT_ID_VIS + groundStation.getName() + "/" + satellite.getName());
@@ -172,7 +172,7 @@ public class VisibilityCone extends AbstractPrimaryObject {
      * @param header           : The header considered.
      */
     public VisibilityCone(final TopocentricFrame topocentricFrame,
-                          final Satellite satellite, final Header header) {
+                          final Spacecraft satellite, final Header header) {
         this(topocentricFrame, satellite, DEFAULT_ANGLE_OF_APERTURE, header);
     }
 
@@ -184,7 +184,7 @@ public class VisibilityCone extends AbstractPrimaryObject {
      * @param angleOfAperture  : The angle of aperture of the ground station.
      * @param header           : The header to consider.
      */
-    public VisibilityCone(final TopocentricFrame topocentricFrame, final Satellite satellite,
+    public VisibilityCone(final TopocentricFrame topocentricFrame, final Spacecraft satellite,
                           final double angleOfAperture, final Header header) {
 
         this.setId(DEFAULT_ID_VIS + topocentricFrame.getName() + "/" + satellite.getName());
@@ -237,7 +237,7 @@ public class VisibilityCone extends AbstractPrimaryObject {
      *
      * @return the satellite
      */
-    public Satellite getSatellite() {
+    public Spacecraft getSatellite() {
         if (satellite == null) {
             throw new OreCzmlException(OreCzmlMessages.NO_SAT_VISIBILITY_CONE);
         } else {

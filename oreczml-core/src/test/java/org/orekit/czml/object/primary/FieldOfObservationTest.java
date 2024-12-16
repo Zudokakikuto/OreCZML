@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.attitudes.LofOffset;
 import org.orekit.czml.file.AbstractTest;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.primary.visu.FieldOfObservation;
 import org.orekit.forces.ForceModel;
 import org.orekit.forces.gravity.HolmesFeatherstoneAttractionModel;
@@ -107,7 +107,7 @@ public class FieldOfObservationTest extends AbstractTest {
         propagator.propagate(startDate, finalDate);
         final BoundedPropagator boundedPropagator = generator.getGeneratedEphemeris();
 
-        final Satellite satellite = new Satellite(boundedPropagator, header);
+        final Spacecraft satellite = new Spacecraft(boundedPropagator, header);
 
         final FieldOfView fov = new DoubleDihedraFieldOfView(Vector3D.PLUS_J, Vector3D.PLUS_I,
                 FastMath.toRadians(20), Vector3D.PLUS_K, FastMath.toRadians(20), 2);

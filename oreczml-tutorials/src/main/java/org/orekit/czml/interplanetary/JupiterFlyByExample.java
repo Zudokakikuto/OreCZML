@@ -26,7 +26,7 @@ import org.orekit.czml.archi.factory.BodyFactory;
 import org.orekit.czml.file.CzmlFile;
 import org.orekit.czml.object.primary.entities.Body;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.forces.gravity.SingleBodyAbsoluteAttraction;
 import org.orekit.forces.inertia.InertialForces;
@@ -159,11 +159,11 @@ public class JupiterFlyByExample {
 
         final BoundedPropagator boundedPropagator = generator.getGeneratedEphemeris();
 
-        final Satellite satellite = Satellite.builder(boundedPropagator, header)
-                                             .withModelPath(juiceModel)
-                                             .withColor(Color.MAGENTA)
-                                             .withOnlyOnePeriod()
-                                             .build();
+        final Spacecraft satellite = Spacecraft.builder(boundedPropagator, header)
+                                               .withModelPath(juiceModel)
+                                               .withColor(Color.MAGENTA)
+                                               .withOnlyOnePeriod()
+                                               .build();
 
         final Body jupiterDisplay = BodyFactory.getJupiter(header);
 

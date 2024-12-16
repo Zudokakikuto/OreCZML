@@ -21,11 +21,11 @@ import org.orekit.czml.TutorialUtils;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.czml.archi.adaptor.AemAdaptor;
 import org.orekit.czml.archi.adaptor.OemAdaptor;
-import org.orekit.czml.object.primary.entities.SatelliteBuilder;
+import org.orekit.czml.object.primary.entities.SpacecraftBuilder;
 import org.orekit.czml.file.CzmlFile;
 import org.orekit.czml.object.primary.entities.CzmlGroundStation;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.czml.object.secondary.Orientation;
 import org.orekit.data.DataSource;
@@ -105,9 +105,9 @@ public class AemAdaptorExample {
         final Orientation orientation = aemAdaptor.buildOrientation(oemBoundedPropagator, header);
 
         // Creation of the satellite
-        final Satellite satellite = new SatelliteBuilder(oemBoundedPropagator, header).withModelPath(IssModel)
-                                                                              .withOrientation(orientation)
-                                                                              .build();
+        final Spacecraft satellite = new SpacecraftBuilder(oemBoundedPropagator, header).withModelPath(IssModel)
+                                                                                        .withOrientation(orientation)
+                                                                                        .build();
 
 
         final CzmlGroundStation groundStation = new CzmlGroundStation(

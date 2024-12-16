@@ -24,7 +24,8 @@ import org.hipparchus.util.FastMath;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.czml.file.AbstractTest;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.covariance.Covariance;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.forces.ForceModel;
 import org.orekit.forces.gravity.HolmesFeatherstoneAttractionModel;
 import org.orekit.forces.gravity.potential.GravityFieldFactory;
@@ -98,7 +99,7 @@ public class CovarianceTest extends AbstractTest {
         final BoundedPropagator boundedPropagator = generator.getGeneratedEphemeris();
 
 
-        final Satellite satellite = new Satellite(boundedPropagator, header);
+        final Spacecraft satellite = new Spacecraft(boundedPropagator, header);
 
         final RealMatrix realMatrix = MatrixUtils.createRealDiagonalMatrix(
                 new double[] {1e-4, 1e-4, 2e-4, 1e-6, 1e-6, (36 * 4.848e-6) * (36 * 4.848e-6)});

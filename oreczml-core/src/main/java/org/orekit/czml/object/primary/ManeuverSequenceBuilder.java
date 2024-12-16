@@ -14,13 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.orekit.czml.archi.builder;
+package org.orekit.czml.object.primary;
 
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.orekit.attitudes.AttitudesSequence;
-import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.ManeuverSequence;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.forces.maneuvers.Maneuver;
 import org.orekit.frames.LOF;
 
@@ -49,7 +47,7 @@ public class ManeuverSequenceBuilder {
     /**
      * The satellite which performs maneuvers.
      */
-    private final Satellite satellite;
+    private final Spacecraft satellite;
 
     /**
      * The attitude sequence used during the mission.
@@ -114,7 +112,7 @@ public class ManeuverSequenceBuilder {
      * @param headerInput    : The header considered.
      */
     public ManeuverSequenceBuilder(final AttitudesSequence sequenceInput, final List<Maneuver> maneuversInput,
-                                   final Satellite satelliteInput, final Vector3D directionInput, final LOF lofInput,
+                                   final Spacecraft satelliteInput, final Vector3D directionInput, final LOF lofInput,
                                    final Header headerInput) {
         this.sequence  = sequenceInput;
         this.satellite = satelliteInput;
@@ -136,7 +134,7 @@ public class ManeuverSequenceBuilder {
      * @param headerInput    : The header considered.
      */
     public ManeuverSequenceBuilder(final AttitudesSequence sequenceInput, final Maneuver maneuverInput,
-                                   final Satellite satelliteInput, final Vector3D directionInput, final LOF lofInput,
+                                   final Spacecraft satelliteInput, final Vector3D directionInput, final LOF lofInput,
                                    final Header headerInput) {
         this.sequence       = sequenceInput;
         this.singleManeuver = maneuverInput;
@@ -158,7 +156,7 @@ public class ManeuverSequenceBuilder {
      * @param headerInput     : The header considered.
      */
     public ManeuverSequenceBuilder(final AttitudesSequence sequenceInput, final List<Maneuver> maneuversInput,
-                                   final Satellite satelliteInput, final List<Vector3D> directionsInput,
+                                   final Spacecraft satelliteInput, final List<Vector3D> directionsInput,
                                    final LOF lofInput, final Header headerInput) {
         this.sequence   = sequenceInput;
         this.maneuvers  = new ArrayList<>(maneuversInput);

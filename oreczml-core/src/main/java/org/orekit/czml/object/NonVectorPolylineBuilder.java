@@ -14,11 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.orekit.czml.archi.builder;
+package org.orekit.czml.object;
 
 import cesiumlanguagewriter.CesiumArcType;
 import cesiumlanguagewriter.Reference;
-import org.orekit.czml.object.Polyline;
 import org.orekit.czml.object.primary.Header;
 
 import java.awt.Color;

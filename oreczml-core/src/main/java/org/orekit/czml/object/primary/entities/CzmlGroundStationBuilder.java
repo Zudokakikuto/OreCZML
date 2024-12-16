@@ -72,7 +72,7 @@ public class CzmlGroundStationBuilder {
 
     private boolean displayCircle = false;
 
-    private Satellite satellite;
+    private Spacecraft satellite;
 
     private double angleOfAperture;
 
@@ -103,7 +103,7 @@ public class CzmlGroundStationBuilder {
     }
 
 
-    public CzmlGroundStationBuilder displayCircle(final Satellite satellite, final double angleOfAperture) {
+    public CzmlGroundStationBuilder displayCircle(final Spacecraft satellite, final double angleOfAperture) {
         displayCircle = true;
         this.satellite = satellite;
         this.angleOfAperture = angleOfAperture;

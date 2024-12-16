@@ -29,12 +29,11 @@ import org.hipparchus.geometry.euclidean.threed.RotationConvention;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.orekit.attitudes.Attitude;
 import org.orekit.attitudes.BoundedAttitudeProvider;
-import org.orekit.czml.archi.builder.OrientationBuilder;
 import org.orekit.czml.errors.OreCzmlException;
 import org.orekit.czml.errors.OreCzmlMessages;
 import org.orekit.czml.object.Utils.DateUtils;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.frames.Frame;
 import org.orekit.frames.FramesFactory;
 import org.orekit.propagation.BoundedPropagator;
@@ -108,7 +107,7 @@ public class Orientation extends AbstractSecondaryObject {
 
         final List<Attitude> attitudesTemp = new ArrayList<>();
 
-        final List<AbsoluteDate> dateList = new Satellite(propagator, header).getAbsoluteDateList();
+        final List<AbsoluteDate> dateList = new Spacecraft(propagator, header).getAbsoluteDateList();
 
         final Frame objectFrame = propagator.getFrame();
 

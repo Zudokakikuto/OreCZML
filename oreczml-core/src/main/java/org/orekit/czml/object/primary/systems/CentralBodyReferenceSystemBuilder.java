@@ -14,10 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.orekit.czml.archi.builder;
+package org.orekit.czml.object.primary.systems;
 
 import org.orekit.bodies.OneAxisEllipsoid;
-import org.orekit.czml.object.primary.systems.CentralBodyReferenceSystem;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.frames.FramesFactory;
 import org.orekit.utils.Constants;
@@ -74,12 +73,12 @@ public class CentralBodyReferenceSystemBuilder {
     /**
      * The color for the x-axis.
      */
-    private Color color2 = DEFAULT_BLUE;
+    private Color color2 = DEFAULT_GREEN;
 
     /**
      * The color for the x-axis.
      */
-    private Color color3 = DEFAULT_GREEN;
+    private Color color3 = DEFAULT_BLUE;
 
     /**
      * The body that will be the reference for the system.

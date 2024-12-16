@@ -14,7 +14,7 @@ import org.orekit.bodies.GeodeticPoint;
 import org.orekit.bodies.OneAxisEllipsoid;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.entities.Satellite;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.frames.Frame;
 import org.orekit.frames.FramesFactory;
 import org.orekit.frames.TopocentricFrame;
@@ -50,7 +50,7 @@ public class StationVisibilityCircle extends AbstractPrimaryObject {
 
     private double angleOfAperture = DEFAULT_ANGLE_OF_APERTURE;
 
-    private Satellite satellite;
+    private Spacecraft satellite;
 
     private VisibilityCone cone;
 
@@ -68,7 +68,7 @@ public class StationVisibilityCircle extends AbstractPrimaryObject {
      * @param angleOfAperture  : The angle of aperture of the visibility of the station.
      * @param header           : The header considered.
      */
-    StationVisibilityCircle(final TopocentricFrame topocentricFrame, final Satellite satellite,
+    StationVisibilityCircle(final TopocentricFrame topocentricFrame, final Spacecraft satellite,
                             final double angleOfAperture, final Header header) {
         this.setId(DEFAULT_ID + topocentricFrame.getName() + "/" + satellite.getId());
         this.setName(DEFAULT_NAME + topocentricFrame.getName());
@@ -86,7 +86,7 @@ public class StationVisibilityCircle extends AbstractPrimaryObject {
 
     // Builder
 
-    public static StationVisibilityCircleBuilder builder(final TopocentricFrame topocentricFrameInput, final Satellite satelliteInput, final Header headerInput) {
+    public static StationVisibilityCircleBuilder builder(final TopocentricFrame topocentricFrameInput, final Spacecraft satelliteInput, final Header headerInput) {
         return new StationVisibilityCircleBuilder(topocentricFrameInput, satelliteInput, headerInput);
     }
 
@@ -119,7 +119,7 @@ public class StationVisibilityCircle extends AbstractPrimaryObject {
     // Private functions
 
     final List<GeodeticPoint> computePointPositions(final TopocentricFrame topocentricFrameInput,
-                                                    final Satellite satelliteInput, final double angleOfAperture) {
+                                                    final Spacecraft satelliteInput, final double angleOfAperture) {
         final List<GeodeticPoint> toReturn         = new ArrayList<>();
         final double              fixedElevation   = 90.0 - angleOfAperture;
         final double              radiansElevation = FastMath.toRadians(fixedElevation);
