@@ -43,7 +43,7 @@
         </dependency>
         <dependency>
             <groupId>com.agi</groupId>
-            <artifactId>cesiumlanguagewriter</artifactId>
+            <artifactId>czml-writer</artifactId>
             <version>${oreczml.cesiumwriter.version}</version>
         </dependency>
     </dependencies>
