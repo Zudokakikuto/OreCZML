@@ -1,6 +1,6 @@
 {
-  "id":"VIS/Packet containing 1 ground stations",
-  "name":"Visibility of Packet containing 1 ground stations",
+  "id":"VIS/Ground station : Toulouse Frame",
+  "name":"Visibility of Ground station : Toulouse Frame",
   "availability":"2024-01-01T00:00:00Z/2024-01-01T00:01:00Z",
   "cylinder":{
     "bottomRadius":0,

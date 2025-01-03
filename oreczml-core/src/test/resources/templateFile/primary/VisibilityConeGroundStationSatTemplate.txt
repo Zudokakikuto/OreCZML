@@ -1,6 +1,6 @@
 {
-  "id":"VIS/Packet containing 1 ground stations/Spacecraft",
-  "name":"Visibility of Packet containing 1 ground stations looking at Spacecraft",
+  "id":"VIS/Ground station : Toulouse Frame/Spacecraft",
+  "name":"Visibility of Ground station : Toulouse Frame looking at Spacecraft",
   "availability":"2024-01-01T00:00:00Z/2024-01-01T00:01:00Z",
   "cylinder":{
     "bottomRadius":10,
