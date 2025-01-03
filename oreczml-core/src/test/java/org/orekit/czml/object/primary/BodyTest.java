@@ -23,6 +23,7 @@ import org.orekit.czml.archi.factory.BodyFactory;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.file.CzmlFile;
 import org.orekit.czml.object.primary.entities.Body;
+import org.orekit.frames.Frame;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -43,16 +44,19 @@ public class BodyTest extends AbstractTest {
 
         loadOrekitData();
 
+        final Frame sunFrame = CelestialBodyFactory.getSun()
+                                                   .getBodyOrientedFrame();
+
         final Header header = dummyHeader();
 
         final String pathToModel = loadResources("Bodies/mars.glb");
 
-        final Body body = Body.builder(CelestialBodyFactory.getMars(), pathToModel, header)
+        final Body body = Body.builder(CelestialBodyFactory.getMars(), pathToModel, sunFrame, header)
                               .build();
 
         final double marsOrbitalPeriod = 686.96 * 24 * 3600; // in sec
 
-        final Body bodyBuilder = Body.builder(CelestialBodyFactory.getMars(), pathToModel, header)
+        final Body bodyBuilder = Body.builder(CelestialBodyFactory.getMars(), pathToModel, sunFrame, header)
                                      .withHeader(header)
                                      .withCustomID("CustomID")
                                      .displayOnlyOnePeriod(marsOrbitalPeriod)
@@ -73,8 +77,7 @@ public class BodyTest extends AbstractTest {
         final String bodyPathFile = loadResources("templateFile/primary/BodyTemplate.txt");
         final CzmlFile file = CzmlFile.builder()
                                       .withHeader(header)
-                                      .withBody(mercury, earth, venus, jupiter, saturn, uranus, neptune,
-                                              pluto, sun)
+                                      .withBody(mercury, earth, venus, jupiter, saturn, uranus, neptune, pluto, sun)
                                       .build();
 
         final String bodiesPathFiles  = loadResources("templateFile/primary/BodiesTemplate.txt");
@@ -85,7 +88,7 @@ public class BodyTest extends AbstractTest {
 
         Assertions.assertEquals(Files.readString(Path.of(bodiesPathFiles)), file.toString());
 
-        Assertions.assertEquals(CelestialBodyFactory.getMars(), bodyBuilder.getBody());
+        Assertions.assertEquals(CelestialBodyFactory.getMars(), bodyBuilder.getCelestialBody());
         Assertions.assertTrue(bodyBuilder.isDisplayOrbit());
         Assertions.assertTrue(bodyBuilder.isDisplayOnlyOnePeriod());
     }

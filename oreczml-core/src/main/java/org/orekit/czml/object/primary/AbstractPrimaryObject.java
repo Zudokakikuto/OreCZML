@@ -172,15 +172,15 @@ public abstract class AbstractPrimaryObject implements CzmlPrimaryObject {
     /**
      * Color wheel list.
      *
-     * @param totalOfSat the total of sat
+     * @param numberOfEntities the total of sat
      * @return the list
      */
-    protected List<Color> colorWheel(final int totalOfSat) {
-        // Check if the number of sat is bigger than 12 (number of primal colors made with r,g,b) :
+    protected List<Color> colorWheel(final int numberOfEntities) {
+        // Check if the number of entities is bigger than 12 (number of primal colors made with r,g,b) :
         final List<Color> toReturn = new ArrayList<>();
-        if (totalOfSat / 12.0 > 1) {
-            final int totalOfColorBySection = totalOfSat / 6;
-            final int rest                  = totalOfSat % 6;
+        if (numberOfEntities / 12.0 > 1) {
+            final int totalOfColorBySection = numberOfEntities / 6;
+            final int rest                  = numberOfEntities % 6;
             final int shiftOfColor          = 255 / totalOfColorBySection;
             // To yellow
             for (int i = 0; i < totalOfColorBySection; i++) {
@@ -216,7 +216,7 @@ public abstract class AbstractPrimaryObject implements CzmlPrimaryObject {
             }
         } else {
             final List<Color> preMadeColors = preMadeColorList();
-            for (int i = 0; i < totalOfSat; i++) {
+            for (int i = 0; i < numberOfEntities; i++) {
                 toReturn.add(preMadeColors.get(i));
             }
         }

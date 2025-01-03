@@ -63,12 +63,15 @@ public enum OreCzmlMessages implements Localizable {
     SEVERAL_STATION_UNIQUE_GET(
             "Several ground stations were build, please use the appropriate getter (usually ends with an \"s\" for plural)."),
 
-    // body
+    // Body
     /**
      * Triggers when the orbit of the body is not displayed, but the user tried to set up the period of the orbit.
      */
     CANT_DISPLAY_PERIOD_NO_ORBIT(
             "The orbit is not displayed, do not use noOrbitDisplay() then setup the period display of the orbit."),
+
+    INFLUENCE_SPHERE_NOT_DISPLAYED(
+            "This displayInfluenceSphere() method has not been called, so the getInfluenceSphere() cannot be used."),
 
     // Czml Model
     /**
@@ -115,21 +118,27 @@ public enum OreCzmlMessages implements Localizable {
     EMPTY_GROUND_TRACKS(
             "The ground tracks are empty, either the file is already written or the ground track is not build with a constellation."),
 
-    // Satellite
+    // Spacecraft
     /**
      * Triggers when the satellite does not display the orientation, but the method getOrientation() has been called.
      */
     NO_ORIENTATION_DISPLAYED(
-            "The satellite did not display the orientation, maybe you tried to use an AttitudePointing, please use the withDisplayAttitude() method first."),
+            "The spacecraft did not display the orientation, maybe you tried to use an AttitudePointing, please use the withDisplayAttitude() method first."),
 
     /** Trigger when the initial state of the satellite object is not built with a keplerian period gettable. */
-    NO_ORBIT_FOR_KEPLERIAN_PERIOD("The initial state of the satellite does not have a keplerian period."),
+    NO_ORBIT_FOR_KEPLERIAN_PERIOD("The initial state of the spacecraft does not have a keplerian period."),
+
+    NOT_INSIDE_AN_INFLUENCE_SPHERE(
+            "The spacecraft is not inside an influence sphere, or the influence sphere was not defined/inputted in the displayInfluenceSphereChanges() method."),
+
+    TRY_INFLUENCE_SPHERE_WITHOUT_SPHERES(
+            "You tried to displayed changes in the orbit of the spacecraft without building the influence sphere of the bodies. Try using .displayInfluenceSphere() on the bodies first."),
 
     // Visibility cone
     /**
      * Triggers when the visibility cone was not defined for a given satellite.
      */
-    NO_SAT_VISIBILITY_CONE("The Visibility cone was not defined with a given satellite."),
+    NO_SAT_VISIBILITY_CONE("The Visibility cone was not defined with a given spacecraft."),
 
     // Orientation
     /**
@@ -215,23 +224,23 @@ public enum OreCzmlMessages implements Localizable {
      * Triggers when the .getShowList() method is applied on a line of visibility containing several shows.
      */
     NOT_A_SINGLE_SAT_OR_STATION(
-            "The line of visibility used has several station or several satellites, don't use the .getShowList() method instead use the .getSingleShow(int) method."),
+            "The line of visibility used has several station or several spacecraft, don't use the .getShowList() method instead use the .getSingleShow(int) method."),
 
     /**
      * Triggers when the .getSingleShow(int) method is used while only one line of visibility is defined.
      */
     NOT_A_MULTIPLE_SAT_OR_STATION(
-            "The line of visibility used has only one station and one satellite defined, don't use the .getSingleShow(int) method, instead use the .getShowList() method."),
+            "The line of visibility used has only one station and one spacecraft defined, don't use the .getSingleShow(int) method, instead use the .getShowList() method."),
 
-    /** Triggers when the .displayTriangle() method is called while the line of visibility has several stations or satellites. */
+    /** Triggers when the .displayTriangle() method is called while the line of visibility has several stations or spacecrafts. */
     NOT_A_SINGLE_TRIANGLE_LINE(
-            "The line of visibility used has several station or several satellites, don't use the .displayTriangle() method, instead use the .displaySingleTriangle(int) method"),
+            "The line of visibility used has several station or several spacecrafts, don't use the .displayTriangle() method, instead use the .displaySingleTriangle(int) method"),
 
     /**
      * Triggers when the .displaySingleTriangle(int) method is used while only one line of visibility is defined.
      */
     NOT_A_MULTIPLE_TRIANGLE_LINE(
-            "The line of visibility used has only one station and one satellite defined, don't use the .displaySingleTriangle(int) method, instead use the .displayTriangle() method");
+            "The line of visibility used has only one station and one spacecraft defined, don't use the .displaySingleTriangle(int) method, instead use the .displayTriangle() method");
 
     /**
      * The string containing the message.

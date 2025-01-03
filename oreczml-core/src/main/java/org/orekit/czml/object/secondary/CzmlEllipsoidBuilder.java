@@ -62,7 +62,7 @@ public class CzmlEllipsoidBuilder {
     /**
      * The color of the ellipsoid.
      */
-    private Color color;
+    private Color color = DEFAULT_COLOR;
 
     /**
      * The number of slices (from one point on convergence of lines from the other).
