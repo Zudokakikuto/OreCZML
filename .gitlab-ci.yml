@@ -4,7 +4,7 @@ include:
 
 variables:
   MAVEN_DEPLOY_ENABLED: "true"
-  MAVEN_IMAGE: "vcucchie/maven:maven-3.9-alpine-cesiumwriter"
+  MAVEN_IMAGE: "registry.orekit.org/orekit/oreczml/cicd:1.0"
   MAVEN_CFG_DIR: "/root/.m2"
   MAVEN_SETTINGS_FILE: ${MAVEN_PROJECT_DIR}/cicd/ci-settings.xml
   MAVEN_DEPLOY_FROM_UNPROTECTED_DISABLED : true
