@@ -68,13 +68,13 @@ public class OreCzmlMessagesTest extends AbstractTest {
 
         // Satellite
         Assertions.assertEquals(
-                "The satellite did not display the orientation, maybe you tried to use an AttitudePointing, please use the withDisplayAttitude() method first.",
+                "The spacecraft did not display the orientation, maybe you tried to use an AttitudePointing, please use the withDisplayAttitude() method first.",
                 OreCzmlMessages.NO_ORIENTATION_DISPLAYED.getSourceString());
-        Assertions.assertEquals("The initial state of the satellite does not have a keplerian period.",
+        Assertions.assertEquals("The initial state of the spacecraft does not have a keplerian period.",
                 OreCzmlMessages.NO_ORBIT_FOR_KEPLERIAN_PERIOD.getSourceString());
 
         // Visibility cone
-        Assertions.assertEquals("The Visibility cone was not defined with a given satellite.",
+        Assertions.assertEquals("The Visibility cone was not defined with a given spacecraft.",
                 OreCzmlMessages.NO_SAT_VISIBILITY_CONE.getSourceString());
 
         // Orientation

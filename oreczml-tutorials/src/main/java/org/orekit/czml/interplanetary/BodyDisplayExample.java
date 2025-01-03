@@ -47,11 +47,10 @@ public class BodyDisplayExample {
         TutorialUtils.loadOrekitData();
 
         // Paths
-        final String output = TutorialUtils.generateOutput();
+        final String output = "C:\\Users\\jleblond\\Documents\\git\\OreCzmlJSInterface\\public\\Output.czml";
         // !!! Here you need to change the path inside 'generateJsPath' to the path you are using for images or Model.
         // This folder can also be the public folder of your cesium javascript interface.
-        final String pathToJSFolder = TutorialUtils.generateJSPath(
-                System.getProperty("user.dir") + "/Javascript/public");
+        final String pathToJSFolder = "C:\\Users\\jleblond\\Documents\\git\\OreCzmlJSInterface\\public";
 
         // Creation of the clock.
 
@@ -67,14 +66,23 @@ public class BodyDisplayExample {
         final List<Body> solarSystem    = new ArrayList<>();
         final Body       sunDisplay     = BodyFactory.getSun(header);
         final Body       moonDisplay    = BodyFactory.getMoon(header);
+        moonDisplay.displayInfluenceSphere();
         final Body       mercuryDisplay = BodyFactory.getMercury(header);
+        mercuryDisplay.displayInfluenceSphere();
         final Body       venusDisplay   = BodyFactory.getVenus(header);
+        venusDisplay.displayInfluenceSphere();
         final Body       marsDisplay    = BodyFactory.getMars(header);
+        marsDisplay.displayInfluenceSphere();
         final Body       jupiterDisplay = BodyFactory.getJupiter(header);
+        jupiterDisplay.displayInfluenceSphere();
         final Body       saturnDisplay  = BodyFactory.getSaturn(header);
+        saturnDisplay.displayInfluenceSphere();
         final Body       uranusDisplay  = BodyFactory.getUranus(header);
+        uranusDisplay.displayInfluenceSphere();
         final Body       neptuneDisplay = BodyFactory.getNeptune(header);
+        neptuneDisplay.displayInfluenceSphere();
         final Body       plutoDisplay   = BodyFactory.getPluto(header);
+        plutoDisplay.displayInfluenceSphere();
         solarSystem.add(sunDisplay);
         solarSystem.add(moonDisplay);
         solarSystem.add(mercuryDisplay);

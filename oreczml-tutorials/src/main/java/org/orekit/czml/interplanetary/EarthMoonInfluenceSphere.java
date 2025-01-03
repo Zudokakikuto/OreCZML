@@ -1,9 +1,25 @@
+/* Copyright 2002-2024 CS GROUP
+ * Licensed to CS GROUP (CS) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * CS licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.orekit.czml.interplanetary;
 
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
-import org.orekit.bodies.CelestialBody;
 import org.orekit.bodies.CelestialBodyFactory;
 import org.orekit.czml.TutorialUtils;
 import org.orekit.czml.archi.factory.BodyFactory;
@@ -32,9 +48,13 @@ import org.orekit.utils.AbsolutePVCoordinates;
 import org.orekit.utils.Constants;
 import org.orekit.utils.IERSConventions;
 
-public class MoonPointingExample {
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
 
-    private MoonPointingExample() {
+public class EarthMoonInfluenceSphere {
+
+    private EarthMoonInfluenceSphere() {
         /** . */
     }
 
@@ -56,20 +76,27 @@ public class MoonPointingExample {
 
         // Creation of the clock.
 
-        final double       durationOfSimulation = 2 * 24 * 3600; // in seconds;
+        final double       durationOfSimulation = 3 * 24 * 3600; // in seconds;
         final AbsoluteDate startDate            = new AbsoluteDate(2024, 1, 16, 0, 0, 0.0, TimeScalesFactory.getUTC());
         final AbsoluteDate finalDate            = startDate.shiftedBy(durationOfSimulation);
         final Clock clock = new Clock(startDate, finalDate, TimeScalesFactory.getUTC(),
                 TutorialUtils.STEP_BETWEEN_EACH_INSTANT);
 
-        final Header header = new Header("Example of a moon ground pointing", clock, pathToJSFolder);
+        final Header header = new Header("Example of usage of the influence sphere on the moon and the earth", clock,
+                pathToJSFolder);
 
-        // Moon
+        // Influence sphere
+        final Body earth = BodyFactory.getEarth(header);
+        earth.displayInfluenceSphere();
         final Body moon = BodyFactory.getMoon(header);
+        moon.displayInfluenceSphere(earth);
         moon.displayOnlyOnePeriod(24 * 3600);
+        final List<Body> bodies = new ArrayList<>();
+        bodies.add(earth);
+        bodies.add(moon);
 
         // Satellite 390900000
-        final KeplerianOrbit initialOrbit = new KeplerianOrbit(150900000, 0.3, FastMath.toRadians(180),
+        final KeplerianOrbit initialOrbit = new KeplerianOrbit(140900000, 0.3, FastMath.toRadians(180),
                 FastMath.toRadians(90),
                 FastMath.toRadians(0), FastMath.toRadians(0), PositionAngleType.MEAN, FramesFactory.getEME2000(),
                 startDate,
@@ -97,7 +124,9 @@ public class MoonPointingExample {
         final ForceModel holmesFeatherstoneEarth = new HolmesFeatherstoneAttractionModel(FramesFactory.getITRF(
                 IERSConventions.IERS_2010, true),
                 provider);
-        final ForceModel holmesFeatherstoneMoon = new HolmesFeatherstoneAttractionModel(CelestialBodyFactory.getMoon().getBodyOrientedFrame(), provider);
+        final ForceModel holmesFeatherstoneMoon = new HolmesFeatherstoneAttractionModel(CelestialBodyFactory.getMoon()
+                                                                                                            .getBodyOrientedFrame(),
+                provider);
 
         propagator.setInitialState(initialState);
         propagator.addForceModel(singleBodyEarth);
@@ -107,19 +136,20 @@ public class MoonPointingExample {
         propagator.addForceModel(singleBodyMoon);
         propagator.setOrbitType(null);
         final EphemerisGenerator firstGenerator = propagator.getEphemerisGenerator();
-        propagator.setStepHandler(60, (s) -> System.out.println(s.getPVCoordinates()
-                                                                 .getPosition()));
+
         propagator.propagate(startDate, finalDate);
         final BoundedPropagator boundedPropagator = firstGenerator.getGeneratedEphemeris();
 
         // Satellite
         final Spacecraft spacecraft = Spacecraft.builder(boundedPropagator, header)
                                                 .withReferenceSystem()
+                                                .withColor(Color.BLUE)
+                                                .displayInfluenceSphereChanges(bodies)
                                                 .build();
-
         // Czml file
         final CzmlFile file = CzmlFile.builder()
                                       .withSpacecraft(spacecraft)
+                                      .withBody(earth)
                                       .withBody(moon)
                                       .withHeader(header)
                                       .build();

@@ -36,10 +36,8 @@ import org.orekit.czml.object.primary.AbstractPrimaryObject;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.secondary.Orientation;
 import org.orekit.frames.Frame;
-import org.orekit.frames.FramesFactory;
 import org.orekit.frames.Transform;
 import org.orekit.time.AbsoluteDate;
-import org.orekit.utils.IERSConventions;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -133,6 +131,14 @@ public class Body extends AbstractPrimaryObject {
     /** The description of the body selected. */
     private String description;
 
+    /** The influence sphere of the body if one is asked. */
+    private InfluenceSphere influenceSphere;
+
+    /** To display the influence sphere or not. */
+    private boolean displayInfluenceSphere = false;
+
+    private Frame frameToExpress;
+
     // Constructors
 
     /**
@@ -142,8 +148,8 @@ public class Body extends AbstractPrimaryObject {
      * @param pathToModel : The path to the model to load.
      * @param header      : The header considered.
      */
-    Body(final CelestialBody body, final String pathToModel, final Header header) {
-        this(body, pathToModel, DEFAULT_ID + body.getName(), header);
+    Body(final CelestialBody body, final String pathToModel, final Frame frameToExpress, final Header header) {
+        this(body, pathToModel, frameToExpress, DEFAULT_ID + body.getName(), header);
     }
 
     /**
@@ -154,12 +160,14 @@ public class Body extends AbstractPrimaryObject {
      * @param customID    : The custom ID for the body.
      * @param header      : The header to use if several are used, use null if not.
      */
-    Body(final CelestialBody body, final String pathToModel, final String customID, final Header header) {
+    Body(final CelestialBody body, final String pathToModel, final Frame frameToExpressInput, final String customID,
+         final Header header) {
 
         this.setId(customID);
         this.setName(DEFAULT_NAME + body.getName());
         this.setAvailability(header.getAvailability());
         this.body                  = body;
+        this.frameToExpress        = frameToExpressInput;
         this.header                = header;
         this.description           = "<!--HTML-->\r\n<p>Id : " + customID + "</p>\r\n<p>Name : " + body.getName() + "</p>\r\n<p>Simulated from : " + header.getAvailability()
                                                                                                                                                            .getStart() + " to " + header.getAvailability()
@@ -169,7 +177,7 @@ public class Body extends AbstractPrimaryObject {
         this.julianDatesSimulation = header.getClock()
                                            .getJulianDatesSimulation();
 
-        this.cartesianList = fillCartesian(header, body, julianDatesSimulation);
+        this.cartesianList = fillCartesian(header, body, julianDatesSimulation, frameToExpressInput);
         this.orientation   = generateOrientation(header, body, julianDatesSimulation);
     }
 
@@ -183,8 +191,9 @@ public class Body extends AbstractPrimaryObject {
      * @param header      the header
      * @return the body builder
      */
-    public static BodyBuilder builder(final CelestialBody body, final String pathToModel, final Header header) {
-        return new BodyBuilder(body, pathToModel, header);
+    public static BodyBuilder builder(final CelestialBody body, final String pathToModel,
+                                      final Frame frameToExpressInput, final Header header) {
+        return new BodyBuilder(body, pathToModel, frameToExpressInput, header);
     }
 
     // Overrides
@@ -206,8 +215,25 @@ public class Body extends AbstractPrimaryObject {
             }
             this.orientation.write(packet, output);
         }
+        if (displayInfluenceSphere) {
+            this.influenceSphere.writeCzmlBlock(stream, output);
+        }
     }
 
+
+    // Users' methods
+
+    public void displayInfluenceSphere() {
+        this.influenceSphere        = InfluenceSphere.builder(this, header)
+                                                     .build();
+        this.displayInfluenceSphere = true;
+    }
+
+    public void displayInfluenceSphere(final Body centralBody) {
+        this.influenceSphere        = InfluenceSphere.builder(this, centralBody, header)
+                                                     .build();
+        this.displayInfluenceSphere = true;
+    }
 
     // GETTERS
 
@@ -216,7 +242,7 @@ public class Body extends AbstractPrimaryObject {
      *
      * @return the cartesian list
      */
-    public List<Cartesian> getCartesianList() {
+    public List<Cartesian> getCartesianPositionList() {
         return Collections.unmodifiableList(cartesianList);
     }
 
@@ -225,8 +251,16 @@ public class Body extends AbstractPrimaryObject {
      *
      * @return the body
      */
-    public CelestialBody getBody() {
+    public CelestialBody getCelestialBody() {
         return body;
+    }
+
+    public InfluenceSphere getInfluenceSphere() {
+        if (influenceSphere == null) {
+            throw new OreCzmlException(OreCzmlMessages.INFLUENCE_SPHERE_NOT_DISPLAYED);
+        } else {
+            return influenceSphere;
+        }
     }
 
     /**
@@ -236,6 +270,12 @@ public class Body extends AbstractPrimaryObject {
      */
     public CzmlModel getModel() {
         return model;
+    }
+
+    /** Gets the frame in which the position of the body is expressed.
+     * @return : The frame where the position of the body is expressed.*/
+    public Frame getFrameToExpress() {
+        return frameToExpress;
     }
 
     /**
@@ -263,6 +303,10 @@ public class Body extends AbstractPrimaryObject {
      */
     public boolean isDisplayOrbit() {
         return displayOrbit;
+    }
+
+    public boolean isDisplayInfluenceSphere() {
+        return displayInfluenceSphere;
     }
 
     /**
@@ -422,12 +466,11 @@ public class Body extends AbstractPrimaryObject {
      * @return : The list of cartesian position of the body.
      */
     private List<Cartesian> fillCartesian(final Header headerInput, final CelestialBody bodyInput,
-                                          final List<JulianDate> julianDates) {
-        final Frame           ITRF     = FramesFactory.getITRF(IERSConventions.IERS_2010, true);
+                                          final List<JulianDate> julianDates, final Frame frameToExpress) {
         final List<Cartesian> toReturn = new ArrayList<>();
         for (JulianDate julianDate : julianDates) {
-            final AbsoluteDate date            = DateUtils.toAbsoluteDate(julianDate, headerInput.getTimeScale());
-            final Vector3D     currentPosition = bodyInput.getPosition(date, ITRF);
+            final AbsoluteDate date = DateUtils.toAbsoluteDate(julianDate, headerInput.getTimeScale());
+            final Vector3D currentPosition = bodyInput.getPosition(date, frameToExpress);
             final Cartesian currentCartesian = new Cartesian(currentPosition.getX(), currentPosition.getY(),
                     currentPosition.getZ());
             toReturn.add(currentCartesian);

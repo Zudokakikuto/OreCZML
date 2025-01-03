@@ -32,6 +32,7 @@ import cesiumlanguagewriter.TimeInterval;
 import org.hipparchus.geometry.euclidean.threed.Rotation;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.orekit.attitudes.Attitude;
+import org.orekit.bodies.CelestialBodyFactory;
 import org.orekit.czml.errors.OreCzmlException;
 import org.orekit.czml.errors.OreCzmlMessages;
 import org.orekit.czml.object.ModelType;
@@ -204,28 +205,23 @@ public class Spacecraft extends AbstractPrimaryObject {
      */
     public Spacecraft(final BoundedPropagator propagator, final Header header) throws URISyntaxException, IOException {
         this(propagator, propagator.getMinDate(), propagator.getMaxDate(), DEFAULT_MODEL_PATH, DEFAULT_COLOR,
-                String.format(DEFAULT_FORMAT,
-                        propagator.getInitialState()
-                                  .getPosition()
-                                  .getX(),
-                        propagator.getInitialState()
-                                  .getPosition()
-                                  .getY(),
-                        propagator.getInitialState()
-                                  .getPosition()
-                                  .getZ(),
+                String.format(DEFAULT_FORMAT, propagator.getInitialState()
+                                                        .getPosition()
+                                                        .getX(), propagator.getInitialState()
+                                                                           .getPosition()
+                                                                           .getY(), propagator.getInitialState()
+                                                                                              .getPosition()
+                                                                                              .getZ(),
                         propagator.getInitialState()
                                   .getPVCoordinates()
                                   .getVelocity()
-                                  .getX(),
-                        propagator.getInitialState()
-                                  .getPVCoordinates()
-                                  .getVelocity()
-                                  .getY(),
-                        propagator.getInitialState()
-                                  .getPVCoordinates()
-                                  .getVelocity()
-                                  .getZ()), header);
+                                  .getX(), propagator.getInitialState()
+                                                     .getPVCoordinates()
+                                                     .getVelocity()
+                                                     .getY(), propagator.getInitialState()
+                                                                        .getPVCoordinates()
+                                                                        .getVelocity()
+                                                                        .getZ()), header);
     }
 
     /**
@@ -251,13 +247,13 @@ public class Spacecraft extends AbstractPrimaryObject {
                 DateUtils.toJulianDate(finalDateInput, header.getTimeScale())));
         this.spacecraftPropagator = propagator;
         this.description          = "<!--HTML-->\r\n<p>Id : " + customID + "</p>\r\n<p>" + "Simulated from : " + startDateInput + " to " + finalDateInput + "</p>";
-        this.frame               = propagator.getFrame();
-        this.color               = color;
-        this.model               = new CzmlModel(modelPath, true, header);
-        this.modelType           = model.getModelType();
-        this.startDate           = startDateInput;
-        this.finalDate           = finalDateInput;
-        this.header              = header;
+        this.frame                = propagator.getFrame();
+        this.color                = color;
+        this.model                = new CzmlModel(modelPath, true, header);
+        this.modelType            = model.getModelType();
+        this.startDate            = startDateInput;
+        this.finalDate            = finalDateInput;
+        this.header               = header;
         // Setup propagator
         multiplexerSetup(propagator);
         // Propagation
@@ -333,13 +329,126 @@ public class Spacecraft extends AbstractPrimaryObject {
         this.spacecraftReferenceSystem = new SpacecraftReferenceSystem(this, header);
     }
 
+    /**
+     * TODO : The distance between the body and the spacecraft is not matching what is displayed on screen for no reasons.
+     *  To fix or delete in the future.
+     */
+    public void displayInfluenceSphereChanges(final List<Body> bodies) {
+        // We will take all the position and coordinates in the same frame: the frame of the sun
+        // So that all will be referenced to this system, and we will be able to measure distances.
+        final Frame sunFrame = CelestialBodyFactory.getSun()
+                                                   .getInertiallyOrientedFrame();
+
+        final List<InfluenceSphere> spheres       = new ArrayList<>();
+        final List<Double>          spheresRadius = new ArrayList<>();
+        final List<Color>           colorList     = colorWheel(bodies.size());
+        final List<AbsoluteDate>    datesChanges  = new ArrayList<>();
+
+
+        // Build the influence spheres
+        buildInfluenceSphere(bodies, spheres, spheresRadius);
+
+        // Sort the radiuses of the bodies considered.
+        Collections.sort(spheresRadius);
+        // Sorting the influence sphere and the bodies in accordance to the radiuses.
+        final List<Body>            bodiesSorted  = sortedBodies(spheresRadius, bodies);
+        final List<InfluenceSphere> spheresSorted = sortedSpheres(spheresRadius, spheres);
+
+        // Determine the influence sphere in which the spacecraft is
+        // Get the position of the spacecraft
+        final Vector3D initialPosition = this.getSpaceCraftStates()
+                                             .get(0)
+                                             .getPVCoordinates(sunFrame)
+                                             .getPosition();
+
+        // Compute the initial influence sphere where the spacecraft is
+        InfluenceSphere lastKnownInfluenceSphere = computeInitialInfluenceSphere(spheresSorted, spheresRadius,
+                bodiesSorted, initialPosition, sunFrame);
+
+        // If the initial influence sphere is not referenced in the inputs, throw this error.
+        if (lastKnownInfluenceSphere == null) {
+            throw new OreCzmlException(OreCzmlMessages.NOT_INSIDE_AN_INFLUENCE_SPHERE);
+        }
+
+        System.out.println(lastKnownInfluenceSphere.getName());
+
+        // Add the beginning date of the simulation to this list. We will add the end date of the simulation too.
+        datesChanges.add(this.startDate);
+
+        // Let's iterate on the states then in the body.
+        // We will check if the spacecraft at each state in inside a new influence sphere or not.
+        for (int i = 0; i < this.getSpaceCraftStates()
+                                .size(); i++) {
+            final SpacecraftState state = this.getSpaceCraftStates()
+                                              .get(i);
+            for (final Body currentBody : bodies) {
+                final InfluenceSphere currentInfluenceSphere = currentBody.getInfluenceSphere();
+                final AbsoluteDate    currentDate            = state.getDate();
+
+                // Compute the position of the spacecraft in the frame of the sun.
+                final Vector3D currentPosition = state.getPVCoordinates(currentBody.getCelestialBody()
+                                                                                   .getBodyOrientedFrame())
+                                                      .getPosition();
+
+                // Compute the position of the body in the frame of the sun.
+                final Vector3D currentPositionCurrentBody = currentBody.getCelestialBody()
+                                                                       .getPosition(currentDate,
+                                                                               currentBody.getCelestialBody()
+                                                                                          .getBodyOrientedFrame());
+
+                // Compute the distance between those two entities.
+                final double distance = currentPosition.distance(currentPositionCurrentBody);
+
+                // If the distance in less than the radius of the given body.
+                // And if the body is not the last one registered as the main one.
+                // Then save the date as a date when the main influence sphere attracting the spacecraft changed.
+                if (distance <= currentInfluenceSphere.getRadius() && (!(lastKnownInfluenceSphere.getBody()
+                                                                                                 .getName()
+                                                                                                 .equals(currentInfluenceSphere.getBody()
+                                                                                                                               .getName())))) {
+
+                    System.out.println("Radius influence sphere : " + currentBody.getInfluenceSphere()
+                                                                                 .getRadius());
+                    System.out.println("Distance : " + distance);
+
+                    System.out.println("Name current influence sphere : " + lastKnownInfluenceSphere.getBody()
+                                                                                                    .getName());
+                    System.out.println("Name replacing influence sphere : " + spheres.get(i)
+                                                                                     .getName());
+
+                    lastKnownInfluenceSphere = spheres.get(i);
+                    datesChanges.add(state.getDate());
+                }
+//                if (currentPosition.distance(currentPositionCurrentBody) > currentInfluenceSphere.getRadius()) {
+//                    for (int j = 0; j < spheresRadius.size(); j++) {
+//                        // The radiuses are sorted by size. We will stop on the first that we find being the closest.
+//                        final double currentRadius     = spheresRadius.get(j);
+//                        final Body   sortedCurrentBody = bodiesSorted.get(j);
+//                        final Frame inertialFrameSortedBody = sortedCurrentBody.getCelestialBody()
+//                                                                               .getInertiallyOrientedFrame();
+//                        final Vector3D currentPositionSortedBody = sortedCurrentBody.getCelestialBody()
+//                                                                                    .getPosition(currentDate,
+//                                                                                            inertialFrameSortedBody);
+//                        if (currentPosition.distance(currentPositionSortedBody) < currentRadius) {
+//                            lastKnownInfluenceSphere = spheresSorted.get(j);
+//                            datesChanges.add(state.getDate());
+//                            break;
+//                        }
+//                    }
+//                }
+            }
+        }
+        // Add the last date of the simulation.
+        datesChanges.add(this.finalDate);
+        System.out.println(datesChanges);
+    }
 
     // Getters
 
     /**
-     * Gets space craft states.
+     * Gets spacecraft states.
      *
-     * @return the space craft states
+     * @return the spacecraft states
      */
     public List<SpacecraftState> getSpaceCraftStates() {
         return Collections.unmodifiableList(spaceCraftStates);
@@ -598,12 +707,11 @@ public class Spacecraft extends AbstractPrimaryObject {
     private void multiplexerSetup(final Propagator propagator) {
         propagator.getMultiplexer()
                   .add(header.getClock()
-                             .getMultiplier(),
-                          currentState -> {
-                              spaceCraftStates.add(currentState);
-                              final Attitude currentSpaceCraftAttitude = currentState.getAttitude();
-                              attitudes.add(currentSpaceCraftAttitude);
-                          });
+                             .getMultiplier(), currentState -> {
+                      spaceCraftStates.add(currentState);
+                      final Attitude currentSpaceCraftAttitude = currentState.getAttitude();
+                      attitudes.add(currentSpaceCraftAttitude);
+                  });
     }
 
     /**
@@ -727,6 +835,62 @@ public class Spacecraft extends AbstractPrimaryObject {
                                                   .build();
                     oriented         = true;
                 }
+            }
+        }
+    }
+
+    private InfluenceSphere computeInitialInfluenceSphere(final List<InfluenceSphere> spheres,
+                                                          final List<Double> spheresRadius, final List<Body> bodies,
+                                                          final Vector3D initialPosition, final Frame sunFrame) {
+        for (int i = 0; i < bodies.size(); i++) {
+            final Body currentBody = bodies.get(i);
+            final Vector3D positionOfBodyAtInitialState = currentBody.getCelestialBody()
+                                                                     .getPosition(this.spaceCraftStates.get(0)
+                                                                                                       .getDate(),
+                                                                             sunFrame);
+            if (initialPosition.distance(positionOfBodyAtInitialState) < spheresRadius.get(i)) {
+                return spheres.get(i);
+            }
+        }
+        return null;
+    }
+
+    private List<Body> sortedBodies(final List<Double> radiusesSorted, final List<Body> bodiesNotSorted) {
+        final List<Body> toReturn = new ArrayList<>();
+
+        for (final double currentRadius : radiusesSorted) {
+            for (final Body currentBody : bodiesNotSorted) {
+                if (currentBody.getInfluenceSphere()
+                               .getRadius() == currentRadius) {
+                    toReturn.add(currentBody);
+                }
+            }
+        }
+        return toReturn;
+    }
+
+    private List<InfluenceSphere> sortedSpheres(final List<Double> radiusesSorted,
+                                                final List<InfluenceSphere> spheres) {
+        final List<InfluenceSphere> toReturn = new ArrayList<>();
+        for (final double currentRadius : radiusesSorted) {
+            for (final InfluenceSphere currentSphere : spheres) {
+                if (currentSphere.getRadius() == currentRadius) {
+                    toReturn.add(currentSphere);
+                }
+            }
+        }
+        return toReturn;
+    }
+
+    private void buildInfluenceSphere(final List<Body> bodies, final List<InfluenceSphere> emptyListSphere,
+                                      final List<Double> emptyListRadius) {
+        for (final Body currentBody : bodies) {
+            try {
+                final InfluenceSphere currentSphereBody = currentBody.getInfluenceSphere();
+                emptyListSphere.add(currentSphereBody);
+                emptyListRadius.add(currentSphereBody.getRadius());
+            } catch (OreCzmlException exception) {
+                throw new OreCzmlException(OreCzmlMessages.TRY_INFLUENCE_SPHERE_WITHOUT_SPHERES);
             }
         }
     }

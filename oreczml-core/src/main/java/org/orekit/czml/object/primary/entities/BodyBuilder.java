@@ -20,6 +20,7 @@ package org.orekit.czml.object.primary.entities;
 import org.orekit.bodies.CelestialBody;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.secondary.Orientation;
+import org.orekit.frames.Frame;
 
 /**
  * body builder class
@@ -67,6 +68,12 @@ public class BodyBuilder {
     /** The description of the model. */
     private String description;
 
+    /** To display or not the influence sphere. */
+    private boolean displayInfluenceSphere = false;
+
+    /** The frame in which the body must be computed. */
+    private Frame frameToExpress;
+
     /**
      * The body builder constructor.
      *
@@ -74,11 +81,19 @@ public class BodyBuilder {
      * @param pathToModelInput : The model to load
      * @param headerInput      : The header considered.
      */
-    public BodyBuilder(final CelestialBody bodyInput, final String pathToModelInput, final Header headerInput) {
-        this.body        = bodyInput;
-        this.pathToModel = pathToModelInput;
-        this.customId    = "BODY/" + bodyInput.getName();
-        this.header      = headerInput;
+    public BodyBuilder(final CelestialBody bodyInput, final String pathToModelInput, final Frame frameToExpressInput,
+                       final Header headerInput) {
+        this.body           = bodyInput;
+        this.pathToModel    = pathToModelInput;
+        this.customId       = "BODY/" + bodyInput.getName();
+        this.header         = headerInput;
+        this.frameToExpress = frameToExpressInput;
+    }
+
+    /** Function to display the influence sphere. */
+    public BodyBuilder displayInfluenceSphere() {
+        this.displayInfluenceSphere = true;
+        return this;
     }
 
     /**
@@ -160,6 +175,17 @@ public class BodyBuilder {
     }
 
     /**
+     * With custom expressed frame.
+     *
+     * @param frameToExpressInput : The frame to define the position of the body.
+     * @return : The body builder object with a custom frame to express the position of the body.
+     */
+    public BodyBuilder withCustomExpressedFrame(final Frame frameToExpressInput) {
+        this.frameToExpress = frameToExpressInput;
+        return this;
+    }
+
+    /**
      * With description body.
      *
      * @param descriptionInput : The description input
@@ -186,7 +212,7 @@ public class BodyBuilder {
      * @return : A body object with the given parameters of the builder.
      */
     public Body build() {
-        final Body tempBody = new Body(body, pathToModel, customId, header);
+        final Body tempBody = new Body(body, pathToModel, frameToExpress, customId, header);
         return checkAttributes(tempBody);
     }
 
@@ -211,6 +237,9 @@ public class BodyBuilder {
         }
         if (displayOnlyOnePeriod) {
             bodyInput.displayOnlyOnePeriod(period);
+        }
+        if (displayInfluenceSphere) {
+            bodyInput.displayInfluenceSphere();
         }
         return bodyInput;
     }

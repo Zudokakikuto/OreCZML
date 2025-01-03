@@ -25,6 +25,8 @@ import org.orekit.time.AbsoluteDate;
 import java.awt.Color;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Spacecraft builder class
@@ -105,6 +107,12 @@ public class SpacecraftBuilder {
     /** An optional rotation for the orientation. */
     private Rotation rotation;
 
+    /** The list of bodies considered when influence sphere are computed. */
+    private List<Body> bodies = new ArrayList<>();
+
+    /** The boolean to display or not the influence sphere. */
+    private boolean displayInfluenceSphere = false;
+
     // Constructor
 
     /**
@@ -117,7 +125,7 @@ public class SpacecraftBuilder {
         this.propagator = propagator;
         this.finalDate  = propagator.getMaxDate();
         this.startDate  = propagator.getMinDate();
-        this.customID = String.format(DEFAULT_FORMAT,
+        this.customID   = String.format(DEFAULT_FORMAT,
                 propagator.getInitialState()
                           .getPosition()
                           .getX(),
@@ -264,6 +272,12 @@ public class SpacecraftBuilder {
         return this;
     }
 
+    public SpacecraftBuilder displayInfluenceSphereChanges(final List<Body> bodiesInput) {
+        this.displayInfluenceSphere = true;
+        this.bodies                 = bodiesInput;
+        return this;
+    }
+
     /**
      * The build function that generates a Spacecraft object.
      *
@@ -275,9 +289,9 @@ public class SpacecraftBuilder {
         final Spacecraft tempSpacecraft = new Spacecraft(propagator, startDate, finalDate, modelPath, color, customID,
                 header);
         tempSpacecraft.getSpacecraftBoundedPropagator()
-                     .clearStepHandlers();
+                      .clearStepHandlers();
         tempSpacecraft.getSpacecraftBoundedPropagator()
-                     .clearEventsDetectors();
+                      .clearEventsDetectors();
         return this.checkAttributes(tempSpacecraft);
     }
 
@@ -302,6 +316,9 @@ public class SpacecraftBuilder {
         }
         if (rotation != null) {
             spacecraft.setOptionalRotation(rotation);
+        }
+        if (displayInfluenceSphere) {
+            spacecraft.displayInfluenceSphereChanges(bodies);
         }
         return spacecraft;
     }

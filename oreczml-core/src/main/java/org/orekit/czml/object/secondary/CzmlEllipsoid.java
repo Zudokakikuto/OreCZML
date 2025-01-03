@@ -205,9 +205,9 @@ public class CzmlEllipsoid extends AbstractSecondaryObject {
      * @param header    the header
      * @return the czml ellipsoid builder
      */
-    public static Cylinder.CzmlEllipsoidBuilder builder(final Cartesian cartesian,
+    public static CzmlEllipsoidBuilder builder(final Cartesian cartesian,
                                                         final Header header) {
-        return new Cylinder.CzmlEllipsoidBuilder(cartesian, header);
+        return new CzmlEllipsoidBuilder(cartesian, header);
     }
 
     /**
@@ -218,9 +218,10 @@ public class CzmlEllipsoid extends AbstractSecondaryObject {
      * @param header      the header
      * @return the czml ellipsoid builder
      */
-    public static Cylinder.CzmlEllipsoidBuilder builder(final List<JulianDate> julianDates, final List<Cartesian> dimensions,
+    public static CzmlEllipsoidBuilder builder(final List<JulianDate> julianDates,
+                                                        final List<Cartesian> dimensions,
                                                         final Header header) {
-        return new Cylinder.CzmlEllipsoidBuilder(julianDates, dimensions, header);
+        return new CzmlEllipsoidBuilder(julianDates, dimensions, header);
     }
 
     // Overrides
@@ -244,7 +245,11 @@ public class CzmlEllipsoid extends AbstractSecondaryObject {
             } else {
                 try (EllipsoidRadiiCesiumWriter radiiWriter = ellipsoidCesiumWriter.getRadiiWriter()) {
                     radiiWriter.open(output);
-                    radiiWriter.writeCartesian(julianDates, cartesians);
+                    if (julianDates.isEmpty()) {
+                        radiiWriter.writeCartesian(cartesian);
+                    } else {
+                        radiiWriter.writeCartesian(julianDates, cartesians);
+                    }
                 }
             }
         }
