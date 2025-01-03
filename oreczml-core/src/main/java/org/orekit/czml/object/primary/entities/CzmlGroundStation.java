@@ -22,13 +22,8 @@ import cesiumlanguagewriter.CesiumOutputStream;
 import cesiumlanguagewriter.CesiumStreamWriter;
 import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.PositionCesiumWriter;
-import cesiumlanguagewriter.TimeInterval;
 import cesiumlanguagewriter.UriCesiumWriter;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
-import org.orekit.czml.errors.OreCzmlException;
-import org.orekit.czml.errors.OreCzmlMessages;
-import org.orekit.czml.object.Position;
-import org.orekit.czml.object.PositionType;
 import org.orekit.czml.object.nonvisual.CzmlModel;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
 import org.orekit.czml.object.primary.Header;
@@ -40,7 +35,6 @@ import org.orekit.frames.TopocentricFrame;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 
@@ -78,21 +72,6 @@ public class CzmlGroundStation extends AbstractPrimaryObject {
     public static final String DEFAULT_3D_MODEL = "";
 
     /**
-     * The list containing all the names of all the stations.
-     */
-    private final List<String> names = new ArrayList<>();
-
-    /**
-     * The list of all the ids of all the stations.
-     */
-    private final List<String> ids = new ArrayList<>();
-
-    /**
-     * The list of all the availabilities of the ground stations.
-     */
-    private final List<TimeInterval> availabilities = new ArrayList<>();
-
-    /**
      * The position on earth of a single station, it is the cartesian vector from the geodetic point.
      */
     private Vector3D positionOnEarth;
@@ -105,46 +84,29 @@ public class CzmlGroundStation extends AbstractPrimaryObject {
     /**
      * The billboard that will display the image of the station.
      */
-    private Billboard billboard;
+    private final Billboard billboard;
 
-    /**
-     * The billboards of the stations.
-     */
-    private final List<Billboard> billboards = new ArrayList<>();
+    /** The topocentric frame of the station. */
+    private final TopocentricFrame topocentricFrame;
 
-    /**
-     * The list of the topocentric frames used to build the ground stations when multiple stations are computed.
-     */
-    private final List<TopocentricFrame> topocentricFrames;
+    /** The description of the station. */
+    private final String description;
 
     /**
      * The model used to define the station if only one model is used.
      */
-    private CzmlModel model;
-
-    /**
-     * The list of the models used to build ground stations models when multiple stations are computed.
-     */
-    private List<CzmlModel> models = new ArrayList<>();
+    private final CzmlModel model;
 
     // Intrinsic parameters
 
-    /**
-     * The list of the position object of the stations when several stations are computed.
-     */
-    private final List<Position> positionsObjects = new ArrayList<>();
+    /** The header considered. */
+    private final Header header;
 
-    /**
-     * The list of all the paths of the models if several are used.
-     */
-    private final List<String> modelPaths;
+    /** The visibility circle of the station. */
+    private StationVisibilityCircle visibilityCircle;
 
-    /** The descriptions to write for each station. */
-    private List<String> descriptions = new ArrayList<>();
-
-    private Header header;
-
-    private List<StationVisibilityCircle> visibilityCircles = new ArrayList<>();
+    /** Boolean to know if the visibility circle is created or not. */
+    private boolean displayCircle = false;
 
     //// Constructors
     // Single Station Constructors
@@ -174,95 +136,29 @@ public class CzmlGroundStation extends AbstractPrimaryObject {
     public CzmlGroundStation(final TopocentricFrame topocentricFrame, final String modelPath,
                              final Header header) throws URISyntaxException, IOException {
 
-        this(Collections.singletonList(topocentricFrame), modelPath, header);
-    }
-
-    // Multiple Stations Constructors
-
-    /**
-     * The constructor of several ground stations with a default model.
-     *
-     * @param topocentricFrames : The list of topocentric frame where the station must be located.
-     * @param header            : The header considered.
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException        the io exception
-     */
-    public CzmlGroundStation(final List<TopocentricFrame> topocentricFrames,
-                             final Header header) throws URISyntaxException, IOException {
-        this(topocentricFrames, DEFAULT_3D_MODEL, header);
-    }
-
-    /**
-     * The constructor of several ground stations with no default parameters.
-     *
-     * @param topocentricFrames : The list of topocentric frame where the station must be located.
-     * @param modelPath         : The path of the model to load (same for all stations, a feature when each station will be able                          to have its own model it under development)
-     * @param header            : The header considered.
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException        the io exception
-     */
-    public CzmlGroundStation(final List<TopocentricFrame> topocentricFrames, final String modelPath,
-                             final Header header) throws URISyntaxException, IOException {
-        this(topocentricFrames, Collections.singletonList(modelPath),
-                topocentricFrames.size() + " " + topocentricFrames.get(0)
-                                                                  .getName() + DEFAULT_ID, header);
-    }
-
-    /**
-     * Instantiates a new Czml ground station.
-     *
-     * @param topocentricFrames the topocentric frames
-     * @param modelPathsInput   the model paths input
-     * @param customID          the custom id
-     * @param header            the header
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException        the io exception
-     */
-    public CzmlGroundStation(final List<TopocentricFrame> topocentricFrames, final List<String> modelPathsInput,
-                             final String customID, final Header header) throws URISyntaxException, IOException {
-
-        this.topocentricFrames = new ArrayList<>(topocentricFrames);
-        this.header            = header;
-        this.setName("Packet containing " + topocentricFrames.size() + " ground stations");
-        this.setId(customID);
-        this.modelPaths = new ArrayList<>(modelPathsInput);
-        for (final TopocentricFrame currentTopocentricFrame : topocentricFrames) {
-            final double latitude = currentTopocentricFrame.getPoint()
-                                                           .getLatitude();
-            final double longitude = currentTopocentricFrame.getPoint()
-                                                            .getLongitude();
-            final double altitude = currentTopocentricFrame.getPoint()
-                                                           .getAltitude();
-            final PositionType positionType = PositionType.CARTOGRAPHIC_RADIANS;
-            this.availabilities.add(header.getAvailability());
-            this.ids.add(DEFAULT_ID + currentTopocentricFrame.getName());
-            this.descriptions.add(
-                    "<!--HTML-->\r\n<p>Id : " + DEFAULT_ID + currentTopocentricFrame.getName() + "</p\r\n<p>Longitude : " + longitude + "</p>\r\n<p>Latitude : " + latitude + "</p>\r\n<p>Simulated from : " + header.getAvailability()
+        this.topocentricFrame = topocentricFrame;
+        this.header           = header;
+        this.setName(DEFAULT_NAME + topocentricFrame.getName());
+        this.setId(DEFAULT_ID + topocentricFrame.getName());
+        this.setAvailability(header.getAvailability());
+        final double latitude = topocentricFrame.getPoint()
+                                                .getLatitude();
+        final double longitude = topocentricFrame.getPoint()
+                                                 .getLongitude();
+        this.description = "<!--HTML-->\r\n<p>Id : " + DEFAULT_ID + topocentricFrame.getName() + "</p\r\n<p>Longitude : " + longitude + "</p>\r\n<p>Latitude : " + latitude + "</p>\r\n<p>Simulated from : " + header.getAvailability()
                                                                                                                                                                                                                      .getStart() + " to " + header.getAvailability()
-                                                                                                                                                                                                                                                  .getStop() + "</p>");
-            this.billboards.add(new Billboard(DEFAULT_IMAGE));
-            this.names.add(DEFAULT_NAME + currentTopocentricFrame.getName());
-            this.positionsOnEarth.add(currentTopocentricFrame.getCartesianPoint());
-            this.positionsObjects.add(new Position(longitude, latitude, altitude, positionType, header));
-        }
+                                                                                                                                                                                                                                                  .getStop() + "</p>";
+        this.billboard   = new Billboard(DEFAULT_IMAGE);
+        this.positionsOnEarth.add(topocentricFrame.getCartesianPoint());
 
-        if (modelPathsInput.isEmpty()) {
-            this.models = null;
+        if (modelPath.isEmpty()) {
+            this.model = null;
         } else {
-            if (modelPathsInput.size() == 1 && modelPathsInput.get(0)
-                                                              .isEmpty()) {
-                this.model = null;
-            } else if (modelPathsInput.size() == 1) {
-                this.model = new CzmlModel(modelPathsInput.get(0), 50, 300, 2, false, header);
-            } else {
-                for (final String currentPathModel : modelPathsInput) {
-                    this.models.add(new CzmlModel(currentPathModel, 50, 300, 2, false, header));
-                }
-            }
+            this.model = new CzmlModel(modelPath, 50, 300, 2, false, header);
         }
     }
 
-    // Builders
+// Builders
 
     /**
      * Builder czml ground station builder.
@@ -275,56 +171,37 @@ public class CzmlGroundStation extends AbstractPrimaryObject {
         return new CzmlGroundStationBuilder(topocentricFrameInput, header);
     }
 
-    /**
-     * Builder czml ground station builder.
-     *
-     * @param topocentricFramesInput the topocentric frames input
-     * @param header                 the header
-     * @return the czml ground station builder
-     */
-    public static CzmlGroundStationBuilder builder(final List<TopocentricFrame> topocentricFramesInput,
-                                                   final Header header) {
-        return new CzmlGroundStationBuilder(topocentricFramesInput, header);
-    }
-
-    // Overrides
+// Overrides
 
     @Override
     public void writeCzmlBlock(final CesiumStreamWriter stream,
                                final CesiumOutputStream output) throws IOException, URISyntaxException {
-        for (int i = 0; i < ids.size(); i++) {
+        this.positionOnEarth = positionsOnEarth.get(0);
+        output.setPrettyFormatting(true);
+        try (PacketCesiumWriter packet = stream.openPacket(output)) {
+            packet.writeId(getId());
+            packet.writeName(getName());
+            packet.writeAvailability(getAvailability());
+            packet.writeDescriptionProperty(description);
 
-            this.setId(ids.get(i));
-            this.setName(names.get(i));
-            this.setAvailability(availabilities.get(i));
-            this.positionOnEarth = positionsOnEarth.get(i);
-            this.billboard       = billboards.get(i);
+            writeModel(packet, output);
 
-            output.setPrettyFormatting(true);
-            try (PacketCesiumWriter packet = stream.openPacket(output)) {
-                packet.writeId(ids.get(i));
-                packet.writeName(names.get(i));
-                packet.writeAvailability(availabilities.get(i));
+            writeLabel(packet, output);
 
-                writeMultipleModels(packet, i, output);
-
-                writeLabel(packet, i, output);
-
-                writePosition(packet, output);
-            }
+            writePosition(packet, output);
         }
-        for (StationVisibilityCircle visibilityCircle : visibilityCircles) {
+        if (displayCircle) {
             visibilityCircle.writeCzmlBlock(stream, output);
         }
     }
 
 
     public void displayCircle(final Spacecraft satellite, final double angleOfAperture) {
-        for (TopocentricFrame topocentricFrame : topocentricFrames) {
-            visibilityCircles.add(StationVisibilityCircle.builder(topocentricFrame, satellite, header)
-                                                         .withAngleOfAperture(angleOfAperture)
-                                                         .build());
-        }
+        visibilityCircle = StationVisibilityCircle.builder(topocentricFrame, satellite, header)
+                                                  .withAngleOfAperture(angleOfAperture)
+                                                  .build();
+        displayCircle    = true;
+
     }
 
     // Getters
@@ -344,24 +221,7 @@ public class CzmlGroundStation extends AbstractPrimaryObject {
      * @return the topocentric frame
      */
     public TopocentricFrame getTopocentricFrame() {
-        if (topocentricFrames.size() == 1) {
-            return topocentricFrames.get(0);
-        } else {
-            throw new OreCzmlException(OreCzmlMessages.SEVERAL_STATION_UNIQUE_GET);
-        }
-    }
-
-    /**
-     * Gets topocentric frames.
-     *
-     * @return the topocentric frames
-     */
-    public List<TopocentricFrame> getTopocentricFrames() {
-        if (topocentricFrames.isEmpty()) {
-            throw new OreCzmlException(OreCzmlMessages.SINGLE_STATION_GET_MULTIPLE_GROUND_STATION);
-        } else {
-            return Collections.unmodifiableList(topocentricFrames);
-        }
+        return topocentricFrame;
     }
 
     /**
@@ -370,82 +230,7 @@ public class CzmlGroundStation extends AbstractPrimaryObject {
      * @return the positions
      */
     public Vector3D getPositions() {
-        if (topocentricFrames.size() == 1) {
-            return positionsOnEarth.get(0);
-        } else {
-            throw new OreCzmlException(OreCzmlMessages.SEVERAL_STATION_UNIQUE_GET);
-        }
-    }
-
-    /**
-     * Gets position object.
-     *
-     * @return the position object
-     */
-    public Position getPositionObject() {
-        if (topocentricFrames.size() == 1) {
-            return positionsObjects.get(0);
-        } else {
-            throw new OreCzmlException(OreCzmlMessages.SEVERAL_STATION_UNIQUE_GET);
-        }
-    }
-
-    /**
-     * Gets billboards.
-     *
-     * @return the billboards
-     */
-    public List<Billboard> getBillboards() {
-        return Collections.unmodifiableList(billboards);
-    }
-
-    /**
-     * Gets positions objects.
-     *
-     * @return the positions objects
-     */
-    public List<Position> getPositionsObjects() {
-        return Collections.unmodifiableList(positionsObjects);
-    }
-
-    public List<TimeInterval> getAvailabilities() {
-        return Collections.unmodifiableList(availabilities);
-    }
-
-    /**
-     * Gets ids.
-     *
-     * @return the ids
-     */
-    public List<String> getIds() {
-        return Collections.unmodifiableList(ids);
-    }
-
-    /**
-     * Gets names.
-     *
-     * @return the names
-     */
-    public List<String> getNames() {
-        return Collections.unmodifiableList(names);
-    }
-
-    /**
-     * Gets positions on earth.
-     *
-     * @return the positions on earth
-     */
-    public List<Vector3D> getPositionsOnEarth() {
-        return Collections.unmodifiableList(positionsOnEarth);
-    }
-
-    /**
-     * Gets position on earth.
-     *
-     * @return the position on earth
-     */
-    public Vector3D getPositionOnEarth() {
-        return positionOnEarth;
+        return positionsOnEarth.get(0);
     }
 
     /**
@@ -487,24 +272,15 @@ public class CzmlGroundStation extends AbstractPrimaryObject {
     /**
      * This function will write the specific model for the given station when multiple stations are used.
      *
-     * @param packet          : The packet that will write in the czml file.
-     * @param iterationNumber : The iteration number of the current station.
-     * @param output          : The output stream of cesium that will contain the strings to write into the CzmLFile.
+     * @param packet : The packet that will write in the czml file.
+     * @param output : The output stream of cesium that will contain the strings to write into the CzmLFile.
      */
-    private void writeMultipleModels(final PacketCesiumWriter packet, final int iterationNumber,
-                                     final CesiumOutputStream output) throws IOException, URISyntaxException {
-        if (models.isEmpty()) {
+    private void writeModel(final PacketCesiumWriter packet,
+                            final CesiumOutputStream output) throws IOException, URISyntaxException {
+        if (model == null) {
             writeBillBoard(packet, output);
-        } else if (modelPaths.size() == 1) {
-            if (modelPaths.get(0)
-                          .isEmpty()) {
-                writeBillBoard(packet, output);
-            } else {
-                this.model.generateCZML(packet, output);
-            }
         } else {
-            final CzmlModel currentModel = models.get(iterationNumber);
-            currentModel.generateCZML(packet, output);
+            this.model.generateCZML(packet, output);
         }
     }
 
@@ -512,14 +288,12 @@ public class CzmlGroundStation extends AbstractPrimaryObject {
      * This function aims at writing multiple models when several are loaded.
      * The number of models should be the same as the number of ground stations wanted.
      *
-     * @param packet          : The packet that will write in the czml file.
-     * @param iterationNumber : The number of the iteration in the loop.
-     * @param output          : The output stream of cesium that will contain the strings to write into the CzmLFile.
+     * @param packet : The packet that will write in the czml file.
+     * @param output : The output stream of cesium that will contain the strings to write into the CzmLFile.
      */
-    private void writeLabel(final PacketCesiumWriter packet, final int iterationNumber,
+    private void writeLabel(final PacketCesiumWriter packet,
                             final CesiumOutputStream output) {
-        final Label label = new Label(topocentricFrames.get(iterationNumber)
-                                                       .getName());
+        final Label label = new Label(topocentricFrame.getName());
         label.write(packet, output);
     }
 
@@ -540,5 +314,4 @@ public class CzmlGroundStation extends AbstractPrimaryObject {
             positionWriter.writeCartesian(cartesian);
         }
     }
-
 }

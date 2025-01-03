@@ -1285,6 +1285,7 @@
     "id":"GROUND_STATION/Toulouse Frame",
     "name":"Ground station : Toulouse Frame",
     "availability":"2024-03-15T00:00:00Z/2024-03-15T05:00:00Z",
+    "description":"<!--HTML-->\r\n<p>Id : GROUND_STATION/Toulouse Frame</p\r\n<p>Longitude : 0.025206045057302107</p>\r\n<p>Latitude : 0.7610455843443714</p>\r\n<p>Simulated from : 2460384:43200 UTC (3/15/2024 12:00:00 AM) to 2460384:61200 UTC (3/15/2024 5:00:00 AM)</p>",
     "billboard":{
       "horizontalOrigin":"CENTER",
       "color":{
@@ -1319,6 +1320,7 @@
     "id":"GROUND_STATION/Las Vegas Frame",
     "name":"Ground station : Las Vegas Frame",
     "availability":"2024-03-15T00:00:00Z/2024-03-15T05:00:00Z",
+    "description":"<!--HTML-->\r\n<p>Id : GROUND_STATION/Las Vegas Frame</p\r\n<p>Longitude : -2.009556392783003</p>\r\n<p>Latitude : 0.6313135157143809</p>\r\n<p>Simulated from : 2460384:43200 UTC (3/15/2024 12:00:00 AM) to 2460384:61200 UTC (3/15/2024 5:00:00 AM)</p>",
     "billboard":{
       "horizontalOrigin":"CENTER",
       "color":{

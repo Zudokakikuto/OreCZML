@@ -78,17 +78,11 @@ public class CzmlGroundStationTest extends AbstractTest {
                                                                   .withModel(modelISS)
                                                                   .build();
 
-        final CzmlGroundStation multipleStation = CzmlGroundStation.builder(topocentrics, header)
-                                                                   .withModel(modelISS, modelJuno)
-                                                                   .withModel(strings)
-                                                                   .build();
 
         final String pathFile = loadResources("templateFile/primary/CzmlGroundStationTemplate.txt");
         final String builderPathFile = loadResources("templateFile/primary/CzmlGroundStationWithBuilderTemplate.txt");
-        final String multiplePathFile = loadResources("templateFile/primary/CzmlGroundStationMultipleTemplate.txt");
 
         Assertions.assertEquals(Files.readString(Path.of(pathFile)), station.toString());
         Assertions.assertEquals(Files.readString(Path.of(builderPathFile)), stationBuilder.toString());
-        Assertions.assertEquals(Files.readString(Path.of(multiplePathFile)), multipleStation.toString());
     }
 }

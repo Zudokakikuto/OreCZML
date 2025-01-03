@@ -62,11 +62,6 @@ public class CzmlGroundStationBuilder {
     /** The custom ID for the czml ground station. */
     private String customID = CzmlGroundStation.DEFAULT_ID;
 
-    /**
-     * The boolean to know id the ground station are multiple or not.
-     */
-    private final boolean multipleStations;
-
     /** The header to consider when several are used. */
     private Header header;
 
@@ -89,19 +84,6 @@ public class CzmlGroundStationBuilder {
      */
     public CzmlGroundStationBuilder(final TopocentricFrame topocentricFrameInput, final Header headerInput) {
         this.topocentricFrame = topocentricFrameInput;
-        this.multipleStations = false;
-        this.header = headerInput;
-    }
-
-    /**
-     * The constructor of the czml ground station builder for multiple stations.
-     *
-     * @param topocentricFramesInput : The list of the topocentric frames where the stations must be.
-     * @param headerInput            : The header considered.
-     */
-    public CzmlGroundStationBuilder(final List<TopocentricFrame> topocentricFramesInput, final Header headerInput) {
-        this.multipleTopocentricFrame.addAll(topocentricFramesInput);
-        this.multipleStations = true;
         this.header = headerInput;
     }
 
@@ -122,38 +104,6 @@ public class CzmlGroundStationBuilder {
     public CzmlGroundStationBuilder withModel(final String modelPathInput) {
         this.modelPath = modelPathInput;
         return this;
-    }
-
-    /**
-     * Function to set up all the models to use for the ground stations.
-     * The number of model paths must be the same as the number of ground stations.
-     *
-     * @param modelPathsInput : The list of all the paths of all the models to load.
-     * @return : The czml ground station with the given models
-     */
-    public CzmlGroundStationBuilder withModel(final List<String> modelPathsInput) {
-        if (!multipleStations) {
-            throw new OreCzmlException(OreCzmlMessages.MULTIPLE_MODEL_SINGLE_STATION);
-        } else {
-            this.multipleModels.addAll(modelPathsInput);
-            return this;
-        }
-    }
-
-    /**
-     * Function to set up all the models to use for the ground stations.
-     * The number of model paths must be the same as the number of ground stations.
-     *
-     * @param modelPathsInput :Several paths of the models to set up
-     * @return : The czml ground station with the given models
-     */
-    public CzmlGroundStationBuilder withModel(final String... modelPathsInput) {
-        if (!multipleStations) {
-            throw new OreCzmlException(OreCzmlMessages.MULTIPLE_MODEL_SINGLE_STATION);
-        } else {
-            this.multipleModels.addAll(Arrays.asList(modelPathsInput));
-            return this;
-        }
     }
 
     /**
@@ -186,16 +136,8 @@ public class CzmlGroundStationBuilder {
      * @throws IOException        the io exception
      */
     public CzmlGroundStation build() throws URISyntaxException, IOException {
-        CzmlGroundStation toReturn = null;
-        if (!multipleStations) {
-            toReturn = new CzmlGroundStation(topocentricFrame, modelPath, header);
-        } else {
-            if (modelPath != null) {
-                toReturn = new CzmlGroundStation(multipleTopocentricFrame, modelPath, header);
-            } else {
-                toReturn = new CzmlGroundStation(multipleTopocentricFrame, multipleModels, customID, header);
-            }
-        }
+        CzmlGroundStation toReturn;
+        toReturn = new CzmlGroundStation(topocentricFrame, modelPath, header);
         if (displayCircle) {
             toReturn.displayCircle(spacecraft, angleOfAperture);
         }

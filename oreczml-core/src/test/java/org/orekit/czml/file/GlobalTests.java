@@ -667,21 +667,9 @@ class GlobalTests extends AbstractTest {
         final List<TopocentricFrame> topocentrics = new ArrayList<>();
         topocentrics.add(topocentricToulouse);
         topocentrics.add(topocentricLasVegas);
-        final CzmlGroundStation groundStationCoverageList = CzmlGroundStation.builder(topocentrics, header)
-                                                                             .build();
         final CzmlGroundStation soloGroundStation = new CzmlGroundStation(topocentricToulouse, header);
 
-        groundStationCoverageList.getTopocentricFrames();
-        groundStationCoverageList.getBillboards();
-        groundStationCoverageList.getAvailabilities();
-        groundStationCoverageList.getNames();
-        groundStationCoverageList.getIds();
-        groundStationCoverageList.getPositionsObjects();
-        groundStationCoverageList.getPositionsOnEarth();
-
         soloGroundStation.getTopocentricFrame();
-        soloGroundStation.getPositionsObjects();
-        soloGroundStation.getPositionsOnEarth();
 
         final List<ManeuverSequence> sequences = new ArrayList<>();
         sequences.add(maneuverSequence);
