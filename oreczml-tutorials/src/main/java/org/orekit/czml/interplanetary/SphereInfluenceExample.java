@@ -47,10 +47,11 @@ public class SphereInfluenceExample {
         TutorialUtils.loadOrekitData();
 
         // Paths
-        final String output = "C:\\Users\\jleblond\\Documents\\git\\OreCzmlJSInterface\\public\\Output.czml";
+        final String output = TutorialUtils.generateOutput();
         // !!! Here you need to change the path inside 'generateJsPath' to the path you are using for images or Model.
         // This folder can also be the public folder of your cesium javascript interface.
-        final String pathToJSFolder = "C:\\Users\\jleblond\\Documents\\git\\OreCzmlJSInterface\\public";
+        final String pathToJSFolder = TutorialUtils.generateJSPath(
+                System.getProperty("user.dir") + "/Javascript/public");
 
         // Creation of the clock.
 
