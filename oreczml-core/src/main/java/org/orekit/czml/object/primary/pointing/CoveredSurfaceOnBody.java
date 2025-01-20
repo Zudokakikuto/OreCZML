@@ -44,6 +44,9 @@ import java.util.List;
  */
 public class CoveredSurfaceOnBody extends AbstractPrimaryObject {
 
+    /** The default color of the covered surface. */
+    public static final Color DEFAULT_COLOR = new Color(34, 155, 83);
+
     /**
      * The default ID for the covered surface.
      */
@@ -103,7 +106,7 @@ public class CoveredSurfaceOnBody extends AbstractPrimaryObject {
         this(satelliteInput, fieldOfObservationInput,
                 DEFAULT_ID + satelliteInput.getId() + "/" + fieldOfObservationInput.getBody()
                                                                                    .getBodyFrame()
-                                                                                   .toString(), header);
+                                                                                   .toString(), false, true, DEFAULT_COLOR, header);
     }
 
     /**
@@ -115,7 +118,7 @@ public class CoveredSurfaceOnBody extends AbstractPrimaryObject {
      * @param header                  : The header to consider when several headers are used.
      */
     CoveredSurfaceOnBody(final Spacecraft satelliteInput, final FieldOfObservation fieldOfObservationInput,
-                         final String customID, final Header header) {
+                         final String customID, final boolean fill, final boolean outline, final Color color, final Header header) {
 
         this.setId(customID);
         this.setName(DEFAULT_NAME + satelliteInput.getId() + " on : " + fieldOfObservationInput.getBody()
@@ -140,9 +143,9 @@ public class CoveredSurfaceOnBody extends AbstractPrimaryObject {
             cartesiansToBuildOnePolygon.addAll(currentCartesianList);
         }
 
-        this.polygon = new Label.PolygonBuilder(cartesiansToBuildOnePolygon, header).withColor(new Color(34, 155, 83))
-                                                                                    .withOutline(true)
-                                                                                    .withFill(false)
+        this.polygon = new Label.PolygonBuilder(cartesiansToBuildOnePolygon, header).withColor(color)
+                                                                                    .withOutline(outline)
+                                                                                    .withFill(fill)
                                                                                     .build();
     }
 

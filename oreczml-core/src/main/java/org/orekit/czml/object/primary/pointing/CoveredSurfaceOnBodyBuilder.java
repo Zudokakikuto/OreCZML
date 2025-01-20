@@ -17,9 +17,11 @@
 
 package org.orekit.czml.object.primary.pointing;
 
-import org.orekit.czml.object.primary.visu.FieldOfObservation;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.primary.entities.Spacecraft;
+import org.orekit.czml.object.primary.visu.FieldOfObservation;
+
+import java.awt.Color;
 
 /**
  * Covered Surface On Body Builder class
@@ -43,6 +45,14 @@ public class CoveredSurfaceOnBodyBuilder {
     /** The header to consider when several are used. */
     private Header header = null;
 
+    /** To fill or not the covered surface. */
+    private boolean fill = false;
+
+    /** The outline wanted. */
+    private boolean outline = true;
+
+    /** The color to use. */
+    private Color color = new Color(34, 155, 83);
 
     /**
      * The constructor of the covered surface on body builder.
@@ -58,7 +68,7 @@ public class CoveredSurfaceOnBodyBuilder {
         this.customId           = "COVERED_SURFACE/" + satelliteInput.getId() + "/" + fieldOfObservationInput.getBody()
                                                                                                              .getBodyFrame()
                                                                                                              .toString();
-        this.header = headerInput;
+        this.header             = headerInput;
     }
 
     /**
@@ -84,11 +94,44 @@ public class CoveredSurfaceOnBodyBuilder {
     }
 
     /**
+     * Function to set up the fill parameter.
+     *
+     * @param fillInput : The fill to set up
+     * @return : A covered surface on body builder with a fill parameter set.
+     */
+    public CoveredSurfaceOnBodyBuilder withFill(final boolean fillInput) {
+        this.fill = fillInput;
+        return this;
+    }
+
+    /**
+     * Function to set up the outline parameter.
+     *
+     * @param outlineInput : The outline to set up
+     * @return : A covered surface on body builder with an outline parameter set.
+     */
+    public CoveredSurfaceOnBodyBuilder withOutline(final boolean outlineInput) {
+        this.outline = outlineInput;
+        return this;
+    }
+
+    /**
+     * Function to set up the color.
+     *
+     * @param colorInput : The color to set up
+     * @return : A covered surface on body builder with a color set.
+     */
+    public CoveredSurfaceOnBodyBuilder withColor(final Color colorInput) {
+        this.color = colorInput;
+        return this;
+    }
+
+    /**
      * Build covered surface on body.
      *
      * @return the covered surface on body
      */
     public CoveredSurfaceOnBody build() {
-        return new CoveredSurfaceOnBody(satellite, fieldOfObservation, customId, header);
+        return new CoveredSurfaceOnBody(satellite, fieldOfObservation, customId, fill, outline, color, header);
     }
 }
