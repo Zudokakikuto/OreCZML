@@ -53,6 +53,7 @@ import org.orekit.propagation.SpacecraftState;
 import org.orekit.time.AbsoluteDate;
 
 import java.awt.Color;
+import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -79,7 +80,10 @@ public class Spacecraft extends AbstractPrimaryObject {
     /**
      * The default model path, empty.
      */
-    public static final String DEFAULT_MODEL_PATH = "";
+    public static final String DEFAULT_MODEL_PATH = new File(Spacecraft.class.getClassLoader()
+            .getResource("satellite.png")
+            .getFile()).toPath()
+            .toString();
 
     /**
      * The default id of the Spacecraft.
