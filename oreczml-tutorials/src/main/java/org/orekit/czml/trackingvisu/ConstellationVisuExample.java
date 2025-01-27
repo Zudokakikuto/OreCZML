@@ -16,15 +16,15 @@
  */
 package org.orekit.czml.trackingvisu;
 
-import org.orekit.czml.TutorialUtils;
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
 import org.orekit.bodies.GeodeticPoint;
+import org.orekit.czml.TutorialUtils;
 import org.orekit.czml.file.CzmlFile;
+import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.primary.entities.Constellation;
 import org.orekit.czml.object.primary.entities.CzmlGroundStation;
-import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.primary.visu.LineOfVisibility;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.forces.ForceModel;
@@ -55,7 +55,7 @@ import java.util.List;
  */
 public class ConstellationVisuExample {
 
-    private ConstellationVisuExample () {
+    private ConstellationVisuExample() {
         // empty
     }
 
@@ -65,7 +65,7 @@ public class ConstellationVisuExample {
      * @param args the args
      * @throws Exception the exception
      */
-    public static void main (final String[] args) throws Exception {
+    public static void main(final String[] args) throws Exception {
         // Load orekit data
         TutorialUtils.loadOrekitData();
 
@@ -121,7 +121,8 @@ public class ConstellationVisuExample {
         }
 
         // Build of the constellation
-        final Constellation constellation = Constellation.builder(propagators, finalDate, header).build();
+        final Constellation constellation = Constellation.builder(propagators, finalDate, header)
+                                                         .build();
 
         //// Creation of the ground station
 
@@ -149,13 +150,22 @@ public class ConstellationVisuExample {
             groundStation.add(new CzmlGroundStation(station, header));
         }
 
-        final LineOfVisibility lineOfVisibility = LineOfVisibility.builder(stations, constellation, header).withVisibilityTriangle().build();
+        final LineOfVisibility lineOfVisibilityToulouse = LineOfVisibility.builder(topocentricToulouse, constellation,
+                                                                                  header)
+                                                                          .withVisibilityTriangle()
+                                                                          .build();
+        final LineOfVisibility lineOfVisibilityLasVegas = LineOfVisibility.builder(topocentricLasVegas, constellation,
+                                                                                  header)
+                                                                          .withVisibilityTriangle()
+                                                                          .build();
+
 
         final CzmlFile file = CzmlFile.builder()
                                       .withHeader(header)
                                       .withConstellation(constellation)
                                       .withCzmlGroundStation(groundStation)
-                                      .withLineOfVisibility(lineOfVisibility)
+                                      .withLineOfVisibility(lineOfVisibilityToulouse)
+                                      .withLineOfVisibility(lineOfVisibilityLasVegas)
                                       .build();
 
         // Writing in the file

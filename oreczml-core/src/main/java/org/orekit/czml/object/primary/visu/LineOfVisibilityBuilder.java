@@ -16,15 +16,13 @@
  */
 package org.orekit.czml.object.primary.visu;
 
-import org.orekit.czml.object.primary.entities.Constellation;
 import org.orekit.czml.object.primary.Header;
+import org.orekit.czml.object.primary.entities.Constellation;
 import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.frames.TopocentricFrame;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Line of visibility builder class
@@ -41,16 +39,10 @@ public class LineOfVisibilityBuilder {
      */
     public static final double DEFAULT_ANGLE_OF_APERTURE = 80.0;
 
-    /** The string to call stations in the id. */
-    public static final String DEFAULT_STATIONS = "STATIONS : ";
-
     /**
      * The topocentric frame where the ground station is.
      */
     private TopocentricFrame topocentricFrame;
-
-    /** Topocentrics when several stations are considered. */
-    private final List<TopocentricFrame> topocentricFrames = new ArrayList<>();
 
     /**
      * The satellite observed.
@@ -69,7 +61,7 @@ public class LineOfVisibilityBuilder {
     private String customID;
 
     /** The header considered when several are used. */
-    private Header header = null;
+    private Header header;
 
     /** The constellation of the lines. */
     private Constellation constellation;
@@ -102,21 +94,6 @@ public class LineOfVisibilityBuilder {
         this.header           = headerInput;
     }
 
-    public LineOfVisibilityBuilder(final List<TopocentricFrame> topocentricFramesInput, final Spacecraft satellite,
-                                   final Header headerInput) {
-        this.satellite = satellite;
-        this.topocentricFrames.addAll(topocentricFramesInput);
-        this.customID = LineOfVisibility.DEFAULT_ID + DEFAULT_STATIONS + topocentricFrames.size() + "/" + satellite.getId();
-        this.header   = headerInput;
-    }
-
-    public LineOfVisibilityBuilder(final List<TopocentricFrame> topocentricFramesInput,
-                                   final Constellation constellationInput, final Header headerInput) {
-        this.constellation = constellationInput;
-        this.topocentricFrames.addAll(topocentricFramesInput);
-        this.customID = LineOfVisibility.DEFAULT_ID + DEFAULT_STATIONS + topocentricFrames.size() + "/" + constellationInput.getIds();
-        this.header   = headerInput;
-    }
 
     /**
      * Function to set up an angle of aperture.
@@ -166,37 +143,18 @@ public class LineOfVisibilityBuilder {
     public LineOfVisibility build() throws URISyntaxException, IOException {
         LineOfVisibility toReturn = null;
         if (satellite != null) {
-            if (topocentricFrames.isEmpty()) {
-                toReturn = new LineOfVisibility(topocentricFrame, satellite, angleOfAperture, customID, header);
-            } else {
-                toReturn = new LineOfVisibility(topocentricFrames, satellite, angleOfAperture, customID, header);
-            }
+            toReturn = new LineOfVisibility(topocentricFrame, satellite, angleOfAperture, customID, header);
+
         }
         if (constellation != null) {
-            if (topocentricFrames.isEmpty()) {
-                toReturn = new LineOfVisibility(topocentricFrame, constellation, angleOfAperture, customID, header);
-            } else {
-                toReturn = new LineOfVisibility(topocentricFrames, constellation, angleOfAperture, customID, header);
-            }
+            toReturn = new LineOfVisibility(topocentricFrame, constellation, angleOfAperture, customID, header);
         }
         if (displayTriangle) {
-            assert toReturn != null;
-            if (satellite != null && topocentricFrames.isEmpty()) {
+            if (satellite != null) {
                 toReturn.displayTriangle();
             } else {
-                if (constellation != null && !(topocentricFrames.isEmpty())) {
+                if (constellation != null) {
                     for (int i = 0; i < constellation.getTotalOfSatellite(); i++) {
-                        for (int j = 0; j < topocentricFrames.size(); j++) {
-                            toReturn.displaySingleTriangle(j);
-                        }
-                    }
-                }
-                else if (constellation != null) {
-                    for (int i = 0; i < constellation.getTotalOfSatellite(); i++) {
-                        toReturn.displaySingleTriangle(i);
-                    }
-                } else if (!(topocentricFrames.isEmpty())) {
-                    for (int i = 0; i < topocentricFrames.size(); i++) {
                         toReturn.displaySingleTriangle(i);
                     }
                 }

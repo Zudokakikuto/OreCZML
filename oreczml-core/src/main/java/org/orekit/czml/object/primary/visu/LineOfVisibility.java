@@ -31,8 +31,8 @@ import org.orekit.czml.object.CzmlShow;
 import org.orekit.czml.object.Polyline;
 import org.orekit.czml.object.Utils.DateUtils;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
-import org.orekit.czml.object.primary.entities.Constellation;
 import org.orekit.czml.object.primary.Header;
+import org.orekit.czml.object.primary.entities.Constellation;
 import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.frames.TopocentricFrame;
 import org.orekit.propagation.BoundedPropagator;
@@ -208,36 +208,6 @@ public class LineOfVisibility extends AbstractPrimaryObject {
         }
     }
 
-    LineOfVisibility(final List<TopocentricFrame> topocentricFrames, final Spacecraft satellite,
-                     final double angleOfAperture, final String customID, final Header header) {
-        this.setId(customID);
-        this.header = header;
-        this.topocentricFrames.addAll(topocentricFrames);
-        this.satellite = satellite;
-        for (final TopocentricFrame currentTopocentricFrame : topocentricFrames) {
-            final LineOfVisibility currentLine = new LineOfVisibility(currentTopocentricFrame, satellite,
-                    angleOfAperture, currentTopocentricFrame.getName() + satellite.getId() + customID, header);
-            this.lines.add(currentLine);
-        }
-    }
-
-    LineOfVisibility(final List<TopocentricFrame> topocentricFrames, final Constellation constellation,
-                     final double angleOfAperture, final String customID, final Header header) {
-        this.setId(customID);
-        this.header = header;
-        this.topocentricFrames.addAll(topocentricFrames);
-        this.satellites = constellation.getSatellites();
-        for (final TopocentricFrame currentTopocentric : topocentricFrames) {
-            for (int j = 0; j < constellation.getTotalOfSatellite(); j++) {
-                final Spacecraft currentSatellite = constellation.getSatellites()
-                                                                 .get(j);
-                final LineOfVisibility currentLine = new LineOfVisibility(currentTopocentric, currentSatellite,
-                        angleOfAperture, currentTopocentric.getName() + currentSatellite.getId() + customID, header);
-                this.lines.add(currentLine);
-            }
-        }
-    }
-
     // Builder
 
     /**
@@ -257,16 +227,6 @@ public class LineOfVisibility extends AbstractPrimaryObject {
                                                   final Constellation constellationInput,
                                                   final Header header) throws URISyntaxException, IOException {
         return new LineOfVisibilityBuilder(topocentricFrameInput, constellationInput, header);
-    }
-
-    public static LineOfVisibilityBuilder builder(final List<TopocentricFrame> topocentricFramesInput,
-                                                  final Spacecraft satellite, final Header header) {
-        return new LineOfVisibilityBuilder(topocentricFramesInput, satellite, header);
-    }
-
-    public static LineOfVisibilityBuilder builder(final List<TopocentricFrame> topocentricFramesInput,
-                                                  final Constellation constellationInput, final Header header) {
-        return new LineOfVisibilityBuilder(topocentricFramesInput, constellationInput, header);
     }
 
     // Overrides
@@ -569,7 +529,8 @@ public class LineOfVisibility extends AbstractPrimaryObject {
      */
     private void writePolyline(final PacketCesiumWriter packet, final CesiumOutputStream output,
                                final Header headerInput) {
-        final Polyline polylineInput = Polyline.nonVectorBuilder(headerInput).build();
+        final Polyline polylineInput = Polyline.nonVectorBuilder(headerInput)
+                                               .build();
         polylineInput.writePolylineOfVisibility(packet, output, references, showList);
     }
 
