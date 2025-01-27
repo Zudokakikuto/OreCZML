@@ -22,8 +22,8 @@ import org.hipparchus.util.FastMath;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.czml.TutorialUtils;
 import org.orekit.czml.file.CzmlFile;
-import org.orekit.czml.object.primary.entities.CzmlGroundStation;
 import org.orekit.czml.object.primary.Header;
+import org.orekit.czml.object.primary.entities.CzmlGroundStation;
 import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.primary.visu.LineOfVisibility;
 import org.orekit.czml.object.secondary.Clock;
@@ -170,15 +170,36 @@ public class SatTrackingExample {
             groundStations.add(currentCzmlStation);
         }
 
-        final LineOfVisibility lineOfVisibility = LineOfVisibility.builder(stations, satellite, header).withAngleOfAperture(70.0)
-                                                                  .build();
+        final LineOfVisibility lineOfVisibilityToulouse = LineOfVisibility.builder(topocentricToulouse, satellite,
+                                                                                  header)
+                                                                          .withAngleOfAperture(70.0)
+                                                                          .build();
+        final LineOfVisibility lineOfVisibilityGibraltar = LineOfVisibility.builder(topocentricGibraltar, satellite,
+                                                                                   header)
+                                                                           .withAngleOfAperture(70.0)
+                                                                           .build();
+        final LineOfVisibility lineOfVisibilityQuito = LineOfVisibility.builder(topocentricQuito, satellite, header)
+                                                                       .withAngleOfAperture(70.0)
+                                                                       .build();
+        final LineOfVisibility lineOfVisibilityLasVegas = LineOfVisibility.builder(topocentricLasVegas, satellite,
+                                                                                  header)
+                                                                          .withAngleOfAperture(70.0)
+                                                                          .build();
+        final LineOfVisibility lineOfVisibilitySydney = LineOfVisibility.builder(topocentricSydney, satellite, header)
+                                                                        .withAngleOfAperture(70.0)
+                                                                        .build();
+
 
         //// Creation of a line of visu between the satellite and all the ground stations
         final CzmlFile file = CzmlFile.builder()
                                       .withHeader(header)
                                       .withSpacecraft(satellite)
                                       .withCzmlGroundStation(groundStations)
-                                      .withLineOfVisibility(lineOfVisibility)
+                                      .withLineOfVisibility(lineOfVisibilityToulouse)
+                                      .withLineOfVisibility(lineOfVisibilitySydney)
+                                      .withLineOfVisibility(lineOfVisibilityLasVegas)
+                                      .withLineOfVisibility(lineOfVisibilityGibraltar)
+                                      .withLineOfVisibility(lineOfVisibilityQuito)
                                       .build();
 
         // Write inside the CzmlFile the objects

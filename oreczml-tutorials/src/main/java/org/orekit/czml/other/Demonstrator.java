@@ -16,7 +16,6 @@
  */
 package org.orekit.czml.other;
 
-import org.orekit.czml.TutorialUtils;
 import org.hipparchus.geometry.euclidean.threed.RotationOrder;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
@@ -24,11 +23,12 @@ import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
 import org.orekit.attitudes.LofOffset;
 import org.orekit.bodies.GeodeticPoint;
+import org.orekit.czml.TutorialUtils;
 import org.orekit.czml.file.CzmlFile;
-import org.orekit.czml.object.primary.entities.CzmlGroundStation;
-import org.orekit.czml.object.primary.visu.FieldOfObservation;
 import org.orekit.czml.object.primary.Header;
+import org.orekit.czml.object.primary.entities.CzmlGroundStation;
 import org.orekit.czml.object.primary.entities.Spacecraft;
+import org.orekit.czml.object.primary.visu.FieldOfObservation;
 import org.orekit.czml.object.primary.visu.LineOfVisibility;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.forces.ForceModel;
@@ -62,7 +62,7 @@ import java.util.List;
  */
 public class Demonstrator {
 
-    private Demonstrator () {
+    private Demonstrator() {
         // empty
     }
 
@@ -72,7 +72,7 @@ public class Demonstrator {
      * @param args the args
      * @throws Exception the exception
      */
-    public static void main (final String[] args) throws Exception {
+    public static void main(final String[] args) throws Exception {
         // Load orekit data
         TutorialUtils.loadOrekitData();
 
@@ -97,8 +97,8 @@ public class Demonstrator {
 
 
         // Creation of a topocentric frame around Toulouse.
-        final GeodeticPoint toulouseFrame = new GeodeticPoint(FastMath.toRadians(43.6047),
-                FastMath.toRadians(1.4442), 10);
+        final GeodeticPoint toulouseFrame = new GeodeticPoint(FastMath.toRadians(43.6047), FastMath.toRadians(1.4442),
+                10);
         final TopocentricFrame topocentricToulouse = new TopocentricFrame(TutorialUtils.getEarth(), toulouseFrame,
                 "Toulouse");
 
@@ -109,12 +109,13 @@ public class Demonstrator {
                 "Las Vegas");
 
         // Creation of another topocentric frame around .
-        final GeodeticPoint kirunaFrame = new GeodeticPoint(FastMath.toRadians(67.8558),
-                FastMath.toRadians(20.2253), 10);
-        final TopocentricFrame topocentricKiruna = new TopocentricFrame(TutorialUtils.getEarth(), kirunaFrame, "Kiruna");
+        final GeodeticPoint kirunaFrame = new GeodeticPoint(FastMath.toRadians(67.8558), FastMath.toRadians(20.2253),
+                10);
+        final TopocentricFrame topocentricKiruna = new TopocentricFrame(TutorialUtils.getEarth(), kirunaFrame,
+                "Kiruna");
 
         // Creation of another topocentric frame around Troll.
-        final GeodeticPoint trollFrame = new GeodeticPoint(FastMath.toRadians(-72.006),
+        final GeodeticPoint    trollFrame       = new GeodeticPoint(FastMath.toRadians(-72.006),
                 FastMath.toRadians(2.529), 10);
         final TopocentricFrame topocentricTroll = new TopocentricFrame(TutorialUtils.getEarth(), trollFrame, "Troll");
 
@@ -129,8 +130,8 @@ public class Demonstrator {
         // Build of a LEO orbit
 
         final KeplerianOrbit initialOrbit = new KeplerianOrbit(7878000, 0, FastMath.toRadians(98), 0,
-                FastMath.toRadians(0), FastMath.toRadians(0), PositionAngleType.MEAN, FramesFactory.getEME2000(), startDate,
-                Constants.WGS84_EARTH_MU);
+                FastMath.toRadians(0), FastMath.toRadians(0), PositionAngleType.MEAN, FramesFactory.getEME2000(),
+                startDate, Constants.WGS84_EARTH_MU);
 
         final SpacecraftState initialState = new SpacecraftState(initialOrbit);
 
@@ -140,16 +141,13 @@ public class Demonstrator {
         final double[][] tolerances = NumericalPropagator.tolerances(TutorialUtils.POSITION_TOLERANCE, initialOrbit,
                 OrbitType.CARTESIAN);
         final AdaptiveStepsizeIntegrator integrator = new DormandPrince853Integrator(TutorialUtils.MIN_STEP,
-                TutorialUtils.MAX_STEP, tolerances[0],
-                tolerances[1]);
+                TutorialUtils.MAX_STEP, tolerances[0], tolerances[1]);
 
         final NumericalPropagator propagator = new NumericalPropagator(integrator);
 
-        final NormalizedSphericalHarmonicsProvider provider = GravityFieldFactory.getNormalizedProvider(10,
-                10);
-        final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(FramesFactory.getITRF(
-                IERSConventions.IERS_2010, true),
-                provider);
+        final NormalizedSphericalHarmonicsProvider provider = GravityFieldFactory.getNormalizedProvider(10, 10);
+        final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(
+                FramesFactory.getITRF(IERSConventions.IERS_2010, true), provider);
 
         propagator.setOrbitType(OrbitType.CARTESIAN);
         propagator.addForceModel(holmesFeatherstone);
@@ -158,8 +156,7 @@ public class Demonstrator {
         final EphemerisGenerator generator = propagator.getEphemerisGenerator();
 
         final LofOffset lofOffset = new LofOffset(FramesFactory.getEME2000(), LOFType.TNW, RotationOrder.XYZ,
-                FastMath.toRadians(0),
-                FastMath.toRadians(0), FastMath.toRadians(0));
+                FastMath.toRadians(0), FastMath.toRadians(0), FastMath.toRadians(0));
         propagator.setAttitudeProvider(lofOffset);
 
         propagator.propagate(startDate, finalDate);
@@ -181,7 +178,8 @@ public class Demonstrator {
 
         // Creation of the field of observation of the satellite, it describes the area the satellite see
         final Transform initialInertToBody = initialState.getFrame()
-                                                         .getTransformTo(TutorialUtils.getEarth().getBodyFrame(),
+                                                         .getTransformTo(TutorialUtils.getEarth()
+                                                                                      .getBodyFrame(),
                                                                  initialState.getDate());
         final Transform initialFovBody = new Transform(initialState.getDate(), initialState.toTransform()
                                                                                            .getInverse(),
@@ -196,7 +194,16 @@ public class Demonstrator {
                                                                         .withColor(Color.PINK)
                                                                         .build();
 
-        final LineOfVisibility lineOfVisibility = LineOfVisibility.builder(stations, satellite, header).build();
+        final LineOfVisibility lineOfVisibilityToulouse = LineOfVisibility.builder(topocentricToulouse, satellite,
+                                                                                  header)
+                                                                          .build();
+        final LineOfVisibility lineOfVisibilityLasVegas = LineOfVisibility.builder(topocentricLasVegas, satellite,
+                                                                                  header)
+                                                                          .build();
+        final LineOfVisibility lineOfVisibilityKiruna = LineOfVisibility.builder(topocentricKiruna, satellite, header)
+                                                                        .build();
+        final LineOfVisibility lineOfVisibilityTroll = LineOfVisibility.builder(topocentricTroll, satellite, header)
+                                                                       .build();
 
         // Creation of the file
         final CzmlFile file = CzmlFile.builder()
@@ -204,7 +211,10 @@ public class Demonstrator {
                                       .withSpacecraft(satellite)
                                       .withCzmlGroundStation(groundStations)
                                       .withFieldOfObservation(fieldOfObservation)
-                                      .withLineOfVisibility(lineOfVisibility)
+                                      .withLineOfVisibility(lineOfVisibilityToulouse)
+                                      .withLineOfVisibility(lineOfVisibilityLasVegas)
+                                      .withLineOfVisibility(lineOfVisibilityKiruna)
+                                      .withLineOfVisibility(lineOfVisibilityTroll)
                                       .build();
 
         // Write inside the CzmlFile the objects

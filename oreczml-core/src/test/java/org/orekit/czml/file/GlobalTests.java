@@ -32,17 +32,17 @@ import org.orekit.bodies.GeodeticPoint;
 import org.orekit.bodies.OneAxisEllipsoid;
 import org.orekit.czml.archi.adaptor.AemAdaptor;
 import org.orekit.czml.archi.adaptor.OemAdaptor;
-import org.orekit.czml.object.primary.entities.SpacecraftBuilder;
 import org.orekit.czml.archi.factory.BodyFactory;
-import org.orekit.czml.object.primary.entities.Body;
-import org.orekit.czml.object.primary.covariance.Collision;
-import org.orekit.czml.object.primary.entities.Constellation;
-import org.orekit.czml.object.primary.covariance.Covariance;
-import org.orekit.czml.object.primary.entities.CzmlGroundStation;
 import org.orekit.czml.object.primary.GroundTrack;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.primary.ManeuverSequence;
+import org.orekit.czml.object.primary.covariance.Collision;
+import org.orekit.czml.object.primary.covariance.Covariance;
+import org.orekit.czml.object.primary.entities.Body;
+import org.orekit.czml.object.primary.entities.Constellation;
+import org.orekit.czml.object.primary.entities.CzmlGroundStation;
 import org.orekit.czml.object.primary.entities.Spacecraft;
+import org.orekit.czml.object.primary.entities.SpacecraftBuilder;
 import org.orekit.czml.object.primary.pointing.AttitudePointing;
 import org.orekit.czml.object.primary.pointing.CoveredSurfaceOnBody;
 import org.orekit.czml.object.primary.systems.CentralBodyReferenceSystem;
@@ -183,7 +183,8 @@ class GlobalTests extends AbstractTest {
         final Body jupiter = BodyFactory.getJupiter(header);
 
         // CentralBodyReferenceSystem
-        final CentralBodyReferenceSystem system = CentralBodyReferenceSystem.builder(header).build();
+        final CentralBodyReferenceSystem system = CentralBodyReferenceSystem.builder(header)
+                                                                            .build();
 
         // Latitude longitude lines display
         final LatLongLines latLong = LatLongLines.builder(header)
@@ -194,7 +195,8 @@ class GlobalTests extends AbstractTest {
 
         final List<BoundedPropagator> propagators = new ArrayList<>();
         propagators.add(oemBoundedPropagator);
-        final Constellation       constellation  = Constellation.builder(propagators, finalDate, header).build();
+        final Constellation constellation = Constellation.builder(propagators, finalDate, header)
+                                                         .build();
         final List<Constellation> constellations = new ArrayList<>();
         constellations.add(constellation);
 
@@ -390,7 +392,8 @@ class GlobalTests extends AbstractTest {
                                                      .build();
 
         // Constellation
-        final Constellation constellation = Constellation.builder(listForConstellation, finalDate, header).build();
+        final Constellation constellation = Constellation.builder(listForConstellation, finalDate, header)
+                                                         .build();
 
         // Covariance display
         final RealMatrix realMatrix = MatrixUtils.createRealDiagonalMatrix(
@@ -422,9 +425,11 @@ class GlobalTests extends AbstractTest {
                                                                         .build();
 
         // Ground track
-        final GroundTrack groundTrack = GroundTrack.builder(firstSatellite, earth, header).build();
+        final GroundTrack groundTrack = GroundTrack.builder(firstSatellite, earth, header)
+                                                   .build();
 
-        final GroundTrack groundTrackConstellation = GroundTrack.builder(constellation, earth, header).build();
+        final GroundTrack groundTrackConstellation = GroundTrack.builder(constellation, earth, header)
+                                                                .build();
 
         // Covered surface on body
         final CoveredSurfaceOnBody surface = CoveredSurfaceOnBody.builder(firstSatellite, fieldOfObservation, header)
@@ -436,7 +441,8 @@ class GlobalTests extends AbstractTest {
 
         // collision
         final Collision collision = Collision.builder(firstSatellite, secondSatellite, covariances1,
-                covariances2, LOFType.TNW, LOFType.TNW, header).build();
+                                                     covariances2, LOFType.TNW, LOFType.TNW, header)
+                                             .build();
 
 
         final List<GroundTrack> groundTracks = new ArrayList<>();
@@ -676,7 +682,8 @@ class GlobalTests extends AbstractTest {
 
         final List<BoundedPropagator> propagators = new ArrayList<>();
         propagators.add(boundedPropagator);
-        final Constellation constellation = Constellation.builder(propagators, finalDate, header).build();
+        final Constellation constellation = Constellation.builder(propagators, finalDate, header)
+                                                         .build();
 
         final LineOfVisibility lineToulouse = LineOfVisibility.builder(topocentricToulouse, satellite,
                                                                       header)
@@ -694,21 +701,6 @@ class GlobalTests extends AbstractTest {
                                                                                 .withAngleOfAperture(90.0)
                                                                                 .build();
 
-        final LineOfVisibility lineTopocentric = LineOfVisibility.builder(topocentrics, satellite, header)
-                                                                 .build();
-
-        final LineOfVisibility lineTopocentricAperture = LineOfVisibility.builder(topocentrics, satellite, header)
-                                                                         .withAngleOfAperture(90.0)
-                                                                         .build();
-
-        final LineOfVisibility lineTopocentricConstellation = LineOfVisibility.builder(topocentrics, constellation,
-                                                                                      header)
-                                                                              .build();
-
-        final LineOfVisibility lineTopocentricConstellationAperture = LineOfVisibility.builder(topocentrics,
-                                                                                              constellation, header)
-                                                                                      .withAngleOfAperture(90.0)
-                                                                                      .build();
 
         final CzmlFile file = CzmlFile.builder()
                                       .withHeader(header)
@@ -724,10 +716,6 @@ class GlobalTests extends AbstractTest {
                                               .withLineOfVisibility(lineVegasAperture)
                                               .withLineOfVisibility(lineVegasConstellation)
                                               .withLineOfVisibility(lineVegasConstellationAperture)
-                                              .withLineOfVisibility(lineTopocentric)
-                                              .withLineOfVisibility(lineTopocentricAperture)
-                                              .withLineOfVisibility(lineTopocentricConstellation)
-                                              .withLineOfVisibility(lineTopocentricConstellationAperture)
                                               .build();
 
         // Writing the file
