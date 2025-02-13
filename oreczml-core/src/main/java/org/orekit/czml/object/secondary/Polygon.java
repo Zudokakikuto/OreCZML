@@ -89,6 +89,20 @@ public class Polygon extends AbstractSecondaryObject {
     }
 
     /**
+     * The default constructor for the polygon object with default parameters.
+     *
+     * @param cartesiansInput : The list of the positions of the polygon.
+     * @param availability    : The availability of the polygon
+     */
+    public Polygon(final List<Cartesian> cartesiansInput, final TimeInterval availability) {
+        this.cartesians   = cartesiansInput;
+        this.availability = availability;
+        this.color        = DEFAULT_COLOR;
+        this.outline      = false;
+        this.fill         = true;
+    }
+
+    /**
      * The constructor of the polygon object with no default parameters.
      *
      * @param cartesiansInput : The list of the positions of the polygon.
@@ -101,6 +115,24 @@ public class Polygon extends AbstractSecondaryObject {
                    final Color colorInput, final boolean outline, final boolean fill, final Header header) {
         this.cartesians   = cartesiansInput;
         this.availability = header.getAvailability();
+        this.color        = colorInput;
+        this.outline      = outline;
+        this.fill         = fill;
+    }
+
+    /**
+     * The constructor of the polygon object with no default parameters.
+     *
+     * @param cartesiansInput : The list of the positions of the polygon.
+     * @param colorInput      : The color of the polygon.
+     * @param outline         : The outline of the polygon.
+     * @param fill            : To fill or not with color the polygon. (might cause some lags if put to true)
+     * @param availability    : The availability of the polygon
+     */
+    public Polygon(final List<Cartesian> cartesiansInput,
+                   final Color colorInput, final boolean outline, final boolean fill, final TimeInterval availability) {
+        this.cartesians   = cartesiansInput;
+        this.availability = availability;
         this.color        = colorInput;
         this.outline      = outline;
         this.fill         = fill;
@@ -137,11 +169,23 @@ public class Polygon extends AbstractSecondaryObject {
      * Builder polygon builder.
      *
      * @param cartesiansInput the cartesians input
-     * @param header          the header
+     * @param headerInput     the header
      * @return the polygon builder
      */
-    public Label.PolygonBuilder builder(final List<Cartesian> cartesiansInput, final Header header) {
-        return new Label.PolygonBuilder(cartesiansInput, header);
+    public PolygonBuilder builder(final List<Cartesian> cartesiansInput, final Header headerInput) {
+        return new PolygonBuilder(cartesiansInput, headerInput.getAvailability());
+    }
+
+    /**
+     * Builder polygon builder.
+     *
+     * @param cartesiansInput   the cartesians input
+     * @param availabilityInput the time interval for which the feature will be visible in the simulation
+     * @return the polygon builder
+     */
+    public static PolygonBuilder builder(final List<Cartesian> cartesiansInput,
+                                               final TimeInterval availabilityInput) {
+        return new PolygonBuilder(cartesiansInput, availabilityInput);
     }
 
 
