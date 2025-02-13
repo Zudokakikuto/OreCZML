@@ -93,11 +93,10 @@ public class CoveredSurfaceExample {
 
         // Creation of the clock.
 
-        final double       durationOfSimulation = 2 * 3600; // in seconds;
+        final double       durationOfSimulation = 1800.0; // in seconds;
         final AbsoluteDate startDate            = new AbsoluteDate(2024, 3, 15, 0, 0, 0.0, TimeScalesFactory.getUTC());
         final AbsoluteDate finalDate            = startDate.shiftedBy(durationOfSimulation);
-        final Clock clock = new Clock(startDate, finalDate, TimeScalesFactory.getUTC(),
-                TutorialUtils.STEP_BETWEEN_EACH_INSTANT);
+        final Clock clock = new Clock(startDate, finalDate, TimeScalesFactory.getUTC(), TutorialUtils.STEP_BETWEEN_EACH_INSTANT);
 
         final Header header = new Header("Example of the usage of the covered surface", clock, pathToJSFolder);
 
@@ -174,6 +173,9 @@ public class CoveredSurfaceExample {
 
         // Creation of the surface covered
         final CoveredSurfaceOnBody surface = CoveredSurfaceOnBody.builder(satellite, fieldOfObservation, header)
+                                                                 .withColor(Color.RED)
+                                                                 .withFill(false)
+                                                                 .withOutline(true)
                                                                  .build();
 
         // Creation of the file
@@ -181,7 +183,6 @@ public class CoveredSurfaceExample {
                                       .withHeader(header)
                                       .withSpacecraft(satellite)
                                       .withAttitudePointing(pointing)
-                                      .withFieldOfObservation(fieldOfObservation)
                                       .withCoveredSurfaceOnBody(surface)
                                       .build();
 

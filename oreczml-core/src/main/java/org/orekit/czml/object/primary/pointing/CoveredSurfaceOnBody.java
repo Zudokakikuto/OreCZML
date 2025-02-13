@@ -20,14 +20,15 @@ package org.orekit.czml.object.primary.pointing;
 import cesiumlanguagewriter.Cartesian;
 import cesiumlanguagewriter.CesiumOutputStream;
 import cesiumlanguagewriter.CesiumStreamWriter;
+import cesiumlanguagewriter.JulianDate;
 import cesiumlanguagewriter.PacketCesiumWriter;
+import cesiumlanguagewriter.TimeInterval;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.czml.object.nonvisual.PointOnBody;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.primary.visu.FieldOfObservation;
-import org.orekit.czml.object.secondary.Label;
 import org.orekit.czml.object.secondary.Polygon;
 import org.orekit.frames.Transform;
 import org.orekit.geometry.fov.FieldOfView;
@@ -51,6 +52,9 @@ public class CoveredSurfaceOnBody extends AbstractPrimaryObject {
      * The default ID for the covered surface.
      */
     public static final String DEFAULT_ID = "COVERED_SURFACE/";
+
+    /** String number used for the ID. */
+    public static final String NUMBER = " Number ";
 
     /**
      * The default name for the covered surface.
@@ -90,7 +94,7 @@ public class CoveredSurfaceOnBody extends AbstractPrimaryObject {
     /**
      * List of all the polygons used to describe the surface covered.
      */
-    private final Polygon polygon;
+    private final List<Polygon> polygon;
 
     // Constructors
 
@@ -106,7 +110,8 @@ public class CoveredSurfaceOnBody extends AbstractPrimaryObject {
         this(satelliteInput, fieldOfObservationInput,
                 DEFAULT_ID + satelliteInput.getId() + "/" + fieldOfObservationInput.getBody()
                                                                                    .getBodyFrame()
-                                                                                   .toString(), false, true, DEFAULT_COLOR, header);
+                                                                                   .toString(), false, true,
+                DEFAULT_COLOR, header);
     }
 
     /**
@@ -115,10 +120,14 @@ public class CoveredSurfaceOnBody extends AbstractPrimaryObject {
      * @param satelliteInput          : The satellite that will look at the covered surface.
      * @param fieldOfObservationInput : The field of observation of the satellite that will define the surface covered.
      * @param customID                : The custom ID of the covered surface on body object.
+     * @param fill                    : Custom parameter for the fill property
+     * @param outline                 : Custom parameter for the outline property
+     * @param color                   : Custom parameter for the color of the polygons.
      * @param header                  : The header to consider when several headers are used.
      */
     CoveredSurfaceOnBody(final Spacecraft satelliteInput, final FieldOfObservation fieldOfObservationInput,
-                         final String customID, final boolean fill, final boolean outline, final Color color, final Header header) {
+                         final String customID, final boolean fill, final boolean outline, final Color color,
+                         final Header header) {
 
         this.setId(customID);
         this.setName(DEFAULT_NAME + satelliteInput.getId() + " on : " + fieldOfObservationInput.getBody()
@@ -143,10 +152,29 @@ public class CoveredSurfaceOnBody extends AbstractPrimaryObject {
             cartesiansToBuildOnePolygon.addAll(currentCartesianList);
         }
 
-        this.polygon = new Label.PolygonBuilder(cartesiansToBuildOnePolygon, header).withColor(color)
-                                                                                    .withOutline(outline)
-                                                                                    .withFill(fill)
-                                                                                    .build();
+        this.polygon = new ArrayList<>();
+        for (int i = 0; i < pointsCartesiansInTime.size() - 1; i++) {
+
+            // Technically we'll be leaving off the very last polygon, but is that
+            // really such a big deal?
+            final JulianDate t0 = fieldOfObservation.getJulianDates()
+                                                    .get(i);
+            final JulianDate t1 = fieldOfObservation.getJulianDates()
+                                                    .get(i + 1);
+            final TimeInterval tInterval = new TimeInterval(t0, t1);
+            ;
+
+            // Get current polygon and close it off
+            final List<Cartesian> currentCartesianList = pointsCartesiansInTime.get(i);
+
+            // Add polygon to list
+            this.polygon.add(Polygon.builder(currentCartesianList, tInterval)
+                                    .withColor(color)
+                                    .withOutline(outline)
+                                    .withFill(fill)
+                                    .build());
+        }
+
     }
 
 
@@ -159,7 +187,8 @@ public class CoveredSurfaceOnBody extends AbstractPrimaryObject {
      * @return the covered surface on body builder
      */
     public static CoveredSurfaceOnBodyBuilder builder(final Spacecraft satelliteInput,
-                                                      final FieldOfObservation fieldOfObservationInput, final Header header) {
+                                                      final FieldOfObservation fieldOfObservationInput,
+                                                      final Header header) {
         return new CoveredSurfaceOnBodyBuilder(satelliteInput, fieldOfObservationInput, header);
     }
 
@@ -168,16 +197,28 @@ public class CoveredSurfaceOnBody extends AbstractPrimaryObject {
     @Override
     public void writeCzmlBlock(final CesiumStreamWriter stream,
                                final CesiumOutputStream output) throws URISyntaxException, IOException {
+
         output.setPrettyFormatting(true);
-        try (PacketCesiumWriter packet = stream.openPacket(output)) {
-            packet.writeId(getId() + "/" + fieldOfObservation.getBody()
-                                                             .getBodyFrame()
-                                                             .getName());
-            packet.writeName(getName() + " " + satellite.getName() + " on " + fieldOfObservation.getBody()
-                                                                                                .getBodyFrame()
-                                                                                                .getName());
-            packet.writeAvailability(getAvailability());
-            polygon.write(packet, output);
+
+        int i = 0;
+        for (Polygon poly : polygon) {
+            try (PacketCesiumWriter packet = stream.openPacket(output)) {
+
+                final String currentId = getId() + "/" + fieldOfObservation.getBody()
+                                                                           .getBodyFrame()
+                                                                           .getName() + NUMBER + i;
+
+                packet.writeId(currentId);
+
+                final String currentName = getName() + " " + satellite.getName() + " on " + fieldOfObservation.getBody()
+                                                                                                              .getBodyFrame()
+                                                                                                              .getName() + NUMBER + i;
+                packet.writeName(currentName);
+                packet.writeAvailability(poly.getAvailability());
+
+                poly.write(packet, output);
+            }
+            i += 1;
         }
     }
 
@@ -243,7 +284,7 @@ public class CoveredSurfaceOnBody extends AbstractPrimaryObject {
      *
      * @return the polygon
      */
-    public Polygon getPolygon() {
+    public List<Polygon> getPolygon() {
         return polygon;
     }
 
