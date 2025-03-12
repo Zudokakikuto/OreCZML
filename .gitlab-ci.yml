@@ -9,6 +9,7 @@ variables:
   MAVEN_SETTINGS_FILE: ${MAVEN_PROJECT_DIR}/cicd/ci-settings.xml
   MAVEN_DEPLOY_FROM_UNPROTECTED_DISABLED : true
   SONAR_QUALITY_GATE_ENABLED: true
+  GIT_SUBMODULE_STRATEGY: recursive
 
 # your pipeline stages
 stages:
