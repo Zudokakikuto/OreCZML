@@ -30,8 +30,6 @@ Orekit and junit can be installed with maven using a pom.xml with dependencies :
 * [junit-jupiter](https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter)
 
 For the czml writer you will need to install it differently, because no maven repository exists, two methods can be used :
-
-
 * You download the .jar, and you install it directly. Let name the groupId `com.agi`, the artifactId `czml-writer` and the version will be `3.0.0`. You will need to add in the pom.xml the following lines to do so :
 ```xml
  <dependency>

@@ -17,6 +17,7 @@
 package org.orekit.czml.object.secondary;
 
 import cesiumlanguagewriter.Cartesian;
+import cesiumlanguagewriter.TimeInterval;
 import org.orekit.czml.object.primary.Header;
 
 import java.awt.Color;
@@ -49,6 +50,11 @@ public class PolygonBuilder {
     private Color color = DEFAULT_COLOR;
 
     /**
+     * Time interval when the polygon is displayed.
+     */
+    private TimeInterval availability;
+
+    /**
      * To display the outline or not.
      */
     private boolean outline = false;
@@ -58,10 +64,7 @@ public class PolygonBuilder {
      */
     private boolean fill = true;
 
-    /** The header considered. */
-    private Header header;
-
-    // Constructor
+    // Constructors
 
     /**
      * The constructor of the polygon builder.
@@ -70,9 +73,21 @@ public class PolygonBuilder {
      * @param headerInput     : The header considered.
      */
     public PolygonBuilder(final List<Cartesian> cartesiansInput, final Header headerInput) {
-        this.header     = headerInput;
-        this.cartesians = new ArrayList<>(cartesiansInput);
+        this.availability = headerInput.getAvailability(); // Time frame will be entire simulation
+        this.cartesians   = new ArrayList<>(cartesiansInput);
     }
+
+    /**
+     * The constructor of the polygon builder.
+     *
+     * @param cartesiansInput : The list of cartesians that will build the polygon.
+     * @param availability    : The availability of the polygon
+     */
+    public PolygonBuilder(final List<Cartesian> cartesiansInput, final TimeInterval availability) {
+        this.availability = availability;
+        this.cartesians   = new ArrayList<>(cartesiansInput);
+    }
+
 
     /**
      * Function to set up a color.
@@ -113,8 +128,19 @@ public class PolygonBuilder {
      * @param headerInput : The header considered to set up.
      * @return : The polygon builder with a header considered.
      */
-    public PolygonBuilder withHeader(final Header headerInput) {
-        this.header = headerInput;
+    public PolygonBuilder withAvailability(final Header headerInput) {
+        this.availability = headerInput.getAvailability();
+        return this;
+    }
+
+    /**
+     * Function to set up the valid time interval of the polygon.
+     *
+     * @param availability : The availability of the polygon
+     * @return : Time frame in simulation during which feature will be visible.
+     */
+    public PolygonBuilder withAvailability(final TimeInterval availability) {
+        this.availability = availability;
         return this;
     }
 
@@ -124,7 +150,7 @@ public class PolygonBuilder {
      * @return : A polygon object with the given parameters of the builder.
      */
     public Polygon build() {
-        return new Polygon(cartesians, color, outline, fill, header);
+        return new Polygon(cartesians, color, outline, fill, availability);
     }
 
 }
