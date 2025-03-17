@@ -22,23 +22,19 @@ import cesiumlanguagewriter.CesiumStreamWriter;
 import cesiumlanguagewriter.JulianDate;
 import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.Reference;
-import org.hipparchus.exception.MathIllegalArgumentException;
-import org.hipparchus.geometry.euclidean.threed.Rotation;
-import org.hipparchus.linear.EigenDecompositionNonSymmetric;
-import org.hipparchus.linear.RealMatrix;
-import org.hipparchus.linear.RealVector;
 import org.hipparchus.util.FastMath;
 import org.orekit.attitudes.Attitude;
+import org.orekit.attitudes.LofOffset;
 import org.orekit.czml.object.Utils.DateUtils;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.secondary.CzmlEllipsoid;
 import org.orekit.czml.object.secondary.Orientation;
+import org.orekit.frames.Frame;
 import org.orekit.frames.LOF;
 import org.orekit.propagation.SpacecraftState;
 import org.orekit.propagation.StateCovariance;
-import org.orekit.utils.AngularCoordinates;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -99,29 +95,29 @@ public class Covariance extends AbstractPrimaryObject {
     /**
      * The satellite which the ellipsoid will be around.
      */
-    private Spacecraft satellite;
+    private final Spacecraft spacecraft;
 
     // Other arguments
 
     /**
      * The list of all the spacecraft states of the satellite.
      */
-    private List<SpacecraftState> spaceCraftStates;
+    private final List<SpacecraftState> spaceCraftStates;
 
     /**
      * All the julian dates of each step of computation in a list.
      */
-    private List<JulianDate> julianDates;
+    private final List<JulianDate> julianDates;
 
     /**
      * The dimensions of the ellipsoids in time in cartesian.
      */
-    private List<Cartesian> dimensionsOfEllipsoids = new ArrayList<>();
+    private final List<Cartesian> dimensionsOfEllipsoids = new ArrayList<>();
 
     /**
      * A list of all the attitudes of the satellite used to orientate the covariance when the reference orientation si not used.
      */
-    private List<Attitude> attitudes = new ArrayList<>();
+    private final List<Attitude> attitudes = new ArrayList<>();
 
     /**
      * When a single ellipsoid is computed, this argument will be used.
@@ -129,7 +125,7 @@ public class Covariance extends AbstractPrimaryObject {
     private CzmlEllipsoid uniqueEllipsoid;
 
     /** The header considered. */
-    private Header header;
+    private final Header header;
 
     // Constructors
 
@@ -138,40 +134,40 @@ public class Covariance extends AbstractPrimaryObject {
     /**
      * This builder classically uses the satellite and an initial covariance to build a covariance.
      *
-     * @param satellite   : The satellite used to build the covariance around.
+     * @param spacecraft  : The satellite used to build the covariance around.
      * @param covariances : The list of all the covariances computed.
      * @param lof         : The lof of the satellite
      * @param header      : The header to consider when several are used.
      */
-    Covariance(final Spacecraft satellite, final List<StateCovariance> covariances, final LOF lof,
-                      final Header header) {
+    Covariance(final Spacecraft spacecraft, final List<StateCovariance> covariances, final LOF lof,
+               final Header header) {
 
-        this(satellite, covariances, lof, DEFAULT_COLOR, DEFAULT_ID + satellite.getId(), header);
+        this(spacecraft, covariances, lof, DEFAULT_COLOR, DEFAULT_ID + spacecraft.getId(), header);
     }
 
     /**
      * The classic builder with a given color for the ellipsoid.
      *
-     * @param satellite   : The satellite used to build the covariance around.
+     * @param spacecraft  : The satellite used to build the covariance around.
      * @param covariances : The initial covariance.
      * @param lof         : The lof of the satellite
      * @param color       : The color of the ellipsoid.
      * @param customID    : The custom ID of the covariance object
      * @param header      : The header to consider when several are used.
      */
-    Covariance(final Spacecraft satellite, final List<StateCovariance> covariances, final LOF lof,
-                      final Color color, final String customID, final Header header) {
+    Covariance(final Spacecraft spacecraft, final List<StateCovariance> covariances, final LOF lof,
+               final Color color, final String customID, final Header header) {
 
-        this.satellite        = satellite;
+        this.spacecraft       = spacecraft;
         this.header           = header;
-        this.spaceCraftStates = satellite.getSpaceCraftStates();
+        this.spaceCraftStates = spacecraft.getSpaceCraftStates();
         this.setId(customID);
-        this.setName(DEFAULT_NAME + satellite.getName());
-        this.setAvailability(satellite.getAvailability());
+        this.setName(DEFAULT_NAME + spacecraft.getName());
+        this.setAvailability(spacecraft.getAvailability());
         this.julianDates       = Collections.unmodifiableList(
-                DateUtils.toJulianDates(satellite.getAbsoluteDateList(),
+                DateUtils.toJulianDates(spacecraft.getAbsoluteDateList(),
                         header.getTimeScale()));
-        this.positionReference = new Reference(satellite.getId() + DEFAULT_H_POSITION);
+        this.positionReference = new Reference(spacecraft.getId() + DEFAULT_H_POSITION);
         this.covarianceList    = new ArrayList<>(covariances);
         this.postComputation(color, lof);
     }
@@ -207,7 +203,7 @@ public class Covariance extends AbstractPrimaryObject {
             packet.writeName(getName());
             packet.writeAvailability(getAvailability());
 
-            final Orientation orientation = Orientation.builder(attitudes, satellite.getFrame(), header)
+            final Orientation orientation = Orientation.builder(attitudes, spacecraft.getFrame(), header)
                                                        .withInvertToITRF(false)
                                                        .build();
             orientation.write(packet, output);
@@ -226,8 +222,8 @@ public class Covariance extends AbstractPrimaryObject {
      *
      * @return : The satellite used.
      */
-    public Spacecraft getSatellite() {
-        return satellite;
+    public Spacecraft getSpacecraft() {
+        return spacecraft;
     }
 
 
@@ -321,77 +317,27 @@ public class Covariance extends AbstractPrimaryObject {
      * @param lofInput : The local orbital frame of the satellite
      */
     private void postComputation(final Color color, final LOF lofInput) {
+
+        final Frame initialFrame = spaceCraftStates.get(0)
+                                                   .getFrame();
+        final LofOffset offsetProvider = new LofOffset(initialFrame, lofInput);
+
         for (int i = 0; i < covarianceList.size(); i++) {
             final StateCovariance covariance = covarianceList.get(i);
 
-            final StateCovariance covarianceLof = covariance.changeCovarianceFrame(spaceCraftStates.get(i)
-                                                                                                   .getOrbit(),
-                    lofInput);
+            final Cartesian dimensionToAdd = new Cartesian(FastMath.sqrt(covariance.getMatrix().getEntry(1, 1)), FastMath.sqrt(covariance.getMatrix().getEntry(2, 2)),
+                    FastMath.sqrt(covariance.getMatrix().getEntry(2, 2)));
 
-            final RealMatrix realMatrix = covarianceLof.getMatrix()
-                                                       .getSubMatrix(0, 2, 0, 2);
+            dimensionsOfEllipsoids.add(dimensionToAdd);
 
-            final EigenDecompositionNonSymmetric decomposition      = new EigenDecompositionNonSymmetric(realMatrix);
-            final RealMatrix                     matrixEigenVectors = decomposition.getV();
-            final RealMatrix                     copyOfEigenVectors = matrixEigenVectors.copy();
-            final double[][] dataEigenValues = decomposition.getD()
-                                                            .getData();
-
-            final boolean inverted = invertedDetermination(matrixEigenVectors, copyOfEigenVectors);
-
-            if (inverted) {
-                dimensionsOfEllipsoids.add(
-                        new Cartesian(FastMath.sqrt(dataEigenValues[0][0]), FastMath.sqrt(dataEigenValues[2][2]),
-                                FastMath.sqrt(dataEigenValues[1][1])));
-            } else {
-                dimensionsOfEllipsoids.add(
-                        new Cartesian(FastMath.sqrt(dataEigenValues[0][0]), FastMath.sqrt(dataEigenValues[1][1]),
-                                FastMath.sqrt(dataEigenValues[2][2])));
-            }
-
-            final Rotation rotationFromLOF = lofInput.rotationFromInertial(covariance.getDate(),
+            final Attitude currentAttitudeCovariance = offsetProvider.getAttitude(spacecraft.getSpacecraftPropagator(),
                     spaceCraftStates.get(i)
-                                    .getPVCoordinates());
-            final AngularCoordinates angularCoordinatesRotated = new AngularCoordinates(rotationFromLOF);
-            final Attitude currentAttitudeCovariance = new Attitude(spaceCraftStates.get(i)
-                                                                                    .getDate(),
-                    spaceCraftStates.get(0)
-                                    .getFrame(), angularCoordinatesRotated);
+                                    .getDate(), initialFrame);
             attitudes.add(currentAttitudeCovariance);
         }
 
         this.uniqueEllipsoid = CzmlEllipsoid.builder(julianDates, dimensionsOfEllipsoids, header)
                                             .withColor(color)
                                             .build();
-    }
-
-    /**
-     * This function aims at determining the orientation of the satellite system if it is left or right-handed.
-     *
-     * @param matrixEigenVectors : The matrix of the eigen vectors of the covariance.
-     * @param copyOfEigenVectors : The copy of the first matrix.
-     * @return : A boolean that is true if it is left-handed, false if it is right-handed.
-     */
-    private boolean invertedDetermination(final RealMatrix matrixEigenVectors, final RealMatrix copyOfEigenVectors) {
-
-        boolean inverted = false;
-
-        try {
-            new Rotation(matrixEigenVectors.getData(), 0.01);
-        }
-
-        // If the rotation failed, it's that the determinant of the matrix is equal to -1, this means that the system is
-        // left-handed; to invert it, we need to invert two columns; this way the determinant will be multiplied by -1.
-        // We will need to invert the eigen values related to the eigen vectors that we inverted.
-        catch (MathIllegalArgumentException e) {
-            inverted = true;
-            final RealVector firstColumnMatrix  = matrixEigenVectors.getColumnVector(0);
-            final RealVector secondColumnMatrix = matrixEigenVectors.getColumnVector(1);
-            final RealVector thirdColumnMatrix  = matrixEigenVectors.getColumnVector(2);
-            copyOfEigenVectors.setColumnVector(0, firstColumnMatrix);
-            copyOfEigenVectors.setColumnVector(1, thirdColumnMatrix);
-            copyOfEigenVectors.setColumnVector(2, secondColumnMatrix);
-        }
-        return inverted;
     }
 }

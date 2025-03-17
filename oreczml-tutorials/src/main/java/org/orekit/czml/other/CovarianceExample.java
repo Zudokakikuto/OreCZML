@@ -89,7 +89,7 @@ public class CovarianceExample {
         final Clock clock = new Clock(startDate, finalDate, TimeScalesFactory.getUTC(),
                 TutorialUtils.STEP_BETWEEN_EACH_INSTANT);
 
-        final Header header = new Header("Setup of a covariance of a satellite", clock, pathToJSFolder);
+        final Header header = new Header("Setup of a covariance of a satellite (HOTFIX)", clock, pathToJSFolder);
 
         // Build of a LEO orbit
 
@@ -133,7 +133,7 @@ public class CovarianceExample {
 
         // Build of the covariance
         final RealMatrix realMatrix = MatrixUtils.createRealDiagonalMatrix(
-                new double[] {1e-4, 1e-4, 2e-4, 1e-6, 1e-6, (36 * 4.848e-6) * (36 * 4.848e-6)});
+                new double[] {100, 1000, 100, 1e-6, 1e-6, (36 * 4.848e-6) * (36 * 4.848e-6)});
         final StateCovariance stateCovariance = new StateCovariance(realMatrix, startDate, FramesFactory.getEME2000(),
                 OrbitType.EQUINOCTIAL, PositionAngleType.MEAN);
         final List<StateCovariance> covariances = covariancePropagation(satellite, propagator, stateCovariance, header);
@@ -165,7 +165,6 @@ public class CovarianceExample {
                                                               final StateCovariance initCovariance, final Header header) {
 
         final List<StateCovariance> covarianceListTemp = new ArrayList<>();
-        satellite.setAttitudes(new ArrayList<>());
 
         final List<Orbit> orbits = satellite.getOrbits();
 
