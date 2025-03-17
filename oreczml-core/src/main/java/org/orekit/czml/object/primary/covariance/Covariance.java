@@ -312,6 +312,7 @@ public class Covariance extends AbstractPrimaryObject {
 
     /**
      * This function aims at compute all the arguments after the propagation.
+     * The diagonal of the covariance is extracted in LOF to get the dimension of the ellipsoid.
      *
      * @param color    : The color of the ellipsoid
      * @param lofInput : The local orbital frame of the satellite
@@ -325,8 +326,12 @@ public class Covariance extends AbstractPrimaryObject {
         for (int i = 0; i < covarianceList.size(); i++) {
             final StateCovariance covariance = covarianceList.get(i);
 
-            final Cartesian dimensionToAdd = new Cartesian(FastMath.sqrt(covariance.getMatrix().getEntry(1, 1)), FastMath.sqrt(covariance.getMatrix().getEntry(2, 2)),
-                    FastMath.sqrt(covariance.getMatrix().getEntry(2, 2)));
+            final StateCovariance covarianceLof = covariance.changeCovarianceFrame(spaceCraftStates.get(i)
+                                                                                                   .getOrbit(),
+                    lofInput);
+
+            final Cartesian dimensionToAdd = new Cartesian(FastMath.sqrt(covarianceLof.getMatrix().getEntry(1, 1)), FastMath.sqrt(covarianceLof.getMatrix().getEntry(0, 0)),
+                    FastMath.sqrt(covarianceLof.getMatrix().getEntry(2, 2)));
 
             dimensionsOfEllipsoids.add(dimensionToAdd);
 

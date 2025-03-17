@@ -16,6 +16,8 @@
  */
 package org.orekit.czml.other;
 
+import org.hipparchus.geometry.euclidean.threed.Vector3D;
+import org.hipparchus.linear.BlockRealMatrix;
 import org.orekit.czml.TutorialUtils;
 import org.hipparchus.linear.MatrixUtils;
 import org.hipparchus.linear.RealMatrix;
@@ -33,6 +35,7 @@ import org.orekit.forces.gravity.potential.GravityFieldFactory;
 import org.orekit.forces.gravity.potential.NormalizedSphericalHarmonicsProvider;
 import org.orekit.frames.FramesFactory;
 import org.orekit.frames.LOFType;
+import org.orekit.orbits.CartesianOrbit;
 import org.orekit.orbits.KeplerianOrbit;
 import org.orekit.orbits.Orbit;
 import org.orekit.orbits.OrbitType;
@@ -49,6 +52,7 @@ import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.Constants;
 import org.orekit.utils.IERSConventions;
+import org.orekit.utils.PVCoordinates;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -93,10 +97,13 @@ public class CovarianceExample {
 
         // Build of a LEO orbit
 
-        final KeplerianOrbit initialOrbit = new KeplerianOrbit(7878000, 0, FastMath.toRadians(20), 0,
-                FastMath.toRadians(0), FastMath.toRadians(0), PositionAngleType.MEAN, FramesFactory.getEME2000(),
-                startDate,
-                Constants.WGS84_EARTH_MU);
+//        final KeplerianOrbit initialOrbit = new KeplerianOrbit(7878000, 0, FastMath.toRadians(20), 0,
+//                FastMath.toRadians(0), FastMath.toRadians(0), PositionAngleType.MEAN, FramesFactory.getEME2000(),
+//                startDate,
+//                Constants.WGS84_EARTH_MU);
+        final Orbit initialOrbit = new CartesianOrbit(
+                new PVCoordinates(new Vector3D(2.33052185175137e3, -1.10370451050201e6, 7.10588764299718e6),
+                        new Vector3D(-7.44286282871773e3, -6.13734743652660e-1, 3.95136139293349e0)), FramesFactory.getEME2000(), startDate, Constants.IERS2010_EARTH_MU);
         final SpacecraftState initialState = new SpacecraftState(initialOrbit);
 
         // Build of the propagator
@@ -132,12 +139,17 @@ public class CovarianceExample {
                                                .build();
 
         // Build of the covariance
-        final RealMatrix realMatrix = MatrixUtils.createRealDiagonalMatrix(
-                new double[] {100, 1000, 100, 1e-6, 1e-6, (36 * 4.848e-6) * (36 * 4.848e-6)});
+//        final RealMatrix realMatrix = MatrixUtils.createRealDiagonalMatrix(
+//                new double[] {100, 1000, 100, 1e-6, 1e-6, (36 * 4.848e-6) * (36 * 4.848e-6)});
+        final RealMatrix realMatrix = new BlockRealMatrix(
+                new double[][] { { 9.31700905887535e1, -2.623398113500550e2, 2.360382173935300e1, 0, 0, 0 },
+                        { -2.623398113500550e2, 1.77796454279511e4, -9.331225387386501e1, 0, 0, 0 },
+                        { 2.360382173935300e1, -9.331225387386501e1, 1.917372231880040e1, 0, 0, 0 },
+                        { 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0 } });
         final StateCovariance stateCovariance = new StateCovariance(realMatrix, startDate, FramesFactory.getEME2000(),
-                OrbitType.EQUINOCTIAL, PositionAngleType.MEAN);
+                OrbitType.CARTESIAN, PositionAngleType.MEAN);
         final List<StateCovariance> covariances = covariancePropagation(satellite, propagator, stateCovariance, header);
-        final Covariance covariance = Covariance.builder(satellite, covariances, LOFType.TNW, header)
+        final Covariance covariance = Covariance.builder(satellite, covariances, LOFType.QSW, header)
                                                 .withColor(Color.MAGENTA)
                                                 .build();
 
