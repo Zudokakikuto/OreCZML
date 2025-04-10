@@ -70,6 +70,9 @@ public enum OreCzmlMessages implements Localizable {
     CANT_DISPLAY_PERIOD_NO_ORBIT(
             "The orbit is not displayed, do not use noOrbitDisplay() then setup the period display of the orbit."),
 
+    /**
+     * Triggers when the displayInfluenceSphere method is not called.
+     */
     INFLUENCE_SPHERE_NOT_DISPLAYED(
             "This displayInfluenceSphere() method has not been called, so the getInfluenceSphere() cannot be used."),
 
@@ -125,12 +128,20 @@ public enum OreCzmlMessages implements Localizable {
     NO_ORIENTATION_DISPLAYED(
             "The spacecraft did not display the orientation, maybe you tried to use an AttitudePointing, please use the withDisplayAttitude() method first."),
 
-    /** Trigger when the initial state of the satellite object is not built with a keplerian period gettable. */
+    /**
+     * Trigger when the initial state of the satellite object is not built with a keplerian period gettable.
+     */
     NO_ORBIT_FOR_KEPLERIAN_PERIOD("The initial state of the spacecraft does not have a keplerian period."),
 
+    /**
+     * Triggers when the spacecraft is not inside an influence sphere.
+     */
     NOT_INSIDE_AN_INFLUENCE_SPHERE(
             "The spacecraft is not inside an influence sphere, or the influence sphere was not defined/inputted in the displayInfluenceSphereChanges() method."),
 
+    /**
+     * Triggers when changes are made in the spacecraft orbit without first building an influence sphere for the spacecraft body.
+     */
     TRY_INFLUENCE_SPHERE_WITHOUT_SPHERES(
             "You tried to displayed changes in the orbit of the spacecraft without building the influence sphere of the bodies. Try using .displayInfluenceSphere() on the bodies first."),
 
@@ -240,7 +251,14 @@ public enum OreCzmlMessages implements Localizable {
      * Triggers when the .displaySingleTriangle(int) method is used while only one line of visibility is defined.
      */
     NOT_A_MULTIPLE_TRIANGLE_LINE(
-            "The line of visibility used has only one station and one spacecraft defined, don't use the .displaySingleTriangle(int) method, instead use the .displayTriangle() method");
+            "The line of visibility used has only one station and one spacecraft defined, don't use the .displaySingleTriangle(int) method, instead use the .displayTriangle() method"),
+
+    // unit testing
+    /**
+     * Trigger when satellites are not close enough to build a collision object.
+     */
+    NOT_A_NUMBER(
+            "The unit test file verification function falsely selected a text string as a number.");
 
     /**
      * The string containing the message.

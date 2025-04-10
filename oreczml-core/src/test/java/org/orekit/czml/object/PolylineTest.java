@@ -18,15 +18,13 @@ package org.orekit.czml.object;
 
 import cesiumlanguagewriter.CesiumArcType;
 import cesiumlanguagewriter.Reference;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.Header;
 
 import java.awt.Color;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.net.URISyntaxException;
 
 /**
  * The type Polyline test.
@@ -39,7 +37,7 @@ public class PolylineTest extends AbstractTest {
      * @throws IOException the io exception
      */
     @Test
-    void PolylinecConstructorTest() throws IOException {
+    void PolylinecConstructorTest() throws IOException, URISyntaxException {
 
         loadOrekitData();
 
@@ -61,7 +59,7 @@ public class PolylineTest extends AbstractTest {
         final String pathFile = loadResources("templateFile/PolylineTemplate.txt");
         final String nonVectorPathFile = loadResources("templateFile/PolylineNonVectorTemplate.txt");
 
-        Assertions.assertEquals(Files.readString(Path.of(pathFile)), polyline.toString());
-        Assertions.assertEquals(Files.readString(Path.of(nonVectorPathFile)), polylineNonVector.toString());
+        verifyFileOutput(pathFile, polyline.toString(), 1e-8);
+        verifyFileOutput(nonVectorPathFile, polylineNonVector.toString(), 1e-8);
     }
 }

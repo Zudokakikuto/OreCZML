@@ -18,7 +18,6 @@ package org.orekit.czml.object.secondary;
 
 import cesiumlanguagewriter.CesiumHeightReference;
 import org.hipparchus.util.FastMath;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.czml.file.AbstractTest;
@@ -36,8 +35,6 @@ import org.orekit.time.TimeScalesFactory;
 import java.awt.Color;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 /**
  * The type Cylinder test.
@@ -84,9 +81,9 @@ public class CylinderTest extends AbstractTest {
         final String groundStationPathFile = loadResources("templateFile/secondary/CylinderGroundStationTemplate.txt");
         final String topocentricPathFile = loadResources("templateFile/secondary/CylinderTopocentricTemplate.txt");
 
-        Assertions.assertEquals(Files.readString(Path.of(pathFile)), cylinder.toString());
-        Assertions.assertEquals(Files.readString(Path.of(coveragePathFile)), coverageCylinder.toString());
-        Assertions.assertEquals(Files.readString(Path.of(groundStationPathFile)), groundStationCylinder.toString());
-        Assertions.assertEquals(Files.readString(Path.of(topocentricPathFile)), topocentricCylinder.toString());
+        verifyFileOutput(pathFile, cylinder.toString(), 1e-8);
+        verifyFileOutput(coveragePathFile, coverageCylinder.toString(), 1e-8);
+        verifyFileOutput(groundStationPathFile, groundStationCylinder.toString(), 1e-8);
+        verifyFileOutput(topocentricPathFile, topocentricCylinder.toString(), 1e-8);
     }
 }

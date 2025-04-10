@@ -19,14 +19,12 @@ package org.orekit.czml.object.secondary;
 import cesiumlanguagewriter.CesiumHorizontalOrigin;
 import cesiumlanguagewriter.CesiumLabelStyle;
 import cesiumlanguagewriter.CesiumVerticalOrigin;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.czml.file.AbstractTest;
 
 import java.awt.Color;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.net.URISyntaxException;
 
 /**
  * The type Label test.
@@ -39,7 +37,7 @@ public class LabelTest extends AbstractTest {
      * @throws IOException the io exception
      */
     @Test
-    void LabelConstructorTest() throws IOException {
+    void LabelConstructorTest() throws IOException, URISyntaxException {
 
         loadOrekitData();
 
@@ -54,8 +52,8 @@ public class LabelTest extends AbstractTest {
         final String coveragePathFile = loadResources("templateFile/secondary/LabelCoverageTemplate.txt");
         final String completePathFile = loadResources("templateFile/secondary/LabelCompleteTemplate.txt");
 
-        Assertions.assertEquals(Files.readString(Path.of(pathFile)), label.toString());
-        Assertions.assertEquals(Files.readString(Path.of(coveragePathFile)), coverageLabel.toString());
-        Assertions.assertEquals(Files.readString(Path.of(completePathFile)), completeLabel.toString());
+        verifyFileOutput(pathFile, label.toString(), 1e-8);
+        verifyFileOutput(coveragePathFile, coverageLabel.toString(), 1e-8);
+        verifyFileOutput(completePathFile, completeLabel.toString(), 1e-8);
     }
 }

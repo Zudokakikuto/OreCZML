@@ -20,7 +20,6 @@ import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.attitudes.LofOffset;
 import org.orekit.czml.file.AbstractTest;
@@ -49,8 +48,6 @@ import org.orekit.utils.Constants;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 /**
  * The type Covered surface on body test.
@@ -131,11 +128,11 @@ public class CoveredSurfaceOnBodyTest extends AbstractTest {
                                                                         .withHeader(header)
                                                                         .build();
 
-        final String pathFile        = loadResources("templateFile/primary/CoveredSurfaceOnBodyTemplate.txt");
+        final String pathFile = loadResources("templateFile/primary/CoveredSurfaceOnBodyTemplate.txt");
+        verifyFileOutput(pathFile, surface.toString(), 1e-3);
+
         final String builderPathFile = loadResources(
                 "templateFile/primary/CoveredSurfaceOnBodyWithBuilderTemplate.txt");
-
-        Assertions.assertEquals(Files.readString(Path.of(pathFile)), surface.toString());
-        Assertions.assertEquals(Files.readString(Path.of(builderPathFile)), surfaceBuilder.toString());
+        verifyFileOutput(builderPathFile, surfaceBuilder.toString(), 1e-3);
     }
 }

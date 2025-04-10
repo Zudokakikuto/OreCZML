@@ -23,7 +23,7 @@ import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.Header;
 
 import java.io.IOException;
-import java.nio.file.Files;
+import java.net.URISyntaxException;
 
 /**
  * The type Path test.
@@ -36,7 +36,7 @@ public class PathTest extends AbstractTest {
      * @throws IOException the io exception
      */
     @Test
-    void PathConstructorTest() throws IOException {
+    void PathConstructorTest() throws IOException, URISyntaxException {
 
         loadOrekitData();
 
@@ -51,8 +51,9 @@ public class PathTest extends AbstractTest {
         final String pathFile         = loadResources("templateFile/PathTemplate.txt");
         final String pathCoverageFile = loadResources("templateFile/PathCoverageTemplate.txt");
 
-        Assertions.assertEquals(Files.readString(java.nio.file.Path.of(pathFile)), path.toString());
-        Assertions.assertEquals(Files.readString(java.nio.file.Path.of(pathCoverageFile)), pathCoverage.toString());
+        verifyFileOutput(pathFile, path.toString(), 1e-8);
+        verifyFileOutput(pathCoverageFile, pathCoverage.toString(), 1e-8);
+
         Assertions.assertTrue(pathCoverage.isShow());
         Assertions.assertEquals(availability, pathCoverage.getAvailability());
     }

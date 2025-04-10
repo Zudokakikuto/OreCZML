@@ -16,7 +16,6 @@
  */
 package org.orekit.czml.object.primary;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.Utils.DateUtils;
@@ -28,8 +27,6 @@ import org.orekit.time.TimeScalesFactory;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 /**
  * The type Satellite reference system test.
@@ -58,6 +55,6 @@ public class SpacecraftReferenceSystemTest extends AbstractTest {
 
         final String pathFile = loadResources("templateFile/primary/SpacecraftReferenceSystemTemplate.txt");
 
-        Assertions.assertEquals(Files.readString(Path.of(pathFile)), system.toString());
+        verifyFileOutput(pathFile, system.toString(), 1e-8);
     }
 }

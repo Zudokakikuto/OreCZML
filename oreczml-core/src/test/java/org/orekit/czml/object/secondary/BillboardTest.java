@@ -19,14 +19,12 @@ package org.orekit.czml.object.secondary;
 import cesiumlanguagewriter.CesiumHorizontalOrigin;
 import cesiumlanguagewriter.CesiumResourceBehavior;
 import cesiumlanguagewriter.NearFarScalar;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.czml.file.AbstractTest;
 
 import java.awt.Color;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.net.URISyntaxException;
 
 /**
  * The type Billboard test.
@@ -39,7 +37,7 @@ public class BillboardTest extends AbstractTest {
      * @throws IOException the io exception
      */
     @Test
-    void BillboardConstructorTest() throws IOException {
+    void BillboardConstructorTest() throws IOException, URISyntaxException {
 
         loadOrekitData();
 
@@ -62,9 +60,9 @@ public class BillboardTest extends AbstractTest {
         final String nearFarPathFile = loadResources("templateFile/secondary/BillboardNearFarTemplate.txt");
         final String complexConstructorPathFile = loadResources("templateFile/secondary/BillboardComplexConstructorTemplate.txt");
 
-        Assertions.assertEquals(Files.readString(Path.of(pathFile)), billboard.toString());
-        Assertions.assertEquals(Files.readString(Path.of(coveragePathFile)), billboardCoverage.toString());
-        Assertions.assertEquals(Files.readString(Path.of(nearFarPathFile)), billboardNearFar.toString());
-        Assertions.assertEquals(Files.readString(Path.of(complexConstructorPathFile)), complexConstructor.toString());
+        verifyFileOutput(pathFile, billboard.toString(), 1e-8);
+        verifyFileOutput(coveragePathFile, billboardCoverage.toString(), 1e-8);
+        verifyFileOutput(nearFarPathFile, billboardNearFar.toString(), 1e-8);
+        verifyFileOutput(complexConstructorPathFile, complexConstructor.toString(), 1e-8);
     }
 }

@@ -16,14 +16,12 @@
  */
 package org.orekit.czml.object.primary;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.systems.LatLongLines;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.net.URISyntaxException;
 
 /**
  * The type Lat long lines test.
@@ -36,7 +34,7 @@ public class LatLongLinesTest extends AbstractTest {
      * @throws IOException the io exception
      */
     @Test
-    void LatLongLinesConstructorTest() throws IOException {
+    void LatLongLinesConstructorTest() throws IOException, URISyntaxException {
 
         loadOrekitData();
 
@@ -56,8 +54,8 @@ public class LatLongLinesTest extends AbstractTest {
         final String pathFile        = loadResources("templateFile/primary/LatLongLinesTemplate.txt");
         final String builderPathFile = loadResources("templateFile/primary/LatLongLinesWithBuilderTemplate.txt");
 
-        Assertions.assertEquals(Files.readString(Path.of(pathFile)), lines.toString());
-        Assertions.assertEquals(Files.readString(Path.of(builderPathFile)), linesBuilder.toString());
+        verifyFileOutput(pathFile, lines.toString(), 1e-8);
+        verifyFileOutput(builderPathFile, linesBuilder.toString(), 1e-8);
 
     }
 }

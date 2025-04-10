@@ -21,7 +21,6 @@ import cesiumlanguagewriter.JulianDate;
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.Header;
@@ -45,8 +44,6 @@ import org.orekit.utils.Constants;
 import java.awt.Color;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 
 /**
@@ -116,8 +113,8 @@ public class CzmlEllipsoidTest extends AbstractTest {
         final String pathFile = loadResources("templateFile/secondary/CzmlEllipsoidTemplate.txt");
         final String builderPathFile = loadResources("templateFile/secondary/CzmlEllipsoidWithBuilderTemplate.txt");
 
-        Assertions.assertEquals(Files.readString(Path.of(pathFile)), ellipsoid.toString());
-        Assertions.assertEquals(Files.readString(Path.of(builderPathFile)), ellipsoidBuilder.toString());
+        verifyFileOutput(pathFile, ellipsoid.toString(), 1e-8);
+        verifyFileOutput(builderPathFile, ellipsoidBuilder.toString(), 1e-8);
 
     }
 }

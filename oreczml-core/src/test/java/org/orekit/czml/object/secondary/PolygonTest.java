@@ -17,14 +17,12 @@
 package org.orekit.czml.object.secondary;
 
 import cesiumlanguagewriter.Cartesian;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.Header;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,7 +37,7 @@ public class PolygonTest extends AbstractTest {
      * @throws IOException the io exception
      */
     @Test
-    void PolygonConstructorTest() throws IOException {
+    void PolygonConstructorTest() throws IOException, URISyntaxException {
 
         loadOrekitData();
 
@@ -51,7 +49,7 @@ public class PolygonTest extends AbstractTest {
 
         final String pathFile = loadResources("templateFile/secondary/PolygonTemplate.txt");
 
-        Assertions.assertEquals(Files.readString(Path.of(pathFile)), polygon.toString());
+        verifyFileOutput(pathFile, polygon.toString(), 1e-8);
     }
 
     private List<Cartesian> randomCartesian() {

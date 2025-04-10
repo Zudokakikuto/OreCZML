@@ -17,7 +17,6 @@
 package org.orekit.czml.object.primary;
 
 import org.hipparchus.util.FastMath;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.czml.file.AbstractTest;
@@ -26,8 +25,6 @@ import org.orekit.frames.TopocentricFrame;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,15 +46,16 @@ public class CzmlGroundStationTest extends AbstractTest {
 
         final Header header = dummyHeader();
 
+        final String frameName = "Toulouse Frame";
         final GeodeticPoint toulouseFrame = new GeodeticPoint(FastMath.toRadians(43.6047),
                 FastMath.toRadians(1.4442), 10);
         final TopocentricFrame topocentricToulouse = new TopocentricFrame(getEarth(), toulouseFrame,
-                "Toulouse Frame");
+                frameName);
 
         final GeodeticPoint randomPoint = new GeodeticPoint(FastMath.toRadians(1.6047),
                 FastMath.toRadians(10.4442), 10);
         final TopocentricFrame topocentricRandom = new TopocentricFrame(getEarth(), randomPoint,
-                "Toulouse Frame");
+                frameName);
 
         final List<TopocentricFrame> topocentrics = new ArrayList<>();
         topocentrics.add(topocentricToulouse);
@@ -82,7 +80,7 @@ public class CzmlGroundStationTest extends AbstractTest {
         final String pathFile = loadResources("templateFile/primary/CzmlGroundStationTemplate.txt");
         final String builderPathFile = loadResources("templateFile/primary/CzmlGroundStationWithBuilderTemplate.txt");
 
-        Assertions.assertEquals(Files.readString(Path.of(pathFile)), station.toString());
-        Assertions.assertEquals(Files.readString(Path.of(builderPathFile)), stationBuilder.toString());
+        verifyFileOutput(pathFile, station.toString(), 1e-8);
+        verifyFileOutput(builderPathFile, stationBuilder.toString(), 1e-8);
     }
 }

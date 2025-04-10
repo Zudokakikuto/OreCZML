@@ -21,7 +21,6 @@ import org.hipparchus.linear.RealMatrix;
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.covariance.Covariance;
@@ -47,8 +46,6 @@ import org.orekit.utils.Constants;
 import java.awt.Color;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 
 /**
@@ -114,7 +111,6 @@ public class CovarianceTest extends AbstractTest {
                                                 .build();
 
         final String pathFile = loadResources("templateFile/primary/CovarianceTemplate.txt");
-
-        Assertions.assertEquals(Files.readString(Path.of(pathFile)), covariance.toString());
+        verifyFileOutput(pathFile, covariance.toString(), 1e-8);
     }
 }

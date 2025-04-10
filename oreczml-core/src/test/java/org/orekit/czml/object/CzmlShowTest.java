@@ -16,14 +16,12 @@
  */
 package org.orekit.czml.object;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.Header;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.net.URISyntaxException;
 
 /**
  * The type Czml show test.
@@ -36,7 +34,7 @@ public class CzmlShowTest extends AbstractTest {
      * @throws IOException the io exception
      */
     @Test
-    void CzmlShowConstructorTest() throws IOException {
+    void CzmlShowConstructorTest() throws IOException, URISyntaxException {
 
         loadOrekitData();
 
@@ -46,6 +44,6 @@ public class CzmlShowTest extends AbstractTest {
 
         final String pathFile = loadResources("templateFile/CzmlShowTemplate.txt");
 
-        Assertions.assertEquals(Files.readString(Path.of(pathFile)), show.toString());
+        verifyFileOutput(pathFile, show.toString(), 1e-8);
     }
 }

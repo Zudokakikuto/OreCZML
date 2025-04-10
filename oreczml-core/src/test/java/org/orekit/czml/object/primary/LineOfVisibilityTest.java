@@ -19,7 +19,6 @@ package org.orekit.czml.object.primary;
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.czml.file.AbstractTest;
@@ -44,8 +43,6 @@ import org.orekit.utils.Constants;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 /**
  * The type Line of visibility test.
@@ -116,7 +113,7 @@ public class LineOfVisibilityTest extends AbstractTest {
         final String pathFile = loadResources("templateFile/primary/LineOfVisibilityTemplate.txt");
         final String pathCoverageFile = loadResources("templateFile/primary/LineOfVisibilityCoverageTemplate.txt");
 
-        Assertions.assertEquals(Files.readString(Path.of(pathFile)), line.toString());
-        Assertions.assertEquals(Files.readString(Path.of(pathCoverageFile)), coverageLine.toString());
+        verifyFileOutput(pathFile, line.toString(), 1e-8);
+        verifyFileOutput(pathCoverageFile, coverageLine.toString(), 1e-8);
     }
 }

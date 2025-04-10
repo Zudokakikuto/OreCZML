@@ -19,7 +19,6 @@ package org.orekit.czml.object.secondary;
 import cesiumlanguagewriter.ClockRange;
 import cesiumlanguagewriter.ClockStep;
 import cesiumlanguagewriter.TimeInterval;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.Utils.DateUtils;
@@ -32,8 +31,7 @@ import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScalesFactory;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.net.URISyntaxException;
 
 /**
  * The type Clock test.
@@ -46,7 +44,7 @@ public class ClockTest extends AbstractTest {
      * @throws IOException the io exception
      */
     @Test
-    void ClockConstructorTest() throws IOException {
+    void ClockConstructorTest() throws IOException, URISyntaxException {
 
         loadOrekitData();
 
@@ -72,9 +70,9 @@ public class ClockTest extends AbstractTest {
         final String coveragePathFile = loadResources("templateFile/secondary/ClockCoverageTemplate.txt");
         final String oemClockPathFile = loadResources("templateFile/secondary/OemClockTemplate.txt");
 
-        Assertions.assertEquals(Files.readString(Path.of(pathFile)), clock.toString());
-        Assertions.assertEquals(Files.readString(Path.of(coveragePathFile)), clockCoverage.toString());
-        Assertions.assertEquals(Files.readString(Path.of(oemClockPathFile)), oemClock.toString());
+        verifyFileOutput(pathFile, clock.toString(), 1e-8);
+        verifyFileOutput(coveragePathFile, clockCoverage.toString(), 1e-8);
+        verifyFileOutput(oemClockPathFile, oemClock.toString(), 1e-8);
 
     }
 }

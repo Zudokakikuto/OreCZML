@@ -16,7 +16,6 @@
  */
 package org.orekit.czml.object.primary;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.Utils.DateUtils;
@@ -29,8 +28,6 @@ import org.orekit.time.TimeScalesFactory;
 import java.awt.Color;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -82,8 +79,8 @@ public class GroundTrackTest extends AbstractTest {
         final String builderPathFile       = loadResources("templateFile/primary/GroundTrackWithBuilderTemplate.txt");
         final String constellationPathFile = loadResources("templateFile/primary/GroundTrackConstellationTemplate.txt");
 
-        Assertions.assertEquals(Files.readString(Path.of(pathFile)), groundTrack.toString());
-        Assertions.assertEquals(Files.readString(Path.of(builderPathFile)), groundTrackWithBuilder.toString());
-        Assertions.assertEquals(Files.readString(Path.of(constellationPathFile)), constellationGroundTrack.toString());
+        verifyFileOutput(pathFile, groundTrack.toString(), 1e-8);
+        verifyFileOutput(builderPathFile, groundTrackWithBuilder.toString(), 1e-8);
+        verifyFileOutput(constellationPathFile, constellationGroundTrack.toString(), 1e-8);
     }
 }

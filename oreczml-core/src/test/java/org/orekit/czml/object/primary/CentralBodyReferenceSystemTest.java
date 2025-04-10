@@ -16,15 +16,13 @@
  */
 package org.orekit.czml.object.primary;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.systems.CentralBodyReferenceSystem;
 
 import java.awt.Color;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.net.URISyntaxException;
 
 /**
  * The type Central body reference system test.
@@ -34,10 +32,11 @@ public class CentralBodyReferenceSystemTest extends AbstractTest {
     /**
      * Central body reference system constructor test.
      *
-     * @throws IOException the io exception
+     * @throws URISyntaxException the uri syntax exception
+     * @throws IOException        the io exception
      */
     @Test
-    void CentralBodyReferenceSystemConstructorTest() throws IOException {
+    void CentralBodyReferenceSystemConstructorTest() throws URISyntaxException, IOException {
 
         loadOrekitData();
 
@@ -57,9 +56,8 @@ public class CentralBodyReferenceSystemTest extends AbstractTest {
         final String pathFile = loadResources("templateFile/primary/CentralBodyReferenceSystemTemplate.txt");
         final String builderPathFile = loadResources("templateFile/primary/CentralBodyReferenceSystemWithBuilderTemplate.txt");
 
-        Assertions.assertEquals(Files.readString(Path.of(pathFile)), system.toString());
-        Assertions.assertEquals(Files.readString(Path.of(builderPathFile)), systemBuilder.toString());
-
+        verifyFileOutput(pathFile, system.toString(), 1e-8);
+        verifyFileOutput(builderPathFile, systemBuilder.toString(), 1e-8);
     }
 
 }
