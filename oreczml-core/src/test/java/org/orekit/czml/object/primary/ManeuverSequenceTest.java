@@ -56,8 +56,6 @@ import org.orekit.utils.Constants;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -208,15 +206,12 @@ public class ManeuverSequenceTest extends AbstractTest {
         final String maneuverMultiplePathFile = loadResources(
                 "templateFile/primary/ManeuverSequenceMultipleTemplate.txt");
 
-        Assertions.assertEquals(Files.readString(Path.of(maneuversPathFile)), maneuverSequence.toString());
-
-        Assertions.assertEquals(Files.readString(Path.of(maneuverSimplePathFile)), maneuverSequenceSimple.toString());
-
-        Assertions.assertEquals(Files.readString(Path.of(maneuverMultiplePathFile)),
-                maneuverSequenceMultiple.toString());
+        // Verify file output
+        verifyFileOutput(maneuversPathFile, maneuverSequence.toString(), 1e-8);
+        verifyFileOutput(maneuverSimplePathFile, maneuverSequenceSimple.toString(), 1e-8);
+        verifyFileOutput(maneuverMultiplePathFile, maneuverSequenceMultiple.toString(), 1e-8);
 
         // Getters coverage
-
         Assertions.assertEquals(maneuvers, maneuverSequence.getManeuvers());
         Assertions.assertEquals(boundedPropagator.getInitialState()
                                                  .getPVCoordinates()

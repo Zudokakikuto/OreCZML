@@ -16,13 +16,11 @@
  */
 package org.orekit.czml.object.primary;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.czml.file.AbstractTest;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.net.URISyntaxException;
 
 /**
  * The type Header test.
@@ -35,22 +33,24 @@ public class HeaderTest extends AbstractTest {
      * @throws IOException the io exception
      */
     @Test
-    void HeaderConstructorTest() throws IOException {
+    void HeaderConstructorTest() throws IOException, URISyntaxException {
 
         loadOrekitData();
 
         final Header header = dummyHeader();
 
-        final Header headerCoverage = new Header("A header", "1.0", header.getClock());
+        final String headerValue = "A header";
+        final String headerVersionNumber = "1.0";
+        final Header headerCoverage = new Header(headerValue, headerVersionNumber, header.getClock());
 
-        final Header headerVersion = new Header("A header", "1.0", header.getClock(), "");
+        final Header headerVersion = new Header(headerValue, headerVersionNumber, header.getClock(), "");
 
         final String pathFile         = loadResources("templateFile/primary/HeaderTemplate.txt");
         final String coveragePathFile = loadResources("templateFile/primary/HeaderCoverageTemplate.txt");
         final String versionPathFile  = loadResources("templateFile/primary/HeaderVersionTemplate.txt");
 
-        Assertions.assertEquals(Files.readString(Path.of(pathFile)), header.toString());
-        Assertions.assertEquals(Files.readString(Path.of(coveragePathFile)), headerCoverage.toString());
-        Assertions.assertEquals(Files.readString(Path.of(versionPathFile)), headerVersion.toString());
+        verifyFileOutput(pathFile, header.toString(), 1e-8);
+        verifyFileOutput(coveragePathFile, headerCoverage.toString(), 1e-8);
+        verifyFileOutput(versionPathFile, headerVersion.toString(), 1e-8);
     }
 }

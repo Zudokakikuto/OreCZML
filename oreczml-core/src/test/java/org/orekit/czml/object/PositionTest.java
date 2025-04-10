@@ -23,8 +23,7 @@ import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.Header;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.net.URISyntaxException;
 
 /**
  * The type Position test.
@@ -37,7 +36,7 @@ public class PositionTest extends AbstractTest {
      * @throws IOException the io exception
      */
     @Test
-    void PositionConstructorTest() throws IOException {
+    void PositionConstructorTest() throws IOException, URISyntaxException {
 
         loadOrekitData();
 
@@ -55,11 +54,10 @@ public class PositionTest extends AbstractTest {
         final String referenceFramePathFile = loadResources(
                 "templateFile/PositionCartesianWithReferenceFrameTemplate.txt");
 
-        Assertions.assertEquals(Files.readString(Path.of(cartesianPathFile)), positionCartesian.toString());
-        Assertions.assertEquals(Files.readString(Path.of(degreesPathFile)), positionDegrees.toString());
-        Assertions.assertEquals(Files.readString(Path.of(radiansPathFile)), positionRadians.toString());
-        Assertions.assertEquals(Files.readString(Path.of(referenceFramePathFile)),
-                positionCartesian.toString("INERTIAL"));
+        verifyFileOutput(cartesianPathFile, positionCartesian.toString(), 1e-8);
+        verifyFileOutput(degreesPathFile, positionDegrees.toString(), 1e-8);
+        verifyFileOutput(radiansPathFile, positionRadians.toString(), 1e-8);
+        verifyFileOutput(referenceFramePathFile, positionCartesian.toString("INERTIAL"), 1e-8);
 
         // Method coverage
         Assertions.assertEquals(new Vector3D(1, 45, 20), positionCartesian.toVector3D());

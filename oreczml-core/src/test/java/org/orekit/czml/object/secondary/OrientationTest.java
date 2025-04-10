@@ -31,8 +31,6 @@ import org.orekit.time.TimeScalesFactory;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 
 /**
@@ -60,29 +58,20 @@ public class OrientationTest extends AbstractTest {
 
         final List<Attitude> attitudes = satellite.getAttitudes();
 
-        final Orientation orientation = new Orientation(attitudes, FramesFactory.getEME2000(), header);
-
-        final Orientation orientationWithBuilder = Orientation.builder(attitudes.get(0), FramesFactory.getEME2000(), header).build();
-
-        final Orientation orientationInvert = new Orientation(attitudes, FramesFactory.getEME2000(), true, null, header);
-
-        final Orientation orientationFalseInvert = new Orientation(attitudes, FramesFactory.getEME2000(), false, new Rotation(1.0, 0.0, 0.0, 1.0, false), header);
-
         final String pathFile = loadResources("templateFile/secondary/OrientationTemplate.txt");
-
         final String invertPathFile = loadResources("templateFile/secondary/OrientationInvertTemplate.txt");
-
         final String withBuilderPathFile = loadResources("templateFile/secondary/OrientationWithBuilderTemplate.txt");
-
         final String falseInvertPathFile = loadResources("templateFile/secondary/OrientationFalseInvertTemplate.txt");
 
-        Assertions.assertEquals(Files.readString(Path.of(pathFile)), orientation.toString());
+        final Orientation orientation = new Orientation(attitudes, FramesFactory.getEME2000(), header);
+        final Orientation orientationWithBuilder = Orientation.builder(attitudes.get(0), FramesFactory.getEME2000(), header).build();
+        final Orientation orientationInvert = new Orientation(attitudes, FramesFactory.getEME2000(), true, null, header);
+        final Orientation orientationFalseInvert = new Orientation(attitudes, FramesFactory.getEME2000(), false, new Rotation(1.0, 0.0, 0.0, 1.0, false), header);
 
-        Assertions.assertEquals(Files.readString(Path.of(invertPathFile)), orientationInvert.toString());
-
-        Assertions.assertEquals(Files.readString(Path.of(withBuilderPathFile)), orientationWithBuilder.toString());
-
-        Assertions.assertEquals(Files.readString(Path.of(falseInvertPathFile)), orientationFalseInvert.toString());
+        verifyFileOutput(pathFile, orientation.toString(), 1e-8);
+        verifyFileOutput(invertPathFile, orientationInvert.toString(), 1e-8);
+        verifyFileOutput(withBuilderPathFile, orientationWithBuilder.toString(), 1e-8);
+        verifyFileOutput(falseInvertPathFile, orientationFalseInvert.toString(), 1e-8);
 
         Assertions.assertEquals(attitudes, orientation.getAttitudes());
     }

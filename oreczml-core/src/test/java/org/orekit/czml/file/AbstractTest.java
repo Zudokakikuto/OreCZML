@@ -20,7 +20,11 @@ import cesiumlanguagewriter.Cartesian;
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
+import org.hipparchus.util.Pair;
+import org.junit.jupiter.api.Assertions;
 import org.orekit.bodies.OneAxisEllipsoid;
+import org.orekit.czml.errors.OreCzmlException;
+import org.orekit.czml.errors.OreCzmlMessages;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.secondary.Clock;
@@ -52,9 +56,17 @@ import org.orekit.utils.Constants;
 import org.orekit.utils.IERSConventions;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.NavigableSet;
+import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * The type Abstract test.
@@ -75,8 +87,7 @@ public class AbstractTest {
             DataContext.getDefault()
                        .getDataProvidersManager()
                        .addProvider(provider);
-        } catch (
-                OrekitException oe) {
+        } catch (OrekitException oe) {
             System.err.println(oe.getLocalizedMessage());
         }
     }
@@ -93,6 +104,14 @@ public class AbstractTest {
                                          .getFile())
                 .toPath()
                 .toString();
+    }
+
+    public static String loadOutputLocation() {
+        return "Output";
+    }
+
+    public static String loadModelFile() {
+        return "Default3DModels/ISSModel.glb";
     }
 
     /**
@@ -162,7 +181,7 @@ public class AbstractTest {
     protected List<Cartesian> computeRandomCartesians(final int size) {
         final List<Cartesian> toReturn = new ArrayList<>();
         for (int i = 0; i < size; i++) {
-            toReturn.add(new Cartesian(i, 2*i, i));
+            toReturn.add(new Cartesian(i, 2 * i, i));
         }
         return toReturn;
     }
@@ -215,5 +234,242 @@ public class AbstractTest {
         return covarianceListTemp;
     }
 
+    /**
+     * Verifies unit test output.
+     *
+     * @param templateFileName      Desired unit test output file name
+     * @param testString            Current unit test output data string
+     * @param accuracy              Required significant figure accuracy
+     */
+    public static void verifyFileOutput(final String templateFileName,
+            final String testString, final double accuracy) throws  URISyntaxException, IOException {
+
+        // Get template file string data
+        final String templateFile = Files.readString(Path.of(templateFileName));
+
+        // Stores files as list of string and double values in sequential order
+        final List<Pair<Integer, Object>> templateValues = readValues(templateFile);
+        final List<Pair<Integer, Object>> testValues = readValues(testString);
+
+        // Determines locations of newline characters to aid in finding output error location
+        final NavigableSet<Integer> lineStartValues = new TreeSet<>(findNewlineChars(templateFile));
+
+        // Compares unit test output to template value
+        final ParseOutput testOutput = compareValues(templateValues, testValues, lineStartValues, accuracy);
+
+        if (testOutput.parseStatus == ParseOutput.ParseStatus.SUCCESS) {
+            Assertions.assertNull(testOutput.parseError);
+        } else {
+            final ParseError parseError = testOutput.parseError;
+            final StringBuilder msgBuilder = new StringBuilder(parseError.getError() + " found at line ");
+            msgBuilder.append(String.valueOf(parseError.lineNumber)).append(" of ").append(templateFileName);
+            msgBuilder.append(". Found '").append(parseError.testValue).append("'");
+            msgBuilder.append("instead of '").append(parseError.templateValue).append("'");
+
+            throw new AssertionError(msgBuilder.toString());
+        }
+    }
+
+    /**
+     * Breaks unit test output into strings and numbers.
+     *
+     * @param text          Raw unit test output
+     * @return the list
+     */
+    private static List<Pair<Integer, Object>> readValues(final String text) throws URISyntaxException, IOException {
+
+        // List holds broken down string data as a series of text strings and numeric values
+        final List<Pair<Integer, Object>>  valueList = new ArrayList<>();
+
+        // REGEX to recognize all integer, float, and scientific notation numbers
+        final Pattern pattern = Pattern.compile("-?\\d+(\\.\\d+)?([Ee][+-]?\\d+)?");
+        final Matcher matcher = pattern.matcher(text);
+
+        // Used to ensure that in case of multiple same numbers being present in the text, we
+        // are comparing the *latest* number pulled.
+        int startText = 0;
+        int prevStart = 0;
+        int stopText = 0;
+
+        while (matcher.find()) {
+            final String match = matcher.group();
+            try {
+
+                // Finds next decimal number in line
+                final double decimal = Double.parseDouble(match);
+
+                // Update text starting point
+                startText = text.indexOf(match, stopText);
+
+                // Add text preceding current number and following after last number
+                valueList.add( new Pair<Integer, Object>(prevStart, text.substring(prevStart, startText)) );
+
+                // Add number
+                valueList.add(new Pair<Integer, Object>(startText, decimal));
+
+                // Update other index values
+                stopText = startText + match.length();
+                prevStart = stopText;
+
+            } catch (OreCzmlException e) {
+                // Handle cases where the matched string is not a valid decimal
+                throw new OreCzmlException(OreCzmlMessages.NOT_A_NUMBER);
+            }
+        }
+
+        // Adds final text string to Object list
+        valueList.add( new Pair<Integer, Object>(stopText, text.substring(stopText)) );
+
+        // Return list of text/number objects in file along with start character index values
+        return valueList;
+    }
+
+    /**
+     * Verifies unit test output.
+     *
+     * @param templateValues    Desired unit test output
+     * @param testValues        Current unit test output
+     * @param lineStartValues   Character values where file lines start in the current unit test output
+     * @param accuracy          Required significant figure level of accuracy
+     * @return boolean
+     */
+    private static ParseOutput compareValues(final List<Pair<Integer, Object>> templateValues,
+            final List<Pair<Integer, Object>> testValues, final NavigableSet<Integer> lineStartValues, final double accuracy) {
+
+        int max_val = templateValues.size();
+        if (templateValues.size() > testValues.size()) {
+            max_val = testValues.size();
+        }
+
+        // Compare individual values in the arrays.
+        for (int i = 0; i < max_val; i++) {
+
+            final Object templateValue = templateValues.get(i).getValue();
+            final Object testValue = testValues.get(i).getValue();
+
+            // Compare two doubles
+            if  ( templateValue instanceof Double && testValue instanceof Double ) {
+                final Double decimal1 = getSignificantFigures(templateValue);
+                final Double decimal2 = getSignificantFigures(testValue);
+                if (Math.abs(decimal1 - decimal2) > accuracy) {
+                    final Integer lineValue = findErrorLineValue(lineStartValues, templateValues.get(i));
+                    return new ParseOutput(ParseOutput.ParseStatus.ERROR,
+                                           new ParseError(lineValue, "Numeric Error", decimal1, decimal2));
+                }
+            // Compare two strings of text
+            } else if ( templateValue instanceof String && testValue instanceof String) {
+
+                // Replace return line chars to avoid end-of-file return
+                final String replaceValue = "([\\r\\n])";
+                final String str1 = ((String) templateValue).replaceAll(replaceValue, "");
+                final String str2 = ((String) testValue).replaceAll(replaceValue, "");
+
+                if (str1.compareTo(str2) != 0) {
+                    final Integer lineValue = findErrorLineValue(lineStartValues, templateValues.get(i));
+                    return new ParseOutput(ParseOutput.ParseStatus.ERROR,
+                                           new ParseError(lineValue, "Text Error", str1, str2));
+                }
+            }
+            // Type mismatch error - means there is a mismatch in the data files.
+            else {
+                final Integer lineValue = findErrorLineValue(lineStartValues, templateValues.get(i));
+                return new ParseOutput(ParseOutput.ParseStatus.ERROR,
+                                       new ParseError(lineValue, "Type Mismatch Error", templateValue, testValue));
+            }
+        }
+
+        // Can only reach this point if the files match perfectly.
+        return new ParseOutput(ParseOutput.ParseStatus.SUCCESS, null);
+    }
+
+    /**
+     * Figures out which character values are at the start of file textlines.
+     *
+     * @param text             Desired unit test output
+     * @return List
+     */
+    static List<Integer> findNewlineChars(final String text) {
+
+        final List<Integer> output = new ArrayList<Integer>();
+
+        final Pattern pattern = Pattern.compile("\r?\n");
+        final Matcher matcher = pattern.matcher(text);
+
+        int startText = 0;
+        int prevStart = 0;
+        int stopText = 0;
+        while (matcher.find()) {
+            final String match = matcher.group();
+
+            // Update text starting point
+            startText = text.indexOf(match, stopText);
+
+            // Add text preceding current number and following after last number
+            output.add(prevStart);
+
+            // Update other index values
+            stopText = startText + match.length();
+            prevStart = stopText - 1;
+        }
+
+        // Capture start character of final line of text
+        output.add(text.length() - 2);
+
+        return output;
+    }
+
+    /**
+     * Verifies unit test output.
+     *
+     * @param value             Double/Object value
+     * @return Double
+     */
+    static Double getSignificantFigures(final Object value) {
+
+        Double decimalValue = (Double) value;
+
+        // A negative sign in the string interferes with the decimal place value finder
+        boolean negative = false;
+        if (decimalValue < 0.0) {
+            decimalValue *= 1.0;
+            negative = true;
+        }
+        final int decimalPlace = String.valueOf(decimalValue).indexOf(".");
+
+        // Switch the negative back once we're done
+        if (negative) {
+            decimalValue *= 1.0;
+        }
+
+        return decimalValue / Math.pow(10.0, decimalPlace - 1);
+    }
+
+    /**
+     * Determines file line value of error.
+     *
+     * @param lineStartValues   Character number values of line starts in template output file
+     * @param templateValue    Failed template output value
+     * @return Integer
+     */
+    private static Integer findErrorLineValue(final NavigableSet<Integer> lineStartValues, final Pair<Integer, Object> templateValue) {
+        final Integer lineStartCharValue = lineStartValues.lower(templateValue.getKey());
+        return lineStartValues.headSet(lineStartCharValue).size() + 1;
+    }
+
+    /** Record for output of parsing and comparing Czml against a template reference. */
+    private record ParseOutput(AbstractTest.ParseOutput.ParseStatus parseStatus, ParseError parseError) {
+
+        /** Status. */
+        private enum ParseStatus {
+            ERROR, SUCCESS;
+        }
+    }
+
+    /** Record for storing info on a parsing error. */
+    private record ParseError(Integer lineNumber, String errorType, Object templateValue, Object testValue) {
+        public String getError() {
+            return errorType;
+        }
+    }
 }
 

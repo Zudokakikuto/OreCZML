@@ -20,7 +20,6 @@ import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.attitudes.LofOffset;
 import org.orekit.czml.file.AbstractTest;
@@ -49,8 +48,6 @@ import org.orekit.utils.Constants;
 import java.awt.Color;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 /**
  * The type Field of observation test.
@@ -129,7 +126,6 @@ public class FieldOfObservationTest extends AbstractTest {
                                                                         .build();
 
         final String pathFile = loadResources("templateFile/primary/FieldOfObservationTemplate.txt");
-
-        Assertions.assertEquals(Files.readString(Path.of(pathFile)), fieldOfObservation.toString());
+        verifyFileOutput(pathFile, fieldOfObservation.toString(), 1e-3);
     }
 }

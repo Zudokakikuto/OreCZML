@@ -18,7 +18,6 @@ package org.orekit.czml.object.primary;
 
 import cesiumlanguagewriter.CesiumHeightReference;
 import org.hipparchus.util.FastMath;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.czml.file.AbstractTest;
@@ -37,8 +36,6 @@ import org.orekit.time.TimeScalesFactory;
 import java.awt.Color;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 /**
  * The type Visibility cone test.
@@ -96,11 +93,11 @@ public class VisibilityConeTest extends AbstractTest {
         final String GroundStationSatPathFile = loadResources(
                 "templateFile/primary/VisibilityConeGroundStationSatTemplate.txt");
 
-        Assertions.assertEquals(Files.readString(Path.of(pathFile)), cone.toString());
-        Assertions.assertEquals(Files.readString(Path.of(coveragePathFile)), coverageCone.toString());
-        Assertions.assertEquals(Files.readString(Path.of(cylinderSatPathFile)), cylinderSatCone.toString());
-        Assertions.assertEquals(Files.readString(Path.of(groundStationPathFile)), groundStationCone.toString());
-        Assertions.assertEquals(Files.readString(Path.of(GroundStationSatPathFile)), groundStationSatCone.toString());
+        verifyFileOutput(pathFile, cone.toString(), 1e-8);
+        verifyFileOutput(coveragePathFile, coverageCone.toString(), 1e-8);
+        verifyFileOutput(cylinderSatPathFile, cylinderSatCone.toString(), 1e-8);
+        verifyFileOutput(groundStationPathFile, groundStationCone.toString(), 1e-8);
+        verifyFileOutput(GroundStationSatPathFile, groundStationSatCone.toString(), 1e-8);
     }
 }
 

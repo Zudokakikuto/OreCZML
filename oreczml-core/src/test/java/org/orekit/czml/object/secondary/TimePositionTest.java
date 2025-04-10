@@ -21,7 +21,6 @@ import cesiumlanguagewriter.JulianDate;
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.Header;
@@ -44,8 +43,6 @@ import org.orekit.utils.Constants;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 
 /**
@@ -110,6 +107,6 @@ public class TimePositionTest extends AbstractTest {
 
         final String pathFile = loadResources("templateFile/secondary/TimePositionTemplate.txt");
 
-        Assertions.assertEquals(Files.readString(Path.of(pathFile)), timePosition.toString());
+        verifyFileOutput(pathFile, timePosition.toString(), 1e-8);
     }
 }

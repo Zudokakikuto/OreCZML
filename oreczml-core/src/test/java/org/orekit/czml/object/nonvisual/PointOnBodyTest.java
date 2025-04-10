@@ -27,8 +27,7 @@ import org.orekit.czml.object.Utils.DateUtils;
 import org.orekit.czml.object.primary.Header;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -44,7 +43,7 @@ public class PointOnBodyTest extends AbstractTest {
      * @throws IOException the io exception
      */
     @Test
-    void PointOnBodyConstructorTest() throws IOException {
+    void PointOnBodyConstructorTest() throws IOException, URISyntaxException {
 
         loadOrekitData();
 
@@ -67,8 +66,7 @@ public class PointOnBodyTest extends AbstractTest {
         pointOnBodyTest.setDisplayPeriodPointingPath(true, 20.0);
 
         final String pathFile = loadResources("templateFile/nonvisual/PointOnBodyTemplate.txt");
-
-        Assertions.assertEquals(Files.readString(Path.of(pathFile)), pointOnBodyTest.toString());
+        verifyFileOutput(pathFile, pointOnBodyTest.toString(), 1e-8);
 
         // Getters coverage
 

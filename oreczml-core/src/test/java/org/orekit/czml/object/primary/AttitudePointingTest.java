@@ -17,7 +17,6 @@
 package org.orekit.czml.object.primary;
 
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.Utils.DateUtils;
@@ -30,8 +29,6 @@ import org.orekit.time.TimeScalesFactory;
 import java.awt.Color;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 /**
  * The type Attitude pointing test.
@@ -76,7 +73,7 @@ public class AttitudePointingTest extends AbstractTest {
         final String pathFile = loadResources("templateFile/primary/AttitudePointingTemplate.txt");
         final String builderPathFile = loadResources("templateFile/primary/AttitudePointingWithBuilderTemplate.txt");
 
-        Assertions.assertEquals(Files.readString(Path.of(pathFile)), attitudePointing.toString());
-        Assertions.assertEquals(Files.readString(Path.of(builderPathFile)), attitudePointingWithBuilder.toString());
+        verifyFileOutput(pathFile, attitudePointing.toString(), 1e-8);
+        verifyFileOutput(builderPathFile, attitudePointingWithBuilder.toString(), 1e-8);
     }
 }

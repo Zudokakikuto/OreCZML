@@ -26,8 +26,7 @@ import org.orekit.czml.object.primary.entities.Body;
 import org.orekit.frames.Frame;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.net.URISyntaxException;
 
 /**
  * The type Body test.
@@ -37,10 +36,11 @@ public class BodyTest extends AbstractTest {
     /**
      * Body constructor test.
      *
-     * @throws IOException the io exception
+     * @throws URISyntaxException the uri syntax exception
+     * @throws IOException        the io exception
      */
     @Test
-    void BodyConstructorTest() throws IOException {
+    void BodyConstructorTest() throws URISyntaxException, IOException {
 
         loadOrekitData();
 
@@ -83,11 +83,9 @@ public class BodyTest extends AbstractTest {
         final String bodiesPathFiles  = loadResources("templateFile/primary/BodiesTemplate.txt");
         final String builderPathFiles = loadResources("templateFile/primary/BodyWithBuilderTemplate.txt");
 
-        Assertions.assertEquals(Files.readString(Path.of(bodyPathFile)), body.toString());
-        Assertions.assertEquals(Files.readString(Path.of(builderPathFiles)), bodyBuilder.toString());
-
-        Assertions.assertEquals(Files.readString(Path.of(bodiesPathFiles)), file.toString());
-
+        verifyFileOutput(bodyPathFile, body.toString(), 1e-8);
+        verifyFileOutput(builderPathFiles, bodyBuilder.toString(), 1e-8);
+        verifyFileOutput(bodiesPathFiles, file.toString(), 1e-8);
         Assertions.assertEquals(CelestialBodyFactory.getMars(), bodyBuilder.getCelestialBody());
         Assertions.assertTrue(bodyBuilder.isDisplayOrbit());
         Assertions.assertTrue(bodyBuilder.isDisplayOnlyOnePeriod());

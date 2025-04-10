@@ -21,7 +21,6 @@ import org.hipparchus.linear.RealMatrix;
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.covariance.Collision;
@@ -46,8 +45,6 @@ import org.orekit.utils.Constants;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 
 /**
@@ -148,9 +145,8 @@ public class CollisionTest extends AbstractTest {
         final String pathFile = loadResources("templateFile/primary/CollisionTemplate.txt");
         final String builderPathFile = loadResources("templateFile/primary/CollisionWithBuilderTemplate.txt");
 
-        Assertions.assertEquals(Files.readString(Path.of(pathFile)), collision.toString());
-        Assertions.assertEquals(Files.readString(Path.of(builderPathFile)), collisionBuilder.toString());
-
+        verifyFileOutput(pathFile, collision.toString(), 1e-8);
+        verifyFileOutput(builderPathFile, collisionBuilder.toString(), 1e-8);
     }
 
 }

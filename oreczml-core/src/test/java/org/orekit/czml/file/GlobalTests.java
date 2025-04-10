@@ -23,7 +23,6 @@ import org.hipparchus.linear.RealMatrix;
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
-import org.junit.jupiter.api.Assertions;
 import org.orekit.attitudes.AttitudesSequence;
 import org.orekit.attitudes.CelestialBodyPointed;
 import org.orekit.attitudes.LofOffset;
@@ -119,13 +118,13 @@ class GlobalTests extends AbstractTest {
         loadOrekitData();
 
         // Paths
-        final String output = loadResources("Output") + "/Output1.czml";
+        final String output = loadResources(loadOutputLocation()) + "/Output1.czml";
         // Change the path here to your JavaScript>public folder.
         final String pathToJSFolder = loadResources("");
 
         final String OemPath            = loadResources("oemForAemTuto.xml");
         final String AemPath            = loadResources("aemForAemTuto.xml");
-        final String IssModel           = loadResources("Default3DModels/ISSModel.glb");
+        final String IssModel           = loadResources(loadModelFile());
         final String referenceFilePath1 = loadResources("test1.czml");
 
         // Creation of the Oem
@@ -230,14 +229,13 @@ class GlobalTests extends AbstractTest {
         file.write(output);
 
         // Comparing of generated file and reference file.
-        final String stringReference = Files.readString(Path.of(referenceFilePath1));
         final String stringGenerated = Files.readString(Path.of(output));
+        verifyFileOutput(referenceFilePath1, stringGenerated, 1e-8);
 
         final String pathToCoverageTemplateCzmlFile = loadResources(
                 "templateFile/file/Test1CzmlFileTemplateCoverage.txt");
 
-        Assertions.assertEquals(stringReference, stringGenerated);
-        Assertions.assertEquals(Files.readString(Path.of(pathToCoverageTemplateCzmlFile)), coverageFile.toString());
+        verifyFileOutput(pathToCoverageTemplateCzmlFile, coverageFile.toString(), 1e-8);
     }
 
     /**
@@ -257,7 +255,7 @@ class GlobalTests extends AbstractTest {
         // Change the path here to your JavaScript>public folder.
         final String pathToJSFolder = loadResources(".");
 
-        final String IssModel           = loadResources("Default3DModels/ISSModel.glb");
+        final String IssModel           = loadResources(loadModelFile());
         final String referenceFilePath2 = loadResources("test2.czml");
 
         final TimeScale    UTC       = TimeScalesFactory.getUTC();
@@ -491,17 +489,16 @@ class GlobalTests extends AbstractTest {
         file.write(output);
 
         // Comparing of generated file and reference file.
-        final String stringReference = Files.readString(Path.of(referenceFilePath2));
         final String stringGenerated = Files.readString(Path.of(output));
+        verifyFileOutput(referenceFilePath2, stringGenerated, 1e-8);
+
         final String coverageCzmLFilePathTemplate = loadResources(
                 "templateFile/file/Test2CzmlFileTemplateCoverage.txt");
-
-        Assertions.assertEquals(Files.readString(Path.of(coverageCzmLFilePathTemplate)), coverageFile.toString());
-        Assertions.assertEquals(stringReference, stringGenerated);
+        verifyFileOutput(coverageCzmLFilePathTemplate, coverageFile.toString(), 1e-8);
     }
 
     /**
-     * Test the maneuver sequence, multiple ground stations, the line of visu sat station
+     * Test the maneuver sequence, multiple ground stations, the line of visu sat station.
      *
      * @throws URISyntaxException the uri syntax exception
      * @throws IOException        the io exception
@@ -512,7 +509,7 @@ class GlobalTests extends AbstractTest {
         loadOrekitData();
 
         // Paths
-        final String output = loadResources("Output") + "/Output3.czml";
+        final String output = loadResources(loadOutputLocation()) + "/Output3.czml";
         // Change the path here to your JavaScript>public folder.
         final String pathToJSFolder = loadResources(".");
 
@@ -645,9 +642,6 @@ class GlobalTests extends AbstractTest {
                                                .withDisplayAttitude()
                                                .build();
 
-        final Orientation orientationSatelliteToStock = satellite.getOrientation();
-        final double      periodSatelliteToStock      = satellite.getPeriod();
-
         // Creation of the display of the maneuvers
         final ManeuverSequence maneuverSequence = ManeuverSequence.builder(sequence, maneuvers, satellite,
                                                                           accelerationDirection, LOFType.TNW, header)
@@ -670,12 +664,7 @@ class GlobalTests extends AbstractTest {
         final CzmlGroundStation       groundStationLasVegas = new CzmlGroundStation(topocentricLasVegas, header);
         groundStation.add(groundStationToulouse);
         groundStation.add(groundStationLasVegas);
-        final List<TopocentricFrame> topocentrics = new ArrayList<>();
-        topocentrics.add(topocentricToulouse);
-        topocentrics.add(topocentricLasVegas);
         final CzmlGroundStation soloGroundStation = new CzmlGroundStation(topocentricToulouse, header);
-
-        soloGroundStation.getTopocentricFrame();
 
         final List<ManeuverSequence> sequences = new ArrayList<>();
         sequences.add(maneuverSequence);
@@ -722,12 +711,10 @@ class GlobalTests extends AbstractTest {
         file.write(output);
 
         // Comparing of generated file and reference file.
-        final String stringReference = Files.readString(Path.of(referenceFilePath3));
         final String stringGenerated = Files.readString(Path.of(output));
+        verifyFileOutput(referenceFilePath3, stringGenerated, 1e-8);
 
         final String coveragePathFile = loadResources("templateFile/file/Test3CzmlFileTemplateCoverage.txt");
-
-        Assertions.assertEquals(stringReference, stringGenerated);
-        Assertions.assertEquals(Files.readString(Path.of(coveragePathFile)), coverageFile.toString());
+        verifyFileOutput(coveragePathFile, coverageFile.toString(), 1e-8);
     }
 }

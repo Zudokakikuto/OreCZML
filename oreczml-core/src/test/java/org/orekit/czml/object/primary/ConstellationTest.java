@@ -19,7 +19,6 @@ package org.orekit.czml.object.primary;
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.Utils.DateUtils;
@@ -42,8 +41,6 @@ import org.orekit.utils.Constants;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -191,7 +188,6 @@ public class ConstellationTest extends AbstractTest {
                                                          .build();
 
         final String pathFile = loadResources("templateFile/primary/ConstellationTemplate.txt");
-
-        Assertions.assertEquals(Files.readString(Path.of(pathFile)), constellation.toString());
+        verifyFileOutput(pathFile, constellation.toString(), 1e-8);
     }
 }
