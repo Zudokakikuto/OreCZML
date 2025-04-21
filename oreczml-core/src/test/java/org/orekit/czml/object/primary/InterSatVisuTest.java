@@ -153,9 +153,9 @@ public class InterSatVisuTest extends AbstractTest {
                                                                               .build();
 
 
-        //final String pathFile = loadResources("templateFile/primary/InterSatVisuTemplate.txt");
-        //verifyFileOutput(pathFile, interSatVisu.toString(), 1e-8);
-        //verifyFileOutput(pathFile, interSatVisuBuilder.toString(), 1e-8);
+        final String pathFile = loadResources("templateFile/primary/InterSatVisuTemplate.txt");
+        verifyFileOutput(pathFile, interSatVisu.toString(), 1e-8);
+        verifyFileOutput(pathFile, interSatVisuBuilder.toString(), 1e-8);
 
         final String propagatorsInterSatPathFile = loadResources(
                 "templateFile/primary/InterSatVisuPropagatorsTemplate.txt");
@@ -189,8 +189,8 @@ public class InterSatVisuTest extends AbstractTest {
                 interSatVisuFromConstellationBuilder.getIdsSatellites());
         Assertions.assertEquals(Polyline.nonVectorBuilder(header).build().getAvailability(), interSatVisu.getPolyline()
                                                                                     .getAvailability());
-        //Assertions.assertEquals(new ArrayList<>(
-        //        Arrays.asList(true, false, true, false, true, false, false, true, false, true, false, true, false, true,
-        //                false, true, false, true, false)), interSatVisu.getBooleanList());
+
+        Assertions.assertEquals(new ArrayList<>(
+                Arrays.asList(true, false, true, false, true, false, true)), interSatVisu.getBooleanList());
     }
 }
