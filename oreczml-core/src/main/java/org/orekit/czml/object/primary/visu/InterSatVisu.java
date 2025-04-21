@@ -24,7 +24,6 @@ import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.Reference;
 import cesiumlanguagewriter.TimeInterval;
 import org.hipparchus.ode.events.Action;
-import org.hipparchus.util.FastMath;
 import org.orekit.annotation.DefaultDataContext;
 import org.orekit.bodies.OneAxisEllipsoid;
 import org.orekit.czml.object.CzmlShow;
@@ -42,9 +41,12 @@ import org.orekit.propagation.EphemerisGenerator;
 import org.orekit.propagation.Propagator;
 import org.orekit.propagation.SpacecraftState;
 import org.orekit.propagation.events.EventDetector;
+import org.orekit.propagation.events.EventsLogger;
+import org.orekit.propagation.events.EventsLogger.LoggedEvent;
 import org.orekit.propagation.events.InterSatDirectViewDetector;
 import org.orekit.propagation.events.handlers.EventHandler;
 import org.orekit.time.AbsoluteDate;
+import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.Constants;
 import org.orekit.utils.IERSConventions;
 import org.orekit.utils.TimeSpanMap;
@@ -158,6 +160,11 @@ public class InterSatVisu extends AbstractPrimaryObject {
      */
     private List<CzmlShow> showList = new ArrayList<>();
 
+    /**
+     * A marker to determine whether the satellites can see each other at the start of the time interval.
+     */
+    private boolean seenAtTheBeginning = false;
+
     // Constellation parameters
     /**
      * All the satellites of the constellation.
@@ -263,7 +270,7 @@ public class InterSatVisu extends AbstractPrimaryObject {
                                                 .toArray(new Reference[0]);
         this.references = convertToIterable(referenceList);
 
-        this.propagationInterSat(finalDate, satellite1Input, satellite2Input, header);
+        this.propagationInterSat(satellite1Input, satellite2Input);
 
         this.singleTimeIntervalsOfVisu = this.buildIntervals(datesWhenVisu, datesWhenNotVisu, header);
         this.polyline                  = Polyline.nonVectorBuilder(header)
@@ -722,39 +729,46 @@ public class InterSatVisu extends AbstractPrimaryObject {
      * Add a detector for the interring sat view between the two satellites.
      * Then this function propagates the propagator of the first satellite.
      *
-     * @param finalDate       : The final date of the propagation.
      * @param satellite1Input : The first satellite of the couple
      * @param satellite2Input : The second satellite of the couple
-     * @param headerInput     : The header to consider when several are used.
      */
-    private void propagationInterSat(final AbsoluteDate finalDate, final Spacecraft satellite1Input,
-                                     final Spacecraft satellite2Input, final Header headerInput) {
+    private void propagationInterSat(final Spacecraft satellite1Input, final Spacecraft satellite2Input) {
 
         final BoundedPropagator boundedPropagatorSat1 = satellite1Input.getSpacecraftBoundedPropagator();
         final BoundedPropagator boundedPropagatorSat2 = satellite2Input.getSpacecraftBoundedPropagator();
 
-        final InterSatDirectViewDetector detector = new InterSatDirectViewDetector(this.getBody(),
-                boundedPropagatorSat2).withHandler((spacecraftState, currentDetector, increasing) -> {
-            final double detected = currentDetector.g(spacecraftState);
-            if (detected >= 0) {
-                this.datesWhenNotVisu.add(spacecraftState.getDate());
-                this.booleanList.add(true);
-            } else if (detected < 0) {
-                this.datesWhenVisu.add(spacecraftState.getDate());
-                this.booleanList.add(false);
+        final AbsoluteDate finalDate = DateUtils.toAbsoluteDate(getAvailability().getStop(), TimeScalesFactory.getUTC());
+
+        // Create an instance of the handler for inter-satellite visibility events
+        final InterSatViewHandler eventHandler = new InterSatViewHandler();
+
+        // Create and configure the direct line-of-sight detector for inter-satellite visibility, associating it with the second satellite's bounded propagator and the event handler
+        final InterSatDirectViewDetector detector = new InterSatDirectViewDetector(this.getBody(), boundedPropagatorSat2)
+                .withMaxCheck(header.getStepSimulation())
+                .withSkimmingAltitude(0.0)
+                .withHandler(eventHandler);
+
+        // Add event logger and propagate through time span
+        final EventsLogger logger = new EventsLogger();
+        boundedPropagatorSat1.addEventDetector(logger.monitorDetector(detector));
+        boundedPropagatorSat1.propagate(startDate, finalDate);
+
+        // Determine if satellites are initially visible to each other
+        if (eventHandler.isVisible(startDate)) {
+            seenAtTheBeginning = true;
+        }
+
+        for (LoggedEvent event : logger.getLoggedEvents()) {
+            if (event.isIncreasing()) {
+                datesWhenVisu.add(event.getDate());
+                booleanList.add(false);
             }
-            return Action.CONTINUE;
-        });
+            else {
+                datesWhenNotVisu.add(event.getDate());
+                booleanList.add(true);
+            }
+        }
 
-        final TimeInterval availabilityOfTheSatellite = this.getSatellite1()
-                                                            .getAvailability();
-
-        final AbsoluteDate startDateTemp = DateUtils.toAbsoluteDate(availabilityOfTheSatellite.getStart(),
-                headerInput.getTimeScale());
-
-        boundedPropagatorSat1.addEventDetector(detector);
-
-        boundedPropagatorSat1.propagate(startDateTemp, finalDate);
     }
 
     /**
@@ -884,113 +898,92 @@ public class InterSatVisu extends AbstractPrimaryObject {
      *
      * @param datesWhenVisuInput    : A list of absolute dates that contains all the dates when satellites start to see each other.
      * @param datesWhenNotVisuInput : A list of absolute dates that contains all the dates when satellites stop to see each other.
-     * @param headerInput           : The header considered when several are used.
+     * @param fileHeader            : Header file input.
      * @return : A list of time intervals that represents the time chronologically when satellites see and don't see each other.
      */
     private List<TimeInterval> buildIntervals(final List<AbsoluteDate> datesWhenVisuInput,
                                               final List<AbsoluteDate> datesWhenNotVisuInput,
-                                              final Header headerInput) {
+                                              final Header fileHeader) {
 
-        if (!datesWhenVisuInput.isEmpty() && !datesWhenNotVisuInput.isEmpty()) {
+        final List<TimeInterval> viewIntervals = new ArrayList<>();
 
-            AbsoluteDate minimalDate;
-
-            boolean seenAtTheBeginning = false;
-
-            minimalDate = datesWhenVisuInput.get(0);
-
-            if (minimalDate.isAfter(datesWhenNotVisuInput.get(0))) {
-                minimalDate        = datesWhenNotVisuInput.get(0);
-                seenAtTheBeginning = true;
-            }
-
-            final int minimumLength = FastMath.min(datesWhenNotVisuInput.size(), datesWhenVisuInput.size());
-
-            final List<TimeInterval> toReturn = new ArrayList<>();
-
-            buildTimeShowIntervals(seenAtTheBeginning, datesWhenVisuInput, datesWhenNotVisuInput, minimumLength,
-                    toReturn, headerInput);
-
-            addTheLastTimeInterval(datesWhenVisuInput, datesWhenNotVisuInput, toReturn, headerInput);
-
-            return toReturn;
+        // If rises or falls have occurred during the interval
+        if (!datesWhenVisuInput.isEmpty() || !datesWhenNotVisuInput.isEmpty()) {
+            buildTimeShowIntervals(datesWhenVisuInput, datesWhenNotVisuInput, viewIntervals, getAvailability(), fileHeader);
+        }
+        // If no rises or falls have occurred, but satellite was visible for the whole time interval
+        else if (datesWhenVisuInput.isEmpty() && datesWhenNotVisuInput.isEmpty() && seenAtTheBeginning) {
+            viewIntervals.add(getAvailability());
+            this.booleanList.add(true);
+        }
+        // If no rises or sets occur, but satellite was not visible during any portion of the time interval
+        else if (datesWhenVisuInput.isEmpty() && datesWhenNotVisuInput.isEmpty() && !seenAtTheBeginning) {
+            viewIntervals.add(getAvailability());
+            this.booleanList.add(false);
         }
 
-        return new ArrayList<>();
+        return viewIntervals;
     }
 
-    /**
+   /**
      * This function aims at building the list of boolean and of time interval from two lists of start and stop date.
      * Those lists represent the dates when satellites start and stop to see each other.
      *
-     * @param seenAtTheBeginning    : If the satellites have sawed each other since the beginning of the simulation.
      * @param datesWhenVisuInput    : The list of absolute date that contains all the start date of when satellites see each other.
      * @param datesWhenNotVisuInput : The list of absolute date that contains all the stop date of when satellites stop seeing each others.
-     * @param minimumLength         : The minimum length of between the two lists of absolute dates.
      * @param toReturn              : The list of time intervals that will be returned with added time intervals.
-     * @param headerInput           : The header considered when several are used.
+     * @param availability          : The time interval for the propagation.
+     * @param fileHeader            : The header values.
      */
-    private void buildTimeShowIntervals(final boolean seenAtTheBeginning, final List<AbsoluteDate> datesWhenVisuInput,
-                                        final List<AbsoluteDate> datesWhenNotVisuInput, final int minimumLength,
-                                        final List<TimeInterval> toReturn, final Header headerInput) {
-
-        if (!seenAtTheBeginning) {
-            toReturn.add(new TimeInterval(headerInput.getAvailability()
-                                                     .getStart(),
-                    DateUtils.toJulianDate(datesWhenVisuInput.get(0), headerInput.getTimeScale())));
-            this.booleanList.add(true);
-            for (int i = 0; i < minimumLength; i++) {
-                toReturn.add(
-                        new TimeInterval(DateUtils.toJulianDate(datesWhenVisuInput.get(i), headerInput.getTimeScale()),
-                                DateUtils.toJulianDate(datesWhenNotVisuInput.get(i), headerInput.getTimeScale())));
-                toReturn.add(new TimeInterval(
-                        DateUtils.toJulianDate(datesWhenNotVisuInput.get(i), headerInput.getTimeScale()),
-                        DateUtils.toJulianDate(datesWhenVisuInput.get(i + 1), headerInput.getTimeScale())));
-            }
-        } else {
-            toReturn.add(new TimeInterval(headerInput.getAvailability()
-                                                     .getStart(),
-                    DateUtils.toJulianDate(datesWhenNotVisuInput.get(0), headerInput.getTimeScale())));
-            this.booleanList.add(false);
-            for (int i = 0; i < minimumLength; i++) {
-                toReturn.add(new TimeInterval(
-                        DateUtils.toJulianDate(datesWhenNotVisuInput.get(i), headerInput.getTimeScale()),
-                        DateUtils.toJulianDate(datesWhenVisuInput.get(i), headerInput.getTimeScale())));
-                toReturn.add(
-                        new TimeInterval(DateUtils.toJulianDate(datesWhenVisuInput.get(i), headerInput.getTimeScale()),
-                                DateUtils.toJulianDate(datesWhenNotVisuInput.get(i), headerInput.getTimeScale())));
-            }
-        }
-    }
-
-    /**
-     * This function aims at adding the last time interval to the list of time intervals already built.
-     * Depending on the number of start and stop dates from the list of absolute dates, the time interval that will be added
-     * will use either the last stop date or the last start date.
-     *
-     * @param datesWhenVisuInput    : The list of absolute date that contains all the start date of when satellites see each other.
-     * @param datesWhenNotVisuInput : The list of absolute date that contains all the stop date of when satellites stop seeing each others.
-     * @param toReturn              : The list of time intervals that will be returned with the last time interval added.
-     * @param headerInput           : The header considered when several are used.
-     */
-    private void addTheLastTimeInterval(final List<AbsoluteDate> datesWhenVisuInput,
+    private void buildTimeShowIntervals(final List<AbsoluteDate> datesWhenVisuInput,
                                         final List<AbsoluteDate> datesWhenNotVisuInput,
-                                        final List<TimeInterval> toReturn, final Header headerInput) {
+                                        final List<TimeInterval> toReturn, final TimeInterval availability,
+                                        final Header fileHeader) {
 
-        if (datesWhenVisuInput.size() > datesWhenNotVisuInput.size()) {
+        int viewIter = 0;
+        int notViewIter = 0;
+        boolean currentlyInView = true;
 
-            final JulianDate finalDate = DateUtils.toJulianDate(datesWhenVisuInput.get(datesWhenVisuInput.size() - 1),
-                    headerInput.getTimeScale());
-            toReturn.add(new TimeInterval(finalDate, headerInput.getAvailability()
-                                                                .getStop()));
-
-        } else if (datesWhenVisuInput.size() < datesWhenNotVisuInput.size()) {
-
-            final JulianDate finalDate = DateUtils.toJulianDate(
-                    datesWhenNotVisuInput.get(datesWhenNotVisuInput.size() - 1), headerInput.getTimeScale());
-            toReturn.add(new TimeInterval(finalDate, headerInput.getAvailability()
-                                                                .getStop()));
+        // Adds the first interval
+        if (seenAtTheBeginning) {
+            final TimeInterval viewInterval = new TimeInterval(availability.getStart(),
+                DateUtils.toJulianDate(datesWhenNotVisuInput.get(0), fileHeader.getTimeScale()));
+            toReturn.add(viewInterval);
+            currentlyInView = false;
         }
+        else {
+            final TimeInterval viewInterval = new TimeInterval(availability.getStart(),
+                DateUtils.toJulianDate(datesWhenVisuInput.get(0), fileHeader.getTimeScale()));
+            toReturn.add(viewInterval);
+        }
+
+        // Adds the interim intervals
+        while (viewIter < datesWhenVisuInput.size() && notViewIter < datesWhenNotVisuInput.size()) {
+
+            final JulianDate inView = DateUtils.toJulianDate(datesWhenVisuInput.get(viewIter), fileHeader.getTimeScale());
+            final JulianDate outOfView = DateUtils.toJulianDate(datesWhenNotVisuInput.get(notViewIter), fileHeader.getTimeScale());
+
+            if (currentlyInView) {
+                toReturn.add(new TimeInterval(inView, outOfView));
+                viewIter++;
+            } else {
+                toReturn.add(new TimeInterval(outOfView, inView));
+                notViewIter++;
+            }
+            currentlyInView = !currentlyInView;
+        }
+
+        // Adds the last time interval
+        JulianDate initialDate;
+        if (currentlyInView) {
+            initialDate = DateUtils.toJulianDate(datesWhenVisuInput.get(viewIter), fileHeader.getTimeScale());
+            this.booleanList.add(true);
+        } else {
+            initialDate = DateUtils.toJulianDate(datesWhenNotVisuInput.get(notViewIter), fileHeader.getTimeScale());
+            this.booleanList.add(false);
+        }
+        toReturn.add(new TimeInterval(initialDate, availability.getStop()));
+
     }
 
     /**
@@ -1075,7 +1068,7 @@ public class InterSatVisu extends AbstractPrimaryObject {
     private static class InterSatViewHandler implements EventHandler {
 
         /**
-         * .
+         * Lists dates when satellites come in/out of view of each other.
          */
         private final TimeSpanMap<Boolean> viewMap;
 
@@ -1088,14 +1081,23 @@ public class InterSatVisu extends AbstractPrimaryObject {
 
         public void init(final SpacecraftState initialState, final AbsoluteDate target, final EventDetector detector) {
             final double  g       = detector.g(initialState);
-            final boolean visible = g >= 0;
-            viewMap.addValidAfter(visible, initialState.getDate(), true);
+            final Boolean initiallyVisible = g > 0.0;
+            viewMap.addValidAfter(initiallyVisible, initialState.getDate(), true);
         }
 
         @Override
         public Action eventOccurred(final SpacecraftState s, final EventDetector detector, final boolean increasing) {
             viewMap.addValidAfter(increasing, s.getDate(), true);
             return Action.CONTINUE;
+        }
+
+        /**
+         * Returns whether the satellites are visible to each other at this time
+         * @param startDate
+         * @return
+         */
+        public Boolean isVisible(final AbsoluteDate currentDate) {
+            return viewMap.get(currentDate);
         }
 
     }
