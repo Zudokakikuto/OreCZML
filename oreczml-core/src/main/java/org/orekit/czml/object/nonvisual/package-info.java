@@ -16,6 +16,7 @@
  */
 
 /**
- * This package groups all the objects that are not displayed directly on screen.
+ * This package groups all the objects that are not displayed directly on
+ * screen.
  */
 package org.orekit.czml.object.nonvisual;

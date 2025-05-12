@@ -15,5 +15,8 @@
  * limitations under the License.
  */
 
-/** This package groups all the primary objects and their builders related to the entities on screen. */
+/**
+ * This package groups all the primary objects and their builders related to the
+ * entities on screen.
+ */
 package org.orekit.czml.object.primary.entities;

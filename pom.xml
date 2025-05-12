@@ -29,6 +29,10 @@
         <oreczml.build-helper-maven-plugin.version>3.4.0</oreczml.build-helper-maven-plugin.version>
         <oreczml.maven-gpg-plugin.version>3.1.0</oreczml.maven-gpg-plugin.version>
         <oreczml.maven-install-plugin.version>3.1.1</oreczml.maven-install-plugin.version>
+        <oreczml.maven-checkstyle-plugin.version>3.6.0</oreczml.maven-checkstyle-plugin.version>
+        <!-- Checkstyle 9.3 seems to be the last version usable with JDK 8 -->
+        <oreczml.checkstyle.version>9.3</oreczml.checkstyle.version>
+        <oreczml.spotless.version>2.44.0</oreczml.spotless.version>
     </properties>
 
     <build>
@@ -40,6 +44,48 @@
                 <configuration>
                     <source>${project.compiler.source}</source>
                     <target>${project.compiler.target}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>${oreczml.maven-checkstyle-plugin.version}</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.puppycrawl.tools</groupId>
+                        <artifactId>checkstyle</artifactId>
+                        <version>${oreczml.checkstyle.version}</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <configLocation>${basedir}/checkstyle.xml</configLocation>
+                    <enableRulesSummary>false</enableRulesSummary>
+                    <headerLocation>${basedir}/license-header.txt</headerLocation>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>${oreczml.spotless.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>apply</goal>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <java>
+                        <eclipse>
+                            <file>${project.basedir}/orekit-eclipse-formatter.xml</file>
+                        </eclipse>
+                        <includes>
+                            <include>oreczml-core/src/main/java/**/*.java</include>
+                            <include>oreczml-core/src/test/java/**/*.java</include>
+                            <include>oreczml-tutorials/src/main/java/**/*.java</include>
+                        </includes>
+                    </java>
                 </configuration>
             </plugin>
         </plugins>
@@ -58,6 +104,11 @@
                 <groupId>org.orekit</groupId>
                 <artifactId>orekit</artifactId>
                 <version>${oreczml.orekit.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>${oreczml.spotless.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

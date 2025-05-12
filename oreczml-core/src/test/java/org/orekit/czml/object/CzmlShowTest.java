@@ -26,7 +26,9 @@ import java.net.URISyntaxException;
 /**
  * The type Czml show test.
  */
-public class CzmlShowTest extends AbstractTest {
+public class CzmlShowTest
+    extends
+    AbstractTest {
 
     /**
      * Czml show constructor test.
@@ -34,7 +36,9 @@ public class CzmlShowTest extends AbstractTest {
      * @throws IOException the io exception
      */
     @Test
-    void CzmlShowConstructorTest() throws IOException, URISyntaxException {
+    void CzmlShowConstructorTest()
+        throws IOException,
+            URISyntaxException {
 
         loadOrekitData();
 
@@ -42,7 +46,8 @@ public class CzmlShowTest extends AbstractTest {
 
         final CzmlShow show = new CzmlShow(true, header.getAvailability());
 
-        final String pathFile = loadResources("templateFile/CzmlShowTemplate.txt");
+        final String pathFile =
+            loadResources("templateFile/CzmlShowTemplate.txt");
 
         verifyFileOutput(pathFile, show.toString(), 1e-8);
     }

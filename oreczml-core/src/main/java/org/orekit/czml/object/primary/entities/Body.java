@@ -17,13 +17,12 @@
 
 package org.orekit.czml.object.primary.entities;
 
-import cesiumlanguagewriter.Cartesian;
-import cesiumlanguagewriter.CesiumOutputStream;
-import cesiumlanguagewriter.CesiumStreamWriter;
-import cesiumlanguagewriter.JulianDate;
-import cesiumlanguagewriter.PacketCesiumWriter;
-import cesiumlanguagewriter.PathCesiumWriter;
-import cesiumlanguagewriter.PositionCesiumWriter;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.hipparchus.geometry.euclidean.threed.Rotation;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.orekit.attitudes.Attitude;
@@ -39,21 +38,27 @@ import org.orekit.frames.Frame;
 import org.orekit.frames.Transform;
 import org.orekit.time.AbsoluteDate;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import cesiumlanguagewriter.Cartesian;
+import cesiumlanguagewriter.CesiumOutputStream;
+import cesiumlanguagewriter.CesiumStreamWriter;
+import cesiumlanguagewriter.JulianDate;
+import cesiumlanguagewriter.PacketCesiumWriter;
+import cesiumlanguagewriter.PathCesiumWriter;
+import cesiumlanguagewriter.PositionCesiumWriter;
 
 /**
  * Body class
- *
- * <p> This class aims at displaying bodies except the earth. These bodies cannot be seen if too far away.</p>
+ * <p>
+ * This class aims at displaying bodies except the earth. These bodies cannot be
+ * seen if too far away.
+ * </p>
  *
  * @author Julien LEBLOND
  * @since 1.0.0
  */
-public class Body extends AbstractPrimaryObject {
+public class Body
+    extends
+    AbstractPrimaryObject {
 
     /**
      * The default id of the body object.
@@ -137,6 +142,7 @@ public class Body extends AbstractPrimaryObject {
     /** To display the influence sphere or not. */
     private boolean displayInfluenceSphere = false;
 
+    /** The frame in which the position of the body is expressed. */
     private Frame frameToExpress;
 
     // Constructors
@@ -144,41 +150,53 @@ public class Body extends AbstractPrimaryObject {
     /**
      * The body constructor.
      *
-     * @param body        : The body to display.
+     * @param body : The body to display.
      * @param pathToModel : The path to the model to load.
-     * @param header      : The header considered.
+     * @param frameToExpress : The frame in which the position of the body is
+     *        expressed.
+     * @param header : The header considered.
      */
-    Body(final CelestialBody body, final String pathToModel, final Frame frameToExpress, final Header header) {
-        this(body, pathToModel, frameToExpress, DEFAULT_ID + body.getName(), header);
+    Body(final CelestialBody body, final String pathToModel,
+         final Frame frameToExpress, final Header header) {
+        this(body, pathToModel, frameToExpress, DEFAULT_ID + body.getName(),
+             header);
     }
 
     /**
      * The body with custom ID argument.
      *
-     * @param body        : The body to display.
+     * @param body : The body to display.
      * @param pathToModel : The path to the model to load.
-     * @param customID    : The custom ID for the body.
-     * @param header      : The header to use if several are used, use null if not.
+     * @param frameToExpress : The frame in which the position of the body is
+     *        expressed.
+     * @param customID : The custom ID for the body.
+     * @param header : The header to use if several are used, use null if not.
      */
-    Body(final CelestialBody body, final String pathToModel, final Frame frameToExpressInput, final String customID,
+    Body(final CelestialBody body, final String pathToModel,
+         final Frame frameToExpress, final String customID,
          final Header header) {
 
         this.setId(customID);
         this.setName(DEFAULT_NAME + body.getName());
         this.setAvailability(header.getAvailability());
-        this.body                  = body;
-        this.frameToExpress        = frameToExpressInput;
-        this.header                = header;
-        this.description           = "<!--HTML-->\r\n<p>Id : " + customID + "</p>\r\n<p>Name : " + body.getName() + "</p>\r\n<p>Simulated from : " + header.getAvailability()
-                                                                                                                                                           .getStart() + " to " + header.getAvailability()
-                                                                                                                                                                                        .getStop() + "</p>";
-        this.pathToModel           = pathToModel;
-        this.model                 = new CzmlModel(pathToModel, false, header);
-        this.julianDatesSimulation = header.getClock()
-                                           .getJulianDatesSimulation();
+        this.body = body;
+        this.frameToExpress = frameToExpress;
+        this.header = header;
+        this.description =
+            "<!--HTML-->\r\n<p>Id : " +
+                           customID + "</p>\r\n<p>Name : " + body.getName() +
+                           "</p>\r\n<p>Simulated from : " +
+                           header.getAvailability().getStart() + " to " +
+                           header.getAvailability().getStop() + "</p>";
+        this.pathToModel = pathToModel;
+        this.model = new CzmlModel(pathToModel, false, header);
+        this.julianDatesSimulation =
+            header.getClock().getJulianDatesSimulation();
 
-        this.cartesianList = fillCartesian(header, body, julianDatesSimulation, frameToExpressInput);
-        this.orientation   = generateOrientation(header, body, julianDatesSimulation);
+        this.cartesianList =
+            fillCartesian(header, body, julianDatesSimulation, frameToExpress);
+        this.orientation =
+            generateOrientation(header, body, julianDatesSimulation);
     }
 
     // Builders
@@ -186,21 +204,26 @@ public class Body extends AbstractPrimaryObject {
     /**
      * Builder body builder.
      *
-     * @param body        the body
+     * @param body the body
      * @param pathToModel the path to model
-     * @param header      the header
+     * @param frameToExpress the frame in which the position of the body is
+     *        expressed
+     * @param header the header
      * @return the body builder
      */
-    public static BodyBuilder builder(final CelestialBody body, final String pathToModel,
-                                      final Frame frameToExpressInput, final Header header) {
-        return new BodyBuilder(body, pathToModel, frameToExpressInput, header);
+    public static BodyBuilder
+        builder(final CelestialBody body, final String pathToModel,
+                final Frame frameToExpress, final Header header) {
+        return new BodyBuilder(body, pathToModel, frameToExpress, header);
     }
 
     // Overrides
 
     @Override
     public void writeCzmlBlock(final CesiumStreamWriter stream,
-                               final CesiumOutputStream output) throws URISyntaxException, IOException {
+                               final CesiumOutputStream output)
+        throws URISyntaxException,
+            IOException {
         output.setPrettyFormatting(true);
         try (PacketCesiumWriter packet = stream.openPacket(output)) {
             packet.writeId(getId());
@@ -220,18 +243,16 @@ public class Body extends AbstractPrimaryObject {
         }
     }
 
-
     // Users' methods
 
     public void displayInfluenceSphere() {
-        this.influenceSphere        = InfluenceSphere.builder(this, header)
-                                                     .build();
+        this.influenceSphere = InfluenceSphere.builder(this, header).build();
         this.displayInfluenceSphere = true;
     }
 
     public void displayInfluenceSphere(final Body centralBody) {
-        this.influenceSphere        = InfluenceSphere.builder(this, centralBody, header)
-                                                     .build();
+        this.influenceSphere =
+            InfluenceSphere.builder(this, centralBody, header).build();
         this.displayInfluenceSphere = true;
     }
 
@@ -272,8 +293,11 @@ public class Body extends AbstractPrimaryObject {
         return model;
     }
 
-    /** Gets the frame in which the position of the body is expressed.
-     * @return : The frame where the position of the body is expressed.*/
+    /**
+     * Gets the frame in which the position of the body is expressed.
+     *
+     * @return : The frame where the position of the body is expressed.
+     */
     public Frame getFrameToExpress() {
         return frameToExpress;
     }
@@ -342,12 +366,11 @@ public class Body extends AbstractPrimaryObject {
     public void displayOnlyOnePeriod(final double periodInput) {
         if (displayOrbit) {
             displayOnlyOnePeriod = true;
-            this.periodForPath   = periodInput;
+            this.periodForPath = periodInput;
         } else {
             throw new OreCzmlException(OreCzmlMessages.CANT_DISPLAY_PERIOD_NO_ORBIT);
         }
     }
-
 
     // Setters (looks like a builder to make it easier for the BodyFactory).
 
@@ -368,7 +391,8 @@ public class Body extends AbstractPrimaryObject {
      * @param modelMinimumPixelSizeInput the model minimum pixel size input
      * @return the body
      */
-    public Body withModelMinimumPixelSize(final double modelMinimumPixelSizeInput) {
+    public Body
+        withModelMinimumPixelSize(final double modelMinimumPixelSizeInput) {
         this.modelMinimumPixelSize = modelMinimumPixelSizeInput;
         return this;
     }
@@ -409,12 +433,15 @@ public class Body extends AbstractPrimaryObject {
     // Private functions
 
     /**
-     * This functions aims at writing the position of the body in a given packet.
+     * This functions aims at writing the position of the body in a given
+     * packet.
      *
      * @param packet : The packet to write into the czml file.
-     * @param output : The output stream of cesium that will contain the strings to write into the CzmLFile.
+     * @param output : The output stream of cesium that will contain the strings
+     *        to write into the CzmLFile.
      */
-    private void writePosition(final PacketCesiumWriter packet, final CesiumOutputStream output) {
+    private void writePosition(final PacketCesiumWriter packet,
+                               final CesiumOutputStream output) {
         try (PositionCesiumWriter positionWriter = packet.getPositionWriter()) {
             positionWriter.open(output);
             positionWriter.writeInterval(this.getAvailability());
@@ -426,14 +453,21 @@ public class Body extends AbstractPrimaryObject {
      * This functions aims at writing the model of the body in a given packet.
      *
      * @param headerInput : The header considered.
-     * @param packet      : The packet to write into the czml file.
-     * @param output      : The output stream of cesium that will contain the strings to write into the CzmLFile.
+     * @param packet : The packet to write into the czml file.
+     * @param output : The output stream of cesium that will contain the strings
+     *        to write into the CzmLFile.
      */
-    private void writeModel(final Header headerInput, final PacketCesiumWriter packet,
-                            final CesiumOutputStream output) throws URISyntaxException, IOException {
-        if (modelScale != 0.0 && modelMaximumScale != 0.0 && modelMinimumPixelSize != 0.0) {
-            this.model = new CzmlModel(pathToModel, modelMaximumScale, modelMinimumPixelSize, modelScale, false,
-                    headerInput);
+    private void writeModel(final Header headerInput,
+                            final PacketCesiumWriter packet,
+                            final CesiumOutputStream output)
+        throws URISyntaxException,
+            IOException {
+        if (modelScale != 0.0 &&
+            modelMaximumScale != 0.0 && modelMinimumPixelSize != 0.0) {
+            this.model =
+                new CzmlModel(pathToModel, modelMaximumScale,
+                              modelMinimumPixelSize, modelScale, false,
+                              headerInput);
         }
         model.generateCZML(packet, output);
     }
@@ -442,10 +476,13 @@ public class Body extends AbstractPrimaryObject {
      * This functions aims at writing the path of the body in a given packet.
      *
      * @param headerInput : The header considered.
-     * @param packet      : The packet to write into the czml file.
-     * @param output      : The output stream of cesium that will contain the strings to write into the CzmLFile.
+     * @param packet : The packet to write into the czml file.
+     * @param output : The output stream of cesium that will contain the strings
+     *        to write into the CzmLFile.
      */
-    private void writePath(final Header headerInput, final PacketCesiumWriter packet, final CesiumOutputStream output) {
+    private void writePath(final Header headerInput,
+                           final PacketCesiumWriter packet,
+                           final CesiumOutputStream output) {
         try (PathCesiumWriter pathWriter = packet.getPathWriter()) {
             pathWriter.open(output);
             pathWriter.writeShowProperty(true);
@@ -458,52 +495,68 @@ public class Body extends AbstractPrimaryObject {
     }
 
     /**
-     * This function aims at getting the cartesian position of a body at specific julian dates.
+     * This function aims at getting the cartesian position of a body at
+     * specific julian dates.
      *
      * @param headerInput : The header considered.
-     * @param bodyInput   : The body to which the cartesian are computed.
-     * @param julianDates : The julian dates when the cartesian must be computed.
+     * @param bodyInput : The body to which the cartesian are computed.
+     * @param julianDates : The julian dates when the cartesian must be
+     *        computed.
+     * @param frameToExpressInput : The frame in which the position of the body
+     *        is expressed.
      * @return : The list of cartesian position of the body.
      */
-    private List<Cartesian> fillCartesian(final Header headerInput, final CelestialBody bodyInput,
-                                          final List<JulianDate> julianDates, final Frame frameToExpress) {
+    private static List<Cartesian>
+        fillCartesian(final Header headerInput, final CelestialBody bodyInput,
+                      final List<JulianDate> julianDates,
+                      final Frame frameToExpressInput) {
         final List<Cartesian> toReturn = new ArrayList<>();
         for (JulianDate julianDate : julianDates) {
-            final AbsoluteDate date = DateUtils.toAbsoluteDate(julianDate, headerInput.getTimeScale());
-            final Vector3D currentPosition = bodyInput.getPosition(date, frameToExpress);
-            final Cartesian currentCartesian = new Cartesian(currentPosition.getX(), currentPosition.getY(),
-                    currentPosition.getZ());
+            final AbsoluteDate date =
+                DateUtils.toAbsoluteDate(julianDate,
+                                         headerInput.getTimeScale());
+            final Vector3D currentPosition =
+                bodyInput.getPosition(date, frameToExpressInput);
+            final Cartesian currentCartesian =
+                new Cartesian(currentPosition.getX(), currentPosition.getY(),
+                              currentPosition.getZ());
             toReturn.add(currentCartesian);
         }
         return toReturn;
     }
 
-
     /**
-     * This functions aims at computing the orientation in time of the body, because the major part of bodies computed
-     * rotate around themselves, we need to take this into account when computing the orientation.
+     * This functions aims at computing the orientation in time of the body,
+     * because the major part of bodies computed rotate around themselves, we
+     * need to take this into account when computing the orientation.
      *
      * @param headerInput : The header considered.
-     * @param bodyInput   : The body to which the orientation must be computed.
-     * @param julianDates : The julian dates when the orientation must be computed.
+     * @param bodyInput : The body to which the orientation must be computed.
+     * @param julianDates : The julian dates when the orientation must be
+     *        computed.
      * @return : The orientation of the body in time.
      */
-    private Orientation generateOrientation(final Header headerInput, final CelestialBody bodyInput,
-                                            final List<JulianDate> julianDates) {
-        final List<Attitude> attitudes         = new ArrayList<>();
-        final Frame          bodyInertialFrame = bodyInput.getInertiallyOrientedFrame();
-        final Frame          bodyRotatingFrame = bodyInput.getBodyOrientedFrame();
+    private Orientation
+        generateOrientation(final Header headerInput,
+                            final CelestialBody bodyInput,
+                            final List<JulianDate> julianDates) {
+        final List<Attitude> attitudes = new ArrayList<>();
+        final Frame bodyInertialFrame = bodyInput.getInertiallyOrientedFrame();
+        final Frame bodyRotatingFrame = bodyInput.getBodyOrientedFrame();
 
         for (JulianDate julianDate : julianDates) {
-            final AbsoluteDate date             = DateUtils.toAbsoluteDate(julianDate, headerInput.getTimeScale());
-            final Transform    currentTransform = bodyRotatingFrame.getTransformTo(bodyInertialFrame, date);
-            final Rotation     currentRotation  = currentTransform.getRotation();
-            final Attitude currentAttitudeBody = new Attitude(date, bodyRotatingFrame, currentRotation, Vector3D.ZERO,
-                    Vector3D.ZERO);
+            final AbsoluteDate date =
+                DateUtils.toAbsoluteDate(julianDate,
+                                         headerInput.getTimeScale());
+            final Transform currentTransform =
+                bodyRotatingFrame.getTransformTo(bodyInertialFrame, date);
+            final Rotation currentRotation = currentTransform.getRotation();
+            final Attitude currentAttitudeBody =
+                new Attitude(date, bodyRotatingFrame, currentRotation,
+                             Vector3D.ZERO, Vector3D.ZERO);
             attitudes.add(currentAttitudeBody);
         }
         return Orientation.builder(attitudes, bodyRotatingFrame, header)
-                          .withInvertToITRF(false)
-                          .build();
+            .withInvertToITRF(false).build();
     }
 }

@@ -47,11 +47,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This tutorial provides an example of how ground tracks can be set up when using a constellation.
+ * This tutorial provides an example of how ground tracks can be set up when
+ * using a constellation.
  */
 public class GroundTrackConstellationExample {
 
-    private GroundTrackConstellationExample () {
+    private GroundTrackConstellationExample() {
         // empty
     }
 
@@ -61,75 +62,95 @@ public class GroundTrackConstellationExample {
      * @param args arguments of the main function
      * @throws Exception exception to throw
      */
-    public static void main (final String[] args) throws Exception {
+    public static void main(final String[] args)
+        throws Exception {
         // Load orekit data
         TutorialUtils.loadOrekitData();
 
         // Paths
         final String output = TutorialUtils.generateOutput();
-        // !!! Here you need to change the path inside 'generateJsPath' to the path you are using for images or Model.
-        // This folder can also be the public folder of your cesium javascript interface.
-        final String pathToJSFolder = TutorialUtils.generateJSPath(
-                System.getProperty("user.dir") + "/Javascript/public");
+        // !!! Here you need to change the path inside 'generateJsPath' to the
+        // path you are using for images or Model.
+        // This folder can also be the public folder of your cesium javascript
+        // interface.
+        final String pathToJSFolder =
+            TutorialUtils.generateJSPath(System.getProperty("user.dir") +
+                                         "/Javascript/public");
 
         // Creation of the clock.
 
+        final AbsoluteDate startDate =
+            new AbsoluteDate(2024, 3, 15, 0, 0, 0.0,
+                             TimeScalesFactory.getUTC());
+        final AbsoluteDate finalDate =
+            startDate.shiftedBy(TutorialUtils.CLASSIC_DURATION_OF_SIMULATION);
+        final Clock clock =
+            new Clock(startDate, finalDate, TimeScalesFactory.getUTC(),
+                      TutorialUtils.STEP_BETWEEN_EACH_INSTANT);
 
-        final AbsoluteDate startDate = new AbsoluteDate(2024, 3, 15, 0, 0, 0.0, TimeScalesFactory.getUTC());
-        final AbsoluteDate finalDate = startDate.shiftedBy(TutorialUtils.CLASSIC_DURATION_OF_SIMULATION);
-        final Clock clock = new Clock(startDate, finalDate, TimeScalesFactory.getUTC(),
-                TutorialUtils.STEP_BETWEEN_EACH_INSTANT);
-
-        final Header header = new Header("Visualisation of a ground track of a constellation", clock, pathToJSFolder);
+        final Header header =
+            new Header("Visualisation of a ground track of a constellation",
+                       clock, pathToJSFolder);
 
         // Build of an MEO orbit
         // Build of propagators
 
-
-        final NormalizedSphericalHarmonicsProvider provider = GravityFieldFactory.getNormalizedProvider(10,
-                10);
-        final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(FramesFactory.getITRF(
-                IERSConventions.IERS_2010, true),
-                provider);
+        final NormalizedSphericalHarmonicsProvider provider =
+            GravityFieldFactory.getNormalizedProvider(10, 10);
+        final ForceModel holmesFeatherstone =
+            new HolmesFeatherstoneAttractionModel(FramesFactory
+                .getITRF(IERSConventions.IERS_2010, true), provider);
 
         final List<BoundedPropagator> propagators = new ArrayList<>();
 
         for (int i = 0; i < 10; i++) {
-            final Orbit currentOrbit = new KeplerianOrbit(10878000, 0,
-                    FastMath.toRadians(i * 10), 0, FastMath.toRadians(90 * FastMath.pow(-1, i)), FastMath.toRadians(0),
-                    PositionAngleType.MEAN, FramesFactory.getEME2000(), startDate, Constants.WGS84_EARTH_MU);
+            final Orbit currentOrbit =
+                new KeplerianOrbit(10878000, 0, FastMath.toRadians(i * 10), 0,
+                                   FastMath.toRadians(90 * FastMath.pow(-1, i)),
+                                   FastMath.toRadians(0),
+                                   PositionAngleType.MEAN,
+                                   FramesFactory.getEME2000(), startDate,
+                                   Constants.WGS84_EARTH_MU);
             final SpacecraftState state = new SpacecraftState(currentOrbit);
-            final double[][] currentTolerance = NumericalPropagator.tolerances(TutorialUtils.POSITION_TOLERANCE,
-                    currentOrbit, OrbitType.CARTESIAN);
-            final AdaptiveStepsizeIntegrator currentIntegrator = new DormandPrince853Integrator(TutorialUtils.MIN_STEP,
-                    TutorialUtils.MAX_STEP,
-                    currentTolerance[0], currentTolerance[1]);
-            final NumericalPropagator propagator = new NumericalPropagator(currentIntegrator);
+            final double[][] currentTolerance =
+                NumericalPropagator.tolerances(TutorialUtils.POSITION_TOLERANCE,
+                                               currentOrbit,
+                                               OrbitType.CARTESIAN);
+            final AdaptiveStepsizeIntegrator currentIntegrator =
+                new DormandPrince853Integrator(TutorialUtils.MIN_STEP,
+                                               TutorialUtils.MAX_STEP,
+                                               currentTolerance[0],
+                                               currentTolerance[1]);
+            final NumericalPropagator propagator =
+                new NumericalPropagator(currentIntegrator);
             propagator.setOrbitType(OrbitType.CARTESIAN);
             propagator.addForceModel(holmesFeatherstone);
             propagator.setInitialState(state);
 
-            final EphemerisGenerator generator = propagator.getEphemerisGenerator();
+            final EphemerisGenerator generator =
+                propagator.getEphemerisGenerator();
 
             propagator.propagate(startDate, finalDate);
-            final BoundedPropagator boundedPropagator = generator.getGeneratedEphemeris();
+            final BoundedPropagator boundedPropagator =
+                generator.getGeneratedEphemeris();
 
             propagators.add(boundedPropagator);
         }
 
         // Creation of the Constellation
-        final Constellation constellation = Constellation.builder(propagators, finalDate, header).build();
-
+        final Constellation constellation =
+            Constellation.builder(propagators, finalDate, header).build();
 
         // Build of the ground track
-        final GroundTrack groundTrack = GroundTrack.builder(constellation, TutorialUtils.getEarth(), header).build();
+        final GroundTrack groundTrack =
+            GroundTrack.builder(constellation, TutorialUtils.getEarth(), header)
+                .build();
         groundTrack.displayLinkSatellite();
 
-        final CzmlFile file = CzmlFile.builder()
-                                      .withHeader(header)
-                                      .withConstellation(constellation)
-                                      .withGroundTrack(groundTrack)
-                                      .build();
+        final CzmlFile file =
+            CzmlFile.builder().withHeader(header)
+                .withConstellation(constellation).withGroundTrack(groundTrack)
+                .build();
 
         // Writing in the file
         file.write(output);

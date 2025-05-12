@@ -29,7 +29,9 @@ import java.net.URISyntaxException;
 /**
  * The type Billboard test.
  */
-public class BillboardTest extends AbstractTest {
+public class BillboardTest
+    extends
+    AbstractTest {
 
     /**
      * Billboard constructor test.
@@ -37,32 +39,43 @@ public class BillboardTest extends AbstractTest {
      * @throws IOException the io exception
      */
     @Test
-    void BillboardConstructorTest() throws IOException, URISyntaxException {
+    void BillboardConstructorTest()
+        throws IOException,
+            URISyntaxException {
 
         loadOrekitData();
 
-        final String imageStr = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACvSURBVDhPrZDRDcMgDAU9GqN0lIzijw6SUbJJygUeNQgSqepJTyHG91LVVpwDdfxM3T9TSl1EXZvDwii471fivK73cBFFQNTT/d2KoGpfGOpSIkhUpgUMxq9DFEsWv4IXhlyCnhBFnZcFEEuYqbiUlNwWgMTdrZ3JbQFoEVG53rd8ztG9aPJMnBUQf/VFraBJeWnLS0RfjbKyLJA8FkT5seDYS1Qwyv8t0B/5C2ZmH2/eTGNNBgMmAAAAAElFTkSuQmCC";
+        final String imageStr =
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACvSURBVDhPrZDRDcMgDAU9GqN0lIzijw6SUbJJygUeNQgSqepJTyHG91LVVpwDdfxM3T9TSl1EXZvDwii471fivK73cBFFQNTT/d2KoGpfGOpSIkhUpgUMxq9DFEsWv4IXhlyCnhBFnZcFEEuYqbiUlNwWgMTdrZ3JbQFoEVG53rd8ztG9aPJMnBUQf/VFraBJeWnLS0RfjbKyLJA8FkT5seDYS1Qwyv8t0B/5C2ZmH2/eTGNNBgMmAAAAAElFTkSuQmCC";
 
         final Billboard billboard = new Billboard(imageStr);
 
         final Billboard billboardCoverage = new Billboard(imageStr, 10);
 
-        final NearFarScalar nearFarScalar = new NearFarScalar(10.0, 20.0, 100.0, 50.0);
+        final NearFarScalar nearFarScalar =
+            new NearFarScalar(10.0, 20.0, 100.0, 50.0);
 
-        final Billboard billboardNearFar = new Billboard(imageStr, nearFarScalar);
+        final Billboard billboardNearFar =
+            new Billboard(imageStr, nearFarScalar);
 
-        final Billboard complexConstructor = new Billboard(CesiumResourceBehavior.LINK_TO,
-                CesiumHorizontalOrigin.CENTER, imageStr, true, 10,
-                Color.RED, nearFarScalar);
+        final Billboard complexConstructor =
+            new Billboard(CesiumResourceBehavior.LINK_TO,
+                          CesiumHorizontalOrigin.CENTER, imageStr, true, 10,
+                          Color.RED, nearFarScalar);
 
-        final String pathFile = loadResources("templateFile/secondary/BillboardTemplate.txt");
-        final String coveragePathFile = loadResources("templateFile/secondary/BillboardCoverageTemplate.txt");
-        final String nearFarPathFile = loadResources("templateFile/secondary/BillboardNearFarTemplate.txt");
-        final String complexConstructorPathFile = loadResources("templateFile/secondary/BillboardComplexConstructorTemplate.txt");
+        final String pathFile =
+            loadResources("templateFile/secondary/BillboardTemplate.txt");
+        final String coveragePathFile =
+            loadResources("templateFile/secondary/BillboardCoverageTemplate.txt");
+        final String nearFarPathFile =
+            loadResources("templateFile/secondary/BillboardNearFarTemplate.txt");
+        final String complexConstructorPathFile =
+            loadResources("templateFile/secondary/BillboardComplexConstructorTemplate.txt");
 
         verifyFileOutput(pathFile, billboard.toString(), 1e-8);
         verifyFileOutput(coveragePathFile, billboardCoverage.toString(), 1e-8);
         verifyFileOutput(nearFarPathFile, billboardNearFar.toString(), 1e-8);
-        verifyFileOutput(complexConstructorPathFile, complexConstructor.toString(), 1e-8);
+        verifyFileOutput(complexConstructorPathFile,
+                         complexConstructor.toString(), 1e-8);
     }
 }

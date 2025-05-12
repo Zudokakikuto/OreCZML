@@ -64,27 +64,36 @@ public class EarthMoonInfluenceSphere {
      * @param args the args
      * @throws Exception the exception
      */
-    public static void main(final String[] args) throws Exception {
+    public static void main(final String[] args)
+        throws Exception {
         // Load orekit data
         TutorialUtils.loadOrekitData();
 
         // Paths
         final String output = TutorialUtils.generateOutput();
-        // !!! Here you need to change the path inside 'generateJsPath' to the path you are using for images or Model.
-        // This folder can also be the public folder of your cesium javascript interface.
-        final String pathToJSFolder = TutorialUtils.generateJSPath(
-                System.getProperty("user.dir") + "/Javascript/public");
+        // !!! Here you need to change the path inside 'generateJsPath' to the
+        // path you are using for images or Model.
+        // This folder can also be the public folder of your cesium javascript
+        // interface.
+        final String pathToJSFolder =
+            TutorialUtils.generateJSPath(System.getProperty("user.dir") +
+                                         "/Javascript/public");
 
         // Creation of the clock.
 
-        final double       durationOfSimulation = 3 * 24 * 3600; // in seconds;
-        final AbsoluteDate startDate            = new AbsoluteDate(2024, 1, 16, 0, 0, 0.0, TimeScalesFactory.getUTC());
-        final AbsoluteDate finalDate            = startDate.shiftedBy(durationOfSimulation);
-        final Clock clock = new Clock(startDate, finalDate, TimeScalesFactory.getUTC(),
-                TutorialUtils.STEP_BETWEEN_EACH_INSTANT);
+        final double durationOfSimulation = 3 * 24 * 3600; // in seconds;
+        final AbsoluteDate startDate =
+            new AbsoluteDate(2024, 1, 16, 0, 0, 0.0,
+                             TimeScalesFactory.getUTC());
+        final AbsoluteDate finalDate =
+            startDate.shiftedBy(durationOfSimulation);
+        final Clock clock =
+            new Clock(startDate, finalDate, TimeScalesFactory.getUTC(),
+                      TutorialUtils.STEP_BETWEEN_EACH_INSTANT);
 
-        final Header header = new Header("Example of usage of the influence sphere on the moon and the earth", clock,
-                pathToJSFolder);
+        final Header header =
+            new Header("Example of usage of the influence sphere on the moon and the earth",
+                       clock, pathToJSFolder);
 
         // Influence sphere
         final Body earth = BodyFactory.getEarth(header);
@@ -97,37 +106,47 @@ public class EarthMoonInfluenceSphere {
         bodies.add(moon);
 
         // Satellite 390900000
-        final KeplerianOrbit initialOrbit = new KeplerianOrbit(140900000, 0.3, FastMath.toRadians(180),
-                FastMath.toRadians(90),
-                FastMath.toRadians(0), FastMath.toRadians(0), PositionAngleType.MEAN, FramesFactory.getEME2000(),
-                startDate,
-                Constants.WGS84_EARTH_MU);
-        final AbsolutePVCoordinates absolutePVCoordinates = new AbsolutePVCoordinates(
-                FramesFactory.getITRF(IERSConventions.IERS_2010, true), initialOrbit.getPVCoordinates());
+        final KeplerianOrbit initialOrbit =
+            new KeplerianOrbit(140900000, 0.3, FastMath.toRadians(180),
+                               FastMath.toRadians(90), FastMath.toRadians(0),
+                               FastMath.toRadians(0), PositionAngleType.MEAN,
+                               FramesFactory.getEME2000(), startDate,
+                               Constants.WGS84_EARTH_MU);
+        final AbsolutePVCoordinates absolutePVCoordinates =
+            new AbsolutePVCoordinates(FramesFactory
+                .getITRF(IERSConventions.IERS_2010, true),
+                                      initialOrbit.getPVCoordinates());
 
-        final SpacecraftState initialState = new SpacecraftState(absolutePVCoordinates);
-        final double[][] tolerances = NumericalPropagator.tolerances(TutorialUtils.POSITION_TOLERANCE, initialOrbit,
-                OrbitType.CARTESIAN);
-        final AdaptiveStepsizeIntegrator integrator = new DormandPrince853Integrator(TutorialUtils.MIN_STEP,
-                TutorialUtils.MAX_STEP,
-                tolerances[0], tolerances[1]);
-        final NumericalPropagator propagator = new NumericalPropagator(integrator);
+        final SpacecraftState initialState =
+            new SpacecraftState(absolutePVCoordinates);
+        final double[][] tolerances =
+            NumericalPropagator.tolerances(TutorialUtils.POSITION_TOLERANCE,
+                                           initialOrbit, OrbitType.CARTESIAN);
+        final AdaptiveStepsizeIntegrator integrator =
+            new DormandPrince853Integrator(TutorialUtils.MIN_STEP,
+                                           TutorialUtils.MAX_STEP,
+                                           tolerances[0], tolerances[1]);
+        final NumericalPropagator propagator =
+            new NumericalPropagator(integrator);
 
         propagator.setIgnoreCentralAttraction(true);
 
-        final ForceModel singleBodyEarth = new SingleBodyAbsoluteAttraction(CelestialBodyFactory.getEarth());
-        final ForceModel singleBodyMoon  = new SingleBodyAbsoluteAttraction(CelestialBodyFactory.getMoon());
-        final InertialForces model = new InertialForces(CelestialBodyFactory.getEarthMoonBarycenter()
-                                                                            .getInertiallyOrientedFrame());
+        final ForceModel singleBodyEarth =
+            new SingleBodyAbsoluteAttraction(CelestialBodyFactory.getEarth());
+        final ForceModel singleBodyMoon =
+            new SingleBodyAbsoluteAttraction(CelestialBodyFactory.getMoon());
+        final InertialForces model =
+            new InertialForces(CelestialBodyFactory.getEarthMoonBarycenter()
+                .getInertiallyOrientedFrame());
 
-        final NormalizedSphericalHarmonicsProvider provider = GravityFieldFactory.getNormalizedProvider(10,
-                10);
-        final ForceModel holmesFeatherstoneEarth = new HolmesFeatherstoneAttractionModel(FramesFactory.getITRF(
-                IERSConventions.IERS_2010, true),
-                provider);
-        final ForceModel holmesFeatherstoneMoon = new HolmesFeatherstoneAttractionModel(CelestialBodyFactory.getMoon()
-                                                                                                            .getBodyOrientedFrame(),
-                provider);
+        final NormalizedSphericalHarmonicsProvider provider =
+            GravityFieldFactory.getNormalizedProvider(10, 10);
+        final ForceModel holmesFeatherstoneEarth =
+            new HolmesFeatherstoneAttractionModel(FramesFactory
+                .getITRF(IERSConventions.IERS_2010, true), provider);
+        final ForceModel holmesFeatherstoneMoon =
+            new HolmesFeatherstoneAttractionModel(CelestialBodyFactory.getMoon()
+                .getBodyOrientedFrame(), provider);
 
         propagator.setInitialState(initialState);
         propagator.addForceModel(singleBodyEarth);
@@ -136,24 +155,22 @@ public class EarthMoonInfluenceSphere {
         propagator.addForceModel(model);
         propagator.addForceModel(singleBodyMoon);
         propagator.setOrbitType(null);
-        final EphemerisGenerator firstGenerator = propagator.getEphemerisGenerator();
+        final EphemerisGenerator firstGenerator =
+            propagator.getEphemerisGenerator();
 
         propagator.propagate(startDate, finalDate);
-        final BoundedPropagator boundedPropagator = firstGenerator.getGeneratedEphemeris();
+        final BoundedPropagator boundedPropagator =
+            firstGenerator.getGeneratedEphemeris();
 
         // Satellite
-        final Spacecraft spacecraft = Spacecraft.builder(boundedPropagator, header)
-                                                .withReferenceSystem()
-                                                .withColor(Color.BLUE)
-                                                .displayInfluenceSphereChanges(bodies)
-                                                .build();
+        final Spacecraft spacecraft =
+            Spacecraft.builder(boundedPropagator, header).withReferenceSystem()
+                .withColor(Color.BLUE).displayInfluenceSphereChanges(bodies)
+                .build();
         // Czml file
-        final CzmlFile file = CzmlFile.builder()
-                                      .withSpacecraft(spacecraft)
-                                      .withBody(earth)
-                                      .withBody(moon)
-                                      .withHeader(header)
-                                      .build();
+        final CzmlFile file =
+            CzmlFile.builder().withSpacecraft(spacecraft).withBody(earth)
+                .withBody(moon).withHeader(header).build();
 
         // file writing
         file.write(output);

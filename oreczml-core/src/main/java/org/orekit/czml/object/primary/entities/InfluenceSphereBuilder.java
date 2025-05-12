@@ -1,3 +1,19 @@
+/* Copyright 2002-2024 CS GROUP
+ * Licensed to CS GROUP (CS) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * CS licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.orekit.czml.object.primary.entities;
 
 import org.orekit.czml.archi.factory.BodyFactory;
@@ -44,17 +60,19 @@ public class InfluenceSphereBuilder {
 
     public InfluenceSphereBuilder(final Body bodyInput,
                                   final Header headerInput) {
-        this.body        = bodyInput;
-        this.header      = headerInput;
-        this.customID    = DEFAULT_ID + bodyInput.getName();
+        this.body = bodyInput;
+        this.header = headerInput;
+        this.customID = DEFAULT_ID + bodyInput.getName();
         this.centralBody = BodyFactory.getSun(headerInput);
     }
 
-    public InfluenceSphereBuilder(final Body bodyInput, final Body centralBodyInput, final Header headerInput) {
-        this.body        = bodyInput;
-        this.header      = headerInput;
+    public InfluenceSphereBuilder(final Body bodyInput,
+                                  final Body centralBodyInput,
+                                  final Header headerInput) {
+        this.body = bodyInput;
+        this.header = headerInput;
         this.centralBody = centralBodyInput;
-        this.customID    = DEFAULT_ID + bodyInput.getName();
+        this.customID = DEFAULT_ID + bodyInput.getName();
     }
 
     /**
@@ -69,16 +87,17 @@ public class InfluenceSphereBuilder {
     }
 
     /**
-     * This function set up a custom name for the body of the sphere of influence.
+     * This function set up a custom name for the body of the sphere of
+     * influence.
      *
      * @param customBodyNameInput : The name to set up
      * @return : The influence sphere builder with a custom body name.
      */
-    public InfluenceSphereBuilder withCustomBodyName(final String customBodyNameInput) {
+    public InfluenceSphereBuilder
+        withCustomBodyName(final String customBodyNameInput) {
         this.bodyName = customBodyNameInput;
         return this;
     }
-
 
     /**
      * This function set up an inertial frame for the sphere of influence.
@@ -86,7 +105,8 @@ public class InfluenceSphereBuilder {
      * @param inertialFrameInput : The inertial frame to set up
      * @return : The influence sphere builder with a custom inertial frame.
      */
-    public InfluenceSphereBuilder withInertialFrame(final Frame inertialFrameInput) {
+    public InfluenceSphereBuilder
+        withInertialFrame(final Frame inertialFrameInput) {
         this.inertialFrame = inertialFrameInput;
         return this;
     }
@@ -97,7 +117,8 @@ public class InfluenceSphereBuilder {
      * @param bodyOrientedFrameInput : The body oriented frame to set up
      * @return : The influence sphere builder with a custom body oriented frame.
      */
-    public InfluenceSphereBuilder withBodyOrientedFrame(final Frame bodyOrientedFrameInput) {
+    public InfluenceSphereBuilder
+        withBodyOrientedFrame(final Frame bodyOrientedFrameInput) {
         this.bodyOrientedFrame = bodyOrientedFrameInput;
         return this;
     }
@@ -125,18 +146,25 @@ public class InfluenceSphereBuilder {
     }
 
     /**
-     * This function set up a custom mass for the central body.
-     * Using this method will make the sphere of influence not assume the body is orbiting around the sun.
+     * This function set up a custom mass for the central body. Using this
+     * method will make the sphere of influence not assume the body is orbiting
+     * around the sun.
      *
      * @param centralBodyInput : The mass to set up.
-     * @return : The influence sphere builder with a custom mass for the central body.
+     * @return : The influence sphere builder with a custom mass for the central
+     *         body.
      */
     public InfluenceSphereBuilder withCentralBody(final Body centralBodyInput) {
         this.centralBody = centralBodyInput;
         return this;
     }
 
-    /** This function builds the sphere of influence with all the parameters given. */
+    /**
+     * This function builds the sphere of influence with all the parameters
+     * given.
+     *
+     * @return : The influence sphere object with the given parameters.
+     */
     public InfluenceSphere build() {
         return new InfluenceSphere(body, centralBody, header);
     }

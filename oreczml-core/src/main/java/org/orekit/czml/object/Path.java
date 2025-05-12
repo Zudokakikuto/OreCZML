@@ -28,7 +28,6 @@ import java.io.StringWriter;
 
 /**
  * Path class
- *
  * <p>
  * This class aims at displaying the path of a given object.
  * </p>
@@ -36,7 +35,9 @@ import java.io.StringWriter;
  * @author Julien LEBLOND.
  * @since 1.0.0
  */
-public class Path implements CzmlSecondaryObject {
+public class Path
+    implements
+    CzmlSecondaryObject {
 
     /**
      * The availability of the object.
@@ -48,7 +49,6 @@ public class Path implements CzmlSecondaryObject {
      */
     private final boolean show;
 
-
     // Constructors
 
     /**
@@ -58,28 +58,31 @@ public class Path implements CzmlSecondaryObject {
      */
     public Path(final TimeInterval availability) {
         this.availability = availability;
-        this.show         = true;
+        this.show = true;
     }
 
     /**
      * The constructor of the path object with no default parameters.
      *
      * @param availability : The time interval when the path is displayed.
-     * @param show         : To display or not the path.
+     * @param show : To display or not the path.
      */
     public Path(final TimeInterval availability, final boolean show) {
         this.availability = availability;
-        this.show         = show;
+        this.show = show;
     }
 
     // Overrides
 
     @Override
-    public void write(final PacketCesiumWriter packetWriter, final CesiumOutputStream output) {
+    public void write(final PacketCesiumWriter packetWriter,
+                      final CesiumOutputStream output) {
         try (PathCesiumWriter pathCesiumWriter = packetWriter.getPathWriter()) {
             pathCesiumWriter.open(output);
-            try (BooleanCesiumWriter showPath = pathCesiumWriter.openShowProperty()) {
-                showPath.writeInterval(availability.getStart(), availability.getStop());
+            try (BooleanCesiumWriter showPath =
+                pathCesiumWriter.openShowProperty()) {
+                showPath.writeInterval(availability.getStart(),
+                                       availability.getStop());
                 showPath.writeBoolean(show);
             }
         }
@@ -87,8 +90,8 @@ public class Path implements CzmlSecondaryObject {
 
     @Override
     public String toString() {
-        final StringWriter       writerTemp   = new StringWriter();
-        final CesiumOutputStream output       = new CesiumOutputStream(writerTemp);
+        final StringWriter writerTemp = new StringWriter();
+        final CesiumOutputStream output = new CesiumOutputStream(writerTemp);
         final CesiumStreamWriter streamWriter = new CesiumStreamWriter();
         output.setPrettyFormatting(true);
         try (PacketCesiumWriter packet = streamWriter.openPacket(output)) {

@@ -15,5 +15,8 @@
  * limitations under the License.
  */
 
-/** This package groups all the primary objects and their builders related to reference systems displayable. */
+/**
+ * This package groups all the primary objects and their builders related to
+ * reference systems displayable.
+ */
 package org.orekit.czml.object.primary.systems;

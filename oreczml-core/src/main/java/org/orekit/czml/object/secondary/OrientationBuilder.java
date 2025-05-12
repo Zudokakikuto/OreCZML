@@ -50,7 +50,8 @@ public class OrientationBuilder {
     private final Frame objectFrame;
 
     /**
-     * The boolean to know whether the orientation should be converted into the ITRF or not.
+     * The boolean to know whether the orientation should be converted into the
+     * ITRF or not.
      */
     private boolean invertToITRF = true;
 
@@ -72,31 +73,33 @@ public class OrientationBuilder {
     /**
      * The constructor of the orientation builder.
      *
-     * @param attitude    : The attitude of the object to consider.
+     * @param attitude : The attitude of the object to consider.
      * @param objectFrame : The frame of the object.
      * @param headerInput : The header considered.
      */
-    public OrientationBuilder(final Attitude attitude, final Frame objectFrame, final Header headerInput) {
-        this.singleAttitude      = attitude;
-        this.objectFrame         = objectFrame;
+    public OrientationBuilder(final Attitude attitude, final Frame objectFrame,
+                              final Header headerInput) {
+        this.singleAttitude = attitude;
+        this.objectFrame = objectFrame;
         this.singleAttitudeBuilt = true;
-        this.header              = headerInput;
+        this.header = headerInput;
     }
 
     /**
      * The constructor of the orientation builder.
      *
-     * @param attitudes   : The attitudes of the object to consider.
+     * @param attitudes : The attitudes of the object to consider.
      * @param objectFrame : The frame of the object.
      * @param headerInput : The header considered.
      */
-    public OrientationBuilder(final List<Attitude> attitudes, final Frame objectFrame, final Header headerInput) {
-        this.attitudes           = new ArrayList<>(attitudes);
-        this.objectFrame         = objectFrame;
+    public OrientationBuilder(final List<Attitude> attitudes,
+                              final Frame objectFrame,
+                              final Header headerInput) {
+        this.attitudes = new ArrayList<>(attitudes);
+        this.objectFrame = objectFrame;
         this.singleAttitudeBuilt = false;
-        this.header              = headerInput;
+        this.header = headerInput;
     }
-
 
     /**
      * Function to set up the conversion to the ITRF.
@@ -104,7 +107,8 @@ public class OrientationBuilder {
      * @param invertToITRFInput : The boolean to convert to the ITRF.
      * @return : The orientation builder with the given conversion.
      */
-    public OrientationBuilder withInvertToITRF(final boolean invertToITRFInput) {
+    public OrientationBuilder
+        withInvertToITRF(final boolean invertToITRFInput) {
         this.invertToITRF = invertToITRFInput;
         return this;
     }
@@ -115,7 +119,8 @@ public class OrientationBuilder {
      * @param optionalRotationInput : The optional rotation to set up.
      * @return : The orientation builder with the given optional rotation.
      */
-    public OrientationBuilder withOptionalRotation(final Rotation optionalRotationInput) {
+    public OrientationBuilder
+        withOptionalRotation(final Rotation optionalRotationInput) {
         this.optionalRotation = optionalRotationInput;
         return this;
     }
@@ -127,9 +132,11 @@ public class OrientationBuilder {
      */
     public Orientation build() {
         if (singleAttitudeBuilt) {
-            return new Orientation(singleAttitude, objectFrame, invertToITRF, header);
+            return new Orientation(singleAttitude, objectFrame, invertToITRF,
+                                   header);
         } else {
-            return new Orientation(attitudes, objectFrame, invertToITRF, optionalRotation, header);
+            return new Orientation(attitudes, objectFrame, invertToITRF,
+                                   optionalRotation, header);
         }
     }
 }

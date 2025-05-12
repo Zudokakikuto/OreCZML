@@ -28,7 +28,8 @@ import java.net.URISyntaxException;
 /**
  * Aem adaptor
  * <p>
- * Adaptor for the {@link Aem} class, this helps build orientation objects from those files.
+ * Adaptor for the {@link Aem} class, this helps build orientation objects from
+ * those files.
  *
  * @author Julien LEBLOND
  * @since 1.0.0
@@ -39,7 +40,6 @@ public class AemAdaptor {
      * The aem to be used to create an orientation.
      */
     private final Aem aem;
-
 
     /**
      * The constructor of the adaptor.
@@ -54,15 +54,17 @@ public class AemAdaptor {
      * Build orientation orientation.
      *
      * @param propagator the propagator
-     * @param header     the header
+     * @param header the header
      * @return the orientation
      * @throws URISyntaxException the uri syntax exception
-     * @throws IOException        the io exception
+     * @throws IOException the io exception
      */
-    public Orientation buildOrientation(final BoundedPropagator propagator, final Header header) throws URISyntaxException, IOException {
-        return new Orientation(aem.getSegments()
-                                  .get(0)
-                                  .getAttitudeProvider(), propagator, Rotation.IDENTITY, false, header);
+    public Orientation buildOrientation(final BoundedPropagator propagator,
+                                        final Header header)
+        throws URISyntaxException,
+            IOException {
+        return new Orientation(aem.getSegments().get(0).getAttitudeProvider(),
+                               propagator, Rotation.IDENTITY, false, header);
     }
 
     /**

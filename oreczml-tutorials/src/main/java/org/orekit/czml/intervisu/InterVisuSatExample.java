@@ -45,11 +45,12 @@ import org.orekit.utils.IERSConventions;
 import java.awt.Color;
 
 /**
- * This tutorial provides an example of how to set up an inter-visualization between two satellites.
+ * This tutorial provides an example of how to set up an inter-visualization
+ * between two satellites.
  */
 public class InterVisuSatExample {
 
-    private InterVisuSatExample () {
+    private InterVisuSatExample() {
         // empty
     }
 
@@ -59,101 +60,126 @@ public class InterVisuSatExample {
      * @param args arguments of the main function
      * @throws Exception exception to throw
      */
-    public static void main (final String[] args) throws Exception {
+    public static void main(final String[] args)
+        throws Exception {
         // Load orekit data
         TutorialUtils.loadOrekitData();
 
         // Paths
         final String output = TutorialUtils.generateOutput();
-        // !!! Here you need to change the path inside 'generateJsPath' to the path you are using for images or Model.
-        // This folder can also be the public folder of your cesium javascript interface.
-        final String pathToJSFolder = TutorialUtils.generateJSPath(
-                System.getProperty("user.dir") + "/Javascript/public");
+        // !!! Here you need to change the path inside 'generateJsPath' to the
+        // path you are using for images or Model.
+        // This folder can also be the public folder of your cesium javascript
+        // interface.
+        final String pathToJSFolder =
+            TutorialUtils.generateJSPath(System.getProperty("user.dir") +
+                                         "/Javascript/public");
 
         // Creation of the clock.
 
-        final double       durationOfSimulation = 32 * 3600; // in seconds;
-        final AbsoluteDate startDate            = new AbsoluteDate(2024, 3, 15, 0, 0, 0.0, TimeScalesFactory.getUTC());
-        final AbsoluteDate finalDate            = startDate.shiftedBy(durationOfSimulation);
-        final Clock clock = new Clock(startDate, finalDate, TimeScalesFactory.getUTC(),
-                TutorialUtils.STEP_BETWEEN_EACH_INSTANT);
+        final double durationOfSimulation = 32 * 3600; // in seconds;
+        final AbsoluteDate startDate =
+            new AbsoluteDate(2024, 3, 15, 0, 0, 0.0,
+                             TimeScalesFactory.getUTC());
+        final AbsoluteDate finalDate =
+            startDate.shiftedBy(durationOfSimulation);
+        final Clock clock =
+            new Clock(startDate, finalDate, TimeScalesFactory.getUTC(),
+                      TutorialUtils.STEP_BETWEEN_EACH_INSTANT);
 
-        final Header header = new Header("Setup of the visualisation inter-satellites", clock, pathToJSFolder);
+        final Header header =
+            new Header("Setup of the visualisation inter-satellites", clock,
+                       pathToJSFolder);
 
-        //// Build of the first satellite with an orbit with 20 degree inclination
+        //// Build of the first satellite with an orbit with 20 degree
+        //// inclination
         // Build of a LEO orbit
 
-        final KeplerianOrbit firstOrbit = new KeplerianOrbit(7878000, 0, FastMath.toRadians(0), FastMath.toRadians(0),
-                FastMath.toRadians(0), FastMath.toRadians(0), PositionAngleType.MEAN, FramesFactory.getEME2000(), startDate,
-                Constants.WGS84_EARTH_MU);
+        final KeplerianOrbit firstOrbit =
+            new KeplerianOrbit(7878000, 0, FastMath.toRadians(0),
+                               FastMath.toRadians(0), FastMath.toRadians(0),
+                               FastMath.toRadians(0), PositionAngleType.MEAN,
+                               FramesFactory.getEME2000(), startDate,
+                               Constants.WGS84_EARTH_MU);
         final SpacecraftState firstState = new SpacecraftState(firstOrbit);
 
-        //// Build of the first satellite with an orbit with 40 degree inclination and omega of 90 degrees
+        //// Build of the first satellite with an orbit with 40 degree
+        //// inclination and omega of 90 degrees
         // Build of a LEO orbit
-        final KeplerianOrbit secondOrbit = new KeplerianOrbit(7078000, 0, FastMath.toRadians(20),
-                FastMath.toRadians(45), FastMath.toRadians(0), FastMath.toRadians(0), PositionAngleType.MEAN,
-                FramesFactory.getEME2000(),
-                startDate, Constants.WGS84_EARTH_MU);
+        final KeplerianOrbit secondOrbit =
+            new KeplerianOrbit(7078000, 0, FastMath.toRadians(20),
+                               FastMath.toRadians(45), FastMath.toRadians(0),
+                               FastMath.toRadians(0), PositionAngleType.MEAN,
+                               FramesFactory.getEME2000(), startDate,
+                               Constants.WGS84_EARTH_MU);
         final SpacecraftState secondState = new SpacecraftState(secondOrbit);
 
         // Build of the propagator
 
+        final double[][] tolerances1 =
+            NumericalPropagator.tolerances(TutorialUtils.POSITION_TOLERANCE,
+                                           firstOrbit, OrbitType.CARTESIAN);
+        final double[][] tolerances2 =
+            NumericalPropagator.tolerances(TutorialUtils.POSITION_TOLERANCE,
+                                           secondOrbit, OrbitType.CARTESIAN);
+        final AdaptiveStepsizeIntegrator integrator1 =
+            new DormandPrince853Integrator(TutorialUtils.MIN_STEP,
+                                           TutorialUtils.MAX_STEP,
+                                           tolerances1[0], tolerances1[1]);
+        final AdaptiveStepsizeIntegrator integrator2 =
+            new DormandPrince853Integrator(TutorialUtils.MIN_STEP,
+                                           TutorialUtils.MAX_STEP,
+                                           tolerances2[0], tolerances2[1]);
 
-        final double[][] tolerances1 = NumericalPropagator.tolerances(TutorialUtils.POSITION_TOLERANCE, firstOrbit,
-                OrbitType.CARTESIAN);
-        final double[][] tolerances2 = NumericalPropagator.tolerances(TutorialUtils.POSITION_TOLERANCE, secondOrbit,
-                OrbitType.CARTESIAN);
-        final AdaptiveStepsizeIntegrator integrator1 = new DormandPrince853Integrator(TutorialUtils.MIN_STEP,
-                TutorialUtils.MAX_STEP, tolerances1[0],
-                tolerances1[1]);
-        final AdaptiveStepsizeIntegrator integrator2 = new DormandPrince853Integrator(TutorialUtils.MIN_STEP,
-                TutorialUtils.MAX_STEP, tolerances2[0],
-                tolerances2[1]);
+        final NormalizedSphericalHarmonicsProvider provider =
+            GravityFieldFactory.getNormalizedProvider(10, 10);
+        final ForceModel holmesFeatherstone =
+            new HolmesFeatherstoneAttractionModel(FramesFactory
+                .getITRF(IERSConventions.IERS_2010, true), provider);
 
-        final NormalizedSphericalHarmonicsProvider provider = GravityFieldFactory.getNormalizedProvider(10,
-                10);
-        final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(FramesFactory.getITRF(
-                IERSConventions.IERS_2010, true),
-                provider);
-
-        final NumericalPropagator firstPropagator  = new NumericalPropagator(integrator1);
-        final NumericalPropagator secondPropagator = new NumericalPropagator(integrator2);
+        final NumericalPropagator firstPropagator =
+            new NumericalPropagator(integrator1);
+        final NumericalPropagator secondPropagator =
+            new NumericalPropagator(integrator2);
 
         firstPropagator.setOrbitType(OrbitType.CARTESIAN);
         firstPropagator.addForceModel(holmesFeatherstone);
         firstPropagator.setInitialState(firstState);
-        final EphemerisGenerator firstGenerator = firstPropagator.getEphemerisGenerator();
+        final EphemerisGenerator firstGenerator =
+            firstPropagator.getEphemerisGenerator();
         firstPropagator.propagate(startDate, finalDate);
-        final BoundedPropagator firstBoundedPropagator = firstGenerator.getGeneratedEphemeris();
+        final BoundedPropagator firstBoundedPropagator =
+            firstGenerator.getGeneratedEphemeris();
 
         secondPropagator.setOrbitType(OrbitType.CARTESIAN);
         secondPropagator.addForceModel(holmesFeatherstone);
         secondPropagator.setInitialState(secondState);
-        final EphemerisGenerator secondGenerator = secondPropagator.getEphemerisGenerator();
+        final EphemerisGenerator secondGenerator =
+            secondPropagator.getEphemerisGenerator();
         secondPropagator.propagate(startDate, finalDate);
-        final BoundedPropagator secondBoundedPropagator = secondGenerator.getGeneratedEphemeris();
+        final BoundedPropagator secondBoundedPropagator =
+            secondGenerator.getGeneratedEphemeris();
 
         // Creation of the satellites
-        final Spacecraft firstSatellite = Spacecraft.builder(firstBoundedPropagator, header)
-                                                    .withColor(Color.MAGENTA)
-                                                    .withOnlyOnePeriod()
-                                                    .build();
+        final Spacecraft firstSatellite =
+            Spacecraft.builder(firstBoundedPropagator, header)
+                .withColor(Color.MAGENTA).withOnlyOnePeriod().build();
 
-        final Spacecraft secondSatellite = Spacecraft.builder(secondBoundedPropagator, header)
-                                                     .withColor(Color.GREEN)
-                                                     .withOnlyOnePeriod()
-                                                     .build();
+        final Spacecraft secondSatellite =
+            Spacecraft.builder(secondBoundedPropagator, header)
+                .withColor(Color.GREEN).withOnlyOnePeriod().build();
 
         // Creation of the inter-sat visualisation
-        final InterSatVisu interSatVisu = InterSatVisu.builder(firstSatellite, secondSatellite, finalDate, header).build();
+        final InterSatVisu interSatVisu =
+            InterSatVisu
+                .builder(firstSatellite, secondSatellite, finalDate, header)
+                .build();
 
         // Creation of the file
-        final CzmlFile file = CzmlFile.builder()
-                                      .withHeader(header)
-                                      .withSpacecraft(firstSatellite)
-                                      .withSpacecraft(secondSatellite)
-                                      .withInterSatVisu(interSatVisu)
-                                      .build();
+        final CzmlFile file =
+            CzmlFile.builder().withHeader(header).withSpacecraft(firstSatellite)
+                .withSpacecraft(secondSatellite).withInterSatVisu(interSatVisu)
+                .build();
         // Writing in the file
         file.write(output);
     }

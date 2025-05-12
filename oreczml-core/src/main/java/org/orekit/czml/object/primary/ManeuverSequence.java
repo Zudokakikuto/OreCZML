@@ -48,13 +48,17 @@ import java.util.List;
 
 /**
  * Maneuver sequence class
- *
- * <p> The maneuver sequence class depicts the maneuvers done by a single satellite. It can only manage one direction at a time for the maneuvers for the moment. </p>
+ * <p>
+ * The maneuver sequence class depicts the maneuvers done by a single satellite.
+ * It can only manage one direction at a time for the maneuvers for the moment.
+ * </p>
  *
  * @author Julien LEBLOND
  * @since 1.0.0
  */
-public class ManeuverSequence extends AbstractPrimaryObject {
+public class ManeuverSequence
+    extends
+    AbstractPrimaryObject {
 
     /**
      * A basic default ID for maneuvers.
@@ -67,12 +71,15 @@ public class ManeuverSequence extends AbstractPrimaryObject {
     public static final String DEFAULT_NAME = "Maneuvers : ";
 
     /**
-     * The default 3D model representing an arrow, this can depict the acceleration or the thrust.
+     * The default 3D model representing an arrow, this can depict the
+     * acceleration or the thrust.
      */
-    public static final String DEFAULT_PATH_MODEL = Header.getDefaultResources() + "/maneuver_model.glb";
+    public static final String DEFAULT_PATH_MODEL =
+        Header.getDefaultResources() + "/maneuver_model.glb";
 
     /**
-     * The default string for the name to which the maneuver sequence is applied.
+     * The default string for the name to which the maneuver sequence is
+     * applied.
      */
     public static final String DEFAULT_APPLIED = ", applied to :";
 
@@ -112,7 +119,8 @@ public class ManeuverSequence extends AbstractPrimaryObject {
     private final Reference satellitePositionReference;
 
     /**
-     * The direction of the arrows, by default, this is the acceleration direction.
+     * The direction of the arrows, by default, this is the acceleration
+     * direction.
      */
     private List<Vector3D> arrowsDirection = new ArrayList<>();
 
@@ -122,7 +130,8 @@ public class ManeuverSequence extends AbstractPrimaryObject {
     private final List<Orientation> orientations;
 
     /**
-     * The attitudes of the maneuvers, each sublist is attributed to each maneuver.
+     * The attitudes of the maneuvers, each sublist is attributed to each
+     * maneuver.
      */
     private List<List<Attitude>> attitudesWithManeuver = new ArrayList<>();
 
@@ -147,113 +156,158 @@ public class ManeuverSequence extends AbstractPrimaryObject {
     // Constructors
 
     /**
-     * This constructor allows creating a maneuver sequence object for a given maneuver on a satellite.
+     * This constructor allows creating a maneuver sequence object for a given
+     * maneuver on a satellite.
      *
-     * @param sequenceInput         : The attitude sequence of the satellite taking into account the orientation that will be                              necessary for the maneuver.
-     * @param maneuverInput         : The maneuver to perform.
-     * @param satelliteInput        : The satellite that will perform the maneuver.
-     * @param accelerationDirection : The direction of the acceleration of the maneuver.
-     * @param lofInput              : The local orbital frame of the satellite.
-     * @param showTrustInput        : To show or not the arrow in the direction of the thrust (by default, it shows the direction of the acceleration).
-     * @param pathModel             : The path to the model of the arrow to display.                              Check the 'ManeuverSequenceExample' tutorial to see the usage of this class.
-     * @param customID              : The custom ID of the Maneuver Sequence.
-     * @param header                : The header considered if several ared used.
+     * @param sequenceInput : The attitude sequence of the satellite taking into
+     *        account the orientation that will be necessary for the maneuver.
+     * @param maneuverInput : The maneuver to perform.
+     * @param satelliteInput : The satellite that will perform the maneuver.
+     * @param accelerationDirection : The direction of the acceleration of the
+     *        maneuver.
+     * @param lofInput : The local orbital frame of the satellite.
+     * @param showTrustInput : To show or not the arrow in the direction of the
+     *        thrust (by default, it shows the direction of the acceleration).
+     * @param pathModel : The path to the model of the arrow to display. Check
+     *        the 'ManeuverSequenceExample' tutorial to see the usage of this
+     *        class.
+     * @param customID : The custom ID of the Maneuver Sequence.
+     * @param header : The header considered if several ared used.
      */
-    ManeuverSequence(final AttitudesSequence sequenceInput, final Maneuver maneuverInput,
-                     final Spacecraft satelliteInput, final Vector3D accelerationDirection, final LOF lofInput,
-                     final boolean showTrustInput, final String pathModel, final String customID,
-                     final Header header) {
+    ManeuverSequence(final AttitudesSequence sequenceInput,
+                     final Maneuver maneuverInput,
+                     final Spacecraft satelliteInput,
+                     final Vector3D accelerationDirection, final LOF lofInput,
+                     final boolean showTrustInput, final String pathModel,
+                     final String customID, final Header header) {
 
         final List<Maneuver> maneuversTemp = new ArrayList<>();
         maneuversTemp.add(maneuverInput);
 
-        this.header     = header;
-        this.maneuvers  = maneuversTemp;
-        this.propagator = (BoundedPropagator) satelliteInput.getSpacecraftPropagator();
-        this.states     = satelliteInput.getSpaceCraftStates();
-        this.lof        = lofInput;
-        this.sequence   = sequenceInput;
-        this.showTrust  = showTrustInput;
+        this.header = header;
+        this.maneuvers = maneuversTemp;
+        this.propagator =
+            (BoundedPropagator) satelliteInput.getSpacecraftPropagator();
+        this.states = satelliteInput.getSpaceCraftStates();
+        this.lof = lofInput;
+        this.sequence = sequenceInput;
+        this.showTrust = showTrustInput;
         final int length = maneuversTemp.size();
 
         this.arrowsDirection = Collections.singletonList(accelerationDirection);
 
         this.setId(customID);
-        this.setName(DEFAULT_NAME + length + DEFAULT_APPLIED + propagator.toString());
-        final JulianDate startDate = DateUtils.toJulianDate(propagator.getMinDate(), header.getTimeScale());
-        final JulianDate stopDate  = DateUtils.toJulianDate(propagator.getMaxDate(), header.getTimeScale());
+        this.setName(DEFAULT_NAME +
+                     length + DEFAULT_APPLIED + propagator.toString());
+        final JulianDate startDate =
+            DateUtils.toJulianDate(propagator.getMinDate(),
+                                   header.getTimeScale());
+        final JulianDate stopDate =
+            DateUtils.toJulianDate(propagator.getMaxDate(),
+                                   header.getTimeScale());
         this.setAvailability(new TimeInterval(startDate, stopDate));
-        this.satellitePositionReference = new Reference(satelliteInput.getId() + DEFAULT_H_POSITION);
+        this.satellitePositionReference =
+            new Reference(satelliteInput.getId() + DEFAULT_H_POSITION);
 
-        this.attitudesWithManeuver   = generateAttitudesManeuvers(states, maneuversTemp, arrowsDirection);
-        this.model                   = new CzmlModel(pathModel, 500000, 40, 5E-05, false, header);
-        this.availabilitiesManeuvers = generateAvailabilitiesManeuvers(maneuvers, header);
-        this.orientations            = generateOrientationManeuvers(attitudesWithManeuver, header);
+        this.attitudesWithManeuver =
+            generateAttitudesManeuvers(states, maneuversTemp, arrowsDirection);
+        this.model = new CzmlModel(pathModel, 500000, 40, 5E-05, false, header);
+        this.availabilitiesManeuvers =
+            generateAvailabilitiesManeuvers(maneuvers, header);
+        this.orientations =
+            generateOrientationManeuvers(attitudesWithManeuver, header);
     }
 
     /**
-     * This constructor allows creating a maneuver sequence object for a given list of maneuvers on a satellite with default parameters.
+     * This constructor allows creating a maneuver sequence object for a given
+     * list of maneuvers on a satellite with default parameters.
      *
-     * @param sequenceInput         : The attitude sequence of the satellite taking into account the orientation that will be                              necessary for the maneuver.
-     * @param maneuversInput        : The list of maneuvers to perform.
-     * @param satelliteInput        : The satellite that will perform the maneuvers.
-     * @param accelerationDirection : The direction of the acceleration of the maneuver.
-     * @param lofInput              : The local orbital frame of the satellite. Check the 'ManeuverSequenceExample' tutorial.
-     * @param header                : The header considered.
+     * @param sequenceInput : The attitude sequence of the satellite taking into
+     *        account the orientation that will be necessary for the maneuver.
+     * @param maneuversInput : The list of maneuvers to perform.
+     * @param satelliteInput : The satellite that will perform the maneuvers.
+     * @param accelerationDirection : The direction of the acceleration of the
+     *        maneuver.
+     * @param lofInput : The local orbital frame of the satellite. Check the
+     *        'ManeuverSequenceExample' tutorial.
+     * @param header : The header considered.
      */
-    ManeuverSequence(final AttitudesSequence sequenceInput, final List<Maneuver> maneuversInput,
-                     final Spacecraft satelliteInput, final Vector3D accelerationDirection, final LOF lofInput,
+    ManeuverSequence(final AttitudesSequence sequenceInput,
+                     final List<Maneuver> maneuversInput,
+                     final Spacecraft satelliteInput,
+                     final Vector3D accelerationDirection, final LOF lofInput,
                      final Header header) {
-        this(sequenceInput, maneuversInput, satelliteInput, accelerationDirection, lofInput, false, DEFAULT_PATH_MODEL,
-                ManeuverSequence.DEFAULT_ID + maneuversInput.subList(0, maneuversInput.size() - 1), header);
+        this(sequenceInput, maneuversInput, satelliteInput,
+             accelerationDirection, lofInput, false, DEFAULT_PATH_MODEL,
+             ManeuverSequence.DEFAULT_ID +
+                                                                         maneuversInput
+                                                                             .subList(0,
+                                                                                      maneuversInput
+                                                                                          .size() -
+                                                                                         1),
+             header);
     }
 
-
     /**
-     * This constructor allows creating a maneuver sequence object for a given list of maneuvers on a satellite with no default parameters.
-     * This constructor allows each maneuver to have the same direction of the propulsion.
+     * This constructor allows creating a maneuver sequence object for a given
+     * list of maneuvers on a satellite with no default parameters. This
+     * constructor allows each maneuver to have the same direction of the
+     * propulsion.
      *
-     * @param sequenceInput         : The attitude sequence of the satellite taking into account the orientation that will be                              necessary for the maneuver.
-     * @param maneuversInput        : The list of maneuvers to perform.
-     * @param satelliteInput        : The satellite that will perform the maneuvers.
-     * @param accelerationDirection : The direction of the acceleration of the maneuvers.
-     * @param lofInput              : The local orbital frame of the satellite.
-     * @param showTrustInput        : To show or not the arrow in the direction of the thrust (by default, it shows the direction of the acceleration).
-     * @param pathModel             : The path to the model of the arrow to display.                              Check the 'ManeuverSequenceExample' tutorial.
-     * @param customID              : The custom ID of the maneuver sequence object.
-     * @param header                : The header considered.
+     * @param sequenceInput : The attitude sequence of the satellite taking into
+     *        account the orientation that will be necessary for the maneuver.
+     * @param maneuversInput : The list of maneuvers to perform.
+     * @param satelliteInput : The satellite that will perform the maneuvers.
+     * @param accelerationDirection : The direction of the acceleration of the
+     *        maneuvers.
+     * @param lofInput : The local orbital frame of the satellite.
+     * @param showTrustInput : To show or not the arrow in the direction of the
+     *        thrust (by default, it shows the direction of the acceleration).
+     * @param pathModel : The path to the model of the arrow to display. Check
+     *        the 'ManeuverSequenceExample' tutorial.
+     * @param customID : The custom ID of the maneuver sequence object.
+     * @param header : The header considered.
      */
-    ManeuverSequence(final AttitudesSequence sequenceInput, final List<Maneuver> maneuversInput,
-                     final Spacecraft satelliteInput, final Vector3D accelerationDirection, final LOF lofInput,
-                     final boolean showTrustInput, final String pathModel, final String customID,
-                     final Header header) {
-        this(sequenceInput, maneuversInput, satelliteInput, Collections.singletonList(accelerationDirection), lofInput,
-                showTrustInput, pathModel, customID, header);
-    }
-
-
-    /**
-     * The maneuver sequence constructor that allows different direction for each maneuver.
-     *
-     * @param sequenceInput         : The attitude sequence of the satellite taking into account the orientation that will be                              necessary for the maneuver.
-     * @param maneuversInput        : The list of maneuvers to perform.
-     * @param satelliteInput        : The satellite that will perform the maneuvers.
-     * @param accelerationDirection : The list of the directions of the accelerations of the maneuvers.
-     * @param lofInput              : The local orbital frame of the satellite.
-     * @param showTrustInput        : To show or not the arrow in the direction of the thrust (by default, it shows the direction of the acceleration).
-     * @param pathModel             : The path to the model of the arrow to display.
-     * @param customID              : The custom id of the maneuver sequence object
-     * @param header                : The header considered when several are used.
-     */
-    ManeuverSequence(final AttitudesSequence sequenceInput, final List<Maneuver> maneuversInput,
-                     final Spacecraft satelliteInput, final List<Vector3D> accelerationDirection,
-                     final LOF lofInput, final boolean showTrustInput, final String pathModel,
+    ManeuverSequence(final AttitudesSequence sequenceInput,
+                     final List<Maneuver> maneuversInput,
+                     final Spacecraft satelliteInput,
+                     final Vector3D accelerationDirection, final LOF lofInput,
+                     final boolean showTrustInput, final String pathModel,
                      final String customID, final Header header) {
+        this(sequenceInput, maneuversInput, satelliteInput,
+             Collections.singletonList(accelerationDirection), lofInput,
+             showTrustInput, pathModel, customID, header);
+    }
 
-        this.maneuvers  = maneuversInput;
+    /**
+     * The maneuver sequence constructor that allows different direction for
+     * each maneuver.
+     *
+     * @param sequenceInput : The attitude sequence of the satellite taking into
+     *        account the orientation that will be necessary for the maneuver.
+     * @param maneuversInput : The list of maneuvers to perform.
+     * @param satelliteInput : The satellite that will perform the maneuvers.
+     * @param accelerationDirection : The list of the directions of the
+     *        accelerations of the maneuvers.
+     * @param lofInput : The local orbital frame of the satellite.
+     * @param showTrustInput : To show or not the arrow in the direction of the
+     *        thrust (by default, it shows the direction of the acceleration).
+     * @param pathModel : The path to the model of the arrow to display.
+     * @param customID : The custom id of the maneuver sequence object
+     * @param header : The header considered when several are used.
+     */
+    ManeuverSequence(final AttitudesSequence sequenceInput,
+                     final List<Maneuver> maneuversInput,
+                     final Spacecraft satelliteInput,
+                     final List<Vector3D> accelerationDirection,
+                     final LOF lofInput, final boolean showTrustInput,
+                     final String pathModel, final String customID,
+                     final Header header) {
+
+        this.maneuvers = maneuversInput;
         this.propagator = satelliteInput.getSpacecraftBoundedPropagator();
-        this.states     = satelliteInput.getSpaceCraftStates();
-        this.header     = header;
+        this.states = satelliteInput.getSpaceCraftStates();
+        this.header = header;
 
         if (accelerationDirection.size() == 1) {
             for (int i = 0; i < maneuversInput.size(); i++) {
@@ -263,23 +317,32 @@ public class ManeuverSequence extends AbstractPrimaryObject {
             arrowsDirection.addAll(accelerationDirection);
         }
 
-        this.lof       = lofInput;
-        this.sequence  = sequenceInput;
+        this.lof = lofInput;
+        this.sequence = sequenceInput;
         this.showTrust = showTrustInput;
         int length = maneuversInput.size();
         if (length > 10) {
             length = 10;
         }
         this.setId(customID);
-        this.setName(DEFAULT_NAME + length + DEFAULT_APPLIED + propagator.toString());
-        final JulianDate startDate = DateUtils.toJulianDate(propagator.getMinDate(), header.getTimeScale());
-        final JulianDate stopDate  = DateUtils.toJulianDate(propagator.getMaxDate(), header.getTimeScale());
+        this.setName(DEFAULT_NAME +
+                     length + DEFAULT_APPLIED + propagator.toString());
+        final JulianDate startDate =
+            DateUtils.toJulianDate(propagator.getMinDate(),
+                                   header.getTimeScale());
+        final JulianDate stopDate =
+            DateUtils.toJulianDate(propagator.getMaxDate(),
+                                   header.getTimeScale());
         this.setAvailability(new TimeInterval(startDate, stopDate));
-        this.satellitePositionReference = new Reference(satelliteInput.getId() + DEFAULT_H_POSITION);
-        this.attitudesWithManeuver      = generateAttitudesManeuvers(states, maneuversInput, arrowsDirection);
-        this.model                      = new CzmlModel(pathModel, 500000, 40, 5E-05, false, header);
-        this.availabilitiesManeuvers    = generateAvailabilitiesManeuvers(maneuvers, header);
-        this.orientations               = generateOrientationManeuvers(attitudesWithManeuver, header);
+        this.satellitePositionReference =
+            new Reference(satelliteInput.getId() + DEFAULT_H_POSITION);
+        this.attitudesWithManeuver =
+            generateAttitudesManeuvers(states, maneuversInput, arrowsDirection);
+        this.model = new CzmlModel(pathModel, 500000, 40, 5E-05, false, header);
+        this.availabilitiesManeuvers =
+            generateAvailabilitiesManeuvers(maneuvers, header);
+        this.orientations =
+            generateOrientationManeuvers(attitudesWithManeuver, header);
     }
 
     // Builders
@@ -287,73 +350,85 @@ public class ManeuverSequence extends AbstractPrimaryObject {
     /**
      * Builder maneuver sequence builder.
      *
-     * @param sequenceInput         the sequence input
-     * @param maneuverInput         the maneuver input
-     * @param satellite             the satellite
+     * @param sequenceInput the sequence input
+     * @param maneuverInput the maneuver input
+     * @param satellite the satellite
      * @param accelerationDirection the acceleration direction
-     * @param lofInput              the lof input
-     * @param header                the header
+     * @param lofInput the lof input
+     * @param header the header
      * @return the maneuver sequence builder
      */
-    public static ManeuverSequenceBuilder builder(final AttitudesSequence sequenceInput, final Maneuver maneuverInput,
-                                                  final Spacecraft satellite, final Vector3D accelerationDirection,
-                                                  final LOF lofInput, final Header header) {
-        return new ManeuverSequenceBuilder(sequenceInput, maneuverInput, satellite, accelerationDirection, lofInput,
-                header);
+    public static ManeuverSequenceBuilder
+        builder(final AttitudesSequence sequenceInput,
+                final Maneuver maneuverInput, final Spacecraft satellite,
+                final Vector3D accelerationDirection, final LOF lofInput,
+                final Header header) {
+        return new ManeuverSequenceBuilder(sequenceInput, maneuverInput,
+                                           satellite, accelerationDirection,
+                                           lofInput, header);
     }
 
     /**
      * Builder maneuver sequence builder.
      *
-     * @param sequenceInput         the sequence input
-     * @param maneuversInput        the maneuvers input
-     * @param satellite             the satellite
+     * @param sequenceInput the sequence input
+     * @param maneuversInput the maneuvers input
+     * @param satellite the satellite
      * @param accelerationDirection the acceleration direction
-     * @param lofInput              the lof input
-     * @param header                the header
+     * @param lofInput the lof input
+     * @param header the header
      * @return the maneuver sequence builder
      */
-    public static ManeuverSequenceBuilder builder(final AttitudesSequence sequenceInput,
-                                                  final List<Maneuver> maneuversInput, final Spacecraft satellite,
-                                                  final Vector3D accelerationDirection, final LOF lofInput,
-                                                  final Header header) {
-        return new ManeuverSequenceBuilder(sequenceInput, maneuversInput, satellite, accelerationDirection, lofInput,
-                header);
+    public static ManeuverSequenceBuilder
+        builder(final AttitudesSequence sequenceInput,
+                final List<Maneuver> maneuversInput, final Spacecraft satellite,
+                final Vector3D accelerationDirection, final LOF lofInput,
+                final Header header) {
+        return new ManeuverSequenceBuilder(sequenceInput, maneuversInput,
+                                           satellite, accelerationDirection,
+                                           lofInput, header);
     }
 
     /**
      * Builder maneuver sequence builder.
      *
-     * @param sequenceInput          the sequence input
-     * @param maneuversInput         the maneuvers input
-     * @param satellite              the satellite
+     * @param sequenceInput the sequence input
+     * @param maneuversInput the maneuvers input
+     * @param satellite the satellite
      * @param accelerationDirections the acceleration directions
-     * @param lofInput               the lof input
-     * @param header                 the header
+     * @param lofInput the lof input
+     * @param header the header
      * @return the maneuver sequence builder
      */
-    public static ManeuverSequenceBuilder builder(final AttitudesSequence sequenceInput,
-                                                  final List<Maneuver> maneuversInput, final Spacecraft satellite,
-                                                  final List<Vector3D> accelerationDirections, final LOF lofInput,
-                                                  final Header header) {
-        return new ManeuverSequenceBuilder(sequenceInput, maneuversInput, satellite, accelerationDirections, lofInput,
-                header);
+    public static ManeuverSequenceBuilder
+        builder(final AttitudesSequence sequenceInput,
+                final List<Maneuver> maneuversInput, final Spacecraft satellite,
+                final List<Vector3D> accelerationDirections, final LOF lofInput,
+                final Header header) {
+        return new ManeuverSequenceBuilder(sequenceInput, maneuversInput,
+                                           satellite, accelerationDirections,
+                                           lofInput, header);
     }
 
     // Overrides
 
     @Override
     public void writeCzmlBlock(final CesiumStreamWriter stream,
-                               final CesiumOutputStream output) throws URISyntaxException, IOException {
+                               final CesiumOutputStream output)
+        throws URISyntaxException,
+            IOException {
         output.setPrettyFormatting(true);
         for (int i = 0; i < maneuvers.size(); i++) {
-            final Orientation  currentOrientation  = orientations.get(i);
-            final TimeInterval currentAvailability = availabilitiesManeuvers.get(i);
+            final Orientation currentOrientation = orientations.get(i);
+            final TimeInterval currentAvailability =
+                availabilitiesManeuvers.get(i);
             try (PacketCesiumWriter packet = stream.openPacket(output)) {
-                packet.writeId(DEFAULT_ID + satellitePositionReference + " " + i);
+                packet
+                    .writeId(DEFAULT_ID + satellitePositionReference + " " + i);
                 packet.writeName(DEFAULT_NAME + satellitePositionReference);
                 packet.writeAvailability(currentAvailability);
-                packet.writePositionPropertyReference(satellitePositionReference);
+                packet
+                    .writePositionPropertyReference(satellitePositionReference);
 
                 currentOrientation.write(packet, output);
 
@@ -361,7 +436,6 @@ public class ManeuverSequence extends AbstractPrimaryObject {
             }
         }
     }
-
 
     // Getters
 
@@ -473,65 +547,76 @@ public class ManeuverSequence extends AbstractPrimaryObject {
         return showTrust;
     }
 
-
     // Private functions
 
     /**
      * This function aims at generating a list of all the attitudes by maneuver.
      *
-     * @param statesInput    : The list of the spacecraft states of the satellite.
+     * @param statesInput : The list of the spacecraft states of the satellite.
      * @param maneuversInput : The list of the maneuvers to perform.
-     * @param directions     : The direction of the propulsion of the maneuver.
+     * @param directions : The direction of the propulsion of the maneuver.
      * @return : A list of the attitudes organized by maneuver.
      */
-    private List<List<Attitude>> generateAttitudesManeuvers(final List<SpacecraftState> statesInput,
-                                                            final List<Maneuver> maneuversInput,
-                                                            final List<Vector3D> directions) {
+    private List<List<Attitude>>
+        generateAttitudesManeuvers(final List<SpacecraftState> statesInput,
+                                   final List<Maneuver> maneuversInput,
+                                   final List<Vector3D> directions) {
         final List<List<Attitude>> toReturn = new ArrayList<>();
 
         // Iteration for each maneuver
         for (int i = 0; i < maneuversInput.size(); i++) {
-            final Maneuver maneuver  = maneuversInput.get(i);
+            final Maneuver maneuver = maneuversInput.get(i);
             final Vector3D direction = directions.get(i);
-            toReturn.add(generateAttitudeForOneManeuver(statesInput, maneuver, direction));
+            toReturn.add(generateAttitudeForOneManeuver(statesInput, maneuver,
+                                                        direction));
         }
         return toReturn;
     }
 
     /**
-     * This function will generate a list of the time intervals representing when the maneuvers take place.
+     * This function will generate a list of the time intervals representing
+     * when the maneuvers take place.
      *
      * @param maneuverList : The list of the maneuvers to perform.
-     * @param headerInput  : The header considered when several headers are used.
-     * @return : A list of the time intervals chronologically ordered of when the maneuvers happen.
+     * @param headerInput : The header considered when several headers are used.
+     * @return : A list of the time intervals chronologically ordered of when
+     *         the maneuvers happen.
      */
-    private List<TimeInterval> generateAvailabilitiesManeuvers(final List<Maneuver> maneuverList,
-                                                               final Header headerInput) {
+    private List<TimeInterval>
+        generateAvailabilitiesManeuvers(final List<Maneuver> maneuverList,
+                                        final Header headerInput) {
 
         final List<TimeInterval> toReturn = new ArrayList<>();
         for (final Maneuver currentManeuver : maneuverList) {
-            final AbstractManeuverTriggers currentTrigger = (AbstractManeuverTriggers) currentManeuver.getManeuverTriggers();
-            final TimeSpanMap<Boolean>     map            = currentTrigger.getFirings();
-            for (TimeSpanMap.Span<Boolean> span = map.getFirstNonNullSpan(); span != null; span = span.next()) {
+            final AbstractManeuverTriggers currentTrigger =
+                (AbstractManeuverTriggers) currentManeuver
+                    .getManeuverTriggers();
+            final TimeSpanMap<Boolean> map = currentTrigger.getFirings();
+            for (TimeSpanMap.Span<Boolean> span = map.getFirstNonNullSpan();
+                 span != null; span = span.next()) {
                 if (span.getData()) {
-                    if (span.getEnd()
-                            .isAfter(DateUtils.toAbsoluteDate(headerInput.getAvailability()
-                                                                         .getStop(), headerInput.getTimeScale()))) {
-                        toReturn.add(
-                                new TimeInterval(DateUtils.toJulianDate(span.getStart(), headerInput.getTimeScale()),
-                                        headerInput.getAvailability()
-                                                   .getStop()));
+                    if (span.getEnd().isAfter(DateUtils
+                        .toAbsoluteDate(headerInput.getAvailability().getStop(),
+                                        headerInput.getTimeScale()))) {
+                        toReturn
+                            .add(new TimeInterval(DateUtils
+                                .toJulianDate(span.getStart(),
+                                              headerInput.getTimeScale()),
+                                                  headerInput.getAvailability()
+                                                      .getStop()));
                     } else if (span.getStart()
-                                   .isBefore(DateUtils.toAbsoluteDate(headerInput.getAvailability()
-                                                                                 .getStart(),
-                                           headerInput.getTimeScale()))) {
-                        toReturn.add(new TimeInterval(headerInput.getAvailability()
-                                                                 .getStart(),
-                                DateUtils.toJulianDate(span.getEnd(), headerInput.getTimeScale())));
+                        .isBefore(DateUtils
+                            .toAbsoluteDate(headerInput.getAvailability()
+                                .getStart(), headerInput.getTimeScale()))) {
+                        toReturn
+                            .add(new TimeInterval(headerInput.getAvailability()
+                                .getStart(), DateUtils.toJulianDate(span.getEnd(), headerInput.getTimeScale())));
                     } else {
-                        toReturn.add(
-                                new TimeInterval(DateUtils.toJulianDate(span.getStart(), headerInput.getTimeScale()),
-                                        DateUtils.toJulianDate(span.getEnd(), headerInput.getTimeScale())));
+                        toReturn.add(new TimeInterval(DateUtils
+                            .toJulianDate(span.getStart(), headerInput
+                                .getTimeScale()), DateUtils
+                                    .toJulianDate(span.getEnd(),
+                                                  headerInput.getTimeScale())));
                     }
                 }
             }
@@ -540,21 +625,26 @@ public class ManeuverSequence extends AbstractPrimaryObject {
     }
 
     /**
-     * This function generates a list of the attitudes of the satellite knowing a maneuver is performing.
+     * This function generates a list of the attitudes of the satellite knowing
+     * a maneuver is performing.
      *
-     * @param direction       : The list of the direction of the propulsion of the maneuvers.
-     * @param statesInput     : The list of the spacecraft states of the satellite.
+     * @param direction : The list of the direction of the propulsion of the
+     *        maneuvers.
+     * @param statesInput : The list of the spacecraft states of the satellite.
      * @param currentManeuver : The maneuver to perform.
      * @return : A list of the attitudes during the maneuver.
      */
-    private List<Attitude> generateAttitudeForOneManeuver(final List<SpacecraftState> statesInput,
-                                                          final Maneuver currentManeuver, final Vector3D direction) {
+    private List<Attitude>
+        generateAttitudeForOneManeuver(final List<SpacecraftState> statesInput,
+                                       final Maneuver currentManeuver,
+                                       final Vector3D direction) {
 
-        final ManeuverTriggers currentTrigger       = currentManeuver.getManeuverTriggers();
-        boolean                firstFiringDateFound = false;
-        AbsoluteDate           dateFinalTime        = null;
-        SpacecraftState        previousState        = null;
-        AbsoluteDate           firstFiringDate;
+        final ManeuverTriggers currentTrigger =
+            currentManeuver.getManeuverTriggers();
+        boolean firstFiringDateFound = false;
+        AbsoluteDate dateFinalTime = null;
+        SpacecraftState previousState = null;
+        AbsoluteDate firstFiringDate;
 
         final List<Attitude> toReturn = new ArrayList<>();
 
@@ -564,32 +654,40 @@ public class ManeuverSequence extends AbstractPrimaryObject {
             if (j != 0) {
                 previousState = statesInput.get(j - 1);
             }
-            final double[] maneuversParameters = currentManeuver.getParameters();
-            final double   finalLocalTime      = maneuversParameters[maneuversParameters.length - 1];
+            final double[] maneuversParameters =
+                currentManeuver.getParameters();
+            final double finalLocalTime =
+                maneuversParameters[maneuversParameters.length - 1];
 
             // If the maneuver is firing
-            if (currentTrigger.isFiring(state.getDate(), currentManeuver.getParameters())) {
-                // If this is the first time the firing occurs for the maneuver, then we will save it
+            if (currentTrigger.isFiring(state.getDate(),
+                                        currentManeuver.getParameters())) {
+                // If this is the first time the firing occurs for the maneuver,
+                // then we will save it
                 if (!firstFiringDateFound) {
                     firstFiringDateFound = true;
-                    firstFiringDate      = state.getDate();
-                    dateFinalTime        = firstFiringDate.shiftedBy(finalLocalTime);
+                    firstFiringDate = state.getDate();
+                    dateFinalTime = firstFiringDate.shiftedBy(finalLocalTime);
                 }
                 definitionOfAttitudes(direction, state, toReturn);
             }
 
-            // If we already found the first date, and that the previous state is firing and the next is not, but
-            // the time indicates that we did not reach the end of the maneuver. We will add the current state as if it
-            // is firing. This way the maneuver is entirely covered in display. Else way, the arrow maneuver stopped being
+            // If we already found the first date, and that the previous state
+            // is firing and the next is not, but
+            // the time indicates that we did not reach the end of the maneuver.
+            // We will add the current state as if it
+            // is firing. This way the maneuver is entirely covered in display.
+            // Else way, the arrow maneuver stopped being
             // displayed before the end of the maneuver.
             if (firstFiringDateFound) {
                 assert previousState != null;
                 if (currentTrigger.isFiring(previousState.getDate(),
-                        currentManeuver.getParameters()) && !(currentTrigger.isFiring(state.getDate(),
-                        currentManeuver.getParameters()))) {
+                                            currentManeuver.getParameters()) &&
+                    !(currentTrigger
+                        .isFiring(state.getDate(),
+                                  currentManeuver.getParameters()))) {
                     assert dateFinalTime != null;
-                    if (previousState.getDate()
-                                     .isBefore(dateFinalTime)) {
+                    if (previousState.getDate().isBefore(dateFinalTime)) {
 
                         definitionOfAttitudes(direction, state, toReturn);
                     }
@@ -600,61 +698,84 @@ public class ManeuverSequence extends AbstractPrimaryObject {
     }
 
     /**
-     * This function will generate the orientations in time, knowing the list of the attitudes ordered by maneuvers.
+     * This function will generate the orientations in time, knowing the list of
+     * the attitudes ordered by maneuvers.
      *
-     * @param allAttitudeByManeuver : The list of the attitudes ordered by maneuver.
-     * @param headerInput           : The header considered
-     * @return : A list of orientation objects representing the orientation of the satellite in time to be written in the czml file.
+     * @param allAttitudeByManeuver : The list of the attitudes ordered by
+     *        maneuver.
+     * @param headerInput : The header considered
+     * @return : A list of orientation objects representing the orientation of
+     *         the satellite in time to be written in the czml file.
      */
-    private List<Orientation> generateOrientationManeuvers(final List<List<Attitude>> allAttitudeByManeuver,
-                                                           final Header headerInput) {
+    private List<Orientation>
+        generateOrientationManeuvers(final List<List<Attitude>> allAttitudeByManeuver,
+                                     final Header headerInput) {
         final List<Orientation> toReturn = new ArrayList<>();
         for (final List<Attitude> attitudesGivenManeuver : allAttitudeByManeuver) {
             if (!attitudesGivenManeuver.isEmpty()) {
-                toReturn.add(Orientation.builder(attitudesGivenManeuver, propagator.getFrame(), headerInput)
-                                        .withInvertToITRF(false)
-                                        .build());
+                toReturn.add(
+                             Orientation
+                                 .builder(attitudesGivenManeuver,
+                                          propagator.getFrame(), headerInput)
+                                 .withInvertToITRF(false).build());
             }
         }
         return toReturn;
     }
 
-
     /**
-     * This function aims at generating the attitudes for a given spacecraft state.
+     * This function aims at generating the attitudes for a given spacecraft
+     * state.
      *
      * @param direction : The direction of the maneuver to consider.
-     * @param state     : The state to consider.
-     * @param toReturn  : The list to add attitudes into.
+     * @param state : The state to consider.
+     * @param toReturn : The list to add attitudes into.
      */
-    private void definitionOfAttitudes(final Vector3D direction, final SpacecraftState state,
+    private void definitionOfAttitudes(final Vector3D direction,
+                                       final SpacecraftState state,
                                        final List<Attitude> toReturn) {
 
-        // The default direction of thrust of the 3D model is PLUS_J, so we will need to make sure when the
-        // direction of thrust asked is PLUS_J in Local Orbital Frame, we will need just to retrieve the
+        // The default direction of thrust of the 3D model is PLUS_J, so we will
+        // need to make sure when the
+        // direction of thrust asked is PLUS_J in Local Orbital Frame, we will
+        // need just to retrieve the
         // attitude from the sequence.
 
-        final Attitude currentAttitude = sequence.getAttitude(state.getOrbit(), state.getDate(), state.getFrame());
+        final Attitude currentAttitude =
+            sequence.getAttitude(state.getOrbit(), state.getDate(),
+                                 state.getFrame());
         final Rotation currentRotation = currentAttitude.getRotation();
         if (direction != Vector3D.PLUS_J) {
 
-            // We need the acceleration direction to NOT be PLUS_J else way we can't compute the following rotation :
-            final Rotation rotationFromXtoDirection = new Rotation(Vector3D.PLUS_J, direction.negate());
-            // If we want to display the thrust and not the acceleration, we need to rotate the vector by 180°
+            // We need the acceleration direction to NOT be PLUS_J else way we
+            // can't compute the following rotation :
+            final Rotation rotationFromXtoDirection =
+                new Rotation(Vector3D.PLUS_J, direction.negate());
+            // If we want to display the thrust and not the acceleration, we
+            // need to rotate the vector by 180°
             if (showTrust) {
-                final Rotation showTrustRotation = new Rotation(direction, direction.negate());
-                final Rotation tempRotation = rotationFromXtoDirection.compose(currentRotation,
-                        RotationConvention.VECTOR_OPERATOR);
-                final Rotation finalRotation = showTrustRotation.compose(tempRotation,
-                        RotationConvention.VECTOR_OPERATOR);
-                final Attitude finalAttitude = new Attitude(state.getDate(), state.getFrame(), finalRotation,
-                        Vector3D.ZERO, Vector3D.ZERO);
+                final Rotation showTrustRotation =
+                    new Rotation(direction, direction.negate());
+                final Rotation tempRotation =
+                    rotationFromXtoDirection
+                        .compose(currentRotation,
+                                 RotationConvention.VECTOR_OPERATOR);
+                final Rotation finalRotation =
+                    showTrustRotation
+                        .compose(tempRotation,
+                                 RotationConvention.VECTOR_OPERATOR);
+                final Attitude finalAttitude =
+                    new Attitude(state.getDate(), state.getFrame(),
+                                 finalRotation, Vector3D.ZERO, Vector3D.ZERO);
                 toReturn.add(finalAttitude);
             } else {
-                final Rotation finalRotation = rotationFromXtoDirection.compose(currentRotation,
-                        RotationConvention.VECTOR_OPERATOR);
-                final Attitude finalAttitude = new Attitude(state.getDate(), state.getFrame(), finalRotation,
-                        Vector3D.ZERO, Vector3D.ZERO);
+                final Rotation finalRotation =
+                    rotationFromXtoDirection
+                        .compose(currentRotation,
+                                 RotationConvention.VECTOR_OPERATOR);
+                final Attitude finalAttitude =
+                    new Attitude(state.getDate(), state.getFrame(),
+                                 finalRotation, Vector3D.ZERO, Vector3D.ZERO);
                 toReturn.add(finalAttitude);
             }
         }
@@ -663,16 +784,21 @@ public class ManeuverSequence extends AbstractPrimaryObject {
 
             // Rotation of PLUS_J of 180°
             if (showTrust) {
-                final Rotation rotationFromXtoDirection = new Rotation(Vector3D.PLUS_J, Vector3D.MINUS_J);
-                final Rotation finalRotation = rotationFromXtoDirection.compose(currentRotation,
-                        RotationConvention.VECTOR_OPERATOR);
-                final Attitude finalAttitude = new Attitude(state.getDate(), state.getFrame(), finalRotation,
-                        Vector3D.ZERO, Vector3D.ZERO);
+                final Rotation rotationFromXtoDirection =
+                    new Rotation(Vector3D.PLUS_J, Vector3D.MINUS_J);
+                final Rotation finalRotation =
+                    rotationFromXtoDirection
+                        .compose(currentRotation,
+                                 RotationConvention.VECTOR_OPERATOR);
+                final Attitude finalAttitude =
+                    new Attitude(state.getDate(), state.getFrame(),
+                                 finalRotation, Vector3D.ZERO, Vector3D.ZERO);
                 toReturn.add(finalAttitude);
             } else {
                 // No need to compute the direction rotation here
-                final Attitude finalAttitude = new Attitude(state.getDate(), state.getFrame(), currentRotation,
-                        Vector3D.ZERO, Vector3D.ZERO);
+                final Attitude finalAttitude =
+                    new Attitude(state.getDate(), state.getFrame(),
+                                 currentRotation, Vector3D.ZERO, Vector3D.ZERO);
                 toReturn.add(finalAttitude);
             }
         }

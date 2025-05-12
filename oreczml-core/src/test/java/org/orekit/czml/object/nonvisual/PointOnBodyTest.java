@@ -35,7 +35,9 @@ import java.util.List;
 /**
  * The type Point on body test.
  */
-public class PointOnBodyTest extends AbstractTest {
+public class PointOnBodyTest
+    extends
+    AbstractTest {
 
     /**
      * Point on body constructor test.
@@ -43,29 +45,39 @@ public class PointOnBodyTest extends AbstractTest {
      * @throws IOException the io exception
      */
     @Test
-    void PointOnBodyConstructorTest() throws IOException, URISyntaxException {
+    void PointOnBodyConstructorTest()
+        throws IOException,
+            URISyntaxException {
 
         loadOrekitData();
 
         final Header header = dummyHeader();
 
         final TimeInterval availability1 = header.getAvailability();
-        final TimeInterval availability2 = DateUtils.shitfedBy(availability1, 10.0);
-        final TimeInterval availability3 = DateUtils.shitfedBy(availability2, 10.0);
-        final TimeInterval availability4 = DateUtils.shitfedBy(availability3, 10.0);
+        final TimeInterval availability2 =
+            DateUtils.shitfedBy(availability1, 10.0);
+        final TimeInterval availability3 =
+            DateUtils.shitfedBy(availability2, 10.0);
+        final TimeInterval availability4 =
+            DateUtils.shitfedBy(availability3, 10.0);
 
-        final List<TimeInterval> availabilities = new ArrayList<>(Arrays.asList(availability1, availability2, availability3, availability4));
+        final List<TimeInterval> availabilities =
+            new ArrayList<>(Arrays.asList(availability1, availability2,
+                                          availability3, availability4));
 
-        final List<JulianDate> julianDates = DateUtils.toJulianDates(availabilities);
+        final List<JulianDate> julianDates =
+            DateUtils.toJulianDates(availabilities);
 
         final List<GeodeticPoint> points = getPoints();
 
-        final PointOnBody pointOnBodyTest = new PointOnBody(julianDates, points, getEarth(), header);
+        final PointOnBody pointOnBodyTest =
+            new PointOnBody(julianDates, points, getEarth(), header);
 
         pointOnBodyTest.setDisplayPath(true);
         pointOnBodyTest.setDisplayPeriodPointingPath(true, 20.0);
 
-        final String pathFile = loadResources("templateFile/nonvisual/PointOnBodyTemplate.txt");
+        final String pathFile =
+            loadResources("templateFile/nonvisual/PointOnBodyTemplate.txt");
         verifyFileOutput(pathFile, pointOnBodyTest.toString(), 1e-8);
 
         // Getters coverage
@@ -76,16 +88,22 @@ public class PointOnBodyTest extends AbstractTest {
     }
 
     private static List<GeodeticPoint> getPoints() {
-        final GeodeticPoint point1 = new GeodeticPoint(FastMath.toRadians(43),
-                FastMath.toRadians(1.44), 10);
-        final GeodeticPoint point2 = new GeodeticPoint(FastMath.toRadians(44),
-                FastMath.toRadians(1.45), 10);
-        final GeodeticPoint point3 = new GeodeticPoint(FastMath.toRadians(45),
-                FastMath.toRadians(1.46), 10);
-        final GeodeticPoint point4 = new GeodeticPoint(FastMath.toRadians(46),
-                FastMath.toRadians(1.47), 10);
-        final GeodeticPoint point5 = new GeodeticPoint(FastMath.toRadians(47),
-                FastMath.toRadians(1.48), 10);
-        return new ArrayList<>(Arrays.asList(point1, point2, point3, point4, point5));
+        final GeodeticPoint point1 =
+            new GeodeticPoint(FastMath.toRadians(43), FastMath.toRadians(1.44),
+                              10);
+        final GeodeticPoint point2 =
+            new GeodeticPoint(FastMath.toRadians(44), FastMath.toRadians(1.45),
+                              10);
+        final GeodeticPoint point3 =
+            new GeodeticPoint(FastMath.toRadians(45), FastMath.toRadians(1.46),
+                              10);
+        final GeodeticPoint point4 =
+            new GeodeticPoint(FastMath.toRadians(46), FastMath.toRadians(1.47),
+                              10);
+        final GeodeticPoint point5 =
+            new GeodeticPoint(FastMath.toRadians(47), FastMath.toRadians(1.48),
+                              10);
+        return new ArrayList<>(Arrays.asList(point1, point2, point3, point4,
+                                             point5));
     }
 }

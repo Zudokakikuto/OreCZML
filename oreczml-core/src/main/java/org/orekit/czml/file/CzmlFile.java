@@ -34,10 +34,11 @@ import java.util.List;
 
 /**
  * Czml File
- *
  * <p>
- * The Czml file is the center of all the project. It carries all the information that will are written after each object as been declared.
- * It contains only packets and objects and interface with the Czml File Writer that write everything inside the file.
+ * The Czml file is the center of all the project. It carries all the
+ * information that will are written after each object as been declared. It
+ * contains only packets and objects and interface with the Czml File Writer
+ * that write everything inside the file.
  *
  * @author Julien LEBLOND.
  * @since 1.0.0
@@ -47,8 +48,8 @@ public class CzmlFile {
     /**
      * The default path to the root folder.
      */
-    private static final String DEFAULT_ROOT = System.getProperty("user.dir")
-                                                     .replace("\\", "/");
+    private static final String DEFAULT_ROOT =
+        System.getProperty("user.dir").replace("\\", "/");
 
     /**
      * The complete list of all the primary object to write.
@@ -89,10 +90,12 @@ public class CzmlFile {
             // String writer used by Cesium
             final StringWriter writer = new StringWriter();
 
-            // The output stream of cesium that will contain the strings to write into the CzmLFile
+            // The output stream of cesium that will contain the strings to
+            // write into the CzmLFile
             final CesiumOutputStream output = new CesiumOutputStream(writer);
 
-            // The stream that converts all the strings into understandable string for the CzmlFile.
+            // The stream that converts all the strings into understandable
+            // string for the CzmlFile.
             final CesiumStreamWriter streamWriter = new CesiumStreamWriter();
 
             // Remove duplicates
@@ -100,9 +103,7 @@ public class CzmlFile {
             noDuplicates.add(objects.get(0));
             for (int i = 1; i < objects.size(); i++) {
                 final CzmlPrimaryObject object = objects.get(i);
-                if (!object.getId()
-                           .equals(objects.get(i - 1)
-                                          .getId())) {
+                if (!object.getId().equals(objects.get(i - 1).getId())) {
                     noDuplicates.add(object);
                 }
             }
@@ -121,24 +122,30 @@ public class CzmlFile {
     }
 
     /**
-     * This function writes all the primary objects into the czml file from a path.
+     * This function writes all the primary objects into the czml file from a
+     * path.
      *
      * @param outputFilePath file to write in
      * @throws URISyntaxException the uri syntax exception
-     * @throws IOException        the io exception
+     * @throws IOException the io exception
      */
-    public void write(final String outputFilePath) throws URISyntaxException, IOException {
+    public void write(final String outputFilePath)
+        throws URISyntaxException,
+            IOException {
         write(new File(outputFilePath));
     }
 
     /**
-     * This function writes all the primary objects into the czml file from a File object.
+     * This function writes all the primary objects into the czml file from a
+     * File object.
      *
      * @param outputFile file to write in
      * @throws URISyntaxException the uri syntax exception
-     * @throws IOException        the io exception
+     * @throws IOException the io exception
      */
-    public void write(final File outputFile) throws URISyntaxException, IOException {
+    public void write(final File outputFile)
+        throws URISyntaxException,
+            IOException {
         if (objects.isEmpty()) {
             throw new OreCzmlException(OreCzmlMessages.HEADER_ALONE);
         }
@@ -150,10 +157,12 @@ public class CzmlFile {
             // String writer used by Cesium
             final StringWriter writer = new StringWriter();
 
-            // The output stream of cesium that will contain the strings to write into the CzmLFile
+            // The output stream of cesium that will contain the strings to
+            // write into the CzmLFile
             final CesiumOutputStream output = new CesiumOutputStream(writer);
 
-            // The stream that converts all the strings into understandable string for the CzmlFile.
+            // The stream that converts all the strings into understandable
+            // string for the CzmlFile.
             final CesiumStreamWriter streamWriter = new CesiumStreamWriter();
 
             // Remove duplicates
@@ -161,9 +170,7 @@ public class CzmlFile {
             noDuplicates.add(objects.get(0));
             for (int i = 1; i < objects.size(); i++) {
                 final CzmlPrimaryObject object = objects.get(i);
-                if (!object.getId()
-                           .equals(objects.get(i - 1)
-                                          .getId())) {
+                if (!object.getId().equals(objects.get(i - 1).getId())) {
                     noDuplicates.add(object);
                 }
             }
@@ -174,15 +181,14 @@ public class CzmlFile {
             }
 
             // Write in file
-            outputFile.getParentFile()
-                      .mkdirs(); // Create output directory if needed
+            outputFile.getParentFile().mkdirs(); // Create output directory if
+                                                 // needed
             try (FileWriter FileWriter = new FileWriter(outputFile)) {
                 FileWriter.write(writer + System.lineSeparator() + "]");
             }
         }
         clear();
     }
-
 
     /**
      * Builder czml file builder.
@@ -196,7 +202,8 @@ public class CzmlFile {
     // Getters
 
     /**
-     * This function allows the addition of a primary object into the czml file object.
+     * This function allows the addition of a primary object into the czml file
+     * object.
      *
      * @param object : Primary object to add
      */
@@ -239,10 +246,11 @@ public class CzmlFile {
     // Usable functions
 
     /**
-     * This method clears the path and the directory of the czml file, use this to write two czml file after another.
+     * This method clears the path and the directory of the czml file, use this
+     * to write two czml file after another.
      */
     public void clear() {
         this.pathDirectory = "";
-        this.objects       = new ArrayList<>();
+        this.objects = new ArrayList<>();
     }
 }

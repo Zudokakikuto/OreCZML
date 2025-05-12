@@ -16,6 +16,7 @@
  */
 
 /**
- * This package groups all the tutorials related to scenarios where inter visualization of satellites are displayed.
+ * This package groups all the tutorials related to scenarios where inter
+ * visualization of satellites are displayed.
  */
 package org.orekit.czml.intervisu;

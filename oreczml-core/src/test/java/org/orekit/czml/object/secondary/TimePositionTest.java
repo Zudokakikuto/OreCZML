@@ -48,45 +48,56 @@ import java.util.List;
 /**
  * The type Time position test.
  */
-public class TimePositionTest extends AbstractTest {
+public class TimePositionTest
+    extends
+    AbstractTest {
 
     /**
      * Time position constructor test.
      *
-     * @throws IOException        the io exception
+     * @throws IOException the io exception
      * @throws URISyntaxException the uri syntax exception
      */
     @Test
-    void TimePositionConstructorTest() throws IOException, URISyntaxException {
+    void TimePositionConstructorTest()
+        throws IOException,
+            URISyntaxException {
 
         loadOrekitData();
 
         final Header header = dummyHeader();
 
-        final AbsoluteDate startDate = new AbsoluteDate(2024, 3, 15, 0, 0, 0.0, TimeScalesFactory.getUTC());
+        final AbsoluteDate startDate =
+            new AbsoluteDate(2024, 3, 15, 0, 0, 0.0,
+                             TimeScalesFactory.getUTC());
         final AbsoluteDate finalDate = startDate.shiftedBy(5 * 3600);
 
-        final KeplerianOrbit initialOrbit = new KeplerianOrbit(7878000, 0, FastMath.toRadians(10), 0,
-                FastMath.toRadians(90), FastMath.toRadians(0), PositionAngleType.MEAN, FramesFactory.getEME2000(), startDate,
-                Constants.WGS84_EARTH_MU);
+        final KeplerianOrbit initialOrbit =
+            new KeplerianOrbit(7878000, 0, FastMath.toRadians(10), 0,
+                               FastMath.toRadians(90), FastMath.toRadians(0),
+                               PositionAngleType.MEAN,
+                               FramesFactory.getEME2000(), startDate,
+                               Constants.WGS84_EARTH_MU);
 
         final SpacecraftState initialState = new SpacecraftState(initialOrbit);
 
         // Build of the propagator
 
+        final double[][] tolerances =
+            NumericalPropagator.tolerances(10, initialOrbit,
+                                           OrbitType.CARTESIAN);
+        final AdaptiveStepsizeIntegrator integrator =
+            new DormandPrince853Integrator(0.001, 1000.0, tolerances[0],
+                                           tolerances[1]);
 
-        final double[][] tolerances = NumericalPropagator.tolerances(10, initialOrbit,
-                OrbitType.CARTESIAN);
-        final AdaptiveStepsizeIntegrator integrator = new DormandPrince853Integrator(0.001,
-                1000.0, tolerances[0],
-                tolerances[1]);
+        final NumericalPropagator propagator =
+            new NumericalPropagator(integrator);
 
-        final NumericalPropagator propagator = new NumericalPropagator(integrator);
-
-        final NormalizedSphericalHarmonicsProvider provider = GravityFieldFactory.getNormalizedProvider(10,
-                10);
-        final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(FramesFactory.getEME2000(),
-                provider);
+        final NormalizedSphericalHarmonicsProvider provider =
+            GravityFieldFactory.getNormalizedProvider(10, 10);
+        final ForceModel holmesFeatherstone =
+            new HolmesFeatherstoneAttractionModel(FramesFactory.getEME2000(),
+                                                  provider);
 
         final EphemerisGenerator generator = propagator.getEphemerisGenerator();
 
@@ -95,17 +106,21 @@ public class TimePositionTest extends AbstractTest {
         propagator.setInitialState(initialState);
 
         propagator.propagate(startDate, finalDate);
-        final BoundedPropagator boundedPropagator = generator.getGeneratedEphemeris();
+        final BoundedPropagator boundedPropagator =
+            generator.getGeneratedEphemeris();
 
         final Spacecraft satellite = new Spacecraft(boundedPropagator, header);
 
         final List<JulianDate> julianDates = satellite.getJulianDates();
 
-        final List<Cartesian> randomCartesians = computeRandomCartesians(julianDates.size());
+        final List<Cartesian> randomCartesians =
+            computeRandomCartesians(julianDates.size());
 
-        final TimePosition timePosition = new TimePosition(randomCartesians, julianDates);
+        final TimePosition timePosition =
+            new TimePosition(randomCartesians, julianDates);
 
-        final String pathFile = loadResources("templateFile/secondary/TimePositionTemplate.txt");
+        final String pathFile =
+            loadResources("templateFile/secondary/TimePositionTemplate.txt");
 
         verifyFileOutput(pathFile, timePosition.toString(), 1e-8);
     }

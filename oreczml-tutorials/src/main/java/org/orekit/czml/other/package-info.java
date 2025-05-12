@@ -16,6 +16,7 @@
  */
 
 /**
- * This package groups all the tutorials that are not grouped in a specific category.
+ * This package groups all the tutorials that are not grouped in a specific
+ * category.
  */
 package org.orekit.czml.other;

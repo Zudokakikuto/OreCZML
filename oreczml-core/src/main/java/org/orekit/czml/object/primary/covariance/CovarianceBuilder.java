@@ -72,17 +72,20 @@ public class CovarianceBuilder {
     /**
      * The constructor of the covariance display builder.
      *
-     * @param satelliteInput   : The satellite around which the covariance is computed.
-     * @param covariancesInput : The list of state covariance used to start the propagation of the covariance.
-     * @param lofInput         : The local orbital frame of the satellite.
-     * @param headerInput      : The header considered.
+     * @param satelliteInput : The satellite around which the covariance is
+     *        computed.
+     * @param covariancesInput : The list of state covariance used to start the
+     *        propagation of the covariance.
+     * @param lofInput : The local orbital frame of the satellite.
+     * @param headerInput : The header considered.
      */
-    public CovarianceBuilder(final Spacecraft satelliteInput, final List<StateCovariance> covariancesInput,
+    public CovarianceBuilder(final Spacecraft satelliteInput,
+                             final List<StateCovariance> covariancesInput,
                              final LOF lofInput, final Header headerInput) {
-        this.satellite   = satelliteInput;
+        this.satellite = satelliteInput;
         this.covariances = covariancesInput;
-        this.lof         = lofInput;
-        this.customID    = Covariance.DEFAULT_ID + satelliteInput.getId();
+        this.lof = lofInput;
+        this.customID = Covariance.DEFAULT_ID + satelliteInput.getId();
         this.header = headerInput;
     }
 
@@ -122,13 +125,17 @@ public class CovarianceBuilder {
     /**
      * The build function that generates the covariance display object.
      *
-     * @return : A covariance display object with the given parameters of the builder.
+     * @return : A covariance display object with the given parameters of the
+     *         builder.
      * @throws URISyntaxException the uri syntax exception
-     * @throws IOException        the io exception
+     * @throws IOException the io exception
      */
-    public Covariance build() throws URISyntaxException, IOException {
+    public Covariance build()
+        throws URISyntaxException,
+            IOException {
         if (this.satellite != null && !this.covariances.isEmpty()) {
-            return new Covariance(satellite, covariances, lof, color, customID, header);
+            return new Covariance(satellite, covariances, lof, color, customID,
+                                  header);
         }
         return null;
     }

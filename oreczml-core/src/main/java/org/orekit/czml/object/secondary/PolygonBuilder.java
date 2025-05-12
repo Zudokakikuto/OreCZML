@@ -16,13 +16,14 @@
  */
 package org.orekit.czml.object.secondary;
 
-import cesiumlanguagewriter.Cartesian;
-import cesiumlanguagewriter.TimeInterval;
-import org.orekit.czml.object.primary.Header;
-
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.orekit.czml.object.primary.Header;
+
+import cesiumlanguagewriter.Cartesian;
+import cesiumlanguagewriter.TimeInterval;
 
 /**
  * Polygon Builder class
@@ -69,25 +70,29 @@ public class PolygonBuilder {
     /**
      * The constructor of the polygon builder.
      *
-     * @param cartesiansInput : The list of cartesians that will build the polygon.
-     * @param headerInput     : The header considered.
+     * @param cartesiansInput : The list of cartesians that will build the
+     *        polygon.
+     * @param headerInput : The header considered.
      */
-    public PolygonBuilder(final List<Cartesian> cartesiansInput, final Header headerInput) {
-        this.availability = headerInput.getAvailability(); // Time frame will be entire simulation
-        this.cartesians   = new ArrayList<>(cartesiansInput);
+    public PolygonBuilder(final List<Cartesian> cartesiansInput,
+                          final Header headerInput) {
+        this.availability = headerInput.getAvailability(); // Time frame will be
+                                                           // entire simulation
+        this.cartesians = new ArrayList<>(cartesiansInput);
     }
 
     /**
      * The constructor of the polygon builder.
      *
-     * @param cartesiansInput : The list of cartesians that will build the polygon.
-     * @param availability    : The availability of the polygon
+     * @param cartesiansInput : The list of cartesians that will build the
+     *        polygon.
+     * @param availability : The availability of the polygon
      */
-    public PolygonBuilder(final List<Cartesian> cartesiansInput, final TimeInterval availability) {
+    public PolygonBuilder(final List<Cartesian> cartesiansInput,
+                          final TimeInterval availability) {
         this.availability = availability;
-        this.cartesians   = new ArrayList<>(cartesiansInput);
+        this.cartesians = new ArrayList<>(cartesiansInput);
     }
-
 
     /**
      * Function to set up a color.
@@ -136,11 +141,12 @@ public class PolygonBuilder {
     /**
      * Function to set up the valid time interval of the polygon.
      *
-     * @param availability : The availability of the polygon
+     * @param availabilityInput : The availability of the polygon
      * @return : Time frame in simulation during which feature will be visible.
      */
-    public PolygonBuilder withAvailability(final TimeInterval availability) {
-        this.availability = availability;
+    public PolygonBuilder
+        withAvailability(final TimeInterval availabilityInput) {
+        availability = availabilityInput;
         return this;
     }
 

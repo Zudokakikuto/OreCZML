@@ -44,10 +44,10 @@ public class VectorPolylineBuilder {
     public static final double DEFAULT_NEAR_DISTANCE = 1;
 
     /**
-     * The default far distance where the polyline must not be displayed anymore.
+     * The default far distance where the polyline must not be displayed
+     * anymore.
      */
     public static final double DEFAULT_FAR_DISTANCE = 100000000;
-
 
     /**
      * The color of the polyline.
@@ -77,12 +77,14 @@ public class VectorPolylineBuilder {
     /**
      * The constructor of the vector polyline builder.
      *
-     * @param cartesiansInput : The list of cartesian that represents the extremities of the polyline.
-     * @param header          : The header considered.s
+     * @param cartesiansInput : The list of cartesian that represents the
+     *        extremities of the polyline.
+     * @param header : The header considered.s
      */
-    public VectorPolylineBuilder(final List<Cartesian> cartesiansInput, final Header header) {
+    public VectorPolylineBuilder(final List<Cartesian> cartesiansInput,
+                                 final Header header) {
         this.cartesianList = new ArrayList<>(cartesiansInput);
-        this.header        = header;
+        this.header = header;
     }
 
     /**
@@ -102,7 +104,8 @@ public class VectorPolylineBuilder {
      * @param nearDistanceInput : The near distance to set up.
      * @return : The vector polyline builder with the given near distance.
      */
-    public VectorPolylineBuilder withNearDistance(final double nearDistanceInput) {
+    public VectorPolylineBuilder
+        withNearDistance(final double nearDistanceInput) {
         this.nearDistance = nearDistanceInput;
         return this;
     }
@@ -113,7 +116,8 @@ public class VectorPolylineBuilder {
      * @param farDistanceInput : The far distance to set up.
      * @return : The vector polyline builder with the given far distance.
      */
-    public VectorPolylineBuilder withFarDistance(final double farDistanceInput) {
+    public VectorPolylineBuilder
+        withFarDistance(final double farDistanceInput) {
         this.farDistance = farDistanceInput;
         return this;
     }
@@ -124,7 +128,8 @@ public class VectorPolylineBuilder {
      * @return : A polyline object with the given parameters of the builder.
      */
     public Polyline build() {
-        return new Polyline(cartesianList, color, nearDistance, farDistance, header);
+        return new Polyline(cartesianList, color, nearDistance, farDistance,
+                            header);
     }
 
 }

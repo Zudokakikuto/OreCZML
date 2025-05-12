@@ -25,9 +25,9 @@ import java.net.URISyntaxException;
 
 /**
  * CZML Primary Object Interface
- *
  * <p>
- * This interface represents the objects that are directly displayed on screen,they depends to no other objects except the header object.
+ * This interface represents the objects that are directly displayed on
+ * screen,they depends to no other objects except the header object.
  *
  * @author Julien LEBLOND
  * @since 1.0.0
@@ -39,12 +39,16 @@ public interface CzmlPrimaryObject {
     /**
      * The classic method that writes the object into the CzmlFile.
      *
-     * @param stream : The stream that converts all the strings into understandable string for the CzmlFile
-     * @param output : The output stream of cesium that will contain the strings to write into the CzmLFile.
+     * @param stream : The stream that converts all the strings into
+     *        understandable string for the CzmlFile
+     * @param output : The output stream of cesium that will contain the strings
+     *        to write into the CzmLFile.
      * @throws URISyntaxException the uri syntax exception
-     * @throws IOException        the io exception
+     * @throws IOException the io exception
      */
-    void writeCzmlBlock(CesiumStreamWriter stream, CesiumOutputStream output) throws URISyntaxException, IOException;
+    void writeCzmlBlock(CesiumStreamWriter stream, CesiumOutputStream output)
+        throws URISyntaxException,
+            IOException;
 
     /**
      * Gets id.

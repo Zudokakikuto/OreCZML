@@ -25,7 +25,9 @@ import java.net.URISyntaxException;
 /**
  * The type Header test.
  */
-public class HeaderTest extends AbstractTest {
+public class HeaderTest
+    extends
+    AbstractTest {
 
     /**
      * Header constructor test.
@@ -33,7 +35,9 @@ public class HeaderTest extends AbstractTest {
      * @throws IOException the io exception
      */
     @Test
-    void HeaderConstructorTest() throws IOException, URISyntaxException {
+    void HeaderConstructorTest()
+        throws IOException,
+            URISyntaxException {
 
         loadOrekitData();
 
@@ -41,13 +45,18 @@ public class HeaderTest extends AbstractTest {
 
         final String headerValue = "A header";
         final String headerVersionNumber = "1.0";
-        final Header headerCoverage = new Header(headerValue, headerVersionNumber, header.getClock());
+        final Header headerCoverage =
+            new Header(headerValue, headerVersionNumber, header.getClock());
 
-        final Header headerVersion = new Header(headerValue, headerVersionNumber, header.getClock(), "");
+        final Header headerVersion =
+            new Header(headerValue, headerVersionNumber, header.getClock(), "");
 
-        final String pathFile         = loadResources("templateFile/primary/HeaderTemplate.txt");
-        final String coveragePathFile = loadResources("templateFile/primary/HeaderCoverageTemplate.txt");
-        final String versionPathFile  = loadResources("templateFile/primary/HeaderVersionTemplate.txt");
+        final String pathFile =
+            loadResources("templateFile/primary/HeaderTemplate.txt");
+        final String coveragePathFile =
+            loadResources("templateFile/primary/HeaderCoverageTemplate.txt");
+        final String versionPathFile =
+            loadResources("templateFile/primary/HeaderVersionTemplate.txt");
 
         verifyFileOutput(pathFile, header.toString(), 1e-8);
         verifyFileOutput(coveragePathFile, headerCoverage.toString(), 1e-8);

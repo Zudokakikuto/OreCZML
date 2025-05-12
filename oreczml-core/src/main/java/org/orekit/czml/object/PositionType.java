@@ -19,28 +19,31 @@ package org.orekit.czml.object;
 /**
  * Position type enum
  * <p>
- * Enum for the {@link org.orekit.czml.object.Position} class. It describes all the different
- * types of existing tuples to describe a position.
+ * Enum for the {@link org.orekit.czml.object.Position} class. It describes all
+ * the different types of existing tuples to describe a position.
  *
  * @author Julien LEBLOND
  * @since 1.0.0
  */
 public enum PositionType {
 
-    /**
-     * The position in radians in the (longitude, latitude, altitude) reference system.
-     */
-    CARTOGRAPHIC_RADIANS,
-    /**
-     * The position in degrees in the (longitude, latitude, altitude) reference system.
-     */
-    CARTOGRAPHIC_DEGREES,
-    /**
-     * The position in the cartesian position (x,y,z) reference system.
-     */
-    CARTESIAN_POSITION,
+                          /**
+                           * The position in radians in the (longitude,
+                           * latitude, altitude) reference system.
+                           */
+                          CARTOGRAPHIC_RADIANS,
+                          /**
+                           * The position in degrees in the (longitude,
+                           * latitude, altitude) reference system.
+                           */
+                          CARTOGRAPHIC_DEGREES,
+                          /**
+                           * The position in the cartesian position (x,y,z)
+                           * reference system.
+                           */
+                          CARTESIAN_POSITION,
 
-    /** The empty constructor. */
-    PositionType() {
-    }
+                          /** The empty constructor. */
+                          PositionType() {
+                          }
 }

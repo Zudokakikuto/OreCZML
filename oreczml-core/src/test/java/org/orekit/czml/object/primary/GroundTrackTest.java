@@ -34,53 +34,64 @@ import java.util.List;
 /**
  * The type Ground track test.
  */
-public class GroundTrackTest extends AbstractTest {
+public class GroundTrackTest
+    extends
+    AbstractTest {
 
     /**
      * Ground track constructor test.
      *
-     * @throws IOException        the io exception
+     * @throws IOException the io exception
      * @throws URISyntaxException the uri syntax exception
      */
     @Test
-    void GroundTrackConstructorTest() throws IOException, URISyntaxException {
+    void GroundTrackConstructorTest()
+        throws IOException,
+            URISyntaxException {
 
         loadOrekitData();
 
         final Header header = dummyHeader();
-        final AbsoluteDate startDate = DateUtils.toAbsoluteDate(header.getAvailability()
-                                                                      .getStart(), TimeScalesFactory.getUTC());
+        final AbsoluteDate startDate =
+            DateUtils.toAbsoluteDate(header.getAvailability().getStart(),
+                                     TimeScalesFactory.getUTC());
         final AbsoluteDate finalDate = startDate.shiftedBy(60.0);
 
-        final BoundedPropagator propagator = dummyPropagator(startDate, finalDate);
+        final BoundedPropagator propagator =
+            dummyPropagator(startDate, finalDate);
 
         final Spacecraft satellite = new Spacecraft(propagator, header);
 
-        final List<BoundedPropagator> propagators = new ArrayList<>(List.of(propagator));
+        final List<BoundedPropagator> propagators =
+            new ArrayList<>(List.of(propagator));
 
-        final Constellation constellation = Constellation.builder(propagators, finalDate, header)
-                                                         .build();
+        final Constellation constellation =
+            Constellation.builder(propagators, finalDate, header).build();
 
-        final GroundTrack groundTrack = new GroundTrack(satellite, getEarth(), header);
+        final GroundTrack groundTrack =
+            new GroundTrack(satellite, getEarth(), header);
         groundTrack.displayLinkSatellite();
 
-        final GroundTrack groundTrackWithBuilder = GroundTrack.builder(satellite, getEarth(), header)
-                                                              .withColor(Color.ORANGE)
-                                                              .withHeader(header)
-                                                              .withCustomID("CustomID")
-                                                              .build();
+        final GroundTrack groundTrackWithBuilder =
+            GroundTrack.builder(satellite, getEarth(), header)
+                .withColor(Color.ORANGE).withHeader(header)
+                .withCustomID("CustomID").build();
 
-        final GroundTrack constellationGroundTrack = GroundTrack.builder(constellation, getEarth(), header)
-                                                                .build();
+        final GroundTrack constellationGroundTrack =
+            GroundTrack.builder(constellation, getEarth(), header).build();
         constellationGroundTrack.displayLinkSatellite();
 
-
-        final String pathFile              = loadResources("templateFile/primary/GroundTrackTemplate.txt");
-        final String builderPathFile       = loadResources("templateFile/primary/GroundTrackWithBuilderTemplate.txt");
-        final String constellationPathFile = loadResources("templateFile/primary/GroundTrackConstellationTemplate.txt");
+        final String pathFile =
+            loadResources("templateFile/primary/GroundTrackTemplate.txt");
+        final String builderPathFile =
+            loadResources("templateFile/primary/GroundTrackWithBuilderTemplate.txt");
+        final String constellationPathFile =
+            loadResources("templateFile/primary/GroundTrackConstellationTemplate.txt");
 
         verifyFileOutput(pathFile, groundTrack.toString(), 1e-8);
-        verifyFileOutput(builderPathFile, groundTrackWithBuilder.toString(), 1e-8);
-        verifyFileOutput(constellationPathFile, constellationGroundTrack.toString(), 1e-8);
+        verifyFileOutput(builderPathFile, groundTrackWithBuilder.toString(),
+                         1e-8);
+        verifyFileOutput(constellationPathFile,
+                         constellationGroundTrack.toString(), 1e-8);
     }
 }

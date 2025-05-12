@@ -42,10 +42,9 @@ public class SpacecraftBuilder {
     /**
      * The default model path of the model for the Spacecraft.
      */
-    public static final String DEFAULT_MODEL_PATH = new File(Spacecraft.class.getClassLoader()
-            .getResource("satellite.png")
-            .getFile()).toPath()
-            .toString();
+    public static final String DEFAULT_MODEL_PATH =
+        new File(Spacecraft.class.getClassLoader().getResource("satellite.png")
+            .getFile()).toPath().toString();
 
     /**
      * The default color of the orbit of the Spacecraft.
@@ -53,7 +52,8 @@ public class SpacecraftBuilder {
     public static final Color DEFAULT_COLOR = new Color(255, 255, 255);
 
     /** The default format for the ID. */
-    public static final String DEFAULT_FORMAT = "SPACECRAFT/" + "{P(%1.8e, %2.8e, %3.8e), V(%4.8e, %5.8e, %6.8e)}";
+    public static final String DEFAULT_FORMAT =
+        "SPACECRAFT/" + "{P(%1.8e, %2.8e, %3.8e), V(%4.8e, %5.8e, %6.8e)}";
 
     // Optional parameters
     /**
@@ -123,34 +123,24 @@ public class SpacecraftBuilder {
      * The constructor of the builder.
      *
      * @param propagator : The propagator used to build the Spacecraft.
-     * @param header     : The header considered.
+     * @param header : The header considered.
      */
-    public SpacecraftBuilder(final BoundedPropagator propagator, final Header header) {
+    public SpacecraftBuilder(final BoundedPropagator propagator,
+                             final Header header) {
         this.propagator = propagator;
-        this.finalDate  = propagator.getMaxDate();
-        this.startDate  = propagator.getMinDate();
-        this.customID   = String.format(DEFAULT_FORMAT,
-                propagator.getInitialState()
-                          .getPosition()
-                          .getX(),
-                propagator.getInitialState()
-                          .getPosition()
-                          .getY(),
-                propagator.getInitialState()
-                          .getPosition()
-                          .getZ(),
-                propagator.getInitialState()
-                          .getPVCoordinates()
-                          .getVelocity()
-                          .getX(),
-                propagator.getInitialState()
-                          .getPVCoordinates()
-                          .getVelocity()
-                          .getY(),
-                propagator.getInitialState()
-                          .getPVCoordinates()
-                          .getVelocity()
-                          .getZ());
+        this.finalDate = propagator.getMaxDate();
+        this.startDate = propagator.getMinDate();
+        this.customID =
+            String.format(DEFAULT_FORMAT,
+                          propagator.getInitialState().getPosition().getX(),
+                          propagator.getInitialState().getPosition().getY(),
+                          propagator.getInitialState().getPosition().getZ(),
+                          propagator.getInitialState().getPVCoordinates()
+                              .getVelocity().getX(),
+                          propagator.getInitialState().getPVCoordinates()
+                              .getVelocity().getY(),
+                          propagator.getInitialState().getPVCoordinates()
+                              .getVelocity().getZ());
 
         this.header = header;
     }
@@ -161,9 +151,11 @@ public class SpacecraftBuilder {
      * @param modelPathInput : The model to set up.
      * @return : The Spacecraft builder with the given model.
      * @throws URISyntaxException the uri syntax exception
-     * @throws IOException        the io exception
+     * @throws IOException the io exception
      */
-    public SpacecraftBuilder withModelPath(final String modelPathInput) throws URISyntaxException, IOException {
+    public SpacecraftBuilder withModelPath(final String modelPathInput)
+        throws URISyntaxException,
+            IOException {
         this.modelPath = modelPathInput;
         return this;
     }
@@ -204,7 +196,8 @@ public class SpacecraftBuilder {
     /**
      * Function to display the period of the orbit.
      *
-     * @return : The Spacecraft builder with the given period for the orbit displayed.
+     * @return : The Spacecraft builder with the given period for the orbit
+     *         displayed.
      */
     public SpacecraftBuilder withOnlyOnePeriod() {
         displayOnlyOnePeriod = true;
@@ -214,7 +207,8 @@ public class SpacecraftBuilder {
     /**
      * Function to set up the orientation of the Spacecraft.
      *
-     * @return : The Spacecraft builder with the personalized orientation for the Spacecraft.
+     * @return : The Spacecraft builder with the personalized orientation for
+     *         the Spacecraft.
      */
     public SpacecraftBuilder withDisplayAttitude() {
         this.displayAttitude = true;
@@ -227,8 +221,9 @@ public class SpacecraftBuilder {
      * @param orientationInput the orientation input
      * @return the Spacecraft builder
      */
-    public SpacecraftBuilder withOrientation(final Orientation orientationInput) {
-        this.orientation     = orientationInput;
+    public SpacecraftBuilder
+        withOrientation(final Orientation orientationInput) {
+        this.orientation = orientationInput;
         this.displayAttitude = true;
         return this;
     }
@@ -260,7 +255,8 @@ public class SpacecraftBuilder {
      * @param optionalRotationInput : The custom ID to set up.
      * @return : The Spacecraft object with a custom ID.
      */
-    public SpacecraftBuilder withOptionalRotation(final Rotation optionalRotationInput) {
+    public SpacecraftBuilder
+        withOptionalRotation(final Rotation optionalRotationInput) {
         this.rotation = optionalRotationInput;
         return this;
     }
@@ -276,9 +272,10 @@ public class SpacecraftBuilder {
         return this;
     }
 
-    public SpacecraftBuilder displayInfluenceSphereChanges(final List<Body> bodiesInput) {
+    public SpacecraftBuilder
+        displayInfluenceSphereChanges(final List<Body> bodiesInput) {
         this.displayInfluenceSphere = true;
-        this.bodies                 = bodiesInput;
+        this.bodies = bodiesInput;
         return this;
     }
 
@@ -287,23 +284,26 @@ public class SpacecraftBuilder {
      *
      * @return : A Spacecraft object with the given parameters of the builder.
      * @throws URISyntaxException the uri syntax exception
-     * @throws IOException        the io exception
+     * @throws IOException the io exception
      */
-    public Spacecraft build() throws URISyntaxException, IOException {
-        final Spacecraft tempSpacecraft = new Spacecraft(propagator, startDate, finalDate, modelPath, color, customID,
-                header);
-        tempSpacecraft.getSpacecraftBoundedPropagator()
-                      .clearStepHandlers();
-        tempSpacecraft.getSpacecraftBoundedPropagator()
-                      .clearEventsDetectors();
+    public Spacecraft build()
+        throws URISyntaxException,
+            IOException {
+        final Spacecraft tempSpacecraft =
+            new Spacecraft(propagator, startDate, finalDate, modelPath, color,
+                           customID, header);
+        tempSpacecraft.getSpacecraftBoundedPropagator().clearStepHandlers();
+        tempSpacecraft.getSpacecraftBoundedPropagator().clearEventsDetectors();
         return this.checkAttributes(tempSpacecraft);
     }
 
     /**
-     * This function checks if the reference system, the attitude and the period of the orbit must be displayed or not.
+     * This function checks if the reference system, the attitude and the period
+     * of the orbit must be displayed or not.
      *
      * @param spacecraft : The Spacecraft object build with the build function.
-     * @return : A Spacecraft with a reference system, an attitude and a period of the orbit, displayed or not.
+     * @return : A Spacecraft with a reference system, an attitude and a period
+     *         of the orbit, displayed or not.
      */
     private Spacecraft checkAttributes(final Spacecraft spacecraft) {
         if (displayOnlyOnePeriod) {

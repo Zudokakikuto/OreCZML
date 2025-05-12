@@ -16,6 +16,7 @@
  */
 
 /**
- * This package contains all the factories that build predefined objects for the user.
+ * This package contains all the factories that build predefined objects for the
+ * user.
  */
 package org.orekit.czml.archi.factory;

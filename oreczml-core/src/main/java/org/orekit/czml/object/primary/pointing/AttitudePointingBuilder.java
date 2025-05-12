@@ -68,9 +68,10 @@ public class AttitudePointingBuilder {
 
     /**
      * Director that manages the pointing or not at objects during the orbit.
-     * Put this parameter on if the satellite is pointing at objects during the orbit.
-     * This boolean will project the attitude on the ground when it is not pointing at objects.
-     * When the attitude is pointing at objects, it will put the projection on the pointed object.
+     * Put this parameter on if the satellite is pointing at objects during the
+     * orbit. This boolean will project the attitude on the ground when it is
+     * not pointing at objects. When the attitude is pointing at objects, it
+     * will put the projection on the pointed object.
      * <p>
      * AttitudeTuto.AttitudePathAlongOrbit
      */
@@ -92,17 +93,19 @@ public class AttitudePointingBuilder {
      * The constructor of the builder.
      *
      * @param satelliteInput : The satellite that has a pointing.
-     * @param bodyInput      : The body that is pointed at.
+     * @param bodyInput : The body that is pointed at.
      * @param directionInput : The direction of the pointing.
-     * @param headerInput    : The header considered.
+     * @param headerInput : The header considered.
      */
-    public AttitudePointingBuilder(final Spacecraft satelliteInput, final OneAxisEllipsoid bodyInput,
-                                   final Vector3D directionInput, final Header headerInput) {
+    public AttitudePointingBuilder(final Spacecraft satelliteInput,
+                                   final OneAxisEllipsoid bodyInput,
+                                   final Vector3D directionInput,
+                                   final Header headerInput) {
         this.satellite = satelliteInput;
-        this.body      = bodyInput;
+        this.body = bodyInput;
         this.direction = directionInput;
-        this.customID  = "ATTITUDE_POINTING/" + satelliteInput.getId();
-        this.header    = headerInput;
+        this.customID = "ATTITUDE_POINTING/" + satelliteInput.getId();
+        this.header = headerInput;
     }
 
     /**
@@ -122,7 +125,8 @@ public class AttitudePointingBuilder {
      * @param displayOnGroundInput : To use or not the manager.
      * @return : The attitude pointing builder with the manager used or not.
      */
-    public AttitudePointingBuilder withDisplayOnGround(final boolean displayOnGroundInput) {
+    public AttitudePointingBuilder
+        withDisplayOnGround(final boolean displayOnGroundInput) {
         this.displayOnGround = displayOnGroundInput;
         return this;
     }
@@ -152,7 +156,8 @@ public class AttitudePointingBuilder {
     /**
      * Function to set up the pointing trace.
      *
-     * @return : The attitude pointing builder with the pointing trace displayed or not.
+     * @return : The attitude pointing builder with the pointing trace displayed
+     *         or not.
      */
     public AttitudePointingBuilder displayPointingPath() {
         this.displayPointingPath = true;
@@ -162,7 +167,8 @@ public class AttitudePointingBuilder {
     /**
      * Function to set up a period of the pointing trace.
      *
-     * @return : The attitude pointing builder with a period set up of the pointing trace or not.
+     * @return : The attitude pointing builder with a period set up of the
+     *         pointing trace or not.
      */
     public AttitudePointingBuilder displayPeriodPointingPath() {
         this.displayPeriodPointingPath = true;
@@ -172,21 +178,26 @@ public class AttitudePointingBuilder {
     /**
      * The build function that generates the attitude pointing object.
      *
-     * @return : An attitude pointing object with the given parameters of the builder.
+     * @return : An attitude pointing object with the given parameters of the
+     *         builder.
      */
     public AttitudePointing build() {
-        final AttitudePointing toReturn = new AttitudePointing(satellite, body, direction, color,
-                displayOnGround, customID, header);
+        final AttitudePointing toReturn =
+            new AttitudePointing(satellite, body, direction, color,
+                                 displayOnGround, customID, header);
         return this.checkAttributes(toReturn);
     }
 
     /**
-     * This function checks if the pointing trace and the period of the pointing trace are on or not.
+     * This function checks if the pointing trace and the period of the pointing
+     * trace are on or not.
      *
-     * @param attitudePointingInput : The attitude pointing object build with the build function.
+     * @param attitudePointingInput : The attitude pointing object build with
+     *        the build function.
      * @return : An attitude pointing with the pointing trace displayed or not.
      */
-    private AttitudePointing checkAttributes(final AttitudePointing attitudePointingInput) {
+    private AttitudePointing
+        checkAttributes(final AttitudePointing attitudePointingInput) {
         if (displayPointingPath) {
             attitudePointingInput.displayPointingPath();
         }

@@ -48,15 +48,17 @@ import java.util.List;
 
 /**
  * Attitude pointing class
- *
  * <p>
- * The attitude pointing represents a line that will go towards the central body to project the attitude of the satellite at the surface.
- * A given direction will be needed to know which axis the object will project.
+ * The attitude pointing represents a line that will go towards the central body
+ * to project the attitude of the satellite at the surface. A given direction
+ * will be needed to know which axis the object will project.
  *
  * @author Julien LEBLOND.
  * @since 1.0.0
  */
-public class AttitudePointing extends AbstractPrimaryObject {
+public class AttitudePointing
+    extends
+    AbstractPrimaryObject {
 
     /**
      * The default ID of the attitude-pointing object.
@@ -133,61 +135,72 @@ public class AttitudePointing extends AbstractPrimaryObject {
      */
     private double periodPointingPath = 0.0;
 
-
     // Constructors
 
     /**
      * The constructor of the attitude-pointing object with default parameters.
      *
      * @param satellite : The satellite that will point to the body.
-     * @param body      : The body to point to.
+     * @param body : The body to point to.
      * @param direction : The direction to point to.
-     * @param header    : The header considered.
+     * @param header : The header considered.
      */
-    AttitudePointing(final Spacecraft satellite, final OneAxisEllipsoid body, final Vector3D direction,
-                     final Header header) {
-        this(satellite, body, direction, DEFAULT_COLOR, false, DEFAULT_ID + satellite.getId(),
-                header);
+    AttitudePointing(final Spacecraft satellite, final OneAxisEllipsoid body,
+                     final Vector3D direction, final Header header) {
+        this(satellite, body, direction, DEFAULT_COLOR, false,
+             DEFAULT_ID + satellite.getId(), header);
     }
 
     /**
      * The constructor with no default parameters.
      *
-     * @param satellite             : The satellite that will point to the body.
-     * @param body                  : The body to point to.
-     * @param direction             : The line of sight in the spacecraft frame.
-     * @param color                 : The color of the pointing (polyline).
-     * @param alwaysDisplayOnGround : Director that manages the pointing or not at objects during the orbit. Put this parameter on if the satellite is pointing at objects during the orbit. This boolean will project the attitude on                              the ground when it is not pointing at objects. When the attitude is pointing at objects, it will put the                              projection on the pointed object                              AttitudeTuto.AttitudePathAlongOrbit
-     * @param ID                    : The ID of the attitude pointing object
-     * @param header                : The header to set up if several headers are used, else way put null.
+     * @param satellite : The satellite that will point to the body.
+     * @param body : The body to point to.
+     * @param direction : The line of sight in the spacecraft frame.
+     * @param color : The color of the pointing (polyline).
+     * @param alwaysDisplayOnGround : Director that manages the pointing or not
+     *        at objects during the orbit. Put this parameter on if the
+     *        satellite is pointing at objects during the orbit. This boolean
+     *        will project the attitude on the ground when it is not pointing at
+     *        objects. When the attitude is pointing at objects, it will put the
+     *        projection on the pointed object
+     *        AttitudeTuto.AttitudePathAlongOrbit
+     * @param ID : The ID of the attitude pointing object
+     * @param header : The header to set up if several headers are used, else
+     *        way put null.
      */
-    AttitudePointing(final Spacecraft satellite, final OneAxisEllipsoid body, final Vector3D direction,
-                     final Color color, final boolean alwaysDisplayOnGround,
-                     final String ID, final Header header) {
+    AttitudePointing(final Spacecraft satellite, final OneAxisEllipsoid body,
+                     final Vector3D direction, final Color color,
+                     final boolean alwaysDisplayOnGround, final String ID,
+                     final Header header) {
         this.setId(ID);
         this.satellite = satellite;
         this.setName(DEFAULT_NAME + satellite.getName());
         this.setAvailability(header.getAvailability());
         this.satelliteOrientation = satellite.getOrientation();
-        this.satelliteAttitudes   = satellite.getAttitudes();
-        this.states               = satellite.getSpaceCraftStates();
-        this.julianDates          = satelliteOrientation.getJulianDates();
-        this.body                 = body;
+        this.satelliteAttitudes = satellite.getAttitudes();
+        this.states = satellite.getSpaceCraftStates();
+        this.julianDates = satelliteOrientation.getJulianDates();
+        this.body = body;
         final Frame frame = satellite.getFrame();
 
-        final List<GeodeticPoint> projectedGeodeticPoints = this.generateProjectedGeodeticPoint(direction, frame,
-                alwaysDisplayOnGround, satelliteAttitudes, states, satellite, body);
+        final List<GeodeticPoint> projectedGeodeticPoints =
+            this.generateProjectedGeodeticPoint(direction, frame,
+                                                alwaysDisplayOnGround,
+                                                satelliteAttitudes, states,
+                                                satellite, body);
 
-        this.pointOnBody = new PointOnBody(julianDates, projectedGeodeticPoints, body, header);
-        final Reference satelliteReference = new Reference(satellite.getId() + DEFAULT_H_POSITION);
-        final Reference groundReference    = new Reference(pointOnBody.getId() + DEFAULT_H_POSITION);
-        this.attitudePointingPolyline = Polyline.nonVectorBuilder(header)
-                                                .withFirstReference(satelliteReference)
-                                                .withSecondReference(groundReference)
-                                                .withColor(color)
-                                                .build();
+        this.pointOnBody =
+            new PointOnBody(julianDates, projectedGeodeticPoints, body, header);
+        final Reference satelliteReference =
+            new Reference(satellite.getId() + DEFAULT_H_POSITION);
+        final Reference groundReference =
+            new Reference(pointOnBody.getId() + DEFAULT_H_POSITION);
+        this.attitudePointingPolyline =
+            Polyline.nonVectorBuilder(header)
+                .withFirstReference(satelliteReference)
+                .withSecondReference(groundReference).withColor(color).build();
     }
-
 
     // Builder
 
@@ -195,26 +208,31 @@ public class AttitudePointing extends AbstractPrimaryObject {
      * Builder attitude pointing builder.
      *
      * @param satelliteInput the satellite input
-     * @param bodyInput      the body input
+     * @param bodyInput the body input
      * @param directionInput the direction input
-     * @param header         the header
+     * @param header the header
      * @return the attitude pointing builder
      */
-    public static AttitudePointingBuilder builder(final Spacecraft satelliteInput, final OneAxisEllipsoid bodyInput,
-                                                  final Vector3D directionInput, final Header header) {
-        return new AttitudePointingBuilder(satelliteInput, bodyInput, directionInput, header);
+    public static AttitudePointingBuilder
+        builder(final Spacecraft satelliteInput,
+                final OneAxisEllipsoid bodyInput, final Vector3D directionInput,
+                final Header header) {
+        return new AttitudePointingBuilder(satelliteInput, bodyInput,
+                                           directionInput, header);
     }
-
 
     // Overrides
 
     @Override
     public void writeCzmlBlock(final CesiumStreamWriter stream,
-                               final CesiumOutputStream output) throws URISyntaxException, IOException {
+                               final CesiumOutputStream output)
+        throws URISyntaxException,
+            IOException {
         if (displayPointingPath) {
             this.pointOnBody.setDisplayPath(true);
             if (displayPeriodPointingPath) {
-                this.pointOnBody.setDisplayPeriodPointingPath(true, satellite.getPeriod());
+                this.pointOnBody
+                    .setDisplayPeriodPointingPath(true, satellite.getPeriod());
                 if (periodPointingPath != 0.0) {
                     this.pointOnBody.setPeriodForPath(periodPointingPath);
                 }
@@ -229,7 +247,6 @@ public class AttitudePointing extends AbstractPrimaryObject {
             attitudePointingPolyline.writeReferencesPolyline(packet, output);
         }
     }
-
 
     // Display methods
 
@@ -249,7 +266,6 @@ public class AttitudePointing extends AbstractPrimaryObject {
             throw new OreCzmlException(OreCzmlMessages.POINTING_PATH_NOT_SHOWN);
         }
     }
-
 
     // Getters
 
@@ -348,13 +364,13 @@ public class AttitudePointing extends AbstractPrimaryObject {
      *
      * @param periodPointingPathInput the period pointing path input
      */
-    public void setDisplayPeriodPointingPath(final double periodPointingPathInput) {
+    public void
+        setDisplayPeriodPointingPath(final double periodPointingPathInput) {
         if (!displayPeriodPointingPath) {
             throw new OreCzmlException(OreCzmlMessages.PERIOD_POINTING_PATH_NOT_SHOWN);
         }
         this.periodPointingPath = periodPointingPathInput;
     }
-
 
     // Setters
 
@@ -367,33 +383,40 @@ public class AttitudePointing extends AbstractPrimaryObject {
         return periodPointingPath;
     }
 
-
     // Private functions
 
-    private List<GeodeticPoint> generateProjectedGeodeticPoint(final Vector3D directionInput, final Frame frameInput,
-                                                               final boolean alwaysDisplayOnGroundInput,
-                                                               final List<Attitude> satelliteAttitudesInput,
-                                                               final List<SpacecraftState> statesInput,
-                                                               final Spacecraft satelliteInput,
-                                                               final OneAxisEllipsoid bodyInput) {
+    private List<GeodeticPoint>
+        generateProjectedGeodeticPoint(final Vector3D directionInput,
+                                       final Frame frameInput,
+                                       final boolean alwaysDisplayOnGroundInput,
+                                       final List<Attitude> satelliteAttitudesInput,
+                                       final List<SpacecraftState> statesInput,
+                                       final Spacecraft satelliteInput,
+                                       final OneAxisEllipsoid bodyInput) {
 
         final List<GeodeticPoint> toReturn = new ArrayList<>();
         for (int i = 0; i < satelliteAttitudesInput.size(); i++) {
-            final SpacecraftState state           = statesInput.get(i);
-            final Attitude        currentAttitude = state.getAttitude();
-            final Rotation        currentRotation = currentAttitude.getRotation();
-            final AbsoluteDate    currentDate     = state.getDate();
-            final Vector3D        origin          = state.getPosition();
-            final Vector3D        inputDirection  = currentRotation.applyInverseTo(directionInput);
-            final Vector3D        closestToGround = bodyInput.projectToGround(origin, currentDate, frameInput);
-            final Line            currentLine     = Line.fromDirection(origin, inputDirection, 1.0);
-            final GeodeticPoint intersectionGeodetic = bodyInput.getIntersectionPoint(currentLine, closestToGround,
-                    frameInput, currentDate);
+            final SpacecraftState state = statesInput.get(i);
+            final Attitude currentAttitude = state.getAttitude();
+            final Rotation currentRotation = currentAttitude.getRotation();
+            final AbsoluteDate currentDate = state.getDate();
+            final Vector3D origin = state.getPosition();
+            final Vector3D inputDirection =
+                currentRotation.applyInverseTo(directionInput);
+            final Vector3D closestToGround =
+                bodyInput.projectToGround(origin, currentDate, frameInput);
+            final Line currentLine =
+                Line.fromDirection(origin, inputDirection, 1.0);
+            final GeodeticPoint intersectionGeodetic =
+                bodyInput.getIntersectionPoint(currentLine, closestToGround,
+                                               frameInput, currentDate);
             if (alwaysDisplayOnGroundInput && intersectionGeodetic == null) {
-                final Vector3D projectedVector3D = bodyInput.projectToGround(origin, currentDate,
-                        satelliteInput.getFrame());
-                final GeodeticPoint substitutePoint = bodyInput.transform(projectedVector3D, state.getFrame(),
-                        currentDate);
+                final Vector3D projectedVector3D =
+                    bodyInput.projectToGround(origin, currentDate,
+                                              satelliteInput.getFrame());
+                final GeodeticPoint substitutePoint =
+                    bodyInput.transform(projectedVector3D, state.getFrame(),
+                                        currentDate);
                 toReturn.add(substitutePoint);
             } else {
                 toReturn.add(intersectionGeodetic);
@@ -402,4 +425,3 @@ public class AttitudePointing extends AbstractPrimaryObject {
         return toReturn;
     }
 }
-

@@ -29,7 +29,9 @@ import java.util.List;
 /**
  * The type Polygon test.
  */
-public class PolygonTest extends AbstractTest {
+public class PolygonTest
+    extends
+    AbstractTest {
 
     /**
      * Polygon constructor test.
@@ -37,7 +39,9 @@ public class PolygonTest extends AbstractTest {
      * @throws IOException the io exception
      */
     @Test
-    void PolygonConstructorTest() throws IOException, URISyntaxException {
+    void PolygonConstructorTest()
+        throws IOException,
+            URISyntaxException {
 
         loadOrekitData();
 
@@ -47,7 +51,8 @@ public class PolygonTest extends AbstractTest {
 
         final Polygon polygon = new Polygon(cartesians, header);
 
-        final String pathFile = loadResources("templateFile/secondary/PolygonTemplate.txt");
+        final String pathFile =
+            loadResources("templateFile/secondary/PolygonTemplate.txt");
 
         verifyFileOutput(pathFile, polygon.toString(), 1e-8);
     }

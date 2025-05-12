@@ -26,7 +26,9 @@ import java.net.URISyntaxException;
 /**
  * The type Lat long lines test.
  */
-public class LatLongLinesTest extends AbstractTest {
+public class LatLongLinesTest
+    extends
+    AbstractTest {
 
     /**
      * Lat long lines constructor test.
@@ -34,25 +36,26 @@ public class LatLongLinesTest extends AbstractTest {
      * @throws IOException the io exception
      */
     @Test
-    void LatLongLinesConstructorTest() throws IOException, URISyntaxException {
+    void LatLongLinesConstructorTest()
+        throws IOException,
+            URISyntaxException {
 
         loadOrekitData();
 
         final Header header = dummyHeader();
 
-        final LatLongLines lines = LatLongLines.builder(header)
-                                               .build();
+        final LatLongLines lines = LatLongLines.builder(header).build();
 
-        final LatLongLines linesBuilder = LatLongLines.builder(header)
-                                                      .withCustomID("CustomID")
-                                                      .withHeader(header)
-                                                      .withDisplay(true)
-                                                      .withLatitudeAngularStep(20)
-                                                      .withLongitudeAngularStep(20)
-                                                      .build();
+        final LatLongLines linesBuilder =
+            LatLongLines.builder(header).withCustomID("CustomID")
+                .withHeader(header).withDisplay(true)
+                .withLatitudeAngularStep(20).withLongitudeAngularStep(20)
+                .build();
 
-        final String pathFile        = loadResources("templateFile/primary/LatLongLinesTemplate.txt");
-        final String builderPathFile = loadResources("templateFile/primary/LatLongLinesWithBuilderTemplate.txt");
+        final String pathFile =
+            loadResources("templateFile/primary/LatLongLinesTemplate.txt");
+        final String builderPathFile =
+            loadResources("templateFile/primary/LatLongLinesWithBuilderTemplate.txt");
 
         verifyFileOutput(pathFile, lines.toString(), 1e-8);
         verifyFileOutput(builderPathFile, linesBuilder.toString(), 1e-8);

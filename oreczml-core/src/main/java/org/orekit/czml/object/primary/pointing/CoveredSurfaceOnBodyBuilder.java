@@ -57,18 +57,21 @@ public class CoveredSurfaceOnBodyBuilder {
     /**
      * The constructor of the covered surface on body builder.
      *
-     * @param satelliteInput          : The satellite to consider for the coverage.
-     * @param fieldOfObservationInput : The field of observation of the satellite.
-     * @param headerInput             : The header considered.
+     * @param satelliteInput : The satellite to consider for the coverage.
+     * @param fieldOfObservationInput : The field of observation of the
+     *        satellite.
+     * @param headerInput : The header considered.
      */
     public CoveredSurfaceOnBodyBuilder(final Spacecraft satelliteInput,
-                                       final FieldOfObservation fieldOfObservationInput, final Header headerInput) {
-        this.satellite          = satelliteInput;
+                                       final FieldOfObservation fieldOfObservationInput,
+                                       final Header headerInput) {
+        this.satellite = satelliteInput;
         this.fieldOfObservation = fieldOfObservationInput;
-        this.customId           = "COVERED_SURFACE/" + satelliteInput.getId() + "/" + fieldOfObservationInput.getBody()
-                                                                                                             .getBodyFrame()
-                                                                                                             .toString();
-        this.header             = headerInput;
+        this.customId =
+            "COVERED_SURFACE/" +
+                        satelliteInput.getId() + "/" + fieldOfObservationInput
+                            .getBody().getBodyFrame().toString();
+        this.header = headerInput;
     }
 
     /**
@@ -77,7 +80,8 @@ public class CoveredSurfaceOnBodyBuilder {
      * @param customIdInput : The custom ID to set up
      * @return : A covered surface on body builder with a custom id.
      */
-    public CoveredSurfaceOnBodyBuilder withCustomId(final String customIdInput) {
+    public CoveredSurfaceOnBodyBuilder
+        withCustomId(final String customIdInput) {
         this.customId = customIdInput;
         return this;
     }
@@ -108,7 +112,8 @@ public class CoveredSurfaceOnBodyBuilder {
      * Function to set up the outline parameter.
      *
      * @param outlineInput : The outline to set up
-     * @return : A covered surface on body builder with an outline parameter set.
+     * @return : A covered surface on body builder with an outline parameter
+     *         set.
      */
     public CoveredSurfaceOnBodyBuilder withOutline(final boolean outlineInput) {
         this.outline = outlineInput;
@@ -132,6 +137,7 @@ public class CoveredSurfaceOnBodyBuilder {
      * @return the covered surface on body
      */
     public CoveredSurfaceOnBody build() {
-        return new CoveredSurfaceOnBody(satellite, fieldOfObservation, customId, fill, outline, color, header);
+        return new CoveredSurfaceOnBody(satellite, fieldOfObservation, customId,
+                                        fill, outline, color, header);
     }
 }

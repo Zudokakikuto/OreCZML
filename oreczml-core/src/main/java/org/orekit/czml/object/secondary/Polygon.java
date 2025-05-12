@@ -30,16 +30,19 @@ import java.awt.Color;
 import java.util.Collections;
 import java.util.List;
 
-
 /**
  * Polygon class.
- *
- * <p> This class aims at displaying polygons that can be presents at the surface of any body, on even floating in the simulation. </p>
+ * <p>
+ * This class aims at displaying polygons that can be presents at the surface of
+ * any body, on even floating in the simulation.
+ * </p>
  *
  * @author Julien LEBLOND
  * @since 1.0.0
  */
-public class Polygon extends AbstractSecondaryObject {
+public class Polygon
+    extends
+    AbstractSecondaryObject {
 
     /**
      * The default color.
@@ -71,89 +74,98 @@ public class Polygon extends AbstractSecondaryObject {
      */
     private final boolean fill;
 
-
     // Constructors
 
     /**
      * The default constructor for the polygon object with default parameters.
      *
      * @param cartesiansInput : The list of the positions of the polygon.
-     * @param header          : The header considered.
+     * @param header : The header considered.
      */
     public Polygon(final List<Cartesian> cartesiansInput, final Header header) {
-        this.cartesians   = cartesiansInput;
+        this.cartesians = cartesiansInput;
         this.availability = header.getAvailability();
-        this.color        = DEFAULT_COLOR;
-        this.outline      = false;
-        this.fill         = true;
+        this.color = DEFAULT_COLOR;
+        this.outline = false;
+        this.fill = true;
     }
 
     /**
      * The default constructor for the polygon object with default parameters.
      *
      * @param cartesiansInput : The list of the positions of the polygon.
-     * @param availability    : The availability of the polygon
+     * @param availability : The availability of the polygon
      */
-    public Polygon(final List<Cartesian> cartesiansInput, final TimeInterval availability) {
-        this.cartesians   = cartesiansInput;
+    public Polygon(final List<Cartesian> cartesiansInput,
+                   final TimeInterval availability) {
+        this.cartesians = cartesiansInput;
         this.availability = availability;
-        this.color        = DEFAULT_COLOR;
-        this.outline      = false;
-        this.fill         = true;
+        this.color = DEFAULT_COLOR;
+        this.outline = false;
+        this.fill = true;
     }
 
     /**
      * The constructor of the polygon object with no default parameters.
      *
      * @param cartesiansInput : The list of the positions of the polygon.
-     * @param colorInput      : The color of the polygon.
-     * @param outline         : The outline of the polygon.
-     * @param fill            : To fill or not with color the polygon. (might cause some lags if put to true)
-     * @param header          : The header considered.
+     * @param colorInput : The color of the polygon.
+     * @param outline : The outline of the polygon.
+     * @param fill : To fill or not with color the polygon. (might cause some
+     *        lags if put to true)
+     * @param header : The header considered.
      */
     public Polygon(final List<Cartesian> cartesiansInput,
-                   final Color colorInput, final boolean outline, final boolean fill, final Header header) {
-        this.cartesians   = cartesiansInput;
+                   final Color colorInput, final boolean outline,
+                   final boolean fill, final Header header) {
+        this.cartesians = cartesiansInput;
         this.availability = header.getAvailability();
-        this.color        = colorInput;
-        this.outline      = outline;
-        this.fill         = fill;
+        this.color = colorInput;
+        this.outline = outline;
+        this.fill = fill;
     }
 
     /**
      * The constructor of the polygon object with no default parameters.
      *
      * @param cartesiansInput : The list of the positions of the polygon.
-     * @param colorInput      : The color of the polygon.
-     * @param outline         : The outline of the polygon.
-     * @param fill            : To fill or not with color the polygon. (might cause some lags if put to true)
-     * @param availability    : The availability of the polygon
+     * @param colorInput : The color of the polygon.
+     * @param outline : The outline of the polygon.
+     * @param fill : To fill or not with color the polygon. (might cause some
+     *        lags if put to true)
+     * @param availability : The availability of the polygon
      */
     public Polygon(final List<Cartesian> cartesiansInput,
-                   final Color colorInput, final boolean outline, final boolean fill, final TimeInterval availability) {
-        this.cartesians   = cartesiansInput;
+                   final Color colorInput, final boolean outline,
+                   final boolean fill, final TimeInterval availability) {
+        this.cartesians = cartesiansInput;
         this.availability = availability;
-        this.color        = colorInput;
-        this.outline      = outline;
-        this.fill         = fill;
+        this.color = colorInput;
+        this.outline = outline;
+        this.fill = fill;
     }
 
     @Override
-    public void write(final PacketCesiumWriter packetWriter, final CesiumOutputStream output) {
-        try (PolygonCesiumWriter polygonWriter = packetWriter.getPolygonWriter()) {
+    public void write(final PacketCesiumWriter packetWriter,
+                      final CesiumOutputStream output) {
+        try (PolygonCesiumWriter polygonWriter =
+            packetWriter.getPolygonWriter()) {
             polygonWriter.open(output);
             polygonWriter.writeOutlineProperty(outline);
             polygonWriter.writeFillProperty(fill);
             polygonWriter.writeOutlineColorProperty(color);
-            try (PositionListCesiumWriter positionListWriter = polygonWriter.getPositionsWriter()) {
+            try (PositionListCesiumWriter positionListWriter =
+                polygonWriter.getPositionsWriter()) {
                 positionListWriter.open(output);
                 positionListWriter.writeInterval(availability);
                 positionListWriter.writeCartesian(cartesians);
             }
-            try (MaterialCesiumWriter materialWriter = polygonWriter.getMaterialWriter()) {
+            try (MaterialCesiumWriter materialWriter =
+                polygonWriter.getMaterialWriter()) {
                 materialWriter.open(output);
                 output.writeStartObject();
-                try (SolidColorMaterialCesiumWriter solidColorMaterialWriter = materialWriter.getSolidColorWriter()) {
+                try (SolidColorMaterialCesiumWriter solidColorMaterialWriter =
+                    materialWriter.getSolidColorWriter()) {
                     solidColorMaterialWriter.open(output);
                     solidColorMaterialWriter.writeColorProperty(color);
                 }
@@ -162,32 +174,33 @@ public class Polygon extends AbstractSecondaryObject {
         }
     }
 
-
     // Overrides
 
     /**
      * Builder polygon builder.
      *
      * @param cartesiansInput the cartesians input
-     * @param headerInput     the header
+     * @param headerInput the header
      * @return the polygon builder
      */
-    public PolygonBuilder builder(final List<Cartesian> cartesiansInput, final Header headerInput) {
-        return new PolygonBuilder(cartesiansInput, headerInput.getAvailability());
+    public PolygonBuilder builder(final List<Cartesian> cartesiansInput,
+                                  final Header headerInput) {
+        return new PolygonBuilder(cartesiansInput,
+                                  headerInput.getAvailability());
     }
 
     /**
      * Builder polygon builder.
      *
-     * @param cartesiansInput   the cartesians input
-     * @param availabilityInput the time interval for which the feature will be visible in the simulation
+     * @param cartesiansInput the cartesians input
+     * @param availabilityInput the time interval for which the feature will be
+     *        visible in the simulation
      * @return the polygon builder
      */
     public static PolygonBuilder builder(final List<Cartesian> cartesiansInput,
-                                               final TimeInterval availabilityInput) {
+                                         final TimeInterval availabilityInput) {
         return new PolygonBuilder(cartesiansInput, availabilityInput);
     }
-
 
     // Getters
 

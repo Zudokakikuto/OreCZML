@@ -52,45 +52,55 @@ import java.net.URISyntaxException;
 /**
  * The type Field of observation test.
  */
-public class FieldOfObservationTest extends AbstractTest {
+public class FieldOfObservationTest
+    extends
+    AbstractTest {
 
     /**
      * Field of observation constructor test.
      *
-     * @throws IOException        the io exception
+     * @throws IOException the io exception
      * @throws URISyntaxException the uri syntax exception
      */
     @Test
-    void FieldOfObservationConstructorTest() throws IOException, URISyntaxException {
+    void FieldOfObservationConstructorTest()
+        throws IOException,
+            URISyntaxException {
 
         loadOrekitData();
 
-        final Header       header    = dummyHeader();
-        final AbsoluteDate startDate = new AbsoluteDate(2024, 3, 15, 0, 0, 0.0, TimeScalesFactory.getUTC());
+        final Header header = dummyHeader();
+        final AbsoluteDate startDate =
+            new AbsoluteDate(2024, 3, 15, 0, 0, 0.0,
+                             TimeScalesFactory.getUTC());
         final AbsoluteDate finalDate = startDate.shiftedBy(10 * 3600);
 
-
-        final KeplerianOrbit initialOrbit = new KeplerianOrbit(7878000, 0, FastMath.toRadians(20), 0,
-                FastMath.toRadians(0), FastMath.toRadians(0), PositionAngleType.MEAN, FramesFactory.getEME2000(),
-                startDate,
-                Constants.WGS84_EARTH_MU);
+        final KeplerianOrbit initialOrbit =
+            new KeplerianOrbit(7878000, 0, FastMath.toRadians(20), 0,
+                               FastMath.toRadians(0), FastMath.toRadians(0),
+                               PositionAngleType.MEAN,
+                               FramesFactory.getEME2000(), startDate,
+                               Constants.WGS84_EARTH_MU);
 
         final SpacecraftState initialState = new SpacecraftState(initialOrbit);
 
         // Build of the propagator
 
-        final double[][] tolerances = NumericalPropagator.tolerances(10, initialOrbit,
-                OrbitType.CARTESIAN);
-        final AdaptiveStepsizeIntegrator integrator = new DormandPrince853Integrator(0.001,
-                1000.0, tolerances[0],
-                tolerances[1]);
+        final double[][] tolerances =
+            NumericalPropagator.tolerances(10, initialOrbit,
+                                           OrbitType.CARTESIAN);
+        final AdaptiveStepsizeIntegrator integrator =
+            new DormandPrince853Integrator(0.001, 1000.0, tolerances[0],
+                                           tolerances[1]);
 
-        final NumericalPropagator propagator = new NumericalPropagator(integrator);
+        final NumericalPropagator propagator =
+            new NumericalPropagator(integrator);
 
-        final NormalizedSphericalHarmonicsProvider provider = GravityFieldFactory.getNormalizedProvider(10,
-                10);
-        final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(FramesFactory.getEME2000(),
-                provider);
+        final NormalizedSphericalHarmonicsProvider provider =
+            GravityFieldFactory.getNormalizedProvider(10, 10);
+        final ForceModel holmesFeatherstone =
+            new HolmesFeatherstoneAttractionModel(FramesFactory.getEME2000(),
+                                                  provider);
 
         propagator.setOrbitType(OrbitType.CARTESIAN);
         propagator.addForceModel(holmesFeatherstone);
@@ -98,34 +108,36 @@ public class FieldOfObservationTest extends AbstractTest {
 
         final EphemerisGenerator generator = propagator.getEphemerisGenerator();
 
-        final LofOffset lofOffset = new LofOffset(FramesFactory.getEME2000(), LOFType.TNW);
+        final LofOffset lofOffset =
+            new LofOffset(FramesFactory.getEME2000(), LOFType.TNW);
         propagator.setAttitudeProvider(lofOffset);
 
         propagator.propagate(startDate, finalDate);
-        final BoundedPropagator boundedPropagator = generator.getGeneratedEphemeris();
+        final BoundedPropagator boundedPropagator =
+            generator.getGeneratedEphemeris();
 
         final Spacecraft satellite = new Spacecraft(boundedPropagator, header);
 
-        final FieldOfView fov = new DoubleDihedraFieldOfView(Vector3D.PLUS_J, Vector3D.PLUS_I,
-                FastMath.toRadians(20), Vector3D.PLUS_K, FastMath.toRadians(20), 2);
+        final FieldOfView fov =
+            new DoubleDihedraFieldOfView(Vector3D.PLUS_J, Vector3D.PLUS_I,
+                                         FastMath.toRadians(20),
+                                         Vector3D.PLUS_K,
+                                         FastMath.toRadians(20), 2);
 
-        final Transform initialInertToBody = propagator.getFrame()
-                                                       .getTransformTo(getEarth().getBodyFrame(),
-                                                               initialState.getDate());
-        final Transform initialFovBody = new Transform(initialState.getDate(), propagator.getInitialState()
-                                                                                         .toTransform()
-                                                                                         .getInverse(),
-                initialInertToBody);
+        final Transform initialInertToBody =
+            propagator.getFrame().getTransformTo(getEarth().getBodyFrame(),
+                                                 initialState.getDate());
+        final Transform initialFovBody =
+            new Transform(initialState.getDate(), propagator.getInitialState()
+                .toTransform().getInverse(), initialInertToBody);
 
-        final FieldOfObservation fieldOfObservation = FieldOfObservation.builder(satellite, fov, initialFovBody, header)
-                                                                        .withColor(Color.ORANGE)
-                                                                        .withHeader(header)
-                                                                        .withBody(getEarth())
-                                                                        .withCustomID("CustomID")
-                                                                        .withAngularStep(20.0)
-                                                                        .build();
+        final FieldOfObservation fieldOfObservation =
+            FieldOfObservation.builder(satellite, fov, initialFovBody, header)
+                .withColor(Color.ORANGE).withHeader(header).withBody(getEarth())
+                .withCustomID("CustomID").withAngularStep(20.0).build();
 
-        final String pathFile = loadResources("templateFile/primary/FieldOfObservationTemplate.txt");
+        final String pathFile =
+            loadResources("templateFile/primary/FieldOfObservationTemplate.txt");
         verifyFileOutput(pathFile, fieldOfObservation.toString(), 1e-3);
     }
 }

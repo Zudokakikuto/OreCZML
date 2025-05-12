@@ -27,34 +27,38 @@ import java.net.URISyntaxException;
 /**
  * The type Central body reference system test.
  */
-public class CentralBodyReferenceSystemTest extends AbstractTest {
+public class CentralBodyReferenceSystemTest
+    extends
+    AbstractTest {
 
     /**
      * Central body reference system constructor test.
      *
      * @throws URISyntaxException the uri syntax exception
-     * @throws IOException        the io exception
+     * @throws IOException the io exception
      */
     @Test
-    void CentralBodyReferenceSystemConstructorTest() throws URISyntaxException, IOException {
+    void CentralBodyReferenceSystemConstructorTest()
+        throws URISyntaxException,
+            IOException {
 
         loadOrekitData();
 
         final Header header = dummyHeader();
 
-        final CentralBodyReferenceSystem system = CentralBodyReferenceSystem.builder(header).build();
+        final CentralBodyReferenceSystem system =
+            CentralBodyReferenceSystem.builder(header).build();
 
-        final CentralBodyReferenceSystem systemBuilder = CentralBodyReferenceSystem.builder(header)
-                                                                                   .withHeader(header)
-                                                                                   .withBody(getEarth())
-                                                                                   .withColors(Color.BLUE, Color.GREEN,
-                                                                                           Color.RED)
-                                                                                   .withName("A name")
-                                                                                   .withCustomId("CustomID")
-                                                                                   .build();
+        final CentralBodyReferenceSystem systemBuilder =
+            CentralBodyReferenceSystem.builder(header).withHeader(header)
+                .withBody(getEarth())
+                .withColors(Color.BLUE, Color.GREEN, Color.RED)
+                .withName("A name").withCustomId("CustomID").build();
 
-        final String pathFile = loadResources("templateFile/primary/CentralBodyReferenceSystemTemplate.txt");
-        final String builderPathFile = loadResources("templateFile/primary/CentralBodyReferenceSystemWithBuilderTemplate.txt");
+        final String pathFile =
+            loadResources("templateFile/primary/CentralBodyReferenceSystemTemplate.txt");
+        final String builderPathFile =
+            loadResources("templateFile/primary/CentralBodyReferenceSystemWithBuilderTemplate.txt");
 
         verifyFileOutput(pathFile, system.toString(), 1e-8);
         verifyFileOutput(builderPathFile, systemBuilder.toString(), 1e-8);

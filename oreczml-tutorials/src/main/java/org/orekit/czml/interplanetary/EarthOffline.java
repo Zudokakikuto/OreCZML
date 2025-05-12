@@ -27,8 +27,8 @@ import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScalesFactory;
 
 /**
- * This tutorial shows how the earth can be implemented
- * if the simulation is offline can the earth needs to be loaded anyway.
+ * This tutorial shows how the earth can be implemented if the simulation is
+ * offline can the earth needs to be loaded anyway.
  */
 public class EarthOffline {
 
@@ -41,35 +41,45 @@ public class EarthOffline {
      * @param args arguments of the main function
      * @throws Exception exception to throw
      */
-    public static void main(final String[] args) throws Exception {
+    public static void main(final String[] args)
+        throws Exception {
         // Load orekit data
         TutorialUtils.loadOrekitData();
 
         // Paths
         final String output = TutorialUtils.generateOutput();
-        // !!! Here you need to change the path inside 'generateJsPath' to the path you are using for images or Model.
-        // This folder can also be the public folder of your cesium javascript interface.
-        final String pathToJSFolder = TutorialUtils.generateJSPath(
-                System.getProperty("user.dir") + "/Javascript/public");
+        // !!! Here you need to change the path inside 'generateJsPath' to the
+        // path you are using for images or Model.
+        // This folder can also be the public folder of your cesium javascript
+        // interface.
+        final String pathToJSFolder =
+            TutorialUtils.generateJSPath(System.getProperty("user.dir") +
+                                         "/Javascript/public");
 
         // Creation of the clock.
 
-        final double       durationOfSimulation = 24 * 3600; // in seconds;
-        final AbsoluteDate startDate            = new AbsoluteDate(2024, 3, 15, 0, 0, 0.0, TimeScalesFactory.getUTC());
-        final AbsoluteDate finalDate            = startDate.shiftedBy(durationOfSimulation);
-        final Clock clock = new Clock(startDate, finalDate, TimeScalesFactory.getUTC(),
-                TutorialUtils.STEP_BETWEEN_EACH_INSTANT);
+        final double durationOfSimulation = 24 * 3600; // in seconds;
+        final AbsoluteDate startDate =
+            new AbsoluteDate(2024, 3, 15, 0, 0, 0.0,
+                             TimeScalesFactory.getUTC());
+        final AbsoluteDate finalDate =
+            startDate.shiftedBy(durationOfSimulation);
+        final Clock clock =
+            new Clock(startDate, finalDate, TimeScalesFactory.getUTC(),
+                      TutorialUtils.STEP_BETWEEN_EACH_INSTANT);
 
-        final Header header = new Header("Earth Display when the interface is offline", clock, pathToJSFolder);
+        final Header header =
+            new Header("Earth Display when the interface is offline", clock,
+                       pathToJSFolder);
 
-        // Careful, you can't zoom in of this model of the earth, but you can zoom out. To be able to zoom in,
-        // please use a token from CesiumIon, available here : https://ion.cesium.com/tokens?page=1
+        // Careful, you can't zoom in of this model of the earth, but you can
+        // zoom out. To be able to zoom in,
+        // please use a token from CesiumIon, available here :
+        // https://ion.cesium.com/tokens?page=1
         final Body earth = BodyFactory.getEarth(header);
 
-        final CzmlFile file = CzmlFile.builder()
-                                      .withHeader(header)
-                                      .withBody(earth)
-                                      .build();
+        final CzmlFile file =
+            CzmlFile.builder().withHeader(header).withBody(earth).build();
 
         file.write(output);
     }

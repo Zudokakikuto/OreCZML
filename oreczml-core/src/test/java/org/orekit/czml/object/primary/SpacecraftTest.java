@@ -30,28 +30,35 @@ import java.net.URISyntaxException;
 /**
  * The type Satellite test.
  */
-public class SpacecraftTest extends AbstractTest {
+public class SpacecraftTest
+    extends
+    AbstractTest {
 
     /**
      * Satellite constructor test.
      *
-     * @throws IOException        the io exception
+     * @throws IOException the io exception
      * @throws URISyntaxException the uri syntax exception
      */
     @Test
-    void SatelliteConstructorTest() throws IOException, URISyntaxException {
+    void SatelliteConstructorTest()
+        throws IOException,
+            URISyntaxException {
 
         loadOrekitData();
 
-        final Header       header    = dummyHeader();
-        final AbsoluteDate startDate = DateUtils.toAbsoluteDate(header.getAvailability()
-                                                                      .getStart(), TimeScalesFactory.getUTC());
+        final Header header = dummyHeader();
+        final AbsoluteDate startDate =
+            DateUtils.toAbsoluteDate(header.getAvailability().getStart(),
+                                     TimeScalesFactory.getUTC());
         final AbsoluteDate finalDate = startDate.shiftedBy(60.0);
 
-        final BoundedPropagator propagator = dummyPropagator(startDate, finalDate);
-        final Spacecraft        satellite  = new Spacecraft(propagator, header);
+        final BoundedPropagator propagator =
+            dummyPropagator(startDate, finalDate);
+        final Spacecraft satellite = new Spacecraft(propagator, header);
 
-        final String pathFile = loadResources("templateFile/primary/SpacecraftTemplate.txt");
+        final String pathFile =
+            loadResources("templateFile/primary/SpacecraftTemplate.txt");
 
         verifyFileOutput(pathFile, satellite.toString(), 1e-8);
     }
@@ -60,24 +67,31 @@ public class SpacecraftTest extends AbstractTest {
      * Attitude constructor test.
      *
      * @throws URISyntaxException the uri syntax exception
-     * @throws IOException        the io exception
+     * @throws IOException the io exception
      */
     @Test
-    void attitudeConstructorTest() throws URISyntaxException, IOException {
+    void attitudeConstructorTest()
+        throws URISyntaxException,
+            IOException {
 
         loadOrekitData();
 
         final Header header = dummyHeader();
 
-        final AbsoluteDate startDate = DateUtils.toAbsoluteDate(header.getAvailability()
-                                                                      .getStart(), TimeScalesFactory.getUTC());
+        final AbsoluteDate startDate =
+            DateUtils.toAbsoluteDate(header.getAvailability().getStart(),
+                                     TimeScalesFactory.getUTC());
         final AbsoluteDate finalDate = startDate.shiftedBy(60.0);
 
-        final BoundedPropagator propagator = dummyPropagator(startDate, finalDate);
+        final BoundedPropagator propagator =
+            dummyPropagator(startDate, finalDate);
 
-        final Spacecraft satellite = Spacecraft.builder(propagator, header).withDisplayAttitude().build();
+        final Spacecraft satellite =
+            Spacecraft.builder(propagator, header).withDisplayAttitude()
+                .build();
 
-        final String pathFile = loadResources("templateFile/primary/SpacecraftAttitudeTemplate.txt");
+        final String pathFile =
+            loadResources("templateFile/primary/SpacecraftAttitudeTemplate.txt");
 
         verifyFileOutput(pathFile, satellite.toString(), 1e-8);
     }

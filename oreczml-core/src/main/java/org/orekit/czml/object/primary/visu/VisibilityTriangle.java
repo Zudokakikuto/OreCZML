@@ -48,19 +48,22 @@ import java.util.List;
 
 /**
  * Visibility Triangle.
- *
- * <p> This class aims at creating a triangle visible when a line of visibility is created. It shows the entire
- * plan where the line will navigate.
+ * <p>
+ * This class aims at creating a triangle visible when a line of visibility is
+ * created. It shows the entire plan where the line will navigate.
  * </p>
  * <p>
- * This object has no constructor usable, and is called with the .displayTriangle() method from the line of visibility.
+ * This object has no constructor usable, and is called with the
+ * .displayTriangle() method from the line of visibility.
  * </p>
  *
  * @since 1.1
  * @author Julien LEBLOND
  */
 
-public class VisibilityTriangle extends AbstractPrimaryObject {
+public class VisibilityTriangle
+    extends
+    AbstractPrimaryObject {
 
     /** The default string for the ID of the triangle. */
     public static final String DEFAULT_ID = "TRIANGLE_VIS/";
@@ -103,40 +106,49 @@ public class VisibilityTriangle extends AbstractPrimaryObject {
 
     VisibilityTriangle(final LineOfVisibility line, final Header header) {
         this.shows = line.getShowList();
-        this.setId(DEFAULT_ID + line.getSatellite()
-                                    .getId());
-        this.setName(DEFAULT_NAME + line.getSatellite()
-                                        .getName());
-        this.line                      = line;
-        this.header                    = header;
-        this.spacecraftStatesSatellite = line.getSatellite()
-                                             .getSpaceCraftStates();
-        this.trianglesCartesians       = buildTriangleCartesians(shows, spacecraftStatesSatellite);
-        this.availabilityTriangles     = buildTrueIntervals(shows);
+        this.setId(DEFAULT_ID + line.getSatellite().getId());
+        this.setName(DEFAULT_NAME + line.getSatellite().getName());
+        this.line = line;
+        this.header = header;
+        this.spacecraftStatesSatellite =
+            line.getSatellite().getSpaceCraftStates();
+        this.trianglesCartesians =
+            buildTriangleCartesians(shows, spacecraftStatesSatellite);
+        this.availabilityTriangles = buildTrueIntervals(shows);
     }
 
     @Override
     public void writeCzmlBlock(final CesiumStreamWriter stream,
-                               final CesiumOutputStream output) throws URISyntaxException, IOException {
+                               final CesiumOutputStream output)
+        throws URISyntaxException,
+            IOException {
         output.setPrettyFormatting(true);
         for (int i = 0; i < trianglesCartesians.size(); i++) {
             try (PacketCesiumWriter packet = stream.openPacket(output)) {
-                packet.writeId(getId() + "//" + availabilityTriangles.get(i)
-                                                                     .getStart() + "/" + availabilityTriangles.get(i)
-                                                                                                              .getStop());
+                packet.writeId(getId() +
+                               "//" + availabilityTriangles.get(i).getStart() +
+                               "/" + availabilityTriangles.get(i).getStop());
                 packet.writeName(getName());
                 packet.writeAvailability(availabilityTriangles.get(i));
-                try (PolygonCesiumWriter polygonCesiumWriter = packet.getPolygonWriter()) {
+                try (PolygonCesiumWriter polygonCesiumWriter =
+                    packet.getPolygonWriter()) {
                     polygonCesiumWriter.open(output);
                     polygonCesiumWriter.writeShowProperty(true);
                     polygonCesiumWriter.writePerPositionHeightProperty(true);
-                    try (PositionListCesiumWriter positionCesiumWriter = polygonCesiumWriter.openPositionsProperty()) {
-                        positionCesiumWriter.writeCartesian(trianglesCartesians.get(i));
-                        positionCesiumWriter.writeInterval(availabilityTriangles.get(i));
+                    try (PositionListCesiumWriter positionCesiumWriter =
+                        polygonCesiumWriter.openPositionsProperty()) {
+                        positionCesiumWriter
+                            .writeCartesian(trianglesCartesians.get(i));
+                        positionCesiumWriter
+                            .writeInterval(availabilityTriangles.get(i));
                     }
-                    try (MaterialCesiumWriter materialCesiumWriter = polygonCesiumWriter.openMaterialProperty()) {
-                        try (SolidColorMaterialCesiumWriter solidColorMaterialCesiumWriter = materialCesiumWriter.openSolidColorProperty()) {
-                            solidColorMaterialCesiumWriter.writeColorProperty(new Color(238, 144, 37, 104));
+                    try (MaterialCesiumWriter materialCesiumWriter =
+                        polygonCesiumWriter.openMaterialProperty()) {
+                        try (SolidColorMaterialCesiumWriter solidColorMaterialCesiumWriter =
+                            materialCesiumWriter.openSolidColorProperty()) {
+                            solidColorMaterialCesiumWriter
+                                .writeColorProperty(new Color(238, 144, 37,
+                                                              104));
                         }
                     }
                 }
@@ -144,56 +156,72 @@ public class VisibilityTriangle extends AbstractPrimaryObject {
         }
     }
 
-
     // Private functions
 
     /**
      * This function builds the cartesians of each visibility triangle.
      *
-     * @param showsInput  : The list of CzmlShow corresponding to the line of visibility.
+     * @param showsInput : The list of CzmlShow corresponding to the line of
+     *        visibility.
      * @param statesInput : The list of spacecraft states of the satellite.
-     * @return : A list of list of cartesians representing a list of triplets of positions of points for each triangle.
+     * @return : A list of list of cartesians representing a list of triplets of
+     *         positions of points for each triangle.
      */
-    private List<List<Cartesian>> buildTriangleCartesians(final List<CzmlShow> showsInput,
-                                                          final List<SpacecraftState> statesInput) {
+    private List<List<Cartesian>>
+        buildTriangleCartesians(final List<CzmlShow> showsInput,
+                                final List<SpacecraftState> statesInput) {
         final List<List<Cartesian>> toReturn = new ArrayList<>();
 
-        final Frame ITRF = FramesFactory.getITRF(IERSConventions.IERS_2010, true);
-        final OneAxisEllipsoid earth = new OneAxisEllipsoid(Constants.IERS2010_EARTH_EQUATORIAL_RADIUS,
-                Constants.IERS2010_EARTH_FLATTENING, ITRF);
+        final Frame ITRF =
+            FramesFactory.getITRF(IERSConventions.IERS_2010, true);
+        final OneAxisEllipsoid earth =
+            new OneAxisEllipsoid(Constants.IERS2010_EARTH_EQUATORIAL_RADIUS,
+                                 Constants.IERS2010_EARTH_FLATTENING, ITRF);
 
         for (final CzmlShow currentShow : showsInput) {
-            // The triplet for the triangle that will contain the three positions:
-            // the station, the positions at the start and at the end of the approach.
+            // The triplet for the triangle that will contain the three
+            // positions:
+            // the station, the positions at the start and at the end of the
+            // approach.
             final List<Cartesian> pointsPositions = new ArrayList<>();
-            // The second object of the czml show built by a line of visibility is a topocentric frame
-            final TopocentricFrame topocentricShow         = (TopocentricFrame) currentShow.getObject2();
-            final Vector3D         positionTopocentricShow = topocentricShow.getCartesianPoint();
+            // The second object of the czml show built by a line of visibility
+            // is a topocentric frame
+            final TopocentricFrame topocentricShow =
+                (TopocentricFrame) currentShow.getObject2();
+            final Vector3D positionTopocentricShow =
+                topocentricShow.getCartesianPoint();
 
-            // If the time interval considered is one where the satellite is above the station :
+            // If the time interval considered is one where the satellite is
+            // above the station :
             if (currentShow.getShow()) {
 
                 // Add the position of the station to the triplet
-                pointsPositions.add(new Cartesian(positionTopocentricShow.getX(), positionTopocentricShow.getY(),
-                        positionTopocentricShow.getZ()));
+                pointsPositions
+                    .add(new Cartesian(positionTopocentricShow.getX(),
+                                       positionTopocentricShow.getY(),
+                                       positionTopocentricShow.getZ()));
 
                 // Get the interval and the boundaries of the interval.
-                final TimeInterval currentTimeInterval = currentShow.getAvailability();
-                final AbsoluteDate startInterval = DateUtils.toAbsoluteDate(currentTimeInterval.getStart(),
-                        header.getTimeScale());
-                final AbsoluteDate stopInterval = DateUtils.toAbsoluteDate(currentTimeInterval.getStop(),
-                        header.getTimeScale());
+                final TimeInterval currentTimeInterval =
+                    currentShow.getAvailability();
+                final AbsoluteDate startInterval =
+                    DateUtils.toAbsoluteDate(currentTimeInterval.getStart(),
+                                             header.getTimeScale());
+                final AbsoluteDate stopInterval =
+                    DateUtils.toAbsoluteDate(currentTimeInterval.getStop(),
+                                             header.getTimeScale());
 
                 for (final SpacecraftState currentState : statesInput) {
                     // If the state is the starting state of the approach
-                    if (currentState.getDate()
-                                    .isCloseTo(startInterval, 31) || currentState.getDate()
-                                                                                 .isCloseTo(stopInterval, 31)) {
-                        final Cartesian positionCartesian = buildCartesian(currentState, earth);
+                    if (currentState.getDate().isCloseTo(startInterval, 31) ||
+                        currentState.getDate().isCloseTo(stopInterval, 31)) {
+                        final Cartesian positionCartesian =
+                            buildCartesian(currentState, earth);
                         pointsPositions.add(positionCartesian);
-                    } else if (currentState.getDate()
-                                           .isBetween(startInterval, stopInterval)) {
-                        final Cartesian positionCartesian = buildCartesian(currentState, earth);
+                    } else if (currentState.getDate().isBetween(startInterval,
+                                                                stopInterval)) {
+                        final Cartesian positionCartesian =
+                            buildCartesian(currentState, earth);
                         pointsPositions.add(positionCartesian);
                     }
                 }
@@ -204,12 +232,15 @@ public class VisibilityTriangle extends AbstractPrimaryObject {
     }
 
     /**
-     * This function builds the time interval where the satellite is above the station.
+     * This function builds the time interval where the satellite is above the
+     * station.
      *
      * @param showsInput : The czml show considered
-     * @return : A list of time intervals where the satellite is above the station
+     * @return : A list of time intervals where the satellite is above the
+     *         station
      */
-    private List<TimeInterval> buildTrueIntervals(final List<CzmlShow> showsInput) {
+    private List<TimeInterval>
+        buildTrueIntervals(final List<CzmlShow> showsInput) {
         final List<TimeInterval> toReturn = new ArrayList<>();
         for (CzmlShow czmlShow : showsInput) {
             if (czmlShow.getShow()) {
@@ -223,18 +254,20 @@ public class VisibilityTriangle extends AbstractPrimaryObject {
      * Build the position point to add to the list.
      *
      * @param currentState : The current spacecraft state considered
-     * @param earth        : A model of the earth
-     * @return : A cartesian point projected on the earth frame to be added to the list of cartesians.
+     * @param earth : A model of the earth
+     * @return : A cartesian point projected on the earth frame to be added to
+     *         the list of cartesians.
      */
-    private Cartesian buildCartesian(final SpacecraftState currentState, final OneAxisEllipsoid earth) {
+    private Cartesian buildCartesian(final SpacecraftState currentState,
+                                     final OneAxisEllipsoid earth) {
         final Vector3D position = currentState.getPosition();
-        final GeodeticPoint currentGeodetic = earth.transform(position, currentState.getFrame(),
-                currentState.getDate());
-        final TopocentricFrame topocentricFrame = new TopocentricFrame(earth, currentGeodetic,
-                "currentGeodetic");
+        final GeodeticPoint currentGeodetic =
+            earth.transform(position, currentState.getFrame(),
+                            currentState.getDate());
+        final TopocentricFrame topocentricFrame =
+            new TopocentricFrame(earth, currentGeodetic, "currentGeodetic");
         final Vector3D currentProjected = topocentricFrame.getCartesianPoint();
-        return new Cartesian(currentProjected.getX(),
-                currentProjected.getY(),
-                currentProjected.getZ());
+        return new Cartesian(currentProjected.getX(), currentProjected.getY(),
+                             currentProjected.getZ());
     }
 }

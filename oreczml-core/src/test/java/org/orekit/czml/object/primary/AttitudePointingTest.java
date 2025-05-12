@@ -33,47 +33,57 @@ import java.net.URISyntaxException;
 /**
  * The type Attitude pointing test.
  */
-public class AttitudePointingTest extends AbstractTest {
+public class AttitudePointingTest
+    extends
+    AbstractTest {
 
     /**
      * Attitude pointing constructor test.
      *
      * @throws URISyntaxException the uri syntax exception
-     * @throws IOException        the io exception
+     * @throws IOException the io exception
      */
     @Test
-    void AttitudePointingConstructorTest() throws URISyntaxException, IOException {
+    void AttitudePointingConstructorTest()
+        throws URISyntaxException,
+            IOException {
 
         loadOrekitData();
 
         final Header header = dummyHeader();
 
-        final AbsoluteDate startDate = DateUtils.toAbsoluteDate(header.getAvailability()
-                                                                      .getStart(), TimeScalesFactory.getUTC());
+        final AbsoluteDate startDate =
+            DateUtils.toAbsoluteDate(header.getAvailability().getStart(),
+                                     TimeScalesFactory.getUTC());
         final AbsoluteDate stopDate = startDate.shiftedBy(60.0);
 
-        final BoundedPropagator propagator = dummyPropagator(startDate, stopDate);
+        final BoundedPropagator propagator =
+            dummyPropagator(startDate, stopDate);
 
-        final Spacecraft satellite = Spacecraft.builder(propagator, header)
-                                               .withDisplayAttitude()
-                                               .build();
+        final Spacecraft satellite =
+            Spacecraft.builder(propagator, header).withDisplayAttitude()
+                .build();
 
-        final AttitudePointing attitudePointing = AttitudePointing.builder(satellite, getEarth(), Vector3D.MINUS_I, header).build();
+        final AttitudePointing attitudePointing =
+            AttitudePointing
+                .builder(satellite, getEarth(), Vector3D.MINUS_I, header)
+                .build();
         attitudePointing.displayPointingPath();
         attitudePointing.displayPeriodPointingPath();
 
-        final AttitudePointing attitudePointingWithBuilder = AttitudePointing.builder(satellite, getEarth(),
-                                                                                     Vector3D.MINUS_I, header)
-                                                                             .withCustomID("CustomID")
-                                                                             .withDisplayOnGround(false)
-                                                                             .withColor(Color.ORANGE)
-                                                                             .withHeader(header)
-                                                                             .build();
+        final AttitudePointing attitudePointingWithBuilder =
+            AttitudePointing
+                .builder(satellite, getEarth(), Vector3D.MINUS_I, header)
+                .withCustomID("CustomID").withDisplayOnGround(false)
+                .withColor(Color.ORANGE).withHeader(header).build();
 
-        final String pathFile = loadResources("templateFile/primary/AttitudePointingTemplate.txt");
-        final String builderPathFile = loadResources("templateFile/primary/AttitudePointingWithBuilderTemplate.txt");
+        final String pathFile =
+            loadResources("templateFile/primary/AttitudePointingTemplate.txt");
+        final String builderPathFile =
+            loadResources("templateFile/primary/AttitudePointingWithBuilderTemplate.txt");
 
         verifyFileOutput(pathFile, attitudePointing.toString(), 1e-8);
-        verifyFileOutput(builderPathFile, attitudePointingWithBuilder.toString(), 1e-8);
+        verifyFileOutput(builderPathFile,
+                         attitudePointingWithBuilder.toString(), 1e-8);
     }
 }

@@ -16,6 +16,7 @@
  */
 
 /**
- * This package groups all the classes that build the architecture of the project.
+ * This package groups all the classes that build the architecture of the
+ * project.
  */
 package org.orekit.czml.archi;

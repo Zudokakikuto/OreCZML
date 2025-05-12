@@ -67,61 +67,75 @@ public class SSOAttitudeExample {
         // empty
     }
 
-
     /**
      * Main of the SSO attitude tutorial.
      *
      * @param args arguments of the main function
      * @throws Exception exception to throw
      */
-    public static void main(final String[] args) throws Exception {
+    public static void main(final String[] args)
+        throws Exception {
         // Load orekit data
         TutorialUtils.loadOrekitData();
 
         // Paths
         final String output = TutorialUtils.generateOutput();
-        // !!! Here you need to change the path inside 'generateJsPath' to the path you are using for images or Model.
-        // This folder can also be the public folder of your cesium javascript interface.
-        final String pathToJSFolder = TutorialUtils.generateJSPath(
-                System.getProperty("user.dir") + "/Javascript/public");
+        // !!! Here you need to change the path inside 'generateJsPath' to the
+        // path you are using for images or Model.
+        // This folder can also be the public folder of your cesium javascript
+        // interface.
+        final String pathToJSFolder =
+            TutorialUtils.generateJSPath(System.getProperty("user.dir") +
+                                         "/Javascript/public");
 
-        final String IssModel = TutorialUtils.loadResources("Default3DModels/ISSModel.glb");
+        final String IssModel =
+            TutorialUtils.loadResources("Default3DModels/ISSModel.glb");
 
         // Creation of the clock.
 
-        final double       durationOfSimulation = 24 * 3600; // in seconds;
-        final AbsoluteDate startDate            = new AbsoluteDate(2024, 3, 15, 0, 0, 0.0, TimeScalesFactory.getUTC());
-        final AbsoluteDate finalDate            = startDate.shiftedBy(durationOfSimulation);
-        final Clock clock = new Clock(startDate, finalDate, TimeScalesFactory.getUTC(),
-                TutorialUtils.STEP_BETWEEN_EACH_INSTANT);
+        final double durationOfSimulation = 24 * 3600; // in seconds;
+        final AbsoluteDate startDate =
+            new AbsoluteDate(2024, 3, 15, 0, 0, 0.0,
+                             TimeScalesFactory.getUTC());
+        final AbsoluteDate finalDate =
+            startDate.shiftedBy(durationOfSimulation);
+        final Clock clock =
+            new Clock(startDate, finalDate, TimeScalesFactory.getUTC(),
+                      TutorialUtils.STEP_BETWEEN_EACH_INSTANT);
 
-        final Header header = new Header("Setup of an sun synchronous orbit with a sinusoidal attitude", clock,
-                pathToJSFolder);
-
+        final Header header =
+            new Header("Setup of an sun synchronous orbit with a sinusoidal attitude",
+                       clock, pathToJSFolder);
 
         // Build of a LEO orbit
 
-        final KeplerianOrbit initialOrbit = new KeplerianOrbit(7200000, 0, FastMath.toRadians(98.7), 0,
-                FastMath.toRadians(90), FastMath.toRadians(0), PositionAngleType.MEAN, FramesFactory.getEME2000(),
-                startDate,
-                Constants.WGS84_EARTH_MU);
+        final KeplerianOrbit initialOrbit =
+            new KeplerianOrbit(7200000, 0, FastMath.toRadians(98.7), 0,
+                               FastMath.toRadians(90), FastMath.toRadians(0),
+                               PositionAngleType.MEAN,
+                               FramesFactory.getEME2000(), startDate,
+                               Constants.WGS84_EARTH_MU);
 
         final SpacecraftState initialState = new SpacecraftState(initialOrbit);
 
         // Build of the propagator
 
+        final double[][] tolerances =
+            NumericalPropagator.tolerances(TutorialUtils.POSITION_TOLERANCE,
+                                           initialOrbit, OrbitType.CARTESIAN);
+        final AdaptiveStepsizeIntegrator integrator =
+            new DormandPrince853Integrator(TutorialUtils.MIN_STEP,
+                                           TutorialUtils.MAX_STEP,
+                                           tolerances[0], tolerances[1]);
 
-        final double[][] tolerances = NumericalPropagator.tolerances(TutorialUtils.POSITION_TOLERANCE, initialOrbit,
-                OrbitType.CARTESIAN);
-        final AdaptiveStepsizeIntegrator integrator = new DormandPrince853Integrator(TutorialUtils.MIN_STEP,
-                TutorialUtils.MAX_STEP, tolerances[0], tolerances[1]);
+        final NumericalPropagator propagator =
+            new NumericalPropagator(integrator);
 
-        final NumericalPropagator propagator = new NumericalPropagator(integrator);
-
-        final NormalizedSphericalHarmonicsProvider provider = GravityFieldFactory.getNormalizedProvider(10,
-                10);
-        final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(
-                FramesFactory.getEME2000(), provider);
+        final NormalizedSphericalHarmonicsProvider provider =
+            GravityFieldFactory.getNormalizedProvider(10, 10);
+        final ForceModel holmesFeatherstone =
+            new HolmesFeatherstoneAttractionModel(FramesFactory.getEME2000(),
+                                                  provider);
 
         propagator.setOrbitType(OrbitType.CARTESIAN);
         propagator.addForceModel(holmesFeatherstone);
@@ -129,50 +143,54 @@ public class SSOAttitudeExample {
 
         final EphemerisGenerator generator = propagator.getEphemerisGenerator();
 
-        final SinusoidalLof sinusoidalLof = new SinusoidalLof(FramesFactory.getEME2000(), LOFType.VNC, Vector3D.PLUS_I,
-                3600,
-                FastMath.toRadians(45.0), initialState.getDate());
+        final SinusoidalLof sinusoidalLof =
+            new SinusoidalLof(FramesFactory.getEME2000(), LOFType.VNC,
+                              Vector3D.PLUS_I, 3600, FastMath.toRadians(45.0),
+                              initialState.getDate());
         propagator.setAttitudeProvider(sinusoidalLof);
 
         propagator.propagate(startDate, finalDate);
-        final BoundedPropagator boundedPropagator = generator.getGeneratedEphemeris();
+        final BoundedPropagator boundedPropagator =
+            generator.getGeneratedEphemeris();
 
         // Creation of the satellite
-        final Spacecraft satellite = Spacecraft.builder(boundedPropagator, header)
-                                               .withModelPath(IssModel)
-                                               .withColor(Color.RED)
-                                               .withOnlyOnePeriod()
-                                               .withDisplayAttitude()
-                                               .withReferenceSystem()
-                                               .build();
+        final Spacecraft satellite =
+            Spacecraft.builder(boundedPropagator, header)
+                .withModelPath(IssModel).withColor(Color.RED)
+                .withOnlyOnePeriod().withDisplayAttitude().withReferenceSystem()
+                .build();
 
-        final AttitudePointing pointing = AttitudePointing.builder(satellite, TutorialUtils.getEarth(),
-                                                                  Vector3D.MINUS_K, header)
-                                                          .withColor(Color.ORANGE)
-                                                          .displayPointingPath()
-                                                          .displayPeriodPointingPath()
-                                                          .build();
+        final AttitudePointing pointing =
+            AttitudePointing
+                .builder(satellite, TutorialUtils.getEarth(), Vector3D.MINUS_K,
+                         header)
+                .withColor(Color.ORANGE).displayPointingPath()
+                .displayPeriodPointingPath().build();
 
-        // Creation of the field of observation of the satellite, it describes the area the satellite see
-        final Transform initialInertToBody = initialState.getFrame()
-                                                         .getTransformTo(TutorialUtils.getEarth()
-                                                                                      .getBodyFrame(),
-                                                                 initialState.getDate());
-        final Transform initialFovBody = new Transform(initialState.getDate(), initialState.toTransform()
-                                                                                           .getInverse(),
-                initialInertToBody);
-        final FieldOfView fov = new DoubleDihedraFieldOfView(Vector3D.MINUS_K, Vector3D.PLUS_I, FastMath.toRadians(20),
-                Vector3D.PLUS_J, FastMath.toRadians(20), 2);
-        final FieldOfObservation fieldOfObservation = FieldOfObservation.builder(satellite, fov, initialFovBody, header)
-                                                                        .build();
+        // Creation of the field of observation of the satellite, it describes
+        // the area the satellite see
+        final Transform initialInertToBody =
+            initialState.getFrame()
+                .getTransformTo(TutorialUtils.getEarth().getBodyFrame(),
+                                initialState.getDate());
+        final Transform initialFovBody =
+            new Transform(initialState.getDate(),
+                          initialState.toTransform().getInverse(),
+                          initialInertToBody);
+        final FieldOfView fov =
+            new DoubleDihedraFieldOfView(Vector3D.MINUS_K, Vector3D.PLUS_I,
+                                         FastMath.toRadians(20),
+                                         Vector3D.PLUS_J,
+                                         FastMath.toRadians(20), 2);
+        final FieldOfObservation fieldOfObservation =
+            FieldOfObservation.builder(satellite, fov, initialFovBody, header)
+                .build();
 
         // Creation of the file
-        final CzmlFile file = CzmlFile.builder()
-                                      .withHeader(header)
-                                      .withSpacecraft(satellite)
-                                      .withAttitudePointing(pointing)
-                                      .withFieldOfObservation(fieldOfObservation)
-                                      .build();
+        final CzmlFile file =
+            CzmlFile.builder().withHeader(header).withSpacecraft(satellite)
+                .withAttitudePointing(pointing)
+                .withFieldOfObservation(fieldOfObservation).build();
 
         // Writing in the file
         file.write(output);
@@ -181,7 +199,9 @@ public class SSOAttitudeExample {
     /**
      * The type Sinusoidal lof.
      */
-    protected static class SinusoidalLof extends LofOffset {
+    protected static class SinusoidalLof
+        extends
+        LofOffset {
 
         /** The period of the sinusoidal attitude. */
         private final double period;
@@ -198,70 +218,78 @@ public class SSOAttitudeExample {
         /** The max angle of the oscillations. */
         private double maxAngle;
 
-
         /**
          * Instantiates a new Sinusoidal lof.
          *
          * @param inertialFrame the inertial frame
-         * @param lof           the lof
-         * @param axis          the axis
-         * @param period        the period
-         * @param maxAngle      the max angle
-         * @param initialDate   the initial date
+         * @param lof the lof
+         * @param axis the axis
+         * @param period the period
+         * @param maxAngle the max angle
+         * @param initialDate the initial date
          */
-        public SinusoidalLof(final Frame inertialFrame, final LOF lof, final Vector3D axis, final double period,
-                             final double maxAngle, final AbsoluteDate initialDate) {
+        public SinusoidalLof(final Frame inertialFrame, final LOF lof,
+                             final Vector3D axis, final double period,
+                             final double maxAngle,
+                             final AbsoluteDate initialDate) {
             super(inertialFrame, lof);
-            this.period        = period;
+            this.period = period;
             this.inertialFrame = inertialFrame;
-            this.initialDate   = initialDate;
-            this.maxAngle      = maxAngle;
-            this.axis          = axis;
+            this.initialDate = initialDate;
+            this.maxAngle = maxAngle;
+            this.axis = axis;
         }
 
         /**
          * Instantiates a new Sinusoidal lof.
          *
          * @param inertialFrame the inertial frame
-         * @param lof           the lof
-         * @param axis          the axis
-         * @param period        the period
-         * @param maxAngle      the max angle
-         * @param initialDate   the initial date
-         * @param order         the order
-         * @param alpha1        the alpha 1
-         * @param alpha2        the alpha 2
-         * @param alpha3        the alpha 3
+         * @param lof the lof
+         * @param axis the axis
+         * @param period the period
+         * @param maxAngle the max angle
+         * @param initialDate the initial date
+         * @param order the order
+         * @param alpha1 the alpha 1
+         * @param alpha2 the alpha 2
+         * @param alpha3 the alpha 3
          */
-        public SinusoidalLof(final Frame inertialFrame, final LOF lof, final Vector3D axis, final double period,
-                             final double maxAngle, final AbsoluteDate initialDate, final RotationOrder order,
-                             final double alpha1, final double alpha2, final double alpha3) {
+        public SinusoidalLof(final Frame inertialFrame, final LOF lof,
+                             final Vector3D axis, final double period,
+                             final double maxAngle,
+                             final AbsoluteDate initialDate,
+                             final RotationOrder order, final double alpha1,
+                             final double alpha2, final double alpha3) {
             super(inertialFrame, lof, order, alpha1, alpha2, alpha3);
             this.inertialFrame = inertialFrame;
-            this.period        = period;
-            this.initialDate   = initialDate;
-            this.maxAngle      = maxAngle;
-            this.axis          = axis;
+            this.period = period;
+            this.initialDate = initialDate;
+            this.maxAngle = maxAngle;
+            this.axis = axis;
         }
 
         @Override
-        public Attitude getAttitude(final PVCoordinatesProvider pvProv, final AbsoluteDate date, final Frame frame) {
+        public Attitude getAttitude(final PVCoordinatesProvider pvProv,
+                                    final AbsoluteDate date,
+                                    final Frame frame) {
             final double deltaT = date.durationFrom(initialDate);
-            final double alpha  = maxAngle * FastMath.sin(2 * FastMath.PI / period * deltaT);
+            final double alpha =
+                maxAngle * FastMath.sin(2 * FastMath.PI / period * deltaT);
 
-            final Attitude lofAttitude = super.getAttitude(pvProv, date, inertialFrame);
+            final Attitude lofAttitude =
+                super.getAttitude(pvProv, date, inertialFrame);
 
-            final Rotation rotationLof         = lofAttitude.getRotation();
-            final Rotation additionnalRotation = new Rotation(axis, alpha, RotationConvention.VECTOR_OPERATOR);
+            final Rotation rotationLof = lofAttitude.getRotation();
+            final Rotation additionnalRotation =
+                new Rotation(axis, alpha, RotationConvention.VECTOR_OPERATOR);
 
-            final Rotation finalRotation = additionnalRotation.compose(rotationLof,
-                    RotationConvention.VECTOR_OPERATOR);
-            final AngularCoordinates angularCoordinates = new AngularCoordinates(finalRotation);
+            final Rotation finalRotation =
+                additionnalRotation.compose(rotationLof,
+                                            RotationConvention.VECTOR_OPERATOR);
+            final AngularCoordinates angularCoordinates =
+                new AngularCoordinates(finalRotation);
 
             return new Attitude(date, inertialFrame, angularCoordinates);
         }
     }
 }
-
-
-

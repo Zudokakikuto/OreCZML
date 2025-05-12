@@ -16,6 +16,7 @@
  */
 
 /**
- * This package groups all the tutorials related to scenarios when a field of view is displayed.
+ * This package groups all the tutorials related to scenarios when a field of
+ * view is displayed.
  */
 package org.orekit.czml.fieldofviewtuto;

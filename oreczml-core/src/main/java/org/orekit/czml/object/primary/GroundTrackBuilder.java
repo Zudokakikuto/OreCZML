@@ -16,11 +16,11 @@
  */
 package org.orekit.czml.object.primary;
 
+import java.awt.Color;
+
 import org.orekit.bodies.BodyShape;
 import org.orekit.czml.object.primary.entities.Constellation;
 import org.orekit.czml.object.primary.entities.Spacecraft;
-
-import java.awt.Color;
 
 /**
  * Ground Track Builder class
@@ -31,7 +31,6 @@ import java.awt.Color;
  * @since 1.0
  */
 public class GroundTrackBuilder {
-
 
     /** The default ID for the ground track. */
     public static final String DEFAULT_ID = "GROUND_TRACK/";
@@ -74,29 +73,33 @@ public class GroundTrackBuilder {
     /**
      * The constructor for the ground track builder using a single satellite.
      *
-     * @param satellite   : The satellite that will project the ground track on the ground.
-     * @param body        : The body where the ground track will be projected on.
+     * @param satellite : The satellite that will project the ground track on
+     *        the ground.
+     * @param body : The body where the ground track will be projected on.
      * @param headerInput : The header considered.
      */
-    public GroundTrackBuilder(final Spacecraft satellite, final BodyShape body, final Header headerInput) {
+    public GroundTrackBuilder(final Spacecraft satellite, final BodyShape body,
+                              final Header headerInput) {
         this.satellite = satellite;
-        this.body      = body;
-        this.customID  = "GROUND_TRACK/" + satellite.getId();
-        this.header    = headerInput;
+        this.body = body;
+        this.customID = DEFAULT_ID + satellite.getId();
+        this.header = headerInput;
     }
 
     /**
      * The constructor for the ground track builder using a constellation.
      *
-     * @param constellation : The constellation that will project the ground track on the ground.
-     * @param body          : The body where the ground track will be projected on.
-     * @param headerInput   : The header considered.
+     * @param constellation : The constellation that will project the ground
+     *        track on the ground.
+     * @param body : The body where the ground track will be projected on.
+     * @param headerInput : The header considered.
      */
-    public GroundTrackBuilder(final Constellation constellation, final BodyShape body, final Header headerInput) {
+    public GroundTrackBuilder(final Constellation constellation,
+                              final BodyShape body, final Header headerInput) {
         this.constellation = constellation;
-        this.body          = body;
-        this.header        = headerInput;
-        this.customID      = DEFAULT_ID + constellation.getId();
+        this.body = body;
+        this.header = headerInput;
+        this.customID = DEFAULT_ID + constellation.getId();
     }
 
     /**
@@ -141,7 +144,8 @@ public class GroundTrackBuilder {
         if (satellite != null) {
             return new GroundTrack(satellite, body, color, customID, header);
         } else if (constellation != null) {
-            return new GroundTrack(constellation, body, color, customID, header);
+            return new GroundTrack(constellation, body, color, customID,
+                                   header);
         } else {
             return null;
         }

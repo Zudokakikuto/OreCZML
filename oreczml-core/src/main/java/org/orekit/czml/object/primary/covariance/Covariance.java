@@ -43,13 +43,16 @@ import java.util.List;
 
 /**
  * covariance
- *
- * <p> This class builds the covariance as an ellipsoid around a satellite. </p>
+ * <p>
+ * This class builds the covariance as an ellipsoid around a satellite.
+ * </p>
  *
  * @author Julien LEBLOND
  * @since 1.0.0
  */
-public class Covariance extends AbstractPrimaryObject {
+public class Covariance
+    extends
+    AbstractPrimaryObject {
 
     // STATICS
     /**
@@ -75,20 +78,22 @@ public class Covariance extends AbstractPrimaryObject {
     // Parameters
 
     /**
-     * The orientation used as a reference to keep the ellipsoid in the good orientation.
+     * The orientation used as a reference to keep the ellipsoid in the good
+     * orientation.
      */
     private final Reference orientationReference = null;
 
     /**
-     * A list of all the State Covariance object {@link org.orekit.propagation.StateCovariance}.
+     * A list of all the State Covariance object
+     * {@link org.orekit.propagation.StateCovariance}.
      */
     private final List<StateCovariance> covarianceList;
 
     /**
-     * The position used as a reference to keep the ellipsoid at the same place as the satellite.
+     * The position used as a reference to keep the ellipsoid at the same place
+     * as the satellite.
      */
     private final Reference positionReference;
-
 
     // Intrinsic parameters
 
@@ -115,7 +120,8 @@ public class Covariance extends AbstractPrimaryObject {
     private final List<Cartesian> dimensionsOfEllipsoids = new ArrayList<>();
 
     /**
-     * A list of all the attitudes of the satellite used to orientate the covariance when the reference orientation si not used.
+     * A list of all the attitudes of the satellite used to orientate the
+     * covariance when the reference orientation si not used.
      */
     private final List<Attitude> attitudes = new ArrayList<>();
 
@@ -129,46 +135,53 @@ public class Covariance extends AbstractPrimaryObject {
 
     // Constructors
 
-    // The following constructors build several ellipsoids to follow the satellite
+    // The following constructors build several ellipsoids to follow the
+    // satellite
 
     /**
-     * This builder classically uses the satellite and an initial covariance to build a covariance.
+     * This builder classically uses the satellite and an initial covariance to
+     * build a covariance.
      *
-     * @param spacecraft  : The satellite used to build the covariance around.
+     * @param spacecraft : The satellite used to build the covariance around.
      * @param covariances : The list of all the covariances computed.
-     * @param lof         : The lof of the satellite
-     * @param header      : The header to consider when several are used.
+     * @param lof : The lof of the satellite
+     * @param header : The header to consider when several are used.
      */
-    Covariance(final Spacecraft spacecraft, final List<StateCovariance> covariances, final LOF lof,
+    Covariance(final Spacecraft spacecraft,
+               final List<StateCovariance> covariances, final LOF lof,
                final Header header) {
 
-        this(spacecraft, covariances, lof, DEFAULT_COLOR, DEFAULT_ID + spacecraft.getId(), header);
+        this(spacecraft, covariances, lof, DEFAULT_COLOR,
+             DEFAULT_ID + spacecraft.getId(), header);
     }
 
     /**
      * The classic builder with a given color for the ellipsoid.
      *
-     * @param spacecraft  : The satellite used to build the covariance around.
+     * @param spacecraft : The satellite used to build the covariance around.
      * @param covariances : The initial covariance.
-     * @param lof         : The lof of the satellite
-     * @param color       : The color of the ellipsoid.
-     * @param customID    : The custom ID of the covariance object
-     * @param header      : The header to consider when several are used.
+     * @param lof : The lof of the satellite
+     * @param color : The color of the ellipsoid.
+     * @param customID : The custom ID of the covariance object
+     * @param header : The header to consider when several are used.
      */
-    Covariance(final Spacecraft spacecraft, final List<StateCovariance> covariances, final LOF lof,
+    Covariance(final Spacecraft spacecraft,
+               final List<StateCovariance> covariances, final LOF lof,
                final Color color, final String customID, final Header header) {
 
-        this.spacecraft       = spacecraft;
-        this.header           = header;
+        this.spacecraft = spacecraft;
+        this.header = header;
         this.spaceCraftStates = spacecraft.getSpaceCraftStates();
         this.setId(customID);
         this.setName(DEFAULT_NAME + spacecraft.getName());
         this.setAvailability(spacecraft.getAvailability());
-        this.julianDates       = Collections.unmodifiableList(
-                DateUtils.toJulianDates(spacecraft.getAbsoluteDateList(),
-                        header.getTimeScale()));
-        this.positionReference = new Reference(spacecraft.getId() + DEFAULT_H_POSITION);
-        this.covarianceList    = new ArrayList<>(covariances);
+        this.julianDates =
+            Collections.unmodifiableList(DateUtils
+                .toJulianDates(spacecraft.getAbsoluteDateList(),
+                               header.getTimeScale()));
+        this.positionReference =
+            new Reference(spacecraft.getId() + DEFAULT_H_POSITION);
+        this.covarianceList = new ArrayList<>(covariances);
         this.postComputation(color, lof);
     }
 
@@ -177,18 +190,19 @@ public class Covariance extends AbstractPrimaryObject {
     /**
      * Builder covariance builder.
      *
-     * @param satelliteInput   the satellite input
+     * @param satelliteInput the satellite input
      * @param covariancesInput the covariances input
-     * @param lofInput         the lof input
-     * @param header           the header
+     * @param lofInput the lof input
+     * @param header the header
      * @return the covariance builder
      */
-    public static CovarianceBuilder builder(final Spacecraft satelliteInput,
-                                            final List<StateCovariance> covariancesInput, final LOF lofInput,
-                                            final Header header) {
-        return new CovarianceBuilder(satelliteInput, covariancesInput, lofInput, header);
+    public static CovarianceBuilder
+        builder(final Spacecraft satelliteInput,
+                final List<StateCovariance> covariancesInput,
+                final LOF lofInput, final Header header) {
+        return new CovarianceBuilder(satelliteInput, covariancesInput, lofInput,
+                                     header);
     }
-
 
     // Overrides
 
@@ -196,16 +210,17 @@ public class Covariance extends AbstractPrimaryObject {
      * The generation function for the CZML file for the covariance.
      */
     @Override
-    public void writeCzmlBlock(final CesiumStreamWriter stream, final CesiumOutputStream output) {
+    public void writeCzmlBlock(final CesiumStreamWriter stream,
+                               final CesiumOutputStream output) {
         output.setPrettyFormatting(true);
         try (PacketCesiumWriter packet = stream.openPacket(output)) {
             packet.writeId(getId());
             packet.writeName(getName());
             packet.writeAvailability(getAvailability());
 
-            final Orientation orientation = Orientation.builder(attitudes, spacecraft.getFrame(), header)
-                                                       .withInvertToITRF(false)
-                                                       .build();
+            final Orientation orientation =
+                Orientation.builder(attitudes, spacecraft.getFrame(), header)
+                    .withInvertToITRF(false).build();
             orientation.write(packet, output);
 
             packet.writePositionPropertyReference(positionReference);
@@ -213,7 +228,6 @@ public class Covariance extends AbstractPrimaryObject {
             this.uniqueEllipsoid.write(packet, output);
         }
     }
-
 
     // Getters
 
@@ -226,7 +240,6 @@ public class Covariance extends AbstractPrimaryObject {
         return spacecraft;
     }
 
-
     /**
      * This getter returns the reference frame of the ellipsoid.
      *
@@ -237,7 +250,8 @@ public class Covariance extends AbstractPrimaryObject {
     }
 
     /**
-     * This getter returns the reference used for the orientation of the ellipsoid.
+     * This getter returns the reference used for the orientation of the
+     * ellipsoid.
      *
      * @return : The reference for the orientation used.
      */
@@ -312,37 +326,44 @@ public class Covariance extends AbstractPrimaryObject {
 
     /**
      * This function aims at compute all the arguments after the propagation.
-     * The diagonal of the covariance is extracted in LOF to get the dimension of the ellipsoid.
+     * The diagonal of the covariance is extracted in LOF to get the dimension
+     * of the ellipsoid.
      *
-     * @param color    : The color of the ellipsoid
+     * @param color : The color of the ellipsoid
      * @param lofInput : The local orbital frame of the satellite
      */
     private void postComputation(final Color color, final LOF lofInput) {
 
-        final Frame initialFrame = spaceCraftStates.get(0)
-                                                   .getFrame();
+        final Frame initialFrame = spaceCraftStates.get(0).getFrame();
         final LofOffset offsetProvider = new LofOffset(initialFrame, lofInput);
 
         for (int i = 0; i < covarianceList.size(); i++) {
             final StateCovariance covariance = covarianceList.get(i);
 
-            final StateCovariance covarianceLof = covariance.changeCovarianceFrame(spaceCraftStates.get(i)
-                                                                                                   .getOrbit(),
-                    lofInput);
+            final StateCovariance covarianceLof =
+                covariance
+                    .changeCovarianceFrame(spaceCraftStates.get(i).getOrbit(),
+                                           lofInput);
 
-            final Cartesian dimensionToAdd = new Cartesian(FastMath.sqrt(covarianceLof.getMatrix().getEntry(1, 1)), FastMath.sqrt(covarianceLof.getMatrix().getEntry(0, 0)),
-                    FastMath.sqrt(covarianceLof.getMatrix().getEntry(2, 2)));
+            final Cartesian dimensionToAdd =
+                new Cartesian(FastMath
+                    .sqrt(covarianceLof.getMatrix().getEntry(1, 1)),
+                              FastMath.sqrt(covarianceLof.getMatrix()
+                                  .getEntry(0, 0)),
+                              FastMath.sqrt(covarianceLof.getMatrix()
+                                  .getEntry(2, 2)));
 
             dimensionsOfEllipsoids.add(dimensionToAdd);
 
-            final Attitude currentAttitudeCovariance = offsetProvider.getAttitude(spacecraft.getSpacecraftPropagator(),
-                    spaceCraftStates.get(i)
-                                    .getDate(), initialFrame);
+            final Attitude currentAttitudeCovariance =
+                offsetProvider.getAttitude(spacecraft.getSpacecraftPropagator(),
+                                           spaceCraftStates.get(i).getDate(),
+                                           initialFrame);
             attitudes.add(currentAttitudeCovariance);
         }
 
-        this.uniqueEllipsoid = CzmlEllipsoid.builder(julianDates, dimensionsOfEllipsoids, header)
-                                            .withColor(color)
-                                            .build();
+        this.uniqueEllipsoid =
+            CzmlEllipsoid.builder(julianDates, dimensionsOfEllipsoids, header)
+                .withColor(color).build();
     }
 }
