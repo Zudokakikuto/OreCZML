@@ -56,53 +56,66 @@ public class LEOSatelliteExample {
      * @param args the args
      * @throws Exception the exception
      */
-    public static void main(final String[] args) throws Exception {
+    public static void main(final String[] args)
+        throws Exception {
         // Load orekit data
         TutorialUtils.loadOrekitData();
 
         // Paths
         final String output = TutorialUtils.generateOutput();
-        // !!! Here you need to change the path inside 'generateJsPath' to the path you are using for images or Model.
-        // This folder can also be the public folder of your cesium javascript interface.
-        final String pathToJSFolder = TutorialUtils.generateJSPath(
-                System.getProperty("user.dir") + "/Javascript/public");
+        // !!! Here you need to change the path inside 'generateJsPath' to the
+        // path you are using for images or Model.
+        // This folder can also be the public folder of your cesium javascript
+        // interface.
+        final String pathToJSFolder =
+            TutorialUtils.generateJSPath(System.getProperty("user.dir") +
+                                         "/Javascript/public");
 
         // Creation of the clock
 
-        final double       durationOfSimulation = 5 * 3600; // in seconds;
-        final AbsoluteDate startDate            = new AbsoluteDate(2024, 3, 15, 0, 0, 0.0, TimeScalesFactory.getUTC());
-        final AbsoluteDate finalDate            = startDate.shiftedBy(durationOfSimulation);
-        final Clock clock = new Clock(startDate, finalDate, TimeScalesFactory.getUTC(),
-                TutorialUtils.STEP_BETWEEN_EACH_INSTANT);
+        final double durationOfSimulation = 5 * 3600; // in seconds;
+        final AbsoluteDate startDate =
+            new AbsoluteDate(2024, 3, 15, 0, 0, 0.0,
+                             TimeScalesFactory.getUTC());
+        final AbsoluteDate finalDate =
+            startDate.shiftedBy(durationOfSimulation);
+        final Clock clock =
+            new Clock(startDate, finalDate, TimeScalesFactory.getUTC(),
+                      TutorialUtils.STEP_BETWEEN_EACH_INSTANT);
 
         // Creation of the header
-        final Header header = new Header("Low Earth Orbit Tutorial", clock, pathToJSFolder);
+        final Header header =
+            new Header("Low Earth Orbit Tutorial", clock, pathToJSFolder);
 
         // Build of the LEO orbit
 
-        final KeplerianOrbit initialOrbit = new KeplerianOrbit(7878000, 0, FastMath.toRadians(10), 0,
-                FastMath.toRadians(90), FastMath.toRadians(0), PositionAngleType.MEAN, FramesFactory.getEME2000(),
-                startDate,
-                Constants.WGS84_EARTH_MU);
+        final KeplerianOrbit initialOrbit =
+            new KeplerianOrbit(7878000, 0, FastMath.toRadians(10), 0,
+                               FastMath.toRadians(90), FastMath.toRadians(0),
+                               PositionAngleType.MEAN,
+                               FramesFactory.getEME2000(), startDate,
+                               Constants.WGS84_EARTH_MU);
 
         final SpacecraftState initialState = new SpacecraftState(initialOrbit);
 
         // Build of the propagator
 
+        final double[][] tolerances =
+            NumericalPropagator.tolerances(TutorialUtils.POSITION_TOLERANCE,
+                                           initialOrbit, OrbitType.CARTESIAN);
+        final AdaptiveStepsizeIntegrator integrator =
+            new DormandPrince853Integrator(TutorialUtils.MIN_STEP,
+                                           TutorialUtils.MAX_STEP,
+                                           tolerances[0], tolerances[1]);
 
-        final double[][] tolerances = NumericalPropagator.tolerances(TutorialUtils.POSITION_TOLERANCE, initialOrbit,
-                OrbitType.CARTESIAN);
-        final AdaptiveStepsizeIntegrator integrator = new DormandPrince853Integrator(TutorialUtils.MIN_STEP,
-                TutorialUtils.MAX_STEP, tolerances[0],
-                tolerances[1]);
+        final NumericalPropagator propagator =
+            new NumericalPropagator(integrator);
 
-        final NumericalPropagator propagator = new NumericalPropagator(integrator);
-
-        final NormalizedSphericalHarmonicsProvider provider = GravityFieldFactory.getNormalizedProvider(10,
-                10);
-        final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(FramesFactory.getITRF(
-                IERSConventions.IERS_2010, true),
-                provider);
+        final NormalizedSphericalHarmonicsProvider provider =
+            GravityFieldFactory.getNormalizedProvider(10, 10);
+        final ForceModel holmesFeatherstone =
+            new HolmesFeatherstoneAttractionModel(FramesFactory
+                .getITRF(IERSConventions.IERS_2010, true), provider);
 
         final EphemerisGenerator generator = propagator.getEphemerisGenerator();
 
@@ -111,16 +124,17 @@ public class LEOSatelliteExample {
         propagator.setInitialState(initialState);
 
         propagator.propagate(startDate, finalDate);
-        final BoundedPropagator boundedPropagator = generator.getGeneratedEphemeris();
+        final BoundedPropagator boundedPropagator =
+            generator.getGeneratedEphemeris();
 
         // Build the LEO Satellite
-        final Spacecraft leoSatellite = new Spacecraft(boundedPropagator, header);
+        final Spacecraft leoSatellite =
+            new Spacecraft(boundedPropagator, header);
 
         // Creation of the file
-        final CzmlFile file = CzmlFile.builder()
-                                      .withHeader(header)
-                                      .withSpacecraft(leoSatellite)
-                                      .build();
+        final CzmlFile file =
+            CzmlFile.builder().withHeader(header).withSpacecraft(leoSatellite)
+                .build();
 
         // Write inside the CzmlFile the objects
         file.write(output);

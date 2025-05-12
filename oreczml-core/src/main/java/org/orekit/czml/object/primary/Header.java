@@ -30,15 +30,18 @@ import java.io.StringWriter;
 
 /**
  * Header class
- *
  * <p>
- * The header object is the base to all the CZML file. It contains all the primary information needed for the scene to display.
- * The header must be the FIRST object to be created and written before any other object, else way the CZML will be corrupted.
+ * The header object is the base to all the CZML file. It contains all the
+ * primary information needed for the scene to display. The header must be the
+ * FIRST object to be created and written before any other object, else way the
+ * CZML will be corrupted.
  *
  * @author Julien LEBLOND
  * @since 1.0.0
  */
-public class Header extends AbstractPrimaryObject {
+public class Header
+    extends
+    AbstractPrimaryObject {
 
     /**
      * The default id of a CZML file.
@@ -53,11 +56,14 @@ public class Header extends AbstractPrimaryObject {
     /**
      * The default path to the resources' folder.
      */
-    private static final String DEFAULT_RESOURCES = CzmlFile.getDefaultRoot() + "/oreczml-core/src/main/resources";
+    private static final String DEFAULT_RESOURCES =
+        CzmlFile.getDefaultRoot() + "/oreczml-core/src/main/resources";
 
     /**
-     * The path to the external resources that the user may want to use. If cesium JS is used, the resource folder must be the 'public' folder.
-     * If the user does not mention a path for external resources, personalized 3D or 2D models can't be used.
+     * The path to the external resources that the user may want to use. If
+     * cesium JS is used, the resource folder must be the 'public' folder. If
+     * the user does not mention a path for external resources, personalized 3D
+     * or 2D models can't be used.
      */
     private static String pathToExternalResourceFolder;
 
@@ -79,75 +85,77 @@ public class Header extends AbstractPrimaryObject {
     /**
      * The classic builder, a name and a clock.
      *
-     * @param name        : the name of the header.
+     * @param name : the name of the header.
      * @param masterClock : the clock of the header
      */
     public Header(final String name, final Clock masterClock) {
         this.setId(DEFAULT_ID);
         this.setName(name);
-        this.stepSimulation          = masterClock.getStep()
-                                                  .getValue();
+        this.stepSimulation = masterClock.getStep().getValue();
         pathToExternalResourceFolder = "";
-        this.clock                   = masterClock;
-        this.version                 = DEFAULT_VERSION;
+        this.clock = masterClock;
+        this.version = DEFAULT_VERSION;
     }
 
     /**
      * The classic builder, a name and a clock.
      *
-     * @param name                         : the name of the header.
-     * @param masterClock                  : the clock of the header
-     * @param pathToExternalResourceFolder : The path to the JavaScript folder if one is used.
+     * @param name : the name of the header.
+     * @param masterClock : the clock of the header
+     * @param pathToExternalResourceFolder : The path to the JavaScript folder
+     *        if one is used.
      */
-    public Header(final String name, final Clock masterClock, final String pathToExternalResourceFolder) {
+    public Header(final String name, final Clock masterClock,
+                  final String pathToExternalResourceFolder) {
         this.setId(DEFAULT_ID);
         this.setName(name);
-        this.stepSimulation                 = masterClock.getStep()
-                                                         .getValue();
+        this.stepSimulation = masterClock.getStep().getValue();
         Header.pathToExternalResourceFolder = pathToExternalResourceFolder;
-        this.clock                          = masterClock;
-        this.version                        = DEFAULT_VERSION;
+        this.clock = masterClock;
+        this.version = DEFAULT_VERSION;
     }
 
     /**
-     * The versioned constructor, if you don't know which version to use, does not use this builder.
+     * The versioned constructor, if you don't know which version to use, does
+     * not use this builder.
      *
-     * @param name    : the name of the header.
+     * @param name : the name of the header.
      * @param version : the version of the header.
-     * @param clock   : the clock of the header.
+     * @param clock : the clock of the header.
      */
     public Header(final String name, final String version, final Clock clock) {
         this.setId(DEFAULT_ID);
         this.setName(name);
-        this.version        = version;
-        this.clock          = clock;
-        this.stepSimulation = clock.getStep()
-                                   .getValue();
+        this.version = version;
+        this.clock = clock;
+        this.stepSimulation = clock.getStep().getValue();
     }
 
     /**
-     * The versioned constructor, if you don't know which version to use, does not use this builder.
+     * The versioned constructor, if you don't know which version to use, does
+     * not use this builder.
      *
-     * @param name                         : the name of the header.
-     * @param version                      : the version of the header.
-     * @param clock                        : the clock of the header.
-     * @param pathToExternalResourceFolder : The path to the JavaScript folder if one is used.
+     * @param name : the name of the header.
+     * @param version : the version of the header.
+     * @param clock : the clock of the header.
+     * @param pathToExternalResourceFolder : The path to the JavaScript folder
+     *        if one is used.
      */
     public Header(final String name, final String version, final Clock clock,
                   final String pathToExternalResourceFolder) {
         this.setId(DEFAULT_ID);
         this.setName(name);
-        this.version                        = version;
-        this.clock                          = clock;
+        this.version = version;
+        this.clock = clock;
         Header.pathToExternalResourceFolder = pathToExternalResourceFolder;
-        this.stepSimulation                 = clock.getStep()
-                                                   .getValue();
+        this.stepSimulation = clock.getStep().getValue();
     }
 
     // Overrides
 
     @Override
-    public void writeCzmlBlock(final CesiumStreamWriter stream, final CesiumOutputStream output) {
+    public void writeCzmlBlock(final CesiumStreamWriter stream,
+                               final CesiumOutputStream output) {
         output.setPrettyFormatting(true);
         output.writeStartSequence();
 
@@ -164,11 +172,11 @@ public class Header extends AbstractPrimaryObject {
 
     @Override
     public String toString() {
-        final StringWriter       writer       = new StringWriter();
-        final CesiumOutputStream output       = new CesiumOutputStream(writer);
+        final StringWriter writer = new StringWriter();
+        final CesiumOutputStream output = new CesiumOutputStream(writer);
         final CesiumStreamWriter streamWriter = new CesiumStreamWriter();
         this.writeCzmlBlock(streamWriter, output);
-        final String   tempString     = writer.toString();
+        final String tempString = writer.toString();
         final String[] splittedString = tempString.split("\\[");
         return splittedString[1];
     }

@@ -38,15 +38,21 @@ import java.util.List;
 
 /**
  * Point on body class.
- *
- * <p> This class build a point on the body that evolves in time, given a list of geodetic point and a list of julian dates.
- * This point can be used to build objects like ground tracks, or the pointing of an attitude, or any moving object on a body that need a
- * like with an orbiting object. When the point on body is build, the reference of the position can be used for example to build new objects.</p>
+ * <p>
+ * This class build a point on the body that evolves in time, given a list of
+ * geodetic point and a list of julian dates. This point can be used to build
+ * objects like ground tracks, or the pointing of an attitude, or any moving
+ * object on a body that need a like with an orbiting object. When the point on
+ * body is build, the reference of the position can be used for example to build
+ * new objects.
+ * </p>
  *
  * @author Julien LEBLOND
  * @since 1.0.0
  */
-public class PointOnBody extends AbstractPrimaryObject {
+public class PointOnBody
+    extends
+    AbstractPrimaryObject {
 
     /**
      * The default ID for the point of body.
@@ -56,8 +62,8 @@ public class PointOnBody extends AbstractPrimaryObject {
     /**
      * The default name of the point on the body.
      */
-    public static final String DEFAULT_NAME = "Point on the body at location(s) : ";
-
+    public static final String DEFAULT_NAME =
+        "Point on the body at location(s) : ";
 
     // Intrinsic arguments
 
@@ -71,7 +77,6 @@ public class PointOnBody extends AbstractPrimaryObject {
      */
     private final List<GeodeticPoint> footprintsInTime;
 
-
     // Other arguments
 
     /**
@@ -80,7 +85,8 @@ public class PointOnBody extends AbstractPrimaryObject {
     private final List<Vector3D> positionsList = new ArrayList<>();
 
     /**
-     * The list of cartesians that represents the positions of the point in time.
+     * The list of cartesians that represents the positions of the point in
+     * time.
      */
     private final List<Cartesian> cartesians = new ArrayList<>();
 
@@ -90,12 +96,14 @@ public class PointOnBody extends AbstractPrimaryObject {
     private boolean displayPath = false;
 
     /**
-     * To display or not the path period by period with a given interval in time (period for a path).
+     * To display or not the path period by period with a given interval in time
+     * (period for a path).
      */
     private boolean displayPeriodPointingPath = false;
 
     /**
-     * The number of seconds when the path should be displayed, period by period.
+     * The number of seconds when the path should be displayed, period by
+     * period.
      */
     private double periodForPath;
 
@@ -107,17 +115,23 @@ public class PointOnBody extends AbstractPrimaryObject {
     /**
      * The constructor of the point on the body.
      *
-     * @param julianDates    : The dates when the point must be displayed.
-     * @param geodeticPoints : Must be of the same size of julianDates. This list represents the points at the surface of the body                       in time that will describe the trajectory of the point.
-     * @param body           : The body to which the geodetic points are projected to.
-     * @param header         : The header considered.
+     * @param julianDates : The dates when the point must be displayed.
+     * @param geodeticPoints : Must be of the same size of julianDates. This
+     *        list represents the points at the surface of the body in time that
+     *        will describe the trajectory of the point.
+     * @param body : The body to which the geodetic points are projected to.
+     * @param header : The header considered.
      */
-    public PointOnBody(final List<JulianDate> julianDates, final List<GeodeticPoint> geodeticPoints,
+    public PointOnBody(final List<JulianDate> julianDates,
+                       final List<GeodeticPoint> geodeticPoints,
                        final BodyShape body, final Header header) {
         this.footprintsInTime = new ArrayList<>(geodeticPoints);
-        this.header           = header;
-        final String stringFootprints = Arrays.toString(Arrays.copyOfRange(footprintsInTime.toArray(), 0, 10));
-        // Taking only the 10 first geodetic points for the id and the name to not surcharge the czml file
+        this.header = header;
+        final String stringFootprints =
+            Arrays.toString(Arrays.copyOfRange(footprintsInTime.toArray(), 0,
+                                               10));
+        // Taking only the 10 first geodetic points for the id and the name to
+        // not surcharge the czml file
         this.setId(DEFAULT_ID + stringFootprints);
         this.setName(DEFAULT_NAME + stringFootprints);
         this.setAvailability(header.getAvailability());
@@ -126,21 +140,24 @@ public class PointOnBody extends AbstractPrimaryObject {
             if (currentGeodeticPoint == null) {
                 cartesians.add(new Cartesian(0, 0, 0));
             } else {
-                final Vector3D projectedPoint = body.transform(currentGeodeticPoint);
+                final Vector3D projectedPoint =
+                    body.transform(currentGeodeticPoint);
                 positionsList.add(body.transform(currentGeodeticPoint));
-                final Cartesian currentCartesian = new Cartesian(projectedPoint.getX(),
-                        projectedPoint.getY(), projectedPoint.getZ());
+                final Cartesian currentCartesian =
+                    new Cartesian(projectedPoint.getX(), projectedPoint.getY(),
+                                  projectedPoint.getZ());
                 cartesians.add(currentCartesian);
             }
         }
     }
 
-
     // Overrides
 
     @Override
     public void writeCzmlBlock(final CesiumStreamWriter stream,
-                               final CesiumOutputStream output) throws URISyntaxException, IOException {
+                               final CesiumOutputStream output)
+        throws URISyntaxException,
+            IOException {
         output.setPrettyFormatting(true);
         try (PacketCesiumWriter packet = stream.openPacket(output)) {
             packet.writeId(getId());
@@ -153,7 +170,6 @@ public class PointOnBody extends AbstractPrimaryObject {
             }
         }
     }
-
 
     // Gets
 
@@ -232,24 +248,30 @@ public class PointOnBody extends AbstractPrimaryObject {
     /**
      * Sets display period pointing path.
      *
-     * @param displayPeriodPointingPathInput the display period pointing path input
-     * @param period                         the period
+     * @param displayPeriodPointingPathInput the display period pointing path
+     *        input
+     * @param period the period
      */
-    public void setDisplayPeriodPointingPath(final boolean displayPeriodPointingPathInput, final double period) {
+    public void
+        setDisplayPeriodPointingPath(final boolean displayPeriodPointingPathInput,
+                                     final double period) {
         this.displayPeriodPointingPath = displayPeriodPointingPathInput;
-        this.periodForPath             = period;
+        this.periodForPath = period;
     }
-
 
     // Private functions
 
     /**
-     * This function aims at writing the position of the point given a packet to write into.
+     * This function aims at writing the position of the point given a packet to
+     * write into.
      *
-     * @param packet : The packet where the information of the czml file will be written.
-     * @param output : The output stream of cesium that will contain the strings to write into the CzmLFile.
+     * @param packet : The packet where the information of the czml file will be
+     *        written.
+     * @param output : The output stream of cesium that will contain the strings
+     *        to write into the CzmLFile.
      */
-    private void writePosition(final PacketCesiumWriter packet, final CesiumOutputStream output) {
+    private void writePosition(final PacketCesiumWriter packet,
+                               final CesiumOutputStream output) {
 
         try (PositionCesiumWriter positionWriter = packet.getPositionWriter()) {
             positionWriter.open(output);
@@ -259,12 +281,16 @@ public class PointOnBody extends AbstractPrimaryObject {
     }
 
     /**
-     * This function aims at writing the path of the point given a packet to write into.
+     * This function aims at writing the path of the point given a packet to
+     * write into.
      *
-     * @param packet : The packet where the information of the czml file will be written.
-     * @param output : The output stream of cesium that will contain the strings to write into the CzmLFile.
+     * @param packet : The packet where the information of the czml file will be
+     *        written.
+     * @param output : The output stream of cesium that will contain the strings
+     *        to write into the CzmLFile.
      */
-    private void writePath(final PacketCesiumWriter packet, final CesiumOutputStream output) {
+    private void writePath(final PacketCesiumWriter packet,
+                           final CesiumOutputStream output) {
         try (PathCesiumWriter pathWriter = packet.getPathWriter()) {
             pathWriter.open(output);
             pathWriter.writeShowProperty(true);

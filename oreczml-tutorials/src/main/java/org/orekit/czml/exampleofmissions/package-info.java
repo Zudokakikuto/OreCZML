@@ -15,5 +15,8 @@
  * limitations under the License.
  */
 
-/** This package groups all the tutorials linked to displaying missions and not features. */
+/**
+ * This package groups all the tutorials linked to displaying missions and not
+ * features.
+ */
 package org.orekit.czml.exampleofmissions;

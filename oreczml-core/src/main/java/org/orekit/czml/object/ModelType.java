@@ -19,26 +19,26 @@ package org.orekit.czml.object;
 /**
  * Model type enum
  * <p>
- * Enum for the {@link org.orekit.czml.object.nonvisual.CzmlModel} class. It describes all the different
- * types of existing models.
+ * Enum for the {@link org.orekit.czml.object.nonvisual.CzmlModel} class. It
+ * describes all the different types of existing models.
  *
  * @author Julien LEBLOND
  * @since 1.0.0
  */
 public enum ModelType {
 
-    /**
-     * The type to reference the model as a 2D model.
-     */
-    MODEL_2D,
-    /**
-     * The type to reference the model as a 3D model.
-     */
-    MODEL_3D,
-    /**
-     * An empty model.
-     */
-    EMPTY_MODEL;
+                       /**
+                        * The type to reference the model as a 2D model.
+                        */
+                       MODEL_2D,
+                       /**
+                        * The type to reference the model as a 3D model.
+                        */
+                       MODEL_3D,
+                       /**
+                        * An empty model.
+                        */
+                       EMPTY_MODEL;
 
     /**
      * Builder.

@@ -39,51 +39,70 @@ import java.net.URISyntaxException;
 /**
  * The type Cylinder test.
  */
-public class CylinderTest extends AbstractTest {
+public class CylinderTest
+    extends
+    AbstractTest {
 
     /**
      * Cylinder constructor test.
      *
-     * @throws IOException        the io exception
+     * @throws IOException the io exception
      * @throws URISyntaxException the uri syntax exception
      */
     @Test
-    void CylinderConstructorTest() throws IOException, URISyntaxException {
+    void CylinderConstructorTest()
+        throws IOException,
+            URISyntaxException {
 
         loadOrekitData();
 
         final Header header = dummyHeader();
-        final AbsoluteDate startDate = DateUtils.toAbsoluteDate(header.getAvailability()
-                                                                      .getStart(), TimeScalesFactory.getUTC());
+        final AbsoluteDate startDate =
+            DateUtils.toAbsoluteDate(header.getAvailability().getStart(),
+                                     TimeScalesFactory.getUTC());
         final AbsoluteDate finalDate = startDate.shiftedBy(60.0);
-        final GeodeticPoint toulouseFrame = new GeodeticPoint(FastMath.toRadians(43.6047),
-                FastMath.toRadians(1.4442), 10);
-        final TopocentricFrame topocentricToulouse = new TopocentricFrame(getEarth(), toulouseFrame,
-                "Toulouse Frame");
+        final GeodeticPoint toulouseFrame =
+            new GeodeticPoint(FastMath.toRadians(43.6047),
+                              FastMath.toRadians(1.4442), 10);
+        final TopocentricFrame topocentricToulouse =
+            new TopocentricFrame(getEarth(), toulouseFrame, "Toulouse Frame");
 
-        final BoundedPropagator propagator = dummyPropagator(startDate, finalDate);
-        final Spacecraft        satellite  = new Spacecraft(propagator, header);
+        final BoundedPropagator propagator =
+            dummyPropagator(startDate, finalDate);
+        final Spacecraft satellite = new Spacecraft(propagator, header);
 
-        final Cylinder cylinder = new Cylinder(topocentricToulouse, satellite, 90.0, header);
+        final Cylinder cylinder =
+            new Cylinder(topocentricToulouse, satellite, 90.0, header);
 
-        final Cylinder coverageCylinder = new Cylinder(10.0, 20.0, 1.0, Color.BLUE,
-                new Position(1, 45, 20, PositionType.CARTESIAN_POSITION, header), CesiumHeightReference.CLAMP_TO_GROUND,
-                header);
+        final Cylinder coverageCylinder =
+            new Cylinder(10.0, 20.0, 1.0, Color.BLUE,
+                         new Position(1, 45, 20,
+                                      PositionType.CARTESIAN_POSITION, header),
+                         CesiumHeightReference.CLAMP_TO_GROUND, header);
 
-        final CzmlGroundStation groundStation = new CzmlGroundStation(topocentricToulouse, header);
+        final CzmlGroundStation groundStation =
+            new CzmlGroundStation(topocentricToulouse, header);
 
-        final Cylinder groundStationCylinder = new Cylinder(groundStation, 80.0, header);
+        final Cylinder groundStationCylinder =
+            new Cylinder(groundStation, 80.0, header);
 
-        final Cylinder topocentricCylinder = new Cylinder(topocentricToulouse, 90.0, header);
+        final Cylinder topocentricCylinder =
+            new Cylinder(topocentricToulouse, 90.0, header);
 
-        final String pathFile = loadResources("templateFile/secondary/CylinderTemplate.txt");
-        final String coveragePathFile = loadResources("templateFile/secondary/CylinderCoverageTemplate.txt");
-        final String groundStationPathFile = loadResources("templateFile/secondary/CylinderGroundStationTemplate.txt");
-        final String topocentricPathFile = loadResources("templateFile/secondary/CylinderTopocentricTemplate.txt");
+        final String pathFile =
+            loadResources("templateFile/secondary/CylinderTemplate.txt");
+        final String coveragePathFile =
+            loadResources("templateFile/secondary/CylinderCoverageTemplate.txt");
+        final String groundStationPathFile =
+            loadResources("templateFile/secondary/CylinderGroundStationTemplate.txt");
+        final String topocentricPathFile =
+            loadResources("templateFile/secondary/CylinderTopocentricTemplate.txt");
 
         verifyFileOutput(pathFile, cylinder.toString(), 1e-8);
         verifyFileOutput(coveragePathFile, coverageCylinder.toString(), 1e-8);
-        verifyFileOutput(groundStationPathFile, groundStationCylinder.toString(), 1e-8);
-        verifyFileOutput(topocentricPathFile, topocentricCylinder.toString(), 1e-8);
+        verifyFileOutput(groundStationPathFile,
+                         groundStationCylinder.toString(), 1e-8);
+        verifyFileOutput(topocentricPathFile, topocentricCylinder.toString(),
+                         1e-8);
     }
 }

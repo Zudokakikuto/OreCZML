@@ -31,13 +31,17 @@ import java.util.Objects;
 
 /**
  * Spacecraft reference system class
- *
- * <p> The reference system of the Spacecraft and its axis. By default a 3D model of 3 axis is used to define it. </p>
+ * <p>
+ * The reference system of the Spacecraft and its axis. By default a 3D model of
+ * 3 axis is used to define it.
+ * </p>
  *
  * @author Julien LEBLOND.
  * @since 1.0.0
  */
-public class SpacecraftReferenceSystem extends AbstractPrimaryObject {
+public class SpacecraftReferenceSystem
+    extends
+    AbstractPrimaryObject {
 
     /**
      * The default ID for the reference system.
@@ -62,10 +66,9 @@ public class SpacecraftReferenceSystem extends AbstractPrimaryObject {
     /**
      * The default 3D model used to represent the Spacecraft reference system.
      */
-    public static final String PATH_TO_REFERENCE_SYSTEM = Objects.requireNonNull(CzmlModel.class.getClassLoader()
-                                                                                                .getResource(
-                                                                                                        "referenceSystem.glb"))
-                                                                 .getPath();
+    public static final String PATH_TO_REFERENCE_SYSTEM =
+        Objects.requireNonNull(CzmlModel.class.getClassLoader()
+            .getResource("referenceSystem.glb")).getPath();
 
     // Intrinsic parameters
 
@@ -73,7 +76,6 @@ public class SpacecraftReferenceSystem extends AbstractPrimaryObject {
      * The Spacecraft which the system will be around.
      */
     private final Spacecraft spacecraft;
-
 
     // Other parameters
     /**
@@ -91,46 +93,59 @@ public class SpacecraftReferenceSystem extends AbstractPrimaryObject {
      */
     private final CzmlModel referenceSystemModel;
 
-
     // Constructors
 
     /**
-     * The basic constructor for the Spacecraft reference system, it uses default parameters.
+     * The basic constructor for the Spacecraft reference system, it uses
+     * default parameters.
      *
-     * @param spacecraft : The Spacecraft around which the reference system must be.
-     * @param header    : The header considered.
+     * @param spacecraft : The Spacecraft around which the reference system must
+     *        be.
+     * @param header : The header considered.
      */
-    public SpacecraftReferenceSystem(final Spacecraft spacecraft, final Header header) {
-        this(spacecraft, 0.02, 200000, 250, DEFAULT_ID + spacecraft.getId(), header);
+    public SpacecraftReferenceSystem(final Spacecraft spacecraft,
+                                     final Header header) {
+        this(spacecraft, 0.02, 200000, 250, DEFAULT_ID + spacecraft.getId(),
+             header);
     }
 
     /**
-     * The constructor for the Spacecraft reference system with no default parameters.
+     * The constructor for the Spacecraft reference system with no default
+     * parameters.
      *
-     * @param spacecraft        : The Spacecraft around which the reference system must be.
-     * @param scale            : The scale of the model to be loaded to define the reference system.
-     * @param maximumScale     : The maximum scale that the mode can take.
+     * @param spacecraft : The Spacecraft around which the reference system must
+     *        be.
+     * @param scale : The scale of the model to be loaded to define the
+     *        reference system.
+     * @param maximumScale : The maximum scale that the mode can take.
      * @param minimumPixelSize : The minimum pixel sie of the model.
-     * @param customID         : The custom ID of the Spacecraft reference system.
-     * @param header           : The header considered.
+     * @param customID : The custom ID of the Spacecraft reference system.
+     * @param header : The header considered.
      */
-    public SpacecraftReferenceSystem(final Spacecraft spacecraft, final double scale, final double maximumScale,
-                                     final double minimumPixelSize, final String customID, final Header header) {
+    public SpacecraftReferenceSystem(final Spacecraft spacecraft,
+                                     final double scale,
+                                     final double maximumScale,
+                                     final double minimumPixelSize,
+                                     final String customID,
+                                     final Header header) {
         this.spacecraft = spacecraft;
         this.setId(customID);
         this.setName(DEFAULT_NAME + spacecraft.getName());
         this.setAvailability(spacecraft.getAvailability());
-        this.referencePosition    = new Reference(spacecraft.getId() + DEFAULT_H_POSITION);
-        this.referenceOrientation = new Reference(spacecraft.getId() + DEFAULT_H_ORIENTATION);
-        this.referenceSystemModel = new CzmlModel(PATH_TO_REFERENCE_SYSTEM, maximumScale, minimumPixelSize, scale,
-                false, header);
+        this.referencePosition =
+            new Reference(spacecraft.getId() + DEFAULT_H_POSITION);
+        this.referenceOrientation =
+            new Reference(spacecraft.getId() + DEFAULT_H_ORIENTATION);
+        this.referenceSystemModel =
+            new CzmlModel(PATH_TO_REFERENCE_SYSTEM, maximumScale,
+                          minimumPixelSize, scale, false, header);
     }
-
 
     // Overrides
 
     @Override
-    public void writeCzmlBlock(final CesiumStreamWriter stream, final CesiumOutputStream output) {
+    public void writeCzmlBlock(final CesiumStreamWriter stream,
+                               final CesiumOutputStream output) {
         output.setPrettyFormatting(true);
         try (PacketCesiumWriter packet = stream.openPacket(output)) {
             packet.writeId(getId());
@@ -138,13 +153,11 @@ public class SpacecraftReferenceSystem extends AbstractPrimaryObject {
             packet.writeAvailability(getAvailability());
             packet.writePositionPropertyReference(referencePosition);
             packet.writeOrientationPropertyReference(referenceOrientation);
-            this.getReferenceSystemModel()
-                .generateCZML(packet, output);
+            this.getReferenceSystemModel().generateCZML(packet, output);
         } catch (IOException | URISyntaxException e) {
             throw new RuntimeException(e);
         }
     }
-
 
     // Getters
 

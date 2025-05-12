@@ -44,7 +44,6 @@ public class LatLongLinesBuilder {
     /** The header considered when several are used. */
     private Header header;
 
-
     /**
      * The builder of the lat long line display builder object.
      *
@@ -52,14 +51,15 @@ public class LatLongLinesBuilder {
      */
     public LatLongLinesBuilder(final Header headerInput) {
         this.customID = "LAT_LONG";
-        this.header   = headerInput;
+        this.header = headerInput;
     }
 
     /**
      * The function to set up a custom ID.
      *
      * @param customIDInput : The custom ID to set up
-     * @return : The lat long lines display builder object with a given custom ID.
+     * @return : The lat long lines display builder object with a given custom
+     *         ID.
      */
     public LatLongLinesBuilder withCustomID(final String customIDInput) {
         this.customID = customIDInput;
@@ -80,10 +80,13 @@ public class LatLongLinesBuilder {
     /**
      * The function to set up an angular step for the latitude.
      *
-     * @param latitudeAngularStepInput : The angular step for the latitude to set up
-     * @return : The lat long lines display builder object with a given angular step.
+     * @param latitudeAngularStepInput : The angular step for the latitude to
+     *        set up
+     * @return : The lat long lines display builder object with a given angular
+     *         step.
      */
-    public LatLongLinesBuilder withLatitudeAngularStep(final int latitudeAngularStepInput) {
+    public LatLongLinesBuilder
+        withLatitudeAngularStep(final int latitudeAngularStepInput) {
         this.latitudeAngularStep = latitudeAngularStepInput;
         return this;
     }
@@ -91,10 +94,13 @@ public class LatLongLinesBuilder {
     /**
      * The function to set up an angular step for the longitude.
      *
-     * @param longitudeAngularStepInput : The angular step for the longitude to set up
-     * @return : The lat long lines display builder object with a given angular step.
+     * @param longitudeAngularStepInput : The angular step for the longitude to
+     *        set up
+     * @return : The lat long lines display builder object with a given angular
+     *         step.
      */
-    public LatLongLinesBuilder withLongitudeAngularStep(final int longitudeAngularStepInput) {
+    public LatLongLinesBuilder
+        withLongitudeAngularStep(final int longitudeAngularStepInput) {
         this.longitudeAngularStep = longitudeAngularStepInput;
         return this;
     }
@@ -102,8 +108,10 @@ public class LatLongLinesBuilder {
     /**
      * The function to show or not the labels.
      *
-     * @param displayLabelsInput : The boolean to show or not the labels to set up
-     * @return : The lat long lines display builder object with labels displayed or not.
+     * @param displayLabelsInput : The boolean to show or not the labels to set
+     *        up
+     * @return : The lat long lines display builder object with labels displayed
+     *         or not.
      */
     public LatLongLinesBuilder withDisplay(final boolean displayLabelsInput) {
         this.displayLabels = displayLabelsInput;
@@ -113,10 +121,12 @@ public class LatLongLinesBuilder {
     /**
      * The build function that generates a lat long lines display object.
      *
-     * @return : A lat long lines display object with the given parameters of the builder.
+     * @return : A lat long lines display object with the given parameters of
+     *         the builder.
      */
     public LatLongLines build() {
-        return new LatLongLines(latitudeAngularStep, longitudeAngularStep, displayLabels, customID, header);
+        return new LatLongLines(latitudeAngularStep, longitudeAngularStep,
+                                displayLabels, customID, header);
     }
 
 }

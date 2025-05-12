@@ -29,9 +29,9 @@ import org.orekit.utils.IERSConventions;
 
 import java.io.File;
 
-
 /**
- * This class aims at giving the tutorial utilities to ease the understanding of tutorials.
+ * This class aims at giving the tutorial utilities to ease the understanding of
+ * tutorials.
  */
 public class TutorialUtils {
 
@@ -58,7 +58,8 @@ public class TutorialUtils {
     /**
      * .
      */
-    public static final double CLASSIC_DURATION_OF_SIMULATION = 10 * 3600; // in seconds;
+    public static final double CLASSIC_DURATION_OF_SIMULATION = 10 * 3600; // in
+                                                                           // seconds;
 
     /** user home. */
     private static final String USER_HOME = "user.home";
@@ -79,12 +80,11 @@ public class TutorialUtils {
      */
     public static void loadOrekitData() {
         try {
-            final File         home      = new File(System.getProperty(USER_HOME));
-            final File         orekitDir = new File(home, OREKIT_DATA);
-            final DataProvider provider  = new DirectoryCrawler(orekitDir);
-            DataContext.getDefault()
-                       .getDataProvidersManager()
-                       .addProvider(provider);
+            final File home = new File(System.getProperty(USER_HOME));
+            final File orekitDir = new File(home, OREKIT_DATA);
+            final DataProvider provider = new DirectoryCrawler(orekitDir);
+            DataContext.getDefault().getDataProvidersManager()
+                .addProvider(provider);
         } catch (OrekitException oe) {
             System.err.println(oe.getLocalizedMessage());
         }
@@ -96,8 +96,8 @@ public class TutorialUtils {
      * @return the string
      */
     public static String generateOutput() {
-        final String osName       = System.getProperty("os.name");
-        final String outputName   = "Output.czml";
+        final String osName = System.getProperty("os.name");
+        final String outputName = "Output.czml";
         final String outputFolder = "/Output";
         if (osName.contains("Windows")) {
             ROOT = ROOT.replace("\\", "/");
@@ -133,9 +133,7 @@ public class TutorialUtils {
      */
     public static String loadResources(final String resourcePath) {
         return new File(TutorialUtils.class.getClassLoader()
-                                           .getResource(resourcePath)
-                                           .getFile()).toPath()
-                                                      .toString();
+            .getResource(resourcePath).getFile()).toPath().toString();
     }
 
     /**
@@ -144,8 +142,10 @@ public class TutorialUtils {
      * @return the earth
      */
     public static OneAxisEllipsoid getEarth() {
-        final Frame ITRF = FramesFactory.getITRF(IERSConventions.IERS_2010, true);
-        return new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS, Constants.WGS84_EARTH_FLATTENING, ITRF);
+        final Frame ITRF =
+            FramesFactory.getITRF(IERSConventions.IERS_2010, true);
+        return new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS,
+                                    Constants.WGS84_EARTH_FLATTENING, ITRF);
     }
 
 }

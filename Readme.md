@@ -21,6 +21,7 @@ Cesium understands CZML file as inputs. Hence, this project provides a library t
 - Orekit available here : https://gitlab.orekit.org/orekit/orekit
 - CesiumLanguageWriter available here : https://github.com/AnalyticalGraphicsInc/czml-writer
 - Java 8 minimum version is required
+
 ### Installation
 
 #### With maven
@@ -87,6 +88,22 @@ final String pathToJSFolder = TutorialUtils.generateJSPath(
 Replace the `System.getProperty("user.dir")` with the path of the file where you wants your external resources to be taken if you use some.
 
 The Czml file will be outputted in the 'Output' folder.
+
+## Linting
+
+This project uses [checkstyle](https://checkstyle.sourceforge.io/) to check the code style, the rules are the same as used in Orekit and is located in [checkstyle.xml](./checkstyle.xml). You can run the check with the command:
+
+```bash
+mvn checkstyle:check
+```
+
+For formatting the eclipse formatting rules, also copied over from Orekit, are used and found in [orekit-eclipse-formatter.xml](./orekit-eclipse-formatter.xml). [Spotless](https://github.com/diffplug/spotless/tree/main/plugin-maven) is used to check and apply these formatting rules to the codebase, and can be run using:
+
+
+```bash
+mvn spotless:check
+mvn spotless:apply
+```
 
 ## Wiki and more #
 

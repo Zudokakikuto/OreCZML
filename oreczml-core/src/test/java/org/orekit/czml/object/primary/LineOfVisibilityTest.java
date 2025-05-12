@@ -47,49 +47,60 @@ import java.net.URISyntaxException;
 /**
  * The type Line of visibility test.
  */
-public class LineOfVisibilityTest extends AbstractTest {
+public class LineOfVisibilityTest
+    extends
+    AbstractTest {
 
     /**
      * Line of visbility constructor test.
      *
-     * @throws IOException        the io exception
+     * @throws IOException the io exception
      * @throws URISyntaxException the uri syntax exception
      */
     @Test
-    void lineOfVisibilityConstructorTest() throws IOException, URISyntaxException {
+    void lineOfVisibilityConstructorTest()
+        throws IOException,
+            URISyntaxException {
 
         loadOrekitData();
 
         final Header header = dummyHeader();
 
-        final GeodeticPoint toulouseFrame = new GeodeticPoint(FastMath.toRadians(43.6047),
-                FastMath.toRadians(1.4442), 10);
-        final TopocentricFrame topocentricToulouse = new TopocentricFrame(getEarth(), toulouseFrame,
-                "Toulouse Frame");
+        final GeodeticPoint toulouseFrame =
+            new GeodeticPoint(FastMath.toRadians(43.6047),
+                              FastMath.toRadians(1.4442), 10);
+        final TopocentricFrame topocentricToulouse =
+            new TopocentricFrame(getEarth(), toulouseFrame, "Toulouse Frame");
 
-        final AbsoluteDate startDate = new AbsoluteDate(2024, 3, 15, 0, 0, 0.0, TimeScalesFactory.getUTC());
+        final AbsoluteDate startDate =
+            new AbsoluteDate(2024, 3, 15, 0, 0, 0.0,
+                             TimeScalesFactory.getUTC());
         final AbsoluteDate finalDate = startDate.shiftedBy(10 * 3600);
 
-        final KeplerianOrbit initialOrbit = new KeplerianOrbit(7878000, 0, FastMath.toRadians(80), 0,
-                FastMath.toRadians(90), FastMath.toRadians(0), PositionAngleType.MEAN, FramesFactory.getEME2000(),
-                startDate,
-                Constants.WGS84_EARTH_MU);
+        final KeplerianOrbit initialOrbit =
+            new KeplerianOrbit(7878000, 0, FastMath.toRadians(80), 0,
+                               FastMath.toRadians(90), FastMath.toRadians(0),
+                               PositionAngleType.MEAN,
+                               FramesFactory.getEME2000(), startDate,
+                               Constants.WGS84_EARTH_MU);
 
         final SpacecraftState initialState = new SpacecraftState(initialOrbit);
 
+        final NormalizedSphericalHarmonicsProvider provider =
+            GravityFieldFactory.getNormalizedProvider(10, 10);
+        final ForceModel holmesFeatherstone =
+            new HolmesFeatherstoneAttractionModel(FramesFactory.getEME2000(),
+                                                  provider);
 
-        final NormalizedSphericalHarmonicsProvider provider = GravityFieldFactory.getNormalizedProvider(10,
-                10);
-        final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(FramesFactory.getEME2000(),
-                provider);
+        final double[][] tolerances =
+            NumericalPropagator.tolerances(10, initialOrbit,
+                                           OrbitType.CARTESIAN);
+        final AdaptiveStepsizeIntegrator integrator =
+            new DormandPrince853Integrator(0.001, 1000.0, tolerances[0],
+                                           tolerances[1]);
 
-        final double[][] tolerances = NumericalPropagator.tolerances(10, initialOrbit,
-                OrbitType.CARTESIAN);
-        final AdaptiveStepsizeIntegrator integrator = new DormandPrince853Integrator(0.001,
-                1000.0, tolerances[0],
-                tolerances[1]);
-
-        final NumericalPropagator propagator = new NumericalPropagator(integrator);
+        final NumericalPropagator propagator =
+            new NumericalPropagator(integrator);
 
         propagator.setOrbitType(OrbitType.CARTESIAN);
         propagator.addForceModel(holmesFeatherstone);
@@ -98,20 +109,24 @@ public class LineOfVisibilityTest extends AbstractTest {
         final EphemerisGenerator generator = propagator.getEphemerisGenerator();
 
         propagator.propagate(startDate, finalDate);
-        final BoundedPropagator boundedPropagator = generator.getGeneratedEphemeris();
+        final BoundedPropagator boundedPropagator =
+            generator.getGeneratedEphemeris();
 
         final Spacecraft satellite = new Spacecraft(boundedPropagator, header);
 
-        final LineOfVisibility line = LineOfVisibility.builder(topocentricToulouse, satellite, header).build();
+        final LineOfVisibility line =
+            LineOfVisibility.builder(topocentricToulouse, satellite, header)
+                .build();
 
-        final LineOfVisibility coverageLine = LineOfVisibility.builder(topocentricToulouse, satellite, header)
-                                                              .withHeader(header)
-                                                              .withCustomID("CustomID")
-                                                              .withAngleOfAperture(90.0)
-                                                              .build();
+        final LineOfVisibility coverageLine =
+            LineOfVisibility.builder(topocentricToulouse, satellite, header)
+                .withHeader(header).withCustomID("CustomID")
+                .withAngleOfAperture(90.0).build();
 
-        final String pathFile = loadResources("templateFile/primary/LineOfVisibilityTemplate.txt");
-        final String pathCoverageFile = loadResources("templateFile/primary/LineOfVisibilityCoverageTemplate.txt");
+        final String pathFile =
+            loadResources("templateFile/primary/LineOfVisibilityTemplate.txt");
+        final String pathCoverageFile =
+            loadResources("templateFile/primary/LineOfVisibilityCoverageTemplate.txt");
 
         verifyFileOutput(pathFile, line.toString(), 1e-8);
         verifyFileOutput(pathCoverageFile, coverageLine.toString(), 1e-8);

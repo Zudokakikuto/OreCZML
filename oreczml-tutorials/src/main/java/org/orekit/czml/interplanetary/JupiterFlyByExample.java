@@ -48,12 +48,13 @@ import org.orekit.utils.PVCoordinates;
 import java.awt.Color;
 
 /**
- * This tutorial provides an example interplanetary mission with Juno near jupiter.
- * (It is highly recommended to use the local JavaScript interface designed for OreCzml to visualize this example).
+ * This tutorial provides an example interplanetary mission with Juno near
+ * jupiter. (It is highly recommended to use the local JavaScript interface
+ * designed for OreCzml to visualize this example).
  */
 public class JupiterFlyByExample {
 
-    private JupiterFlyByExample () {
+    private JupiterFlyByExample() {
     }
 
     /**
@@ -62,33 +63,43 @@ public class JupiterFlyByExample {
      * @param args arguments of the main function
      * @throws Exception exception to throw
      */
-    public static void main (final String[] args) throws Exception {
+    public static void main(final String[] args)
+        throws Exception {
         // Load orekit data
         TutorialUtils.loadOrekitData();
 
         // Paths
         final String output = TutorialUtils.generateOutput();
-        // !!! Here you need to change the path inside 'generateJsPath' to the path you are using for images or Model.
-        // This folder can also be the public folder of your cesium javascript interface.
-        final String pathToJSFolder = TutorialUtils.generateJSPath(
-                System.getProperty("user.dir") + "/Javascript/public");
+        // !!! Here you need to change the path inside 'generateJsPath' to the
+        // path you are using for images or Model.
+        // This folder can also be the public folder of your cesium javascript
+        // interface.
+        final String pathToJSFolder =
+            TutorialUtils.generateJSPath(System.getProperty("user.dir") +
+                                         "/Javascript/public");
 
-        final String juiceModel = TutorialUtils.loadResources("Default3DModels/Juno.glb");
+        final String juiceModel =
+            TutorialUtils.loadResources("Default3DModels/Juno.glb");
 
         // Creation of the clock.
 
         final double durationOfSimulation = 100000; // in seconds;
-        final AbsoluteDate initialDate = new AbsoluteDate(2004, 1, 1, 0, 0, 00.000,
-                TimeScalesFactory.getUTC());
-        final AbsoluteDate finalDate = initialDate.shiftedBy(durationOfSimulation);
-        final Clock clock = new Clock(initialDate, finalDate, TimeScalesFactory.getUTC(),
-                TutorialUtils.STEP_BETWEEN_EACH_INSTANT);
+        final AbsoluteDate initialDate =
+            new AbsoluteDate(2004, 1, 1, 0, 0, 00.000,
+                             TimeScalesFactory.getUTC());
+        final AbsoluteDate finalDate =
+            initialDate.shiftedBy(durationOfSimulation);
+        final Clock clock =
+            new Clock(initialDate, finalDate, TimeScalesFactory.getUTC(),
+                      TutorialUtils.STEP_BETWEEN_EACH_INSTANT);
 
-        final Header header = new Header("Jupiter fly by", clock, pathToJSFolder);
+        final Header header =
+            new Header("Jupiter fly by", clock, pathToJSFolder);
 
         // Solar system
         final CelestialBody jupiter = CelestialBodyFactory.getJupiter();
-        final CelestialBody[] otherBodies = {
+        final CelestialBody[] otherBodies =
+            {
                 CelestialBodyFactory.getSun(),
                 CelestialBodyFactory.getMercury(),
                 CelestialBodyFactory.getVenus(),
@@ -97,49 +108,56 @@ public class JupiterFlyByExample {
                 CelestialBodyFactory.getSaturn(),
                 CelestialBodyFactory.getUranus(),
                 CelestialBodyFactory.getNeptune()
-        };
+            };
 
         // Frames
 
         final Frame jovianFrame = jupiter.getInertiallyOrientedFrame();
-        final Frame ICRF        = FramesFactory.getICRF();
+        final Frame ICRF = FramesFactory.getICRF();
 
         // Integration parameters
-        final double minStep           = 1.0;
-        final double maxstep           = 7200.0;
+        final double minStep = 1.0;
+        final double maxstep = 7200.0;
         final double positionTolerance = 1.0;
-        final double initialStepSize   = 120.0;
+        final double initialStepSize = 120.0;
 
         // Initial conditions
-        final double x  = 69911000 + 100000000;
-        final double y  = -2000000000;
-        final double z  = 0;
+        final double x = 69911000 + 100000000;
+        final double y = -2000000000;
+        final double z = 0;
         final double Vx = 0;
         final double Vy = 50000;
         final double Vz = 0;
-        final PVCoordinates initialScWrtJupiter = new PVCoordinates(new Vector3D(x, y, z),
-                new Vector3D(Vx, Vy, Vz));
+        final PVCoordinates initialScWrtJupiter =
+            new PVCoordinates(new Vector3D(x, y, z), new Vector3D(Vx, Vy, Vz));
 
         // Propagator
 
-        final Transform     initialTransform1  = jovianFrame.getTransformTo(FramesFactory.getEME2000(), initialDate);
-        final PVCoordinates initialConditions1 = initialTransform1.transformPVCoordinates(initialScWrtJupiter);
+        final Transform initialTransform1 =
+            jovianFrame.getTransformTo(FramesFactory.getEME2000(), initialDate);
+        final PVCoordinates initialConditions1 =
+            initialTransform1.transformPVCoordinates(initialScWrtJupiter);
 
-        final AbsolutePVCoordinates initialAbsPva1 = new AbsolutePVCoordinates(FramesFactory.getEME2000(), initialDate,
-                initialConditions1);
+        final AbsolutePVCoordinates initialAbsPva1 =
+            new AbsolutePVCoordinates(FramesFactory.getEME2000(), initialDate,
+                                      initialConditions1);
 
-        final KeplerianOrbit initialOrbit = new KeplerianOrbit(initialAbsPva1, FramesFactory.getEME2000(),
-                Constants.WGS84_EARTH_MU);
+        final KeplerianOrbit initialOrbit =
+            new KeplerianOrbit(initialAbsPva1, FramesFactory.getEME2000(),
+                               Constants.WGS84_EARTH_MU);
         final SpacecraftState initialState = new SpacecraftState(initialOrbit);
 
-        final double[][] tolerances1 = NumericalPropagator.tolerances(positionTolerance, initialOrbit,
-                OrbitType.CARTESIAN);
+        final double[][] tolerances1 =
+            NumericalPropagator.tolerances(positionTolerance, initialOrbit,
+                                           OrbitType.CARTESIAN);
 
         final AdaptiveStepsizeIntegrator integrator1 =
-                new DormandPrince853Integrator(minStep, maxstep, tolerances1[0], tolerances1[1]);
+            new DormandPrince853Integrator(minStep, maxstep, tolerances1[0],
+                                           tolerances1[1]);
         integrator1.setInitialStepSize(initialStepSize);
 
-        final NumericalPropagator propagator = new NumericalPropagator(integrator1);
+        final NumericalPropagator propagator =
+            new NumericalPropagator(integrator1);
 
         //// Setup the propagation
         propagator.setOrbitType(OrbitType.CARTESIAN);
@@ -157,21 +175,19 @@ public class JupiterFlyByExample {
 
         propagator.propagate(initialDate, finalDate);
 
-        final BoundedPropagator boundedPropagator = generator.getGeneratedEphemeris();
+        final BoundedPropagator boundedPropagator =
+            generator.getGeneratedEphemeris();
 
-        final Spacecraft satellite = Spacecraft.builder(boundedPropagator, header)
-                                               .withModelPath(juiceModel)
-                                               .withColor(Color.MAGENTA)
-                                               .withOnlyOnePeriod()
-                                               .build();
+        final Spacecraft satellite =
+            Spacecraft.builder(boundedPropagator, header)
+                .withModelPath(juiceModel).withColor(Color.MAGENTA)
+                .withOnlyOnePeriod().build();
 
         final Body jupiterDisplay = BodyFactory.getJupiter(header);
 
-        final CzmlFile file = CzmlFile.builder()
-                                      .withHeader(header)
-                                      .withSpacecraft(satellite)
-                                      .withBody(jupiterDisplay)
-                                      .build();
+        final CzmlFile file =
+            CzmlFile.builder().withHeader(header).withSpacecraft(satellite)
+                .withBody(jupiterDisplay).build();
 
         // Writing the file
         file.write(output);

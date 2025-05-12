@@ -31,29 +31,38 @@ import java.net.URISyntaxException;
 /**
  * The type Satellite reference system test.
  */
-public class SpacecraftReferenceSystemTest extends AbstractTest {
+public class SpacecraftReferenceSystemTest
+    extends
+    AbstractTest {
 
     /**
      * Satellite reference systemc constructor test.
      *
-     * @throws IOException        the io exception
+     * @throws IOException the io exception
      * @throws URISyntaxException the uri syntax exception
      */
     @Test
-    void SatelliteReferenceSystemcConstructorTest() throws IOException, URISyntaxException {
+    void SatelliteReferenceSystemcConstructorTest()
+        throws IOException,
+            URISyntaxException {
 
         loadOrekitData();
 
         final Header header = dummyHeader();
-        final AbsoluteDate startDate = DateUtils.toAbsoluteDate(header.getAvailability().getStart(), TimeScalesFactory.getUTC());
+        final AbsoluteDate startDate =
+            DateUtils.toAbsoluteDate(header.getAvailability().getStart(),
+                                     TimeScalesFactory.getUTC());
         final AbsoluteDate finalDate = startDate.shiftedBy(60.0);
 
-        final BoundedPropagator propagator = dummyPropagator(startDate, finalDate);
-        final Spacecraft        satellite  = new Spacecraft(propagator, header);
+        final BoundedPropagator propagator =
+            dummyPropagator(startDate, finalDate);
+        final Spacecraft satellite = new Spacecraft(propagator, header);
 
-        final SpacecraftReferenceSystem system = new SpacecraftReferenceSystem(satellite, header);
+        final SpacecraftReferenceSystem system =
+            new SpacecraftReferenceSystem(satellite, header);
 
-        final String pathFile = loadResources("templateFile/primary/SpacecraftReferenceSystemTemplate.txt");
+        final String pathFile =
+            loadResources("templateFile/primary/SpacecraftReferenceSystemTemplate.txt");
 
         verifyFileOutput(pathFile, system.toString(), 1e-8);
     }

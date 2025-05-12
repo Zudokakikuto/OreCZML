@@ -16,7 +16,19 @@
  */
 package org.orekit.czml.file;
 
-import cesiumlanguagewriter.Cartesian;
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.NavigableSet;
+import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
@@ -55,18 +67,7 @@ import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.Constants;
 import org.orekit.utils.IERSConventions;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.NavigableSet;
-import java.util.TreeSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import cesiumlanguagewriter.Cartesian;
 
 /**
  * The type Abstract test.
@@ -78,15 +79,15 @@ public class AbstractTest {
      */
     public static void loadOrekitData() {
         // Load orekit data
-        // The local US is used to avoid having the problem of comma instead of dots in numbers during the tests.
+        // The local US is used to avoid having the problem of comma instead of
+        // dots in numbers during the tests.
         Locale.setDefault(Locale.US);
         try {
-            final String       homePath  = loadResources(".");
-            final File         orekitDir = new File(homePath, "orekit-data");
-            final DataProvider provider  = new DirectoryCrawler(orekitDir);
-            DataContext.getDefault()
-                       .getDataProvidersManager()
-                       .addProvider(provider);
+            final String homePath = loadResources(".");
+            final File orekitDir = new File(homePath, "orekit-data");
+            final DataProvider provider = new DirectoryCrawler(orekitDir);
+            DataContext.getDefault().getDataProvidersManager()
+                .addProvider(provider);
         } catch (OrekitException oe) {
             System.err.println(oe.getLocalizedMessage());
         }
@@ -100,10 +101,7 @@ public class AbstractTest {
      */
     public static String loadResources(final String resourcePath) {
         return new File(GlobalTests.class.getClassLoader()
-                                         .getResource(resourcePath)
-                                         .getFile())
-                .toPath()
-                .toString();
+            .getResource(resourcePath).getFile()).toPath().toString();
     }
 
     public static String loadOutputLocation() {
@@ -120,9 +118,11 @@ public class AbstractTest {
      * @return the header
      */
     public static Header dummyHeader() {
-        final AbsoluteDate starDate       = new AbsoluteDate(2024, 1, 1, 0, 0, 0.0, TimeScalesFactory.getUTC());
-        final AbsoluteDate stopDate       = starDate.shiftedBy(60.0);
-        final Clock        clockForHeader = new Clock(starDate, stopDate, TimeScalesFactory.getUTC(), 10.0);
+        final AbsoluteDate starDate =
+            new AbsoluteDate(2024, 1, 1, 0, 0, 0.0, TimeScalesFactory.getUTC());
+        final AbsoluteDate stopDate = starDate.shiftedBy(60.0);
+        final Clock clockForHeader =
+            new Clock(starDate, stopDate, TimeScalesFactory.getUTC(), 10.0);
         return new Header("Dummy_Header", clockForHeader);
     }
 
@@ -134,9 +134,10 @@ public class AbstractTest {
      */
     public static Orbit dummyOrbit(final AbsoluteDate startDate) {
         return new KeplerianOrbit(7878000, 0, FastMath.toRadians(10), 0,
-                FastMath.toRadians(90), FastMath.toRadians(0), PositionAngleType.MEAN, FramesFactory.getEME2000(),
-                startDate,
-                Constants.WGS84_EARTH_MU);
+                                  FastMath.toRadians(90), FastMath.toRadians(0),
+                                  PositionAngleType.MEAN,
+                                  FramesFactory.getEME2000(), startDate,
+                                  Constants.WGS84_EARTH_MU);
     }
 
     /**
@@ -146,23 +147,29 @@ public class AbstractTest {
      * @param finalDate the final date
      * @return the bounded propagator
      */
-    public static BoundedPropagator dummyPropagator(final AbsoluteDate startDate, final AbsoluteDate finalDate) {
-        final double[][] tolerances = NumericalPropagator.tolerances(10.0, dummyOrbit(startDate),
-                OrbitType.CARTESIAN);
-        final AdaptiveStepsizeIntegrator integrator = new DormandPrince853Integrator(0.001,
-                1000.0, tolerances[0],
-                tolerances[1]);
+    public static BoundedPropagator
+        dummyPropagator(final AbsoluteDate startDate,
+                        final AbsoluteDate finalDate) {
+        final double[][] tolerances =
+            NumericalPropagator.tolerances(10.0, dummyOrbit(startDate),
+                                           OrbitType.CARTESIAN);
+        final AdaptiveStepsizeIntegrator integrator =
+            new DormandPrince853Integrator(0.001, 1000.0, tolerances[0],
+                                           tolerances[1]);
 
-        final NumericalPropagator propagator = new NumericalPropagator(integrator);
+        final NumericalPropagator propagator =
+            new NumericalPropagator(integrator);
 
-        final NormalizedSphericalHarmonicsProvider provider = GravityFieldFactory.getNormalizedProvider(10,
-                10);
-        final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(FramesFactory.getEME2000(),
-                provider);
+        final NormalizedSphericalHarmonicsProvider provider =
+            GravityFieldFactory.getNormalizedProvider(10, 10);
+        final ForceModel holmesFeatherstone =
+            new HolmesFeatherstoneAttractionModel(FramesFactory.getEME2000(),
+                                                  provider);
 
         final EphemerisGenerator generator = propagator.getEphemerisGenerator();
 
-        final SpacecraftState initialState = new SpacecraftState(dummyOrbit(startDate));
+        final SpacecraftState initialState =
+            new SpacecraftState(dummyOrbit(startDate));
 
         propagator.setOrbitType(OrbitType.CARTESIAN);
         propagator.addForceModel(holmesFeatherstone);
@@ -192,21 +199,26 @@ public class AbstractTest {
      * @return the earth
      */
     public static OneAxisEllipsoid getEarth() {
-        final Frame            ITRF  = FramesFactory.getITRF(IERSConventions.IERS_2010, true);
-        return new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS, Constants.WGS84_EARTH_FLATTENING, ITRF);
+        final Frame ITRF =
+            FramesFactory.getITRF(IERSConventions.IERS_2010, true);
+        return new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS,
+                                    Constants.WGS84_EARTH_FLATTENING, ITRF);
     }
 
     /**
      * Covariance propagation list.
      *
-     * @param satellite      the satellite
-     * @param propagator     the propagator
+     * @param satellite the satellite
+     * @param propagator the propagator
      * @param initCovariance the init covariance
-     * @param header         the header
+     * @param header the header
      * @return the list
      */
-    public static List<StateCovariance> covariancePropagation(final Spacecraft satellite, final Propagator propagator,
-                                                              final StateCovariance initCovariance, final Header header) {
+    public static List<StateCovariance>
+        covariancePropagation(final Spacecraft satellite,
+                              final Propagator propagator,
+                              final StateCovariance initCovariance,
+                              final Header header) {
 
         final List<StateCovariance> covarianceListTemp = new ArrayList<>();
 
@@ -214,57 +226,71 @@ public class AbstractTest {
 
         final String stm = "stm";
 
-        final MatricesHarvester harvester = propagator.setupMatricesComputation(stm, null, null);
+        final MatricesHarvester harvester =
+            propagator.setupMatricesComputation(stm, null, null);
 
-        final StateCovarianceMatrixProvider provider = new StateCovarianceMatrixProvider("covariance", stm, harvester,
-                initCovariance);
+        final StateCovarianceMatrixProvider provider =
+            new StateCovarianceMatrixProvider("covariance", stm, harvester,
+                                              initCovariance);
 
         propagator.addAdditionalStateProvider(provider);
 
-        propagator.getMultiplexer()
-                  .add(header.getClock().getMultiplier(),
-                          spacecraftState -> {
-                              final StateCovariance covariance = provider.getStateCovariance(spacecraftState);
-                              covarianceListTemp.add(covariance);
-                          });
+        propagator.getMultiplexer().add(header.getClock().getMultiplier(),
+                                        spacecraftState -> {
+                                            final StateCovariance covariance =
+                                                provider
+                                                    .getStateCovariance(spacecraftState);
+                                            covarianceListTemp.add(covariance);
+                                        });
 
-        propagator.propagate(orbits.get(0)
-                                   .getDate(), orbits.get(orbits.size() - 1)
-                                                     .getDate());
+        propagator.propagate(orbits.get(0).getDate(),
+                             orbits.get(orbits.size() - 1).getDate());
         return covarianceListTemp;
     }
 
     /**
      * Verifies unit test output.
      *
-     * @param templateFileName      Desired unit test output file name
-     * @param testString            Current unit test output data string
-     * @param accuracy              Required significant figure accuracy
+     * @param templateFileName Desired unit test output file name
+     * @param testString Current unit test output data string
+     * @param accuracy Required significant figure accuracy
      */
     public static void verifyFileOutput(final String templateFileName,
-            final String testString, final double accuracy) throws  URISyntaxException, IOException {
+                                        final String testString,
+                                        final double accuracy)
+        throws URISyntaxException,
+            IOException {
 
         // Get template file string data
         final String templateFile = Files.readString(Path.of(templateFileName));
 
         // Stores files as list of string and double values in sequential order
-        final List<Pair<Integer, Object>> templateValues = readValues(templateFile);
+        final List<Pair<Integer, Object>> templateValues =
+            readValues(templateFile);
         final List<Pair<Integer, Object>> testValues = readValues(testString);
 
-        // Determines locations of newline characters to aid in finding output error location
-        final NavigableSet<Integer> lineStartValues = new TreeSet<>(findNewlineChars(templateFile));
+        // Determines locations of newline characters to aid in finding output
+        // error location
+        final NavigableSet<Integer> lineStartValues =
+            new TreeSet<>(findNewlineChars(templateFile));
 
         // Compares unit test output to template value
-        final ParseOutput testOutput = compareValues(templateValues, testValues, lineStartValues, accuracy);
+        final ParseOutput testOutput =
+            compareValues(templateValues, testValues, lineStartValues,
+                          accuracy);
 
         if (testOutput.parseStatus == ParseOutput.ParseStatus.SUCCESS) {
             Assertions.assertNull(testOutput.parseError);
         } else {
             final ParseError parseError = testOutput.parseError;
-            final StringBuilder msgBuilder = new StringBuilder(parseError.getError() + " found at line ");
-            msgBuilder.append(String.valueOf(parseError.lineNumber)).append(" of ").append(templateFileName);
-            msgBuilder.append(". Found '").append(parseError.testValue).append("'");
-            msgBuilder.append("instead of '").append(parseError.templateValue).append("'");
+            final StringBuilder msgBuilder =
+                new StringBuilder(parseError.getError() + " found at line ");
+            msgBuilder.append(String.valueOf(parseError.lineNumber))
+                .append(" of ").append(templateFileName);
+            msgBuilder.append(". Found '").append(parseError.testValue)
+                .append("'");
+            msgBuilder.append("instead of '").append(parseError.templateValue)
+                .append("'");
 
             throw new AssertionError(msgBuilder.toString());
         }
@@ -273,19 +299,25 @@ public class AbstractTest {
     /**
      * Breaks unit test output into strings and numbers.
      *
-     * @param text          Raw unit test output
+     * @param text Raw unit test output
      * @return the list
      */
-    private static List<Pair<Integer, Object>> readValues(final String text) throws URISyntaxException, IOException {
+    private static List<Pair<Integer, Object>> readValues(final String text)
+        throws URISyntaxException,
+            IOException {
 
-        // List holds broken down string data as a series of text strings and numeric values
-        final List<Pair<Integer, Object>>  valueList = new ArrayList<>();
+        // List holds broken down string data as a series of text strings and
+        // numeric values
+        final List<Pair<Integer, Object>> valueList = new ArrayList<>();
 
-        // REGEX to recognize all integer, float, and scientific notation numbers
-        final Pattern pattern = Pattern.compile("-?\\d+(\\.\\d+)?([Ee][+-]?\\d+)?");
+        // REGEX to recognize all integer, float, and scientific notation
+        // numbers
+        final Pattern pattern =
+            Pattern.compile("-?\\d+(\\.\\d+)?([Ee][+-]?\\d+)?");
         final Matcher matcher = pattern.matcher(text);
 
-        // Used to ensure that in case of multiple same numbers being present in the text, we
+        // Used to ensure that in case of multiple same numbers being present in
+        // the text, we
         // are comparing the *latest* number pulled.
         int startText = 0;
         int prevStart = 0;
@@ -301,8 +333,10 @@ public class AbstractTest {
                 // Update text starting point
                 startText = text.indexOf(match, stopText);
 
-                // Add text preceding current number and following after last number
-                valueList.add( new Pair<Integer, Object>(prevStart, text.substring(prevStart, startText)) );
+                // Add text preceding current number and following after last
+                // number
+                valueList.add(new Pair<Integer, Object>(prevStart, text
+                    .substring(prevStart, startText)));
 
                 // Add number
                 valueList.add(new Pair<Integer, Object>(startText, decimal));
@@ -318,23 +352,29 @@ public class AbstractTest {
         }
 
         // Adds final text string to Object list
-        valueList.add( new Pair<Integer, Object>(stopText, text.substring(stopText)) );
+        valueList
+            .add(new Pair<Integer, Object>(stopText, text.substring(stopText)));
 
-        // Return list of text/number objects in file along with start character index values
+        // Return list of text/number objects in file along with start character
+        // index values
         return valueList;
     }
 
     /**
      * Verifies unit test output.
      *
-     * @param templateValues    Desired unit test output
-     * @param testValues        Current unit test output
-     * @param lineStartValues   Character values where file lines start in the current unit test output
-     * @param accuracy          Required significant figure level of accuracy
+     * @param templateValues Desired unit test output
+     * @param testValues Current unit test output
+     * @param lineStartValues Character values where file lines start in the
+     *        current unit test output
+     * @param accuracy Required significant figure level of accuracy
      * @return boolean
      */
-    private static ParseOutput compareValues(final List<Pair<Integer, Object>> templateValues,
-            final List<Pair<Integer, Object>> testValues, final NavigableSet<Integer> lineStartValues, final double accuracy) {
+    private static ParseOutput
+        compareValues(final List<Pair<Integer, Object>> templateValues,
+                      final List<Pair<Integer, Object>> testValues,
+                      final NavigableSet<Integer> lineStartValues,
+                      final double accuracy) {
 
         int max_val = templateValues.size();
         if (templateValues.size() > testValues.size()) {
@@ -348,33 +388,50 @@ public class AbstractTest {
             final Object testValue = testValues.get(i).getValue();
 
             // Compare two doubles
-            if  ( templateValue instanceof Double && testValue instanceof Double ) {
+            if (templateValue instanceof Double &&
+                testValue instanceof Double) {
                 final Double decimal1 = getSignificantFigures(templateValue);
                 final Double decimal2 = getSignificantFigures(testValue);
                 if (Math.abs(decimal1 - decimal2) > accuracy) {
-                    final Integer lineValue = findErrorLineValue(lineStartValues, templateValues.get(i));
+                    final Integer lineValue =
+                        findErrorLineValue(lineStartValues,
+                                           templateValues.get(i));
                     return new ParseOutput(ParseOutput.ParseStatus.ERROR,
-                                           new ParseError(lineValue, "Numeric Error", decimal1, decimal2));
+                                           new ParseError(lineValue,
+                                                          "Numeric Error",
+                                                          decimal1, decimal2));
                 }
-            // Compare two strings of text
-            } else if ( templateValue instanceof String && testValue instanceof String) {
+                // Compare two strings of text
+            } else if (templateValue instanceof String &&
+                       testValue instanceof String) {
 
                 // Replace return line chars to avoid end-of-file return
                 final String replaceValue = "([\\r\\n])";
-                final String str1 = ((String) templateValue).replaceAll(replaceValue, "");
-                final String str2 = ((String) testValue).replaceAll(replaceValue, "");
+                final String str1 =
+                    ((String) templateValue).replaceAll(replaceValue, "");
+                final String str2 =
+                    ((String) testValue).replaceAll(replaceValue, "");
 
                 if (str1.compareTo(str2) != 0) {
-                    final Integer lineValue = findErrorLineValue(lineStartValues, templateValues.get(i));
+                    final Integer lineValue =
+                        findErrorLineValue(lineStartValues,
+                                           templateValues.get(i));
                     return new ParseOutput(ParseOutput.ParseStatus.ERROR,
-                                           new ParseError(lineValue, "Text Error", str1, str2));
+                                           new ParseError(lineValue,
+                                                          "Text Error", str1,
+                                                          str2));
                 }
             }
-            // Type mismatch error - means there is a mismatch in the data files.
+            // Type mismatch error - means there is a mismatch in the data
+            // files.
             else {
-                final Integer lineValue = findErrorLineValue(lineStartValues, templateValues.get(i));
+                final Integer lineValue =
+                    findErrorLineValue(lineStartValues, templateValues.get(i));
                 return new ParseOutput(ParseOutput.ParseStatus.ERROR,
-                                       new ParseError(lineValue, "Type Mismatch Error", templateValue, testValue));
+                                       new ParseError(lineValue,
+                                                      "Type Mismatch Error",
+                                                      templateValue,
+                                                      testValue));
             }
         }
 
@@ -385,7 +442,7 @@ public class AbstractTest {
     /**
      * Figures out which character values are at the start of file textlines.
      *
-     * @param text             Desired unit test output
+     * @param text Desired unit test output
      * @return List
      */
     static List<Integer> findNewlineChars(final String text) {
@@ -421,14 +478,15 @@ public class AbstractTest {
     /**
      * Verifies unit test output.
      *
-     * @param value             Double/Object value
+     * @param value Double/Object value
      * @return Double
      */
     static Double getSignificantFigures(final Object value) {
 
         Double decimalValue = (Double) value;
 
-        // A negative sign in the string interferes with the decimal place value finder
+        // A negative sign in the string interferes with the decimal place value
+        // finder
         boolean negative = false;
         if (decimalValue < 0.0) {
             decimalValue *= 1.0;
@@ -447,22 +505,29 @@ public class AbstractTest {
     /**
      * Determines file line value of error.
      *
-     * @param lineStartValues   Character number values of line starts in template output file
-     * @param templateValue    Failed template output value
+     * @param lineStartValues Character number values of line starts in template
+     *        output file
+     * @param templateValue Failed template output value
      * @return Integer
      */
-    private static Integer findErrorLineValue(final NavigableSet<Integer> lineStartValues, final Pair<Integer, Object> templateValue) {
-        final Integer lineStartCharValue = lineStartValues.lower(templateValue.getKey());
+    private static Integer
+        findErrorLineValue(final NavigableSet<Integer> lineStartValues,
+                           final Pair<Integer, Object> templateValue) {
+        final Integer lineStartCharValue =
+            lineStartValues.lower(templateValue.getKey());
         return lineStartValues.headSet(lineStartCharValue).size() + 1;
     }
 
-    /** Record for output of parsing and comparing Czml against a template reference. */
-    private record ParseOutput(AbstractTest.ParseOutput.ParseStatus parseStatus, ParseError parseError) {
+    /**
+     * Record for output of parsing and comparing Czml against a template
+     * reference.
+     */
+    private record ParseOutput(AbstractTest.ParseOutput.ParseStatus parseStatus,
+                               ParseError parseError) {
 
         /** Status. */
-        private enum ParseStatus {
-            ERROR, SUCCESS;
-        }
+        private enum ParseStatus{ERROR,SUCCESS;}
+
     }
 
     /** Record for storing info on a parsing error. */
@@ -472,4 +537,3 @@ public class AbstractTest {
         }
     }
 }
-

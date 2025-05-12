@@ -37,12 +37,14 @@ public class CentralBodyReferenceSystemBuilder {
     /**
      * The default ID for the central body reference system.
      */
-    public static final String DEFAULT_ID = CentralBodyReferenceSystem.DEFAULT_ID;
+    public static final String DEFAULT_ID =
+        CentralBodyReferenceSystem.DEFAULT_ID;
 
     /**
      * The default name for the central body reference system.
      */
-    public static final String DEFAULT_NAME = "Reference system of the central body";
+    public static final String DEFAULT_NAME =
+        "Reference system of the central body";
 
     /**
      * Default color for the X axis.
@@ -62,8 +64,10 @@ public class CentralBodyReferenceSystemBuilder {
     /**
      * The default body (the earth).
      */
-    public static final OneAxisEllipsoid DEFAULT_BODY = new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS,
-            Constants.WGS84_EARTH_FLATTENING, FramesFactory.getITRF(IERSConventions.IERS_2010, true));
+    public static final OneAxisEllipsoid DEFAULT_BODY =
+        new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS,
+                             Constants.WGS84_EARTH_FLATTENING, FramesFactory
+                                 .getITRF(IERSConventions.IERS_2010, true));
 
     /**
      * The color for the x-axis.
@@ -101,7 +105,8 @@ public class CentralBodyReferenceSystemBuilder {
     // Constructor
 
     /**
-     * The basic constructor for the central body reference system, it does not need an argument, all arguments have a default value.
+     * The basic constructor for the central body reference system, it does not
+     * need an argument, all arguments have a default value.
      *
      * @param headerInput : The header considered
      */
@@ -115,10 +120,12 @@ public class CentralBodyReferenceSystemBuilder {
      * @param color1Input : The color to set up for the x-axis.
      * @param color2Input : The color to set up for the y-axis.
      * @param color3Input : The color to set up for the z-axis.
-     * @return : The central body reference system builder with the given colors.
+     * @return : The central body reference system builder with the given
+     *         colors.
      */
-    public CentralBodyReferenceSystemBuilder withColors(final Color color1Input, final Color color2Input,
-                                                        final Color color3Input) {
+    public CentralBodyReferenceSystemBuilder
+        withColors(final Color color1Input, final Color color2Input,
+                   final Color color3Input) {
         this.color1 = color1Input;
         this.color2 = color2Input;
         this.color3 = color3Input;
@@ -131,7 +138,8 @@ public class CentralBodyReferenceSystemBuilder {
      * @param bodyInput : The body to set up.
      * @return : The central body reference system builder with the given body.
      */
-    public CentralBodyReferenceSystemBuilder withBody(final OneAxisEllipsoid bodyInput) {
+    public CentralBodyReferenceSystemBuilder
+        withBody(final OneAxisEllipsoid bodyInput) {
         this.body = bodyInput;
         return this;
     }
@@ -142,7 +150,8 @@ public class CentralBodyReferenceSystemBuilder {
      * @param idInput : The id to set up.
      * @return : The central body reference system builder with the given id.
      */
-    public CentralBodyReferenceSystemBuilder withCustomId(final String idInput) {
+    public CentralBodyReferenceSystemBuilder
+        withCustomId(final String idInput) {
         this.id = idInput;
         return this;
     }
@@ -162,9 +171,11 @@ public class CentralBodyReferenceSystemBuilder {
      * Function to set up the header.
      *
      * @param headerInput : The header to set up.
-     * @return : The central body reference system builder with the given header.
+     * @return : The central body reference system builder with the given
+     *         header.
      */
-    public CentralBodyReferenceSystemBuilder withHeader(final Header headerInput) {
+    public CentralBodyReferenceSystemBuilder
+        withHeader(final Header headerInput) {
         this.header = headerInput;
         return this;
     }
@@ -172,10 +183,12 @@ public class CentralBodyReferenceSystemBuilder {
     /**
      * The build function that generates a central body reference system object.
      *
-     * @return : A central body reference system object with the given parameters of the builder.
+     * @return : A central body reference system object with the given
+     *         parameters of the builder.
      */
     public CentralBodyReferenceSystem build() {
-        return new CentralBodyReferenceSystem(body, id, name, color1, color2, color3, header);
+        return new CentralBodyReferenceSystem(body, id, name, color1, color2,
+                                              color3, header);
     }
 
 }

@@ -51,40 +51,54 @@ import java.util.List;
 /**
  * The type Covariance test.
  */
-public class CovarianceTest extends AbstractTest {
+public class CovarianceTest
+    extends
+    AbstractTest {
 
     /**
      * Covariance constructor test.
      *
-     * @throws IOException        the io exception
+     * @throws IOException the io exception
      * @throws URISyntaxException the uri syntax exception
      */
     @Test
-    void CovarianceConstructorTest() throws IOException, URISyntaxException {
+    void CovarianceConstructorTest()
+        throws IOException,
+            URISyntaxException {
 
         loadOrekitData();
 
-        final Header       header    = dummyHeader();
-        final AbsoluteDate startDate = new AbsoluteDate(2024, 3, 15, 0, 0, 0.0, TimeScalesFactory.getUTC());
+        final Header header = dummyHeader();
+        final AbsoluteDate startDate =
+            new AbsoluteDate(2024, 3, 15, 0, 0, 0.0,
+                             TimeScalesFactory.getUTC());
         final AbsoluteDate finalDate = startDate.shiftedBy(5 * 3600);
 
-        final KeplerianOrbit initialOrbit = new KeplerianOrbit(7878000, 0, FastMath.toRadians(20), 0,
-                FastMath.toRadians(0), FastMath.toRadians(0), PositionAngleType.MEAN, FramesFactory.getEME2000(),
-                startDate, Constants.WGS84_EARTH_MU);
+        final KeplerianOrbit initialOrbit =
+            new KeplerianOrbit(7878000, 0, FastMath.toRadians(20), 0,
+                               FastMath.toRadians(0), FastMath.toRadians(0),
+                               PositionAngleType.MEAN,
+                               FramesFactory.getEME2000(), startDate,
+                               Constants.WGS84_EARTH_MU);
         final SpacecraftState initialState = new SpacecraftState(initialOrbit);
 
         // Build of the propagator
 
+        final double[][] tolerances =
+            NumericalPropagator.tolerances(10, initialOrbit,
+                                           OrbitType.CARTESIAN);
+        final AdaptiveStepsizeIntegrator integrator =
+            new DormandPrince853Integrator(0.001, 1000.0, tolerances[0],
+                                           tolerances[1]);
 
-        final double[][] tolerances = NumericalPropagator.tolerances(10, initialOrbit, OrbitType.CARTESIAN);
-        final AdaptiveStepsizeIntegrator integrator = new DormandPrince853Integrator(0.001, 1000.0, tolerances[0],
-                tolerances[1]);
+        final NumericalPropagator propagator =
+            new NumericalPropagator(integrator);
 
-        final NumericalPropagator propagator = new NumericalPropagator(integrator);
-
-        final NormalizedSphericalHarmonicsProvider provider = GravityFieldFactory.getNormalizedProvider(10, 10);
-        final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(FramesFactory.getEME2000(),
-                provider);
+        final NormalizedSphericalHarmonicsProvider provider =
+            GravityFieldFactory.getNormalizedProvider(10, 10);
+        final ForceModel holmesFeatherstone =
+            new HolmesFeatherstoneAttractionModel(FramesFactory.getEME2000(),
+                                                  provider);
 
         propagator.setOrbitType(OrbitType.CARTESIAN);
         propagator.addForceModel(holmesFeatherstone);
@@ -93,24 +107,30 @@ public class CovarianceTest extends AbstractTest {
         final EphemerisGenerator generator = propagator.getEphemerisGenerator();
 
         propagator.propagate(startDate, finalDate);
-        final BoundedPropagator boundedPropagator = generator.getGeneratedEphemeris();
-
+        final BoundedPropagator boundedPropagator =
+            generator.getGeneratedEphemeris();
 
         final Spacecraft satellite = new Spacecraft(boundedPropagator, header);
 
-        final RealMatrix realMatrix = MatrixUtils.createRealDiagonalMatrix(
-                new double[] {1e-4, 1e-4, 2e-4, 1e-6, 1e-6, (36 * 4.848e-6) * (36 * 4.848e-6)});
-        final StateCovariance stateCovariance = new StateCovariance(realMatrix, startDate, FramesFactory.getEME2000(),
-                OrbitType.EQUINOCTIAL, PositionAngleType.MEAN);
-        final List<StateCovariance> covariances = covariancePropagation(satellite, propagator, stateCovariance, header);
+        final RealMatrix realMatrix =
+            MatrixUtils.createRealDiagonalMatrix(new double[] {
+                1e-4, 1e-4, 2e-4, 1e-6, 1e-6, (36 * 4.848e-6) * (36 * 4.848e-6)
+            });
+        final StateCovariance stateCovariance =
+            new StateCovariance(realMatrix, startDate,
+                                FramesFactory.getEME2000(),
+                                OrbitType.EQUINOCTIAL, PositionAngleType.MEAN);
+        final List<StateCovariance> covariances =
+            covariancePropagation(satellite, propagator, stateCovariance,
+                                  header);
 
-        final Covariance covariance = Covariance.builder(satellite, covariances, LOFType.TNW, header)
-                                                .withColor(Color.ORANGE)
-                                                .withCustomID("CustomID")
-                                                .withHeader(header)
-                                                .build();
+        final Covariance covariance =
+            Covariance.builder(satellite, covariances, LOFType.TNW, header)
+                .withColor(Color.ORANGE).withCustomID("CustomID")
+                .withHeader(header).build();
 
-        final String pathFile = loadResources("templateFile/primary/CovarianceTemplate.txt");
+        final String pathFile =
+            loadResources("templateFile/primary/CovarianceTemplate.txt");
         verifyFileOutput(pathFile, covariance.toString(), 1e-8);
     }
 }

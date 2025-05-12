@@ -15,5 +15,8 @@
  * limitations under the License.
  */
 
-/** This package groups all the primary objects and their builders related to the pointing of the satellite. */
+/**
+ * This package groups all the primary objects and their builders related to the
+ * pointing of the satellite.
+ */
 package org.orekit.czml.object.primary.pointing;

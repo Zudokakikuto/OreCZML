@@ -29,13 +29,16 @@ import java.util.List;
 
 /**
  * Time position class
- *
- * <p> The class aims at representing a position and a time of an object.</p>
+ * <p>
+ * The class aims at representing a position and a time of an object.
+ * </p>
  *
  * @author Julien LEBLOND
  * @since 1.0.0
  */
-public class TimePosition extends AbstractSecondaryObject {
+public class TimePosition
+    extends
+    AbstractSecondaryObject {
 
     /**
      * The julian dates when the position is defined.
@@ -48,7 +51,8 @@ public class TimePosition extends AbstractSecondaryObject {
     private final List<Cartesian> positions;
 
     /**
-     * The algorithm of interpolation used. The parameters available are: LINEAR, LAGRANGE, HERMITE.
+     * The algorithm of interpolation used. The parameters available are:
+     * LINEAR, LAGRANGE, HERMITE.
      */
     private final CesiumInterpolationAlgorithm cesiumInterpolationAlgorithm;
 
@@ -62,30 +66,33 @@ public class TimePosition extends AbstractSecondaryObject {
      */
     private final String referenceFrame;
 
-
     // Constructors
 
     /**
      * The basic time position constructor.
      *
-     * @param cartesians  : The list of cartesian positions
-     * @param julianDates : A list of double representing the number of seconds that separate the initial instant from all the instants of the simulation.
+     * @param cartesians : The list of cartesian positions
+     * @param julianDates : A list of double representing the number of seconds
+     *        that separate the initial instant from all the instants of the
+     *        simulation.
      */
-    public TimePosition(final List<Cartesian> cartesians, final List<JulianDate> julianDates) {
+    public TimePosition(final List<Cartesian> cartesians,
+                        final List<JulianDate> julianDates) {
         this.dates = new ArrayList<>(julianDates);
         this.positions = new ArrayList<>();
         this.positions.addAll(cartesians);
 
-        this.cesiumInterpolationAlgorithm = CesiumInterpolationAlgorithm.LAGRANGE;
+        this.cesiumInterpolationAlgorithm =
+            CesiumInterpolationAlgorithm.LAGRANGE;
         this.interpolationDegree = 5;
-        this.referenceFrame      = "INERTIAL";
+        this.referenceFrame = "INERTIAL";
     }
-
 
     // Overrides
 
     @Override
-    public void write(final PacketCesiumWriter packet, final CesiumOutputStream output) {
+    public void write(final PacketCesiumWriter packet,
+                      final CesiumOutputStream output) {
         try (PositionCesiumWriter writer = packet.openPositionProperty()) {
             writer.writeReferenceFrame(referenceFrame);
             writer.writeInterpolationAlgorithm(cesiumInterpolationAlgorithm);
@@ -93,7 +100,6 @@ public class TimePosition extends AbstractSecondaryObject {
             writer.writeCartesian(dates, positions);
         }
     }
-
 
     // Getters
 
@@ -142,4 +148,3 @@ public class TimePosition extends AbstractSecondaryObject {
         return cesiumInterpolationAlgorithm;
     }
 }
-

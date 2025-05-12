@@ -16,16 +16,13 @@
  */
 package org.orekit.czml.object.primary.entities;
 
-import org.orekit.czml.errors.OreCzmlException;
-import org.orekit.czml.errors.OreCzmlMessages;
-import org.orekit.czml.object.primary.Header;
-import org.orekit.frames.TopocentricFrame;
-
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+
+import org.orekit.czml.object.primary.Header;
+import org.orekit.frames.TopocentricFrame;
 
 /**
  * Ground station builder class
@@ -37,16 +34,16 @@ import java.util.List;
  */
 public class CzmlGroundStationBuilder {
 
-
     /**
      * The topocentric frame of the ground station.
      */
-    private TopocentricFrame topocentricFrame;
+    private final TopocentricFrame topocentricFrame;
 
     /**
      * The list of topocentric frame when several ground stations are used.
      */
-    private final List<TopocentricFrame> multipleTopocentricFrame = new ArrayList<>();
+    private final List<TopocentricFrame> multipleTopocentricFrame =
+        new ArrayList<>();
 
     // Optional arguments
     /**
@@ -65,7 +62,10 @@ public class CzmlGroundStationBuilder {
     /** The header to consider when several are used. */
     private Header header;
 
-    /** A boolean to display or not the circle of visibility of the ground station. */
+    /**
+     * A boolean to display or not the circle of visibility of the ground
+     * station.
+     */
     private boolean displayCircle = false;
 
     /** The spacecraft considered. */
@@ -79,19 +79,22 @@ public class CzmlGroundStationBuilder {
     /**
      * The constructor of the czml ground station builder.
      *
-     * @param topocentricFrameInput : The topocentric frame where the station must be.
-     * @param headerInput           : The header considered.
+     * @param topocentricFrameInput : The topocentric frame where the station
+     *        must be.
+     * @param headerInput : The header considered.
      */
-    public CzmlGroundStationBuilder(final TopocentricFrame topocentricFrameInput, final Header headerInput) {
+    public CzmlGroundStationBuilder(final TopocentricFrame topocentricFrameInput,
+                                    final Header headerInput) {
         this.topocentricFrame = topocentricFrameInput;
         this.header = headerInput;
     }
 
-
-    public CzmlGroundStationBuilder displayCircle(final Spacecraft satellite, final double angleOfAperture) {
-        displayCircle        = true;
-        this.spacecraft      = satellite;
-        this.angleOfAperture = angleOfAperture;
+    public CzmlGroundStationBuilder
+        displayCircle(final Spacecraft spacecraftInput,
+                      final double angleOfApertureInput) {
+        displayCircle = true;
+        spacecraft = spacecraftInput;
+        angleOfAperture = angleOfApertureInput;
         return this;
     }
 
@@ -131,12 +134,15 @@ public class CzmlGroundStationBuilder {
     /**
      * The build function that generates the czml ground station object.
      *
-     * @return : A czml ground station object with the given parameters of the builder.
+     * @return : A czml ground station object with the given parameters of the
+     *         builder.
      * @throws URISyntaxException the uri syntax exception
-     * @throws IOException        the io exception
+     * @throws IOException the io exception
      */
-    public CzmlGroundStation build() throws URISyntaxException, IOException {
-        CzmlGroundStation toReturn;
+    public CzmlGroundStation build()
+        throws URISyntaxException,
+            IOException {
+        final CzmlGroundStation toReturn;
         toReturn = new CzmlGroundStation(topocentricFrame, modelPath, header);
         if (displayCircle) {
             toReturn.displayCircle(spacecraft, angleOfAperture);

@@ -15,5 +15,8 @@
  * limitations under the License.
  */
 
-/** This package groups all the primary objects and their builders related to the visibility. */
+/**
+ * This package groups all the primary objects and their builders related to the
+ * visibility.
+ */
 package org.orekit.czml.object.primary.visu;

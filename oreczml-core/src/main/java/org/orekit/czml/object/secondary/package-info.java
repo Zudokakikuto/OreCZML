@@ -16,6 +16,7 @@
  */
 
 /**
- * This package groups all the secondary objects, i.e. the objects that depends of a primary object to exist.
+ * This package groups all the secondary objects, i.e. the objects that depends
+ * of a primary object to exist.
  */
 package org.orekit.czml.object.secondary;

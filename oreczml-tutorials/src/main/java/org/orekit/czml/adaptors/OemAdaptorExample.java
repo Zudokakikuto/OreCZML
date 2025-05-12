@@ -32,9 +32,9 @@ import org.orekit.propagation.Propagator;
 import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScalesFactory;
 
-
 /**
- * This tutorial provides an example of how an Oem object ban be used to build a propagator from it.
+ * This tutorial provides an example of how an Oem object ban be used to build a
+ * propagator from it.
  */
 public class OemAdaptorExample {
 
@@ -48,53 +48,60 @@ public class OemAdaptorExample {
      * @param args arguments of the main function
      * @throws Exception exception to throw
      */
-    public static void main(final String[] args) throws Exception {
+    public static void main(final String[] args)
+        throws Exception {
 
         // Load orekit data
         TutorialUtils.loadOrekitData();
 
         // Paths
         final String output = TutorialUtils.generateOutput();
-        // !!! Here you need to change the path inside 'generateJsPath' to the path you are using for images or Model.
-        // This folder can also be the public folder of your cesium javascript interface.
-        final String pathToJSFolder = TutorialUtils.generateJSPath(
-                System.getProperty("user.dir") + "/Javascript/public");
+        // !!! Here you need to change the path inside 'generateJsPath' to the
+        // path you are using for images or Model.
+        // This folder can also be the public folder of your cesium javascript
+        // interface.
+        final String pathToJSFolder =
+            TutorialUtils.generateJSPath(System.getProperty("user.dir") +
+                                         "/Javascript/public");
 
-        final String OemPath  = TutorialUtils.loadResources("oemForOemTuto.xml");
-        final String IssModel = TutorialUtils.loadResources("Default3DModels/ISSModel.glb");
+        final String OemPath = TutorialUtils.loadResources("oemForOemTuto.xml");
+        final String IssModel =
+            TutorialUtils.loadResources("Default3DModels/ISSModel.glb");
 
         // Creation of the Oem
-        final DataSource    dataSource    = new DataSource(OemPath);
+        final DataSource dataSource = new DataSource(OemPath);
         final ParserBuilder parserBuilder = new ParserBuilder();
-        final OemParser     oemParser     = parserBuilder.buildOemParser();
-        final Oem           oem           = oemParser.parse(dataSource);
+        final OemParser oemParser = parserBuilder.buildOemParser();
+        final Oem oem = oemParser.parse(dataSource);
 
         // Creation of oem
-        final OemAdaptor         adaptor       = new OemAdaptor(oem);
-        final Propagator         oemPropagator = adaptor.buildPropagator();
-        final AbsoluteDate       startDate     = adaptor.buildStartDate();
-        final AbsoluteDate       finalDate     = adaptor.buildFinalDate();
-        final EphemerisGenerator generator     = oemPropagator.getEphemerisGenerator();
+        final OemAdaptor adaptor = new OemAdaptor(oem);
+        final Propagator oemPropagator = adaptor.buildPropagator();
+        final AbsoluteDate startDate = adaptor.buildStartDate();
+        final AbsoluteDate finalDate = adaptor.buildFinalDate();
+        final EphemerisGenerator generator =
+            oemPropagator.getEphemerisGenerator();
         oemPropagator.propagate(startDate, finalDate);
-        final BoundedPropagator oemBoundedPropagator = generator.getGeneratedEphemeris();
+        final BoundedPropagator oemBoundedPropagator =
+            generator.getGeneratedEphemeris();
 
         // Creation of the clock
-        final Clock clock = new Clock(startDate, finalDate, TimeScalesFactory.getUTC(),
-                TutorialUtils.STEP_BETWEEN_EACH_INSTANT);
+        final Clock clock =
+            new Clock(startDate, finalDate, TimeScalesFactory.getUTC(),
+                      TutorialUtils.STEP_BETWEEN_EACH_INSTANT);
 
         // Creation of the header
-        final Header header = new Header("Oem Adaptor Example", clock, pathToJSFolder);
+        final Header header =
+            new Header("Oem Adaptor Example", clock, pathToJSFolder);
 
         // Creation of the satellite
-        final Spacecraft satellite = Spacecraft.builder(oemBoundedPropagator, header)
-                                               .withModelPath(IssModel)
-                                               .withOnlyOnePeriod()
-                                               .build();
+        final Spacecraft satellite =
+            Spacecraft.builder(oemBoundedPropagator, header)
+                .withModelPath(IssModel).withOnlyOnePeriod().build();
 
-        final CzmlFile file = CzmlFile.builder()
-                                      .withHeader(header)
-                                      .withSpacecraft(satellite)
-                                      .build();
+        final CzmlFile file =
+            CzmlFile.builder().withHeader(header).withSpacecraft(satellite)
+                .build();
 
         file.write(output);
     }

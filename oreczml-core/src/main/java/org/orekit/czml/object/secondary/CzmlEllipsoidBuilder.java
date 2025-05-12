@@ -65,7 +65,8 @@ public class CzmlEllipsoidBuilder {
     private Color color = DEFAULT_COLOR;
 
     /**
-     * The number of slices (from one point on convergence of lines from the other).
+     * The number of slices (from one point on convergence of lines from the
+     * other).
      */
     private int slicePartition = DEFAULT_SLICE_PARTITION;
 
@@ -95,12 +96,14 @@ public class CzmlEllipsoidBuilder {
     private List<JulianDate> julianDates = new ArrayList<>();
 
     /**
-     * The list of cartesians representing the positions of the ellipsoid (if several positions are given).
+     * The list of cartesians representing the positions of the ellipsoid (if
+     * several positions are given).
      */
     private List<Cartesian> cartesians = new ArrayList<>();
 
     /**
-     * A parameter to know if the builder was built with julian dates and cartesians or with an availability and a cartesian.
+     * A parameter to know if the builder was built with julian dates and
+     * cartesians or with an availability and a cartesian.
      */
     private final boolean multipleBuilder;
 
@@ -113,11 +116,12 @@ public class CzmlEllipsoidBuilder {
      * The constructor of the multiple ellipsoid builder.
      *
      * @param cartesianInput : The dimensions of the ellipsoid.
-     * @param headerInput    : The header considered.
+     * @param headerInput : The header considered.
      */
-    public CzmlEllipsoidBuilder(final Cartesian cartesianInput, final Header headerInput) {
-        this.header          = headerInput;
-        this.cartesian       = cartesianInput;
+    public CzmlEllipsoidBuilder(final Cartesian cartesianInput,
+                                final Header headerInput) {
+        this.header = headerInput;
+        this.cartesian = cartesianInput;
         this.multipleBuilder = true;
     }
 
@@ -125,14 +129,15 @@ public class CzmlEllipsoidBuilder {
      * The constructor of the single ellipsoid builder.
      *
      * @param julianDates : The dates where the ellipsoid should be displayed.
-     * @param dimensions  : The dimensions of the ellipsoid.
+     * @param dimensions : The dimensions of the ellipsoid.
      * @param headerInput : The header considered.
      */
-    public CzmlEllipsoidBuilder(final List<JulianDate> julianDates, final List<Cartesian> dimensions,
+    public CzmlEllipsoidBuilder(final List<JulianDate> julianDates,
+                                final List<Cartesian> dimensions,
                                 final Header headerInput) {
-        this.header          = headerInput;
-        this.julianDates     = new ArrayList<>(julianDates);
-        this.cartesians      = new ArrayList<>(dimensions);
+        this.header = headerInput;
+        this.julianDates = new ArrayList<>(julianDates);
+        this.cartesians = new ArrayList<>(dimensions);
         this.multipleBuilder = false;
     }
 
@@ -154,7 +159,9 @@ public class CzmlEllipsoidBuilder {
      * @param stackPartitionInput : The stack partition to set up.
      * @return : The ellipsoid builder with the slice and stack partition.
      */
-    public CzmlEllipsoidBuilder withSliceStackPartition(final int slicePartitionInput, final int stackPartitionInput) {
+    public CzmlEllipsoidBuilder
+        withSliceStackPartition(final int slicePartitionInput,
+                                final int stackPartitionInput) {
         this.slicePartition = slicePartitionInput;
         this.stackPartition = stackPartitionInput;
         return this;
@@ -185,15 +192,17 @@ public class CzmlEllipsoidBuilder {
     /**
      * The build function that generates the czml ellipsoid object.
      *
-     * @return : A czml ellipsoid object with the given parameters of the builder.
+     * @return : A czml ellipsoid object with the given parameters of the
+     *         builder.
      */
     public CzmlEllipsoid build() {
         if (multipleBuilder) {
-            return new CzmlEllipsoid(cartesian, fill, outline, slicePartition, stackPartition, color,
-                    header);
+            return new CzmlEllipsoid(cartesian, fill, outline, slicePartition,
+                                     stackPartition, color, header);
         } else {
-            return new CzmlEllipsoid(julianDates, cartesians, fill, outline, slicePartition, stackPartition,
-                    color, header);
+            return new CzmlEllipsoid(julianDates, cartesians, fill, outline,
+                                     slicePartition, stackPartition, color,
+                                     header);
         }
     }
 }

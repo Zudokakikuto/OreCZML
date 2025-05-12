@@ -25,12 +25,14 @@ import java.io.StringWriter;
 /**
  * The type Abstract secondary object.
  */
-public abstract class AbstractSecondaryObject implements CzmlSecondaryObject {
+public abstract class AbstractSecondaryObject
+    implements
+    CzmlSecondaryObject {
 
     @Override
     public String toString() {
-        final StringWriter       writer       = new StringWriter();
-        final CesiumOutputStream output       = new CesiumOutputStream(writer);
+        final StringWriter writer = new StringWriter();
+        final CesiumOutputStream output = new CesiumOutputStream(writer);
         final CesiumStreamWriter streamWriter = new CesiumStreamWriter();
         output.setPrettyFormatting(true);
         try (PacketCesiumWriter packet = streamWriter.openPacket(output)) {

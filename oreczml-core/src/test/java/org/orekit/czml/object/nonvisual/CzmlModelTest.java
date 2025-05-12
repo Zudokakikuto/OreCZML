@@ -25,11 +25,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-
 /**
  * The type Czml model test.
  */
-public class CzmlModelTest extends AbstractTest {
+public class CzmlModelTest
+    extends
+    AbstractTest {
 
     /**
      * Czml model constructor test.
@@ -37,16 +38,21 @@ public class CzmlModelTest extends AbstractTest {
      * @throws IOException the io exception
      */
     @Test
-    void CzmlModelConstructorTest() throws IOException {
+    void CzmlModelConstructorTest()
+        throws IOException {
 
         loadOrekitData();
 
         final Header header = dummyHeader();
 
-        final CzmlModel modelToTest = new CzmlModel(loadResources("Default3DModels/ISSModel.glb"), false, header);
+        final CzmlModel modelToTest =
+            new CzmlModel(loadResources("Default3DModels/ISSModel.glb"), false,
+                          header);
 
-        final String pathFile = loadResources("templateFile/nonvisual/CzmlModelTemplate.txt");
+        final String pathFile =
+            loadResources("templateFile/nonvisual/CzmlModelTemplate.txt");
 
-        Assertions.assertEquals(Files.readString(Path.of(pathFile)), modelToTest.toString());
+        Assertions.assertEquals(Files.readString(Path.of(pathFile)),
+                                modelToTest.toString());
     }
 }

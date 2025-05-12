@@ -26,20 +26,24 @@ import java.util.Locale;
 /**
  * OreCzmlException
  * <p>
- * This class aims at creating exceptions and display messages from OreCzml Messages.
+ * This class aims at creating exceptions and display messages from OreCzml
+ * Messages.
  *
  * @author Julien LEBLOND
  * @since 1.0
  */
-public class OreCzmlException extends OrekitException {
+public class OreCzmlException
+    extends
+    OrekitException {
 
     /**
      * Instantiates a new Ore czml exception.
      *
      * @param specifier the specifier
-     * @param parts     the parts
+     * @param parts the parts
      */
-    public OreCzmlException(final Localizable specifier, final Object... parts) {
+    public OreCzmlException(final Localizable specifier,
+                            final Object... parts) {
         super(specifier, parts);
     }
 
@@ -65,7 +69,7 @@ public class OreCzmlException extends OrekitException {
      * Instantiates a new Ore czml exception.
      *
      * @param message the message
-     * @param cause   the cause
+     * @param cause the cause
      */
     public OreCzmlException(final Localizable message, final Throwable cause) {
         super(message, cause);
@@ -74,11 +78,12 @@ public class OreCzmlException extends OrekitException {
     /**
      * Instantiates a new Ore czml exception.
      *
-     * @param cause     the cause
+     * @param cause the cause
      * @param specifier the specifier
-     * @param parts     the parts
+     * @param parts the parts
      */
-    public OreCzmlException(final Throwable cause, final Localizable specifier, final Object... parts) {
+    public OreCzmlException(final Throwable cause, final Localizable specifier,
+                            final Object... parts) {
         super(cause, specifier, parts);
     }
 

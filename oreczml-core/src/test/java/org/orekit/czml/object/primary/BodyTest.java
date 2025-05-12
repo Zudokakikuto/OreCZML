@@ -31,62 +31,73 @@ import java.net.URISyntaxException;
 /**
  * The type Body test.
  */
-public class BodyTest extends AbstractTest {
+public class BodyTest
+    extends
+    AbstractTest {
 
     /**
      * Body constructor test.
      *
      * @throws URISyntaxException the uri syntax exception
-     * @throws IOException        the io exception
+     * @throws IOException the io exception
      */
     @Test
-    void BodyConstructorTest() throws URISyntaxException, IOException {
+    void BodyConstructorTest()
+        throws URISyntaxException,
+            IOException {
 
         loadOrekitData();
 
-        final Frame sunFrame = CelestialBodyFactory.getSun()
-                                                   .getBodyOrientedFrame();
+        final Frame sunFrame =
+            CelestialBodyFactory.getSun().getBodyOrientedFrame();
 
         final Header header = dummyHeader();
 
         final String pathToModel = loadResources("Bodies/mars.glb");
 
-        final Body body = Body.builder(CelestialBodyFactory.getMars(), pathToModel, sunFrame, header)
-                              .build();
+        final Body body =
+            Body.builder(CelestialBodyFactory.getMars(), pathToModel, sunFrame,
+                         header)
+                .build();
 
         final double marsOrbitalPeriod = 686.96 * 24 * 3600; // in sec
 
-        final Body bodyBuilder = Body.builder(CelestialBodyFactory.getMars(), pathToModel, sunFrame, header)
-                                     .withHeader(header)
-                                     .withCustomID("CustomID")
-                                     .displayOnlyOnePeriod(marsOrbitalPeriod)
-                                     .build();
+        final Body bodyBuilder =
+            Body.builder(CelestialBodyFactory.getMars(), pathToModel, sunFrame,
+                         header)
+                .withHeader(header).withCustomID("CustomID")
+                .displayOnlyOnePeriod(marsOrbitalPeriod).build();
 
         final Body mercury = BodyFactory.getMercury(header);
-        final Body earth   = BodyFactory.getEarth(header);
-        final Body venus   = BodyFactory.getVenus(header);
+        final Body earth = BodyFactory.getEarth(header);
+        final Body venus = BodyFactory.getVenus(header);
         final Body jupiter = BodyFactory.getJupiter(header);
-        final Body saturn  = BodyFactory.getSaturn(header);
-        final Body uranus  = BodyFactory.getUranus(header);
+        final Body saturn = BodyFactory.getSaturn(header);
+        final Body uranus = BodyFactory.getUranus(header);
         final Body neptune = BodyFactory.getNeptune(header);
-        final Body pluto   = BodyFactory.getPluto(header);
-        final Body sun     = BodyFactory.getSun(header);
+        final Body pluto = BodyFactory.getPluto(header);
+        final Body sun = BodyFactory.getSun(header);
 
         sun.noOrbitDisplay();
 
-        final String bodyPathFile = loadResources("templateFile/primary/BodyTemplate.txt");
-        final CzmlFile file = CzmlFile.builder()
-                                      .withHeader(header)
-                                      .withBody(mercury, earth, venus, jupiter, saturn, uranus, neptune, pluto, sun)
-                                      .build();
+        final String bodyPathFile =
+            loadResources("templateFile/primary/BodyTemplate.txt");
+        final CzmlFile file =
+            CzmlFile.builder().withHeader(header)
+                .withBody(mercury, earth, venus, jupiter, saturn, uranus,
+                          neptune, pluto, sun)
+                .build();
 
-        final String bodiesPathFiles  = loadResources("templateFile/primary/BodiesTemplate.txt");
-        final String builderPathFiles = loadResources("templateFile/primary/BodyWithBuilderTemplate.txt");
+        final String bodiesPathFiles =
+            loadResources("templateFile/primary/BodiesTemplate.txt");
+        final String builderPathFiles =
+            loadResources("templateFile/primary/BodyWithBuilderTemplate.txt");
 
         verifyFileOutput(bodyPathFile, body.toString(), 1e-8);
         verifyFileOutput(builderPathFiles, bodyBuilder.toString(), 1e-8);
         verifyFileOutput(bodiesPathFiles, file.toString(), 1e-8);
-        Assertions.assertEquals(CelestialBodyFactory.getMars(), bodyBuilder.getCelestialBody());
+        Assertions.assertEquals(CelestialBodyFactory.getMars(),
+                                bodyBuilder.getCelestialBody());
         Assertions.assertTrue(bodyBuilder.isDisplayOrbit());
         Assertions.assertTrue(bodyBuilder.isDisplayOnlyOnePeriod());
     }

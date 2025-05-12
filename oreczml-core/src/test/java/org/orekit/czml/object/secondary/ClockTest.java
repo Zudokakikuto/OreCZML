@@ -36,7 +36,9 @@ import java.net.URISyntaxException;
 /**
  * The type Clock test.
  */
-public class ClockTest extends AbstractTest {
+public class ClockTest
+    extends
+    AbstractTest {
 
     /**
      * Clock constructor test.
@@ -44,31 +46,42 @@ public class ClockTest extends AbstractTest {
      * @throws IOException the io exception
      */
     @Test
-    void ClockConstructorTest() throws IOException, URISyntaxException {
+    void ClockConstructorTest()
+        throws IOException,
+            URISyntaxException {
 
         loadOrekitData();
 
-        final Header       header    = dummyHeader();
-        final AbsoluteDate startDate = DateUtils.toAbsoluteDate(header.getAvailability()
-                                                                      .getStart(), TimeScalesFactory.getUTC());
+        final Header header = dummyHeader();
+        final AbsoluteDate startDate =
+            DateUtils.toAbsoluteDate(header.getAvailability().getStart(),
+                                     TimeScalesFactory.getUTC());
         final AbsoluteDate finalDate = startDate.shiftedBy(60.0);
-        final TimeInterval interval = new TimeInterval(header.getAvailability().getStart(), header.getAvailability().getStop());
+        final TimeInterval interval =
+            new TimeInterval(header.getAvailability().getStart(),
+                             header.getAvailability().getStop());
 
-        final String        OemPath       = loadResources("oemForOemTuto.xml");
-        final DataSource    dataSource    = new DataSource(OemPath);
+        final String OemPath = loadResources("oemForOemTuto.xml");
+        final DataSource dataSource = new DataSource(OemPath);
         final ParserBuilder parserBuilder = new ParserBuilder();
-        final OemParser     oemParser     = parserBuilder.buildOemParser();
-        final Oem           oem           = oemParser.parse(dataSource);
+        final OemParser oemParser = parserBuilder.buildOemParser();
+        final Oem oem = oemParser.parse(dataSource);
 
-        final Clock clock = new Clock(startDate, finalDate, TimeScalesFactory.getUTC(), 10.0);
+        final Clock clock =
+            new Clock(startDate, finalDate, TimeScalesFactory.getUTC(), 10.0);
 
-        final Clock clockCoverage = new Clock(interval, header.getAvailability().getStart(), 60.0, ClockRange.LOOP_STOP, ClockStep.SYSTEM_CLOCK_MULTIPLIER);
+        final Clock clockCoverage =
+            new Clock(interval, header.getAvailability().getStart(), 60.0,
+                      ClockRange.LOOP_STOP, ClockStep.SYSTEM_CLOCK_MULTIPLIER);
 
         final Clock oemClock = new Clock(oem);
 
-        final String pathFile = loadResources("templateFile/secondary/ClockTemplate.txt");
-        final String coveragePathFile = loadResources("templateFile/secondary/ClockCoverageTemplate.txt");
-        final String oemClockPathFile = loadResources("templateFile/secondary/OemClockTemplate.txt");
+        final String pathFile =
+            loadResources("templateFile/secondary/ClockTemplate.txt");
+        final String coveragePathFile =
+            loadResources("templateFile/secondary/ClockCoverageTemplate.txt");
+        final String oemClockPathFile =
+            loadResources("templateFile/secondary/OemClockTemplate.txt");
 
         verifyFileOutput(pathFile, clock.toString(), 1e-8);
         verifyFileOutput(coveragePathFile, clockCoverage.toString(), 1e-8);

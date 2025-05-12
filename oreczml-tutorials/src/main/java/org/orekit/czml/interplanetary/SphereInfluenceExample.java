@@ -25,9 +25,6 @@ import org.orekit.czml.object.secondary.Clock;
 import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScalesFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * This tutorial provides an example of how a body object can be set up.
  */
@@ -42,35 +39,43 @@ public class SphereInfluenceExample {
      * @param args arguments of the main function
      * @throws Exception exception to throw
      */
-    public static void main(final String[] args) throws Exception {
+    public static void main(final String[] args)
+        throws Exception {
         // Load orekit data
         TutorialUtils.loadOrekitData();
 
         // Paths
         final String output = TutorialUtils.generateOutput();
-        // !!! Here you need to change the path inside 'generateJsPath' to the path you are using for images or Model.
-        // This folder can also be the public folder of your cesium javascript interface.
-        final String pathToJSFolder = TutorialUtils.generateJSPath(
-                System.getProperty("user.dir") + "/Javascript/public");
+        // !!! Here you need to change the path inside 'generateJsPath' to the
+        // path you are using for images or Model.
+        // This folder can also be the public folder of your cesium javascript
+        // interface.
+        final String pathToJSFolder =
+            TutorialUtils.generateJSPath(System.getProperty("user.dir") +
+                                         "/Javascript/public");
 
         // Creation of the clock.
 
-        final double       durationOfSimulation = 24 * 3600; // in seconds;
-        final AbsoluteDate startDate            = new AbsoluteDate(2024, 3, 15, 0, 0, 0.0, TimeScalesFactory.getUTC());
-        final AbsoluteDate finalDate            = startDate.shiftedBy(durationOfSimulation);
-        final Clock clock = new Clock(startDate, finalDate, TimeScalesFactory.getUTC(),
-                TutorialUtils.STEP_BETWEEN_EACH_INSTANT);
+        final double durationOfSimulation = 24 * 3600; // in seconds;
+        final AbsoluteDate startDate =
+            new AbsoluteDate(2024, 3, 15, 0, 0, 0.0,
+                             TimeScalesFactory.getUTC());
+        final AbsoluteDate finalDate =
+            startDate.shiftedBy(durationOfSimulation);
+        final Clock clock =
+            new Clock(startDate, finalDate, TimeScalesFactory.getUTC(),
+                      TutorialUtils.STEP_BETWEEN_EACH_INSTANT);
 
-        final Header header = new Header("Setup of influence sphere", clock, pathToJSFolder);
+        final Header header =
+            new Header("Setup of influence sphere", clock, pathToJSFolder);
 
         // Solar system
-        final Body       venusDisplay   = BodyFactory.getVenus(header);
+        final Body venusDisplay = BodyFactory.getVenus(header);
         venusDisplay.displayInfluenceSphere();
 
-        final CzmlFile file = CzmlFile.builder()
-                                      .withHeader(header)
-                                      .withBody(venusDisplay)
-                                      .build();
+        final CzmlFile file =
+            CzmlFile.builder().withHeader(header).withBody(venusDisplay)
+                .build();
         // Writing in the file
         file.write(output);
     }

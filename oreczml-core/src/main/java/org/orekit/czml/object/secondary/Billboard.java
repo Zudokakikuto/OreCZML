@@ -29,13 +29,16 @@ import java.awt.Color;
 
 /**
  * Billboard class.
- *
- * <p> This class aims at displaying an image to an object when one is defined.</p>
+ * <p>
+ * This class aims at displaying an image to an object when one is defined.
+ * </p>
  *
  * @author Julien LEBLOND
  * @since 1.0.0
  */
-public class Billboard extends AbstractSecondaryObject {
+public class Billboard
+    extends
+    AbstractSecondaryObject {
 
     /**
      * The default scale of the image used by the billboard.
@@ -43,7 +46,8 @@ public class Billboard extends AbstractSecondaryObject {
     public static final double DEFAULT_SCALE = 1.5;
 
     /**
-     * The horizontal origin of the image. Available parameters are: LEFT, CENTER, RIGHT
+     * The horizontal origin of the image. Available parameters are: LEFT,
+     * CENTER, RIGHT
      */
     private final CesiumHorizontalOrigin cesiumHorizontalOrigin;
 
@@ -77,7 +81,6 @@ public class Billboard extends AbstractSecondaryObject {
      */
     private NearFarScalar nearFarScalar;
 
-
     // Constructors
 
     /**
@@ -93,7 +96,7 @@ public class Billboard extends AbstractSecondaryObject {
      * The constructor of the billboard with a given scale.
      *
      * @param imageStr : The string of the image to use (URI).
-     * @param scale    : The scale of the image.
+     * @param scale : The scale of the image.
      */
     public Billboard(final String imageStr, final double scale) {
         this.scale = scale;
@@ -107,7 +110,7 @@ public class Billboard extends AbstractSecondaryObject {
     /**
      * The constructor of the billboard with a given scale.
      *
-     * @param imageStr      : The string of the image to use (URI).
+     * @param imageStr : The string of the image to use (URI).
      * @param nearFarScalar : How close and far the image should be displayed.
      */
     public Billboard(final String imageStr, final NearFarScalar nearFarScalar) {
@@ -122,17 +125,20 @@ public class Billboard extends AbstractSecondaryObject {
     /**
      * The billboard constructor with no default parameters.
      *
-     * @param cesiumResourceBehavior : Parameter of the billboard to know where to link the image.
+     * @param cesiumResourceBehavior : Parameter of the billboard to know where
+     *        to link the image.
      * @param cesiumHorizontalOrigin : The horizontal origin of the image.
-     * @param imageStr               : The string of the image to use (URI).
-     * @param show                   : Whether to show or not the billboard.
-     * @param scale                  : The scale of the image.
-     * @param color                  : The color of the image.
-     * @param nearFarScalar          : How close and far the image should be displayed.
+     * @param imageStr : The string of the image to use (URI).
+     * @param show : Whether to show or not the billboard.
+     * @param scale : The scale of the image.
+     * @param color : The color of the image.
+     * @param nearFarScalar : How close and far the image should be displayed.
      */
     public Billboard(final CesiumResourceBehavior cesiumResourceBehavior,
-                     final CesiumHorizontalOrigin cesiumHorizontalOrigin, final String imageStr, final boolean show,
-                     final double scale, final Color color, final NearFarScalar nearFarScalar) {
+                     final CesiumHorizontalOrigin cesiumHorizontalOrigin,
+                     final String imageStr, final boolean show,
+                     final double scale, final Color color,
+                     final NearFarScalar nearFarScalar) {
         this.scale = scale;
         this.show = show;
         this.cesiumHorizontalOrigin = cesiumHorizontalOrigin;
@@ -145,10 +151,13 @@ public class Billboard extends AbstractSecondaryObject {
     // Overrides
 
     @Override
-    public void write(final PacketCesiumWriter packetWriter, final CesiumOutputStream output) {
-        try (BillboardCesiumWriter billboardWriter = packetWriter.getBillboardWriter()) {
+    public void write(final PacketCesiumWriter packetWriter,
+                      final CesiumOutputStream output) {
+        try (BillboardCesiumWriter billboardWriter =
+            packetWriter.getBillboardWriter()) {
             billboardWriter.open(output);
-            billboardWriter.writeHorizontalOriginProperty(cesiumHorizontalOrigin);
+            billboardWriter
+                .writeHorizontalOriginProperty(cesiumHorizontalOrigin);
             billboardWriter.writeColorProperty(color);
             if (nearFarScalar == null) {
                 billboardWriter.writeScaleProperty(scale);
@@ -225,16 +234,17 @@ public class Billboard extends AbstractSecondaryObject {
         return nearFarScalar;
     }
 
-
     // Private functions
 
     /**
-     * This function aims at writing the image of the billboard with a billboard writer.
+     * This function aims at writing the image of the billboard with a billboard
+     * writer.
      *
      * @param billboardWriter : The writer of the billboard.
      */
     private void writeImage(final BillboardCesiumWriter billboardWriter) {
-        try (UriCesiumWriter imageBillBoard = billboardWriter.openImageProperty()) {
+        try (UriCesiumWriter imageBillBoard =
+            billboardWriter.openImageProperty()) {
             imageBillBoard.writeUri(imageStr, cesiumResourceBehavior);
         }
     }

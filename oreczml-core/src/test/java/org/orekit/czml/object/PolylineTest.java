@@ -29,7 +29,9 @@ import java.net.URISyntaxException;
 /**
  * The type Polyline test.
  */
-public class PolylineTest extends AbstractTest {
+public class PolylineTest
+    extends
+    AbstractTest {
 
     /**
      * Polylinec constructor test.
@@ -37,7 +39,9 @@ public class PolylineTest extends AbstractTest {
      * @throws IOException the io exception
      */
     @Test
-    void PolylinecConstructorTest() throws IOException, URISyntaxException {
+    void PolylinecConstructorTest()
+        throws IOException,
+            URISyntaxException {
 
         loadOrekitData();
 
@@ -45,19 +49,18 @@ public class PolylineTest extends AbstractTest {
 
         final Polyline polyline = Polyline.nonVectorBuilder(header).build();
 
-        final Polyline polylineNonVector = Polyline.nonVectorBuilder(header)
-                                                   .withColor(Color.ORANGE)
-                                                   .withArcType(CesiumArcType.NONE)
-                                                   .withShow(true)
-                                                   .withWidth(10.0)
-                                                   .withFarDistance(10.0)
-                                                   .withNearDistance(1.0)
-                                                   .withFirstReference(new Reference("sat#position"))
-                                                   .withSecondReference(new Reference("groundstation#position"))
-                                                   .build();
+        final Polyline polylineNonVector =
+            Polyline.nonVectorBuilder(header).withColor(Color.ORANGE)
+                .withArcType(CesiumArcType.NONE).withShow(true).withWidth(10.0)
+                .withFarDistance(10.0).withNearDistance(1.0)
+                .withFirstReference(new Reference("sat#position"))
+                .withSecondReference(new Reference("groundstation#position"))
+                .build();
 
-        final String pathFile = loadResources("templateFile/PolylineTemplate.txt");
-        final String nonVectorPathFile = loadResources("templateFile/PolylineNonVectorTemplate.txt");
+        final String pathFile =
+            loadResources("templateFile/PolylineTemplate.txt");
+        final String nonVectorPathFile =
+            loadResources("templateFile/PolylineNonVectorTemplate.txt");
 
         verifyFileOutput(pathFile, polyline.toString(), 1e-8);
         verifyFileOutput(nonVectorPathFile, polylineNonVector.toString(), 1e-8);

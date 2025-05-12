@@ -28,7 +28,9 @@ import java.net.URISyntaxException;
 /**
  * The type Path test.
  */
-public class PathTest extends AbstractTest {
+public class PathTest
+    extends
+    AbstractTest {
 
     /**
      * Path constructor test.
@@ -36,7 +38,9 @@ public class PathTest extends AbstractTest {
      * @throws IOException the io exception
      */
     @Test
-    void PathConstructorTest() throws IOException, URISyntaxException {
+    void PathConstructorTest()
+        throws IOException,
+            URISyntaxException {
 
         loadOrekitData();
 
@@ -48,8 +52,9 @@ public class PathTest extends AbstractTest {
 
         final Path pathCoverage = new Path(availability, true);
 
-        final String pathFile         = loadResources("templateFile/PathTemplate.txt");
-        final String pathCoverageFile = loadResources("templateFile/PathCoverageTemplate.txt");
+        final String pathFile = loadResources("templateFile/PathTemplate.txt");
+        final String pathCoverageFile =
+            loadResources("templateFile/PathCoverageTemplate.txt");
 
         verifyFileOutput(pathFile, path.toString(), 1e-8);
         verifyFileOutput(pathCoverageFile, pathCoverage.toString(), 1e-8);

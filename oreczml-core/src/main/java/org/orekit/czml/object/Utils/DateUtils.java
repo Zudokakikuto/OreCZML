@@ -30,7 +30,8 @@ import java.util.List;
 /**
  * Date Utils class.
  * <p>
- * This class aims at giving utilities functions on dates to be used in the code.
+ * This class aims at giving utilities functions on dates to be used in the
+ * code.
  * </p>
  *
  * @author Julien LEBLOND
@@ -42,10 +43,12 @@ public class DateUtils {
     }
 
     /**
-     * Gives the delta of time between the Julian Epoch and the current absolute date.
+     * Gives the delta of time between the Julian Epoch and the current absolute
+     * date.
      *
      * @param date : The absolute date to get the delta from
-     * @return : The delta of time between the Julian Epoch and the current absolute date.
+     * @return : The delta of time between the Julian Epoch and the current
+     *         absolute date.
      */
     public static double secondsSinceJulianEpoch(final AbsoluteDate date) {
         final double dt_s = date.durationFrom(AbsoluteDate.JULIAN_EPOCH);
@@ -57,44 +60,37 @@ public class DateUtils {
     /**
      * Converts an absolute date to a julian date.
      *
-     * @param date      : The absolute date to convert
+     * @param date : The absolute date to convert
      * @param timeScale : The timescale in which the absolute date is expressed
      * @return : The julian date from the conversion
      */
-    public static JulianDate toJulianDate(final AbsoluteDate date, final TimeScale timeScale) {
+    public static JulianDate toJulianDate(final AbsoluteDate date,
+                                          final TimeScale timeScale) {
 
-        final int year = date.getComponents(timeScale)
-                             .getDate()
-                             .getYear();
-        final int month = date.getComponents(timeScale)
-                              .getDate()
-                              .getMonth();
-        final int day = date.getComponents(timeScale)
-                            .getDate()
-                            .getDay();
-        final int hour = date.getComponents(timeScale)
-                             .getTime()
-                             .getHour();
-        final int min = date.getComponents(timeScale)
-                            .getTime()
-                            .getMinute();
-        final double sec = FastMath.floor(date.getComponents(timeScale)
-                                              .getTime()
-                                              .getSecond());
+        final int year = date.getComponents(timeScale).getDate().getYear();
+        final int month = date.getComponents(timeScale).getDate().getMonth();
+        final int day = date.getComponents(timeScale).getDate().getDay();
+        final int hour = date.getComponents(timeScale).getTime().getHour();
+        final int min = date.getComponents(timeScale).getTime().getMinute();
+        final double sec =
+            FastMath.floor(date.getComponents(timeScale).getTime().getSecond());
 
-        final GregorianDate gregorianDate = new GregorianDate(year, month, day, hour, min, sec);
+        final GregorianDate gregorianDate =
+            new GregorianDate(year, month, day, hour, min, sec);
         return new JulianDate(gregorianDate);
     }
-
 
     /**
      * Converts a list of absolute date into a list of julian dates.
      *
      * @param absoluteDates : The list of absolute dates to convert
-     * @param timeScale     : The timescale in which the absolute dates are expressed
+     * @param timeScale : The timescale in which the absolute dates are
+     *        expressed
      * @return : A list of julian dates from the conversion
      */
-    public static List<JulianDate> toJulianDates(final List<AbsoluteDate> absoluteDates, final TimeScale timeScale) {
+    public static List<JulianDate>
+        toJulianDates(final List<AbsoluteDate> absoluteDates,
+                      final TimeScale timeScale) {
         final List<JulianDate> toReturn = new ArrayList<>();
         for (AbsoluteDate absoluteDate : absoluteDates) {
             toReturn.add(DateUtils.toJulianDate(absoluteDate, timeScale));
@@ -108,48 +104,58 @@ public class DateUtils {
      * @param timeIntervals : The list of time intervals to convert.
      * @return : A list of julian dates from the conversion.
      */
-    public static List<JulianDate> toJulianDates(final List<TimeInterval> timeIntervals) {
+    public static List<JulianDate>
+        toJulianDates(final List<TimeInterval> timeIntervals) {
         final List<JulianDate> toReturn = new ArrayList<>();
         for (TimeInterval timeInterval : timeIntervals) {
             toReturn.add(timeInterval.getStart());
         }
-        toReturn.add(timeIntervals.get(timeIntervals.size() - 1)
-                                  .getStop());
+        toReturn.add(timeIntervals.get(timeIntervals.size() - 1).getStop());
         return toReturn;
     }
 
     /**
-     * Add seconds for the start and the stop of a time interval to build another one shifted by this duration.
+     * Add seconds for the start and the stop of a time interval to build
+     * another one shifted by this duration.
      *
-     * @param input    : The time interval inputted
+     * @param input : The time interval inputted
      * @param duration : The shift to add in seconds.
-     * @return : A new time interval object shifted by the number of seconds given.
+     * @return : A new time interval object shifted by the number of seconds
+     *         given.
      */
-    public static TimeInterval shitfedBy(final TimeInterval input, final double duration) {
-        return new TimeInterval(input.getStart()
-                                     .addSeconds(duration), input.getStop()
-                                                                 .addSeconds(duration));
+    public static TimeInterval shitfedBy(final TimeInterval input,
+                                         final double duration) {
+        return new TimeInterval(input.getStart().addSeconds(duration),
+                                input.getStop().addSeconds(duration));
     }
 
     /**
      * Converts a julian date to an absolute date, given the timescale.
      *
      * @param julianDate : The julian date to convert
-     * @param timeScale  : The timescale in which the absolute date must be expressed.
+     * @param timeScale : The timescale in which the absolute date must be
+     *        expressed.
      * @return : The absolute date from the conversion in the timescale.
      */
-    public static AbsoluteDate toAbsoluteDate(final JulianDate julianDate, final TimeScale timeScale) {
-        return AbsoluteDate.createJDDate(julianDate.getDay(), julianDate.getSecondsOfDay(), timeScale);
+    public static AbsoluteDate toAbsoluteDate(final JulianDate julianDate,
+                                              final TimeScale timeScale) {
+        return AbsoluteDate.createJDDate(julianDate.getDay(),
+                                         julianDate.getSecondsOfDay(),
+                                         timeScale);
     }
 
     /**
-     * Convert a list of julian date into a list of absolute dates, given the timescale.
+     * Convert a list of julian date into a list of absolute dates, given the
+     * timescale.
      *
      * @param julianDates : The list of julian dates to convert
-     * @param timeScale   : The timescale in which the absolute date will be expressed
+     * @param timeScale : The timescale in which the absolute date will be
+     *        expressed
      * @return : A list of absolute date from the conversion
      */
-    public static List<AbsoluteDate> toAbsoluteDates(final List<JulianDate> julianDates, final TimeScale timeScale) {
+    public static List<AbsoluteDate>
+        toAbsoluteDates(final List<JulianDate> julianDates,
+                        final TimeScale timeScale) {
         final List<AbsoluteDate> toReturn = new ArrayList<>();
         for (JulianDate julianDate : julianDates) {
             toReturn.add(DateUtils.toAbsoluteDate(julianDate, timeScale));
@@ -160,20 +166,25 @@ public class DateUtils {
     /**
      * Converts a list of julianDate to a list of TimeInterval.
      *
-     * @param julianDates : The list of julian dates to convert, the list cannot contain only one element.
-     * @return : A list of TimeInterval that correspond to each interval between each date.
+     * @param julianDates : The list of julian dates to convert, the list cannot
+     *        contain only one element.
+     * @return : A list of TimeInterval that correspond to each interval between
+     *         each date.
      */
-    public static List<TimeInterval> createTimeIntervals(final List<JulianDate> julianDates) {
+    public static List<TimeInterval>
+        createTimeIntervals(final List<JulianDate> julianDates) {
 
         final List<TimeInterval> toReturn = new ArrayList<>();
         //
-        final JulianDate firstJulianDate = new JulianDate(new GregorianDate(1900, 1, 1, 0, 0, 0.0));
+        final JulianDate firstJulianDate =
+            new JulianDate(new GregorianDate(1900, 1, 1, 0, 0, 0.0));
         toReturn.add(new TimeInterval(firstJulianDate, julianDates.get(0)));
 
         for (int i = 0; i < julianDates.size() - 1; i++) {
-            final JulianDate   currentJulianDate   = julianDates.get(i);
-            final JulianDate   nextJulianDate      = julianDates.get(i + 1);
-            final TimeInterval currentTimeInterval = new TimeInterval(currentJulianDate, nextJulianDate);
+            final JulianDate currentJulianDate = julianDates.get(i);
+            final JulianDate nextJulianDate = julianDates.get(i + 1);
+            final TimeInterval currentTimeInterval =
+                new TimeInterval(currentJulianDate, nextJulianDate);
             toReturn.add(currentTimeInterval);
         }
         return toReturn;

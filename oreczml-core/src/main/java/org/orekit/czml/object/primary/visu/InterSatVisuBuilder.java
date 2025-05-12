@@ -63,46 +63,55 @@ public class InterSatVisuBuilder {
      *
      * @param satellite1Input the satellite 1 input
      * @param satellite2Input the satellite 2 input
-     * @param finalDateInput  the final date input
-     * @param headerInput     the header input
+     * @param finalDateInput the final date input
+     * @param headerInput the header input
      */
-    public InterSatVisuBuilder(final Spacecraft satellite1Input, final Spacecraft satellite2Input,
-                               final AbsoluteDate finalDateInput, final Header headerInput) {
+    public InterSatVisuBuilder(final Spacecraft satellite1Input,
+                               final Spacecraft satellite2Input,
+                               final AbsoluteDate finalDateInput,
+                               final Header headerInput) {
         this.satellite1 = satellite1Input;
         this.satellite2 = satellite2Input;
-        this.finalDate  = finalDateInput;
-        this.customId   = DEFAULT_ID + satellite1Input.getId() + "/" + satellite2Input.getId();
-        this.header     = headerInput;
+        this.finalDate = finalDateInput;
+        this.customId =
+            DEFAULT_ID +
+                        satellite1Input.getId() + "/" + satellite2Input.getId();
+        this.header = headerInput;
     }
 
     /**
      * Instantiates a new Inter sat visu builder.
      *
      * @param propagatorsInput the propagators input
-     * @param finalDateInput   the final date input
-     * @param headerInput      the header input
+     * @param finalDateInput the final date input
+     * @param headerInput the header input
      * @throws URISyntaxException the uri syntax exception
-     * @throws IOException        the io exception
+     * @throws IOException the io exception
      */
     public InterSatVisuBuilder(final List<BoundedPropagator> propagatorsInput,
                                final AbsoluteDate finalDateInput,
-                               final Header headerInput) throws URISyntaxException, IOException {
-        this(Constellation.builder(propagatorsInput, finalDateInput, headerInput).build(), finalDateInput, headerInput);
+                               final Header headerInput)
+        throws URISyntaxException,
+            IOException {
+        this(Constellation
+            .builder(propagatorsInput, finalDateInput, headerInput).build(),
+             finalDateInput, headerInput);
     }
 
     /**
      * Instantiates a new Inter sat visu builder.
      *
      * @param constellationInput the constellation input
-     * @param finalDateInput     the final date input
-     * @param headerInput        the header input
+     * @param finalDateInput the final date input
+     * @param headerInput the header input
      */
-    public InterSatVisuBuilder(final Constellation constellationInput, final AbsoluteDate finalDateInput,
+    public InterSatVisuBuilder(final Constellation constellationInput,
+                               final AbsoluteDate finalDateInput,
                                final Header headerInput) {
         this.constellation = constellationInput;
-        this.finalDate     = finalDateInput;
-        this.customId      = DEFAULT_ID + constellationInput.getId();
-        this.header        = headerInput;
+        this.finalDate = finalDateInput;
+        this.customId = DEFAULT_ID + constellationInput.getId();
+        this.header = headerInput;
     }
 
     /**
@@ -136,7 +145,8 @@ public class InterSatVisuBuilder {
         if (constellation != null) {
             return new InterSatVisu(constellation, finalDate, customId, header);
         } else {
-            return new InterSatVisu(satellite1, satellite2, finalDate, customId, header);
+            return new InterSatVisu(satellite1, satellite2, finalDate, customId,
+                                    header);
         }
     }
 }

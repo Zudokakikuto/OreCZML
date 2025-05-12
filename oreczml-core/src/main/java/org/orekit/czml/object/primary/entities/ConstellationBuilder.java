@@ -76,16 +76,19 @@ public class ConstellationBuilder {
     /**
      * The default builder for the constellation builder.
      *
-     * @param propagatorsInput : All the propagators that represent the satellites.
-     * @param finalDateInput   : The final date of the propagation.
-     * @param headerInput      : The header considered.
+     * @param propagatorsInput : All the propagators that represent the
+     *        satellites.
+     * @param finalDateInput : The final date of the propagation.
+     * @param headerInput : The header considered.
      */
-    public ConstellationBuilder(final List<BoundedPropagator> propagatorsInput, final AbsoluteDate finalDateInput,
+    public ConstellationBuilder(final List<BoundedPropagator> propagatorsInput,
+                                final AbsoluteDate finalDateInput,
                                 final Header headerInput) {
         this.propagators = new ArrayList<>(propagatorsInput);
-        this.finalDate   = finalDateInput;
-        this.header      = headerInput;
-        this.customID    = DEFAULT_ID + propagatorsInput.size() + " " + DEFAULT_NUMBER_OF_SAT;
+        this.finalDate = finalDateInput;
+        this.header = headerInput;
+        this.customID =
+            DEFAULT_ID + propagatorsInput.size() + " " + DEFAULT_NUMBER_OF_SAT;
     }
 
     /**
@@ -134,17 +137,22 @@ public class ConstellationBuilder {
     /**
      * The build function that generates a constellation object.
      *
-     * @return : A constellation object with the given parameters of the builder.
+     * @return : A constellation object with the given parameters of the
+     *         builder.
      * @throws URISyntaxException the uri syntax exception
-     * @throws IOException        the io exception
+     * @throws IOException the io exception
      */
-    public Constellation build() throws URISyntaxException, IOException {
-        final Constellation tempConstellation = new Constellation(propagators, finalDate, pathToModel, customID,
-                header);
+    public Constellation build()
+        throws URISyntaxException,
+            IOException {
+        final Constellation tempConstellation =
+            new Constellation(propagators, finalDate, pathToModel, customID,
+                              header);
         return checkAttributes(tempConstellation);
     }
 
-    private Constellation checkAttributes(final Constellation constellationInput) {
+    private Constellation
+        checkAttributes(final Constellation constellationInput) {
         if (displayAttitude) {
             constellationInput.displayAttitude();
         }

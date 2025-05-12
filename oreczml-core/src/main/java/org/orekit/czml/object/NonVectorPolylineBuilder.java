@@ -43,7 +43,8 @@ public class NonVectorPolylineBuilder {
     public static final double DEFAULT_WIDTH = 1;
 
     /**
-     * The arc type of the polyline. (a straight line by default). The available parameters are: NONE, GEODESIC, RHUMB;
+     * The arc type of the polyline. (a straight line by default). The available
+     * parameters are: NONE, GEODESIC, RHUMB;
      */
     public static final CesiumArcType DEFAULT_ARC_TYPE = CesiumArcType.NONE;
 
@@ -53,7 +54,8 @@ public class NonVectorPolylineBuilder {
     public static final boolean DEFAULT_SHOW = true;
 
     /**
-     * The reference of the polyline. (to give one of the extremities of the polyline a position)
+     * The reference of the polyline. (to give one of the extremities of the
+     * polyline a position)
      */
     public static final Reference DEFAULT_REFERENCE = null;
 
@@ -63,7 +65,8 @@ public class NonVectorPolylineBuilder {
     public static final double DEFAULT_NEAR_DISTANCE = 1;
 
     /**
-     * The default far distance where the polyline must not be displayed anymore.
+     * The default far distance where the polyline must not be displayed
+     * anymore.
      */
     public static final double DEFAULT_FAR_DISTANCE = 100000000;
 
@@ -78,7 +81,8 @@ public class NonVectorPolylineBuilder {
     private double width = DEFAULT_WIDTH;
 
     /**
-     * The arc type of the polyline. I can take several type : NONE, GEODESIC, RHUMB.
+     * The arc type of the polyline. I can take several type : NONE, GEODESIC,
+     * RHUMB.
      */
     private CesiumArcType arcType = DEFAULT_ARC_TYPE;
 
@@ -109,7 +113,6 @@ public class NonVectorPolylineBuilder {
 
     /** The header considered. */
     private Header header;
-
 
     // Constructor
 
@@ -150,11 +153,11 @@ public class NonVectorPolylineBuilder {
      * @param arcTypeInput : The arc type to set up.
      * @return : The non-vector polyline builder with the given arc type.
      */
-    public NonVectorPolylineBuilder withArcType(final CesiumArcType arcTypeInput) {
+    public NonVectorPolylineBuilder
+        withArcType(final CesiumArcType arcTypeInput) {
         this.arcType = arcTypeInput;
         return this;
     }
-
 
     /**
      * With show non vector polyline builder.
@@ -170,10 +173,13 @@ public class NonVectorPolylineBuilder {
     /**
      * Function to set up a reference for the first extremity.
      *
-     * @param firstReferenceInput : The reference for the first extremity to set up.
-     * @return : The non-vector polyline builder with the given reference for the first extremity.
+     * @param firstReferenceInput : The reference for the first extremity to set
+     *        up.
+     * @return : The non-vector polyline builder with the given reference for
+     *         the first extremity.
      */
-    public NonVectorPolylineBuilder withFirstReference(final Reference firstReferenceInput) {
+    public NonVectorPolylineBuilder
+        withFirstReference(final Reference firstReferenceInput) {
         this.firstReference = firstReferenceInput;
         return this;
     }
@@ -181,10 +187,13 @@ public class NonVectorPolylineBuilder {
     /**
      * Function to set up a reference for the second extremity.
      *
-     * @param secondReferenceInput : The reference for the second extremity to set up.
-     * @return : The non-vector polyline builder with the given reference for the second extremity.
+     * @param secondReferenceInput : The reference for the second extremity to
+     *        set up.
+     * @return : The non-vector polyline builder with the given reference for
+     *         the second extremity.
      */
-    public NonVectorPolylineBuilder withSecondReference(final Reference secondReferenceInput) {
+    public NonVectorPolylineBuilder
+        withSecondReference(final Reference secondReferenceInput) {
         this.secondReference = secondReferenceInput;
         return this;
     }
@@ -195,7 +204,8 @@ public class NonVectorPolylineBuilder {
      * @param nearDistanceInput : The near distance to set up.
      * @return : The non-vector polyline builder with the given near distance.
      */
-    public NonVectorPolylineBuilder withNearDistance(final double nearDistanceInput) {
+    public NonVectorPolylineBuilder
+        withNearDistance(final double nearDistanceInput) {
         this.nearDistance = nearDistanceInput;
         return this;
     }
@@ -206,18 +216,20 @@ public class NonVectorPolylineBuilder {
      * @param farDistanceInput : The far distance to set up.
      * @return : The non-vector polyline builder with the given far distance.
      */
-    public NonVectorPolylineBuilder withFarDistance(final double farDistanceInput) {
+    public NonVectorPolylineBuilder
+        withFarDistance(final double farDistanceInput) {
         this.farDistance = farDistanceInput;
         return this;
     }
 
     /**
-     * The build function that generates a polyline object defined as a non-vector.
+     * The build function that generates a polyline object defined as a
+     * non-vector.
      *
      * @return : A polyline object with the given parameters of the builder.
      */
     public Polyline build() {
-        return new Polyline(firstReference, secondReference, color, width, show, arcType, nearDistance,
-                farDistance, header);
+        return new Polyline(firstReference, secondReference, color, width, show,
+                            arcType, nearDistance, farDistance, header);
     }
 }

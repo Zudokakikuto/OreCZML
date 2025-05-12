@@ -31,54 +31,62 @@ import java.util.List;
 /**
  * The type Czml ground station test.
  */
-public class CzmlGroundStationTest extends AbstractTest {
+public class CzmlGroundStationTest
+    extends
+    AbstractTest {
 
     /**
      * Czml ground station constructor test.
      *
      * @throws URISyntaxException the uri syntax exception
-     * @throws IOException        the io exception
+     * @throws IOException the io exception
      */
     @Test
-    void CzmlGroundStationConstructorTest() throws URISyntaxException, IOException {
+    void CzmlGroundStationConstructorTest()
+        throws URISyntaxException,
+            IOException {
 
         loadOrekitData();
 
         final Header header = dummyHeader();
 
         final String frameName = "Toulouse Frame";
-        final GeodeticPoint toulouseFrame = new GeodeticPoint(FastMath.toRadians(43.6047),
-                FastMath.toRadians(1.4442), 10);
-        final TopocentricFrame topocentricToulouse = new TopocentricFrame(getEarth(), toulouseFrame,
-                frameName);
+        final GeodeticPoint toulouseFrame =
+            new GeodeticPoint(FastMath.toRadians(43.6047),
+                              FastMath.toRadians(1.4442), 10);
+        final TopocentricFrame topocentricToulouse =
+            new TopocentricFrame(getEarth(), toulouseFrame, frameName);
 
-        final GeodeticPoint randomPoint = new GeodeticPoint(FastMath.toRadians(1.6047),
-                FastMath.toRadians(10.4442), 10);
-        final TopocentricFrame topocentricRandom = new TopocentricFrame(getEarth(), randomPoint,
-                frameName);
+        final GeodeticPoint randomPoint =
+            new GeodeticPoint(FastMath.toRadians(1.6047),
+                              FastMath.toRadians(10.4442), 10);
+        final TopocentricFrame topocentricRandom =
+            new TopocentricFrame(getEarth(), randomPoint, frameName);
 
         final List<TopocentricFrame> topocentrics = new ArrayList<>();
         topocentrics.add(topocentricToulouse);
         topocentrics.add(topocentricRandom);
 
-        final String modelISS  = loadResources("Default3DModels/ISSModel.glb");
-        final String modelJuno = loadResources("Default3DModels/ground_Station.glb");
+        final String modelISS = loadResources("Default3DModels/ISSModel.glb");
+        final String modelJuno =
+            loadResources("Default3DModels/ground_Station.glb");
 
         final List<String> strings = new ArrayList<>();
         strings.add(modelISS);
         strings.add(modelJuno);
 
-        final CzmlGroundStation station = new CzmlGroundStation(topocentricToulouse, header);
+        final CzmlGroundStation station =
+            new CzmlGroundStation(topocentricToulouse, header);
 
-        final CzmlGroundStation stationBuilder = CzmlGroundStation.builder(topocentricToulouse, header)
-                                                                  .withHeader(header)
-                                                                  .withCustomID("Custom ID")
-                                                                  .withModel(modelISS)
-                                                                  .build();
+        final CzmlGroundStation stationBuilder =
+            CzmlGroundStation.builder(topocentricToulouse, header)
+                .withHeader(header).withCustomID("Custom ID")
+                .withModel(modelISS).build();
 
-
-        final String pathFile = loadResources("templateFile/primary/CzmlGroundStationTemplate.txt");
-        final String builderPathFile = loadResources("templateFile/primary/CzmlGroundStationWithBuilderTemplate.txt");
+        final String pathFile =
+            loadResources("templateFile/primary/CzmlGroundStationTemplate.txt");
+        final String builderPathFile =
+            loadResources("templateFile/primary/CzmlGroundStationWithBuilderTemplate.txt");
 
         verifyFileOutput(pathFile, station.toString(), 1e-8);
         verifyFileOutput(builderPathFile, stationBuilder.toString(), 1e-8);

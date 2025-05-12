@@ -8,7 +8,7 @@
     "font":"11pt Lucida Console",
     "horizontalOrigin":"CENTER",
     "verticalOrigin":"BASELINE",
-    "text":"A text",
+    "text":"text 2",
     "show":true
   }
 }

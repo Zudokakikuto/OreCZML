@@ -1,6 +1,6 @@
 {
-  "id":"An id",
-  "name":"A name",
+  "id":"id 2",
+  "name":"name 2",
   "availability":"2024-01-01T00:00:00Z/2024-01-01T00:01:00Z",
   "cylinder":{
     "bottomRadius":10,

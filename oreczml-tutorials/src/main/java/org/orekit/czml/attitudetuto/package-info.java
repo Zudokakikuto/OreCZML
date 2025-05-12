@@ -16,6 +16,7 @@
  */
 
 /**
- * This package groups all the tutorials that are related to scenarios when an attitude is displayed.
+ * This package groups all the tutorials that are related to scenarios when an
+ * attitude is displayed.
  */
 package org.orekit.czml.attitudetuto;

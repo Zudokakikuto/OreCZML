@@ -35,10 +35,11 @@ import java.io.StringWriter;
 
 /**
  * Position
- *
  * <p>
- * The position object is used to represent a position of any object except the satellite (see {@link TimePosition} for more information).
- * The position object can be build in many ways, following all the position type that exists : {@link PositionType}.
+ * The position object is used to represent a position of any object except the
+ * satellite (see {@link TimePosition} for more information). The position
+ * object can be build in many ways, following all the position type that exists
+ * : {@link PositionType}.
  * </p>
  *
  * @author Julien LEBLOND.
@@ -52,15 +53,16 @@ public class Position {
     private final String ReferenceFrame;
 
     /**
-     * The {@link PositionType} that defines the type of position the Position object has.
+     * The {@link PositionType} that defines the type of position the Position
+     * object has.
      */
     private final PositionType positionType;
-
 
     //// Cartographic :
 
     /**
-     * The height of the object (used only when longitudes and latitudes are defined).
+     * The height of the object (used only when longitudes and latitudes are
+     * defined).
      */
     private double height;
 
@@ -86,7 +88,6 @@ public class Position {
      */
     private double latitudeDeg;
 
-
     //// Cartesian :
 
     // Cartesian3Value:
@@ -108,19 +109,21 @@ public class Position {
     /** The header considered. */
     private Header header;
 
-
     // Constructor
 
     /**
      * The basic constructor for the position object.
      *
-     * @param param1       : The first parameter of the tuple (can be x, vx, longitude or longitude deg)
-     * @param param2       : The second parameter of the tuple (can be y, vy, latitude or latitude deg)
-     * @param param3       : The third parameter of the tuple (can be z, vz or height)
+     * @param param1 : The first parameter of the tuple (can be x, vx, longitude
+     *        or longitude deg)
+     * @param param2 : The second parameter of the tuple (can be y, vy, latitude
+     *        or latitude deg)
+     * @param param3 : The third parameter of the tuple (can be z, vz or height)
      * @param positionType : The type of the tuple.
-     * @param header       : The header considered.
+     * @param header : The header considered.
      */
-    public Position(final double param1, final double param2, final double param3, final PositionType positionType,
+    public Position(final double param1, final double param2,
+                    final double param3, final PositionType positionType,
                     final Header header) {
         if (positionType == PositionType.CARTESIAN_POSITION) {
             this.x = param1;
@@ -128,90 +131,106 @@ public class Position {
             this.z = param3;
         } else if (positionType == PositionType.CARTOGRAPHIC_RADIANS) {
             this.longitude = param1;
-            this.latitude  = param2;
-            this.height    = param3;
+            this.latitude = param2;
+            this.height = param3;
         } else if (positionType == PositionType.CARTOGRAPHIC_DEGREES) {
             this.longitudeDeg = param1;
-            this.latitudeDeg  = param2;
-            this.height       = param3;
+            this.latitudeDeg = param2;
+            this.height = param3;
         } else {
             throw new OreCzmlException(OreCzmlMessages.POSITION_TYPE_UNKNOWN);
         }
 
-        this.positionType   = positionType;
+        this.positionType = positionType;
         this.ReferenceFrame = "INERTIAL";
-        this.header         = header;
+        this.header = header;
     }
-
 
     // Display functions
 
     /**
-     * This method does not write a reference frame nor an interpolation degree/algorithm for the position.
+     * This method does not write a reference frame nor an interpolation
+     * degree/algorithm for the position.
      *
      * @param packetWriter : packet to write in the CZML
-     * @param output       : Output that will contain the string
+     * @param output : Output that will contain the string
      * @param availability : when the position is displayed on Cesium
      */
-    public void write(final PacketCesiumWriter packetWriter, final CesiumOutputStream output,
+    public void write(final PacketCesiumWriter packetWriter,
+                      final CesiumOutputStream output,
                       final TimeInterval availability) {
-        try (PositionCesiumWriter positionWriter = packetWriter.getPositionWriter()) {
+        try (PositionCesiumWriter positionWriter =
+            packetWriter.getPositionWriter()) {
             positionWriter.open(output);
             positionWriter.writeInterval(availability);
 
             if (positionType == PositionType.CARTESIAN_POSITION) {
-                final Cartesian cartesian = new Cartesian(this.x, this.y, this.z);
+                final Cartesian cartesian =
+                    new Cartesian(this.x, this.y, this.z);
                 positionWriter.writeCartesian(cartesian);
             } else if (positionType == PositionType.CARTOGRAPHIC_RADIANS) {
-                final Cartographic cartographicRadians = new Cartographic(this.longitude, this.latitude, this.height);
+                final Cartographic cartographicRadians =
+                    new Cartographic(this.longitude, this.latitude,
+                                     this.height);
                 positionWriter.writeCartographicRadians(cartographicRadians);
             } else if (positionType == PositionType.CARTOGRAPHIC_DEGREES) {
-                final Cartographic cartographicDegrees = new Cartographic(this.longitudeDeg, this.latitudeDeg,
-                        this.height);
+                final Cartographic cartographicDegrees =
+                    new Cartographic(this.longitudeDeg, this.latitudeDeg,
+                                     this.height);
                 positionWriter.writeCartographicDegrees(cartographicDegrees);
             }
         }
     }
 
     /**
-     * This method allows the writing of a referenceFrame and of an interpolation algorithm and the degree of interpolation.
+     * This method allows the writing of a referenceFrame and of an
+     * interpolation algorithm and the degree of interpolation.
      *
-     * @param packetWriter   : packet to write in the CZML
-     * @param output         : Output that will contain the string
-     * @param availability   : when the position is displayed on Cesium
+     * @param packetWriter : packet to write in the CZML
+     * @param output : Output that will contain the string
+     * @param availability : when the position is displayed on Cesium
      * @param referenceFrame : the frame where the position is referenced
      */
-    public void write(final PacketCesiumWriter packetWriter, final CesiumOutputStream output,
-                      final TimeInterval availability, final String referenceFrame) {
-        try (PositionCesiumWriter positionWriter = packetWriter.getPositionWriter()) {
+    public void write(final PacketCesiumWriter packetWriter,
+                      final CesiumOutputStream output,
+                      final TimeInterval availability,
+                      final String referenceFrame) {
+        try (PositionCesiumWriter positionWriter =
+            packetWriter.getPositionWriter()) {
             positionWriter.open(output);
             positionWriter.writeInterval(availability);
             positionWriter.writeReferenceFrame(referenceFrame);
-            positionWriter.writeInterpolationAlgorithm(CesiumInterpolationAlgorithm.LAGRANGE);
+            positionWriter
+                .writeInterpolationAlgorithm(CesiumInterpolationAlgorithm.LAGRANGE);
             positionWriter.writeInterpolationDegree(5);
 
             if (positionType == PositionType.CARTESIAN_POSITION) {
-                final Cartesian cartesian = new Cartesian(this.x, this.y, this.z);
+                final Cartesian cartesian =
+                    new Cartesian(this.x, this.y, this.z);
                 positionWriter.writeCartesian(cartesian);
             } else if (positionType == PositionType.CARTOGRAPHIC_RADIANS) {
-                final Cartographic cartographicRadians = new Cartographic(this.longitude, this.latitude, this.height);
+                final Cartographic cartographicRadians =
+                    new Cartographic(this.longitude, this.latitude,
+                                     this.height);
                 positionWriter.writeCartographicRadians(cartographicRadians);
             } else if (positionType == PositionType.CARTOGRAPHIC_DEGREES) {
-                final Cartographic cartographicDegrees = new Cartographic(this.longitudeDeg, this.latitudeDeg,
-                        this.height);
+                final Cartographic cartographicDegrees =
+                    new Cartographic(this.longitudeDeg, this.latitudeDeg,
+                                     this.height);
                 positionWriter.writeCartographicDegrees(cartographicDegrees);
             }
         }
     }
 
     /**
-     * Method to return the string of the position object written in the czml file.
+     * Method to return the string of the position object written in the czml
+     * file.
      *
      * @return : A string that would be written in a czml file.
      */
     public String toString() {
-        final StringWriter       writerTemp   = new StringWriter();
-        final CesiumOutputStream output       = new CesiumOutputStream(writerTemp);
+        final StringWriter writerTemp = new StringWriter();
+        final CesiumOutputStream output = new CesiumOutputStream(writerTemp);
         final CesiumStreamWriter streamWriter = new CesiumStreamWriter();
         output.setPrettyFormatting(true);
         final TimeInterval availability = header.getAvailability();
@@ -222,14 +241,16 @@ public class Position {
     }
 
     /**
-     * This method to return the string of the position object written with a given reference frame.
+     * This method to return the string of the position object written with a
+     * given reference frame.
      *
-     * @param referenceFrame : The reference frame where the position is referenced.
+     * @param referenceFrame : The reference frame where the position is
+     *        referenced.
      * @return : A string that would be written in a czml file.
      */
     public String toString(final String referenceFrame) {
-        final StringWriter       writerTemp   = new StringWriter();
-        final CesiumOutputStream output       = new CesiumOutputStream(writerTemp);
+        final StringWriter writerTemp = new StringWriter();
+        final CesiumOutputStream output = new CesiumOutputStream(writerTemp);
         final CesiumStreamWriter streamWriter = new CesiumStreamWriter();
         output.setPrettyFormatting(true);
         final TimeInterval availability = header.getAvailability();
@@ -371,7 +392,6 @@ public class Position {
         return positionType;
     }
 
-
     // Usable functions
 
     /**
@@ -388,15 +408,17 @@ public class Position {
 
         } else if (positionType == PositionType.CARTOGRAPHIC_DEGREES) {
             final double Station_longitude = this.getLongitudeDeg();
-            final double Station_latitude  = this.getLatitudeDeg();
-            final double Station_height    = this.getHeight();
-            return new Vector3D(Station_longitude, Station_latitude, Station_height);
+            final double Station_latitude = this.getLatitudeDeg();
+            final double Station_height = this.getHeight();
+            return new Vector3D(Station_longitude, Station_latitude,
+                                Station_height);
 
         } else if (positionType == PositionType.CARTOGRAPHIC_RADIANS) {
             final double Station_longitudeDegree = this.getLongitudeRad();
-            final double Station_latitudeDegree  = this.getLatitudeRad();
-            final double Station_height          = this.getHeight();
-            return new Vector3D(Station_longitudeDegree, Station_latitudeDegree, Station_height);
+            final double Station_latitudeDegree = this.getLatitudeRad();
+            final double Station_height = this.getHeight();
+            return new Vector3D(Station_longitudeDegree, Station_latitudeDegree,
+                                Station_height);
         } else {
             throw new OreCzmlException(OreCzmlMessages.POSITION_TYPE_UNKNOWN);
         }

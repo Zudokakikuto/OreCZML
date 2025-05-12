@@ -16,6 +16,7 @@
  */
 
 /**
- * This package groups all the classes that are objects and that will be written into the Czml file.
+ * This package groups all the classes that are objects and that will be written
+ * into the Czml file.
  */
 package org.orekit.czml.object;

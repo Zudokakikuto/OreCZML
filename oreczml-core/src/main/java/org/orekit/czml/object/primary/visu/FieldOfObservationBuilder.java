@@ -61,8 +61,8 @@ public class FieldOfObservationBuilder {
     private final FieldOfView fieldOfView;
 
     /**
-     * The transform that converts the frame of the fov to the frame of the body.
-     * Check the tutorial 'FieldOfObservationSatellite'.
+     * The transform that converts the frame of the fov to the frame of the
+     * body. Check the tutorial 'FieldOfObservationSatellite'.
      */
     private final Transform fovToBody;
 
@@ -80,14 +80,15 @@ public class FieldOfObservationBuilder {
     /**
      * The body around which the satellite is orbiting.
      */
-    private OneAxisEllipsoid body = new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS,
-            Constants.WGS84_EARTH_FLATTENING, FramesFactory.getITRF(IERSConventions.IERS_2010, true));
+    private OneAxisEllipsoid body =
+        new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS,
+                             Constants.WGS84_EARTH_FLATTENING, FramesFactory
+                                 .getITRF(IERSConventions.IERS_2010, true));
 
     /**
      * The angular step between each point of the projected points.
      */
     private double angularStep = DEFAULT_ANGULAR_STEP;
-
 
     /** The header to consider when several are used. */
     private Header header = null;
@@ -97,16 +98,19 @@ public class FieldOfObservationBuilder {
     /**
      * The constructor of the field of observation builder object.
      *
-     * @param satelliteInput   : The satellite that is observing the body.
+     * @param satelliteInput : The satellite that is observing the body.
      * @param fieldOfViewInput : The field of view of the satellite.
-     * @param fovToBodyInput   : The transform between the frame of the fov to the frame of the body.
-     * @param headerInput      : The header considered.
+     * @param fovToBodyInput : The transform between the frame of the fov to the
+     *        frame of the body.
+     * @param headerInput : The header considered.
      */
-    public FieldOfObservationBuilder(final Spacecraft satelliteInput, final FieldOfView fieldOfViewInput,
-                                     final Transform fovToBodyInput, final Header headerInput) {
-        this.satellite   = satelliteInput;
+    public FieldOfObservationBuilder(final Spacecraft satelliteInput,
+                                     final FieldOfView fieldOfViewInput,
+                                     final Transform fovToBodyInput,
+                                     final Header headerInput) {
+        this.satellite = satelliteInput;
         this.fieldOfView = fieldOfViewInput;
-        this.fovToBody   = fovToBodyInput;
+        this.fovToBody = fovToBodyInput;
         this.header = headerInput;
     }
 
@@ -127,7 +131,8 @@ public class FieldOfObservationBuilder {
      * @param bodyInput : The body to set up.
      * @return : The field of observation builder with the given body.
      */
-    public FieldOfObservationBuilder withBody(final OneAxisEllipsoid bodyInput) {
+    public FieldOfObservationBuilder
+        withBody(final OneAxisEllipsoid bodyInput) {
         this.body = bodyInput;
         return this;
     }
@@ -138,7 +143,8 @@ public class FieldOfObservationBuilder {
      * @param angularStepInput : The angular step to set up.
      * @return : The field of observation builder with the given angular step.
      */
-    public FieldOfObservationBuilder withAngularStep(final double angularStepInput) {
+    public FieldOfObservationBuilder
+        withAngularStep(final double angularStepInput) {
         this.angularStep = angularStepInput;
         return this;
     }
@@ -168,12 +174,16 @@ public class FieldOfObservationBuilder {
     /**
      * The build function that generates a field of observation object.
      *
-     * @return : A field of observation object with the given parameters of the builder.
+     * @return : A field of observation object with the given parameters of the
+     *         builder.
      * @throws URISyntaxException the uri syntax exception
-     * @throws IOException        the io exception
+     * @throws IOException the io exception
      */
-    public FieldOfObservation build() throws URISyntaxException, IOException {
-        return new FieldOfObservation(satellite, fieldOfView, fovToBody, body, angularStep, color, customID, header);
+    public FieldOfObservation build()
+        throws URISyntaxException,
+            IOException {
+        return new FieldOfObservation(satellite, fieldOfView, fovToBody, body,
+                                      angularStep, color, customID, header);
     }
 
 }

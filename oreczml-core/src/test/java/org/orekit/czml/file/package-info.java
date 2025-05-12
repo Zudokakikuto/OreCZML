@@ -16,7 +16,8 @@
  */
 
 /**
- * This package groups tests that are not linked together, but form a battery of coverage tests.
+ * This package groups tests that are not linked together, but form a battery of
+ * coverage tests.
  **/
 
 package org.orekit.czml.file;

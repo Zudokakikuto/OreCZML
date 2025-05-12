@@ -28,9 +28,9 @@ import java.util.List;
 
 /**
  * CZML Secondary Object Interface
- *
  * <p>
- * This interface represents the objects that are not directly displayed on screen,they depends to primary objects.
+ * This interface represents the objects that are not directly displayed on
+ * screen,they depends to primary objects.
  * </p>
  *
  * @author Julien LEBLOND
@@ -42,7 +42,7 @@ public interface CzmlSecondaryObject {
      * Write.
      *
      * @param packetWriter the packet writer
-     * @param output       the output
+     * @param output the output
      */
     void write(PacketCesiumWriter packetWriter, CesiumOutputStream output);
 
@@ -74,7 +74,8 @@ public interface CzmlSecondaryObject {
         private final Frame objectFrame;
 
         /**
-         * The boolean to know whether the orientation should be converted into the ITRF or not.
+         * The boolean to know whether the orientation should be converted into
+         * the ITRF or not.
          */
         private boolean invertToITRF = true;
 
@@ -96,31 +97,34 @@ public interface CzmlSecondaryObject {
         /**
          * The constructor of the orientation builder.
          *
-         * @param attitude    : The attitude of the object to consider.
+         * @param attitude : The attitude of the object to consider.
          * @param objectFrame : The frame of the object.
          * @param headerInput : The header considered.
          */
-        public OrientationBuilder(final Attitude attitude, final Frame objectFrame, final Header headerInput) {
-            this.singleAttitude      = attitude;
-            this.objectFrame         = objectFrame;
+        public OrientationBuilder(final Attitude attitude,
+                                  final Frame objectFrame,
+                                  final Header headerInput) {
+            this.singleAttitude = attitude;
+            this.objectFrame = objectFrame;
             this.singleAttitudeBuilt = true;
-            this.header              = headerInput;
+            this.header = headerInput;
         }
 
         /**
          * The constructor of the orientation builder.
          *
-         * @param attitudes   : The attitudes of the object to consider.
+         * @param attitudes : The attitudes of the object to consider.
          * @param objectFrame : The frame of the object.
          * @param headerInput : The header considered.
          */
-        public OrientationBuilder(final List<Attitude> attitudes, final Frame objectFrame, final Header headerInput) {
-            this.attitudes           = new ArrayList<>(attitudes);
-            this.objectFrame         = objectFrame;
+        public OrientationBuilder(final List<Attitude> attitudes,
+                                  final Frame objectFrame,
+                                  final Header headerInput) {
+            this.attitudes = new ArrayList<>(attitudes);
+            this.objectFrame = objectFrame;
             this.singleAttitudeBuilt = false;
-            this.header              = headerInput;
+            this.header = headerInput;
         }
-
 
         /**
          * Function to set up the conversion to the ITRF.
@@ -128,7 +132,8 @@ public interface CzmlSecondaryObject {
          * @param invertToITRFInput : The boolean to convert to the ITRF.
          * @return : The orientation builder with the given conversion.
          */
-        public OrientationBuilder withInvertToITRF(final boolean invertToITRFInput) {
+        public OrientationBuilder
+            withInvertToITRF(final boolean invertToITRFInput) {
             this.invertToITRF = invertToITRFInput;
             return this;
         }
@@ -139,7 +144,8 @@ public interface CzmlSecondaryObject {
          * @param optionalRotationInput : The optional rotation to set up.
          * @return : The orientation builder with the given optional rotation.
          */
-        public OrientationBuilder withOptionalRotation(final Rotation optionalRotationInput) {
+        public OrientationBuilder
+            withOptionalRotation(final Rotation optionalRotationInput) {
             this.optionalRotation = optionalRotationInput;
             return this;
         }
@@ -147,13 +153,16 @@ public interface CzmlSecondaryObject {
         /**
          * The build function that generates an orientation object.
          *
-         * @return : An orientation object with the given parameters of the builder.
+         * @return : An orientation object with the given parameters of the
+         *         builder.
          */
         public Orientation build() {
             if (singleAttitudeBuilt) {
-                return new Orientation(singleAttitude, objectFrame, invertToITRF, header);
+                return new Orientation(singleAttitude, objectFrame,
+                                       invertToITRF, header);
             } else {
-                return new Orientation(attitudes, objectFrame, invertToITRF, optionalRotation, header);
+                return new Orientation(attitudes, objectFrame, invertToITRF,
+                                       optionalRotation, header);
             }
         }
     }

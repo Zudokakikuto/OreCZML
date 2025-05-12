@@ -77,20 +77,27 @@ public class BodyBuilder {
     /**
      * The body builder constructor.
      *
-     * @param bodyInput        : The body to consider
+     * @param bodyInput : The body to consider
      * @param pathToModelInput : The model to load
-     * @param headerInput      : The header considered.
+     * @param frameToExpressInput : The frame in which the body must be computed
+     * @param headerInput : The header considered.
      */
-    public BodyBuilder(final CelestialBody bodyInput, final String pathToModelInput, final Frame frameToExpressInput,
+    public BodyBuilder(final CelestialBody bodyInput,
+                       final String pathToModelInput,
+                       final Frame frameToExpressInput,
                        final Header headerInput) {
-        this.body           = bodyInput;
-        this.pathToModel    = pathToModelInput;
-        this.customId       = "BODY/" + bodyInput.getName();
-        this.header         = headerInput;
+        this.body = bodyInput;
+        this.pathToModel = pathToModelInput;
+        this.customId = "BODY/" + bodyInput.getName();
+        this.header = headerInput;
         this.frameToExpress = frameToExpressInput;
     }
 
-    /** Function to display the influence sphere. */
+    /**
+     * Function to display the influence sphere.
+     *
+     * @return : The builder with the influence sphere set to be displayed.
+     */
     public BodyBuilder displayInfluenceSphere() {
         this.displayInfluenceSphere = true;
         return this;
@@ -126,7 +133,7 @@ public class BodyBuilder {
      */
     public BodyBuilder displayOnlyOnePeriod(final double periodInput) {
         displayOnlyOnePeriod = true;
-        this.period          = periodInput;
+        this.period = periodInput;
         return this;
     }
 
@@ -136,7 +143,8 @@ public class BodyBuilder {
      * @param modelMaximumScaleInput the model maximum scale input
      * @return the body
      */
-    public BodyBuilder withModelMaximumScale(final double modelMaximumScaleInput) {
+    public BodyBuilder
+        withModelMaximumScale(final double modelMaximumScaleInput) {
         this.modelMaximumScale = modelMaximumScaleInput;
         return this;
     }
@@ -147,7 +155,8 @@ public class BodyBuilder {
      * @param modelMinimumPixelSizeInput the model minimum pixel size input
      * @return the body
      */
-    public BodyBuilder withModelMinimumPixelSize(final double modelMinimumPixelSizeInput) {
+    public BodyBuilder
+        withModelMinimumPixelSize(final double modelMinimumPixelSizeInput) {
         this.modelMinimumPixelSize = modelMinimumPixelSizeInput;
         return this;
     }
@@ -177,10 +186,13 @@ public class BodyBuilder {
     /**
      * With custom expressed frame.
      *
-     * @param frameToExpressInput : The frame to define the position of the body.
-     * @return : The body builder object with a custom frame to express the position of the body.
+     * @param frameToExpressInput : The frame to define the position of the
+     *        body.
+     * @return : The body builder object with a custom frame to express the
+     *         position of the body.
      */
-    public BodyBuilder withCustomExpressedFrame(final Frame frameToExpressInput) {
+    public BodyBuilder
+        withCustomExpressedFrame(final Frame frameToExpressInput) {
         this.frameToExpress = frameToExpressInput;
         return this;
     }
@@ -212,7 +224,8 @@ public class BodyBuilder {
      * @return : A body object with the given parameters of the builder.
      */
     public Body build() {
-        final Body tempBody = new Body(body, pathToModel, frameToExpress, customId, header);
+        final Body tempBody =
+            new Body(body, pathToModel, frameToExpress, customId, header);
         return checkAttributes(tempBody);
     }
 

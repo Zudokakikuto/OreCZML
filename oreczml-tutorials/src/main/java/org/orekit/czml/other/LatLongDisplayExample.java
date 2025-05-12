@@ -39,43 +39,47 @@ public class LatLongDisplayExample {
      * @param args the args
      * @throws Exception the exception
      */
-    public static void main(final String[] args) throws Exception {
+    public static void main(final String[] args)
+        throws Exception {
         // Load orekit data
         TutorialUtils.loadOrekitData();
 
         // Paths
         final String output = TutorialUtils.generateOutput();
-        // !!! Here you need to change the path inside 'generateJsPath' to the path you are using for images or Model.
-        // This folder can also be the public folder of your cesium javascript interface.
-        final String pathToJSFolder = TutorialUtils.generateJSPath(
-                System.getProperty("user.dir") + "/Javascript/public");
+        // !!! Here you need to change the path inside 'generateJsPath' to the
+        // path you are using for images or Model.
+        // This folder can also be the public folder of your cesium javascript
+        // interface.
+        final String pathToJSFolder =
+            TutorialUtils.generateJSPath(System.getProperty("user.dir") +
+                                         "/Javascript/public");
 
         // Creation of the clock.
 
+        final AbsoluteDate startDate =
+            new AbsoluteDate(2024, 3, 15, 0, 0, 0.0,
+                             TimeScalesFactory.getUTC());
+        final AbsoluteDate finalDate =
+            startDate.shiftedBy(TutorialUtils.CLASSIC_DURATION_OF_SIMULATION);
+        final Clock clock =
+            new Clock(startDate, finalDate, TimeScalesFactory.getUTC(),
+                      TutorialUtils.STEP_BETWEEN_EACH_INSTANT);
 
-        final AbsoluteDate startDate = new AbsoluteDate(2024, 3, 15, 0, 0, 0.0, TimeScalesFactory.getUTC());
-        final AbsoluteDate finalDate = startDate.shiftedBy(TutorialUtils.CLASSIC_DURATION_OF_SIMULATION);
-        final Clock clock = new Clock(startDate, finalDate, TimeScalesFactory.getUTC(),
-                TutorialUtils.STEP_BETWEEN_EACH_INSTANT);
+        final Header header =
+            new Header("Example of the usage of the lat long display object.",
+                       clock, pathToJSFolder);
 
-        final Header header = new Header("Example of the usage of the lat long display object.", clock, pathToJSFolder);
+        // LatLongLinesDisplay
+        final LatLongLines latLongLines =
+            LatLongLines.builder(header).withLatitudeAngularStep(30)
+                .withLongitudeAngularStep(30).withDisplay(true)
+                .withCustomID(LatLongLines.DEFAULT_ID).build();
 
-        //LatLongLinesDisplay
-        final LatLongLines latLongLines = LatLongLines.builder(header)
-                                                      .withLatitudeAngularStep(30)
-                                                      .withLongitudeAngularStep(30)
-                                                      .withDisplay(true)
-                                                      .withCustomID(LatLongLines.DEFAULT_ID)
-                                                      .build();
-
-        final CzmlFile file = CzmlFile.builder()
-                                      .withHeader(header)
-                                      .withLatLong(latLongLines)
-                                      .build();
+        final CzmlFile file =
+            CzmlFile.builder().withHeader(header).withLatLong(latLongLines)
+                .build();
 
         // Writing in the file
         file.write(output);
     }
 }
-
-

@@ -16,6 +16,7 @@
  */
 
 /**
- * This package groups all the primary objects, i.e. the objects that will be directly displayed on screen.
+ * This package groups all the primary objects, i.e. the objects that will be
+ * directly displayed on screen.
  */
 package org.orekit.czml.object.primary;

@@ -37,24 +37,28 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
  * CZML Ground Station
  * <p>
- * This class groups all the characteristics of a ground station. The ground station will be represented at the surface
- * of the central body with precise cartographic parameters. It can be build from the orekit ground station
- * {@link org.orekit.estimation.measurements.GroundStation}, or from the orekit topocentric frame {@link org.orekit.frames.TopocentricFrame}.
+ * This class groups all the characteristics of a ground station. The ground
+ * station will be represented at the surface of the central body with precise
+ * cartographic parameters. It can be build from the orekit ground station
+ * {@link org.orekit.estimation.measurements.GroundStation}, or from the orekit
+ * topocentric frame {@link org.orekit.frames.TopocentricFrame}.
  * </p>
  *
  * @author Julien LEBLOND
  * @since 1.0.0
  */
-public class CzmlGroundStation extends AbstractPrimaryObject {
+public class CzmlGroundStation
+    extends
+    AbstractPrimaryObject {
 
     /**
      * The default image used when no image/model is used for the station.
      */
-    public static final String DEFAULT_IMAGE = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACvSURBVDhPrZDRDcMgDAU9GqN0lIzijw6SUbJJygUeNQgSqepJTyHG91LVVpwDdfxM3T9TSl1EXZvDwii471fivK73cBFFQNTT/d2KoGpfGOpSIkhUpgUMxq9DFEsWv4IXhlyCnhBFnZcFEEuYqbiUlNwWgMTdrZ3JbQFoEVG53rd8ztG9aPJMnBUQf/VFraBJeWnLS0RfjbKyLJA8FkT5seDYS1Qwyv8t0B/5C2ZmH2/eTGNNBgMmAAAAAElFTkSuQmCC";
+    public static final String DEFAULT_IMAGE =
+        "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACvSURBVDhPrZDRDcMgDAU9GqN0lIzijw6SUbJJygUeNQgSqepJTyHG91LVVpwDdfxM3T9TSl1EXZvDwii471fivK73cBFFQNTT/d2KoGpfGOpSIkhUpgUMxq9DFEsWv4IXhlyCnhBFnZcFEEuYqbiUlNwWgMTdrZ3JbQFoEVG53rd8ztG9aPJMnBUQf/VFraBJeWnLS0RfjbKyLJA8FkT5seDYS1Qwyv8t0B/5C2ZmH2/eTGNNBgMmAAAAAElFTkSuQmCC";
 
     /**
      * The default id for ground stations.
@@ -72,7 +76,8 @@ public class CzmlGroundStation extends AbstractPrimaryObject {
     public static final String DEFAULT_3D_MODEL = "";
 
     /**
-     * The position on earth of a single station, it is the cartesian vector from the geodetic point.
+     * The position on earth of a single station, it is the cartesian vector
+     * from the geodetic point.
      */
     private Vector3D positionOnEarth;
 
@@ -114,41 +119,51 @@ public class CzmlGroundStation extends AbstractPrimaryObject {
     /**
      * The constructor of the czml ground station object with a default model.
      *
-     * @param topocentricFrame : The topocentric frame where the ground station must be located.
-     * @param header           : The header considered.
+     * @param topocentricFrame : The topocentric frame where the ground station
+     *        must be located.
+     * @param header : The header considered.
      * @throws URISyntaxException the uri syntax exception
-     * @throws IOException        the io exception
+     * @throws IOException the io exception
      */
     public CzmlGroundStation(final TopocentricFrame topocentricFrame,
-                             final Header header) throws URISyntaxException, IOException {
+                             final Header header)
+        throws URISyntaxException,
+            IOException {
         this(topocentricFrame, DEFAULT_3D_MODEL, header);
     }
 
     /**
-     * The constructor of the czml ground station object with no default parameters.
+     * The constructor of the czml ground station object with no default
+     * parameters.
      *
-     * @param topocentricFrame : The topocentric frame where the ground station must be located.
-     * @param modelPath        : The path of the model to load.
-     * @param header           : The header considered.
+     * @param topocentricFrame : The topocentric frame where the ground station
+     *        must be located.
+     * @param modelPath : The path of the model to load.
+     * @param header : The header considered.
      * @throws URISyntaxException the uri syntax exception
-     * @throws IOException        the io exception
+     * @throws IOException the io exception
      */
-    public CzmlGroundStation(final TopocentricFrame topocentricFrame, final String modelPath,
-                             final Header header) throws URISyntaxException, IOException {
+    public CzmlGroundStation(final TopocentricFrame topocentricFrame,
+                             final String modelPath, final Header header)
+        throws URISyntaxException,
+            IOException {
 
         this.topocentricFrame = topocentricFrame;
-        this.header           = header;
+        this.header = header;
         this.setName(DEFAULT_NAME + topocentricFrame.getName());
         this.setId(DEFAULT_ID + topocentricFrame.getName());
         this.setAvailability(header.getAvailability());
-        final double latitude = topocentricFrame.getPoint()
-                                                .getLatitude();
-        final double longitude = topocentricFrame.getPoint()
-                                                 .getLongitude();
-        this.description = "<!--HTML-->\r\n<p>Id : " + DEFAULT_ID + topocentricFrame.getName() + "</p\r\n<p>Longitude : " + longitude + "</p>\r\n<p>Latitude : " + latitude + "</p>\r\n<p>Simulated from : " + header.getAvailability()
-                                                                                                                                                                                                                     .getStart() + " to " + header.getAvailability()
-                                                                                                                                                                                                                                                  .getStop() + "</p>";
-        this.billboard   = new Billboard(DEFAULT_IMAGE);
+        final double latitude = topocentricFrame.getPoint().getLatitude();
+        final double longitude = topocentricFrame.getPoint().getLongitude();
+        this.description =
+            "<!--HTML-->\r\n<p>Id : " +
+                           DEFAULT_ID + topocentricFrame.getName() +
+                           "</p\r\n<p>Longitude : " + longitude +
+                           "</p>\r\n<p>Latitude : " + latitude +
+                           "</p>\r\n<p>Simulated from : " +
+                           header.getAvailability().getStart() + " to " +
+                           header.getAvailability().getStop() + "</p>";
+        this.billboard = new Billboard(DEFAULT_IMAGE);
         this.positionsOnEarth.add(topocentricFrame.getCartesianPoint());
 
         if (modelPath.isEmpty()) {
@@ -158,24 +173,28 @@ public class CzmlGroundStation extends AbstractPrimaryObject {
         }
     }
 
-// Builders
+    // Builders
 
     /**
      * Builder czml ground station builder.
      *
      * @param topocentricFrameInput the topocentric frame input
-     * @param header                the header
+     * @param header the header
      * @return the czml ground station builder
      */
-    public static CzmlGroundStationBuilder builder(final TopocentricFrame topocentricFrameInput, final Header header) {
+    public static CzmlGroundStationBuilder
+        builder(final TopocentricFrame topocentricFrameInput,
+                final Header header) {
         return new CzmlGroundStationBuilder(topocentricFrameInput, header);
     }
 
-// Overrides
+    // Overrides
 
     @Override
     public void writeCzmlBlock(final CesiumStreamWriter stream,
-                               final CesiumOutputStream output) throws IOException, URISyntaxException {
+                               final CesiumOutputStream output)
+        throws IOException,
+            URISyntaxException {
         this.positionOnEarth = positionsOnEarth.get(0);
         output.setPrettyFormatting(true);
         try (PacketCesiumWriter packet = stream.openPacket(output)) {
@@ -195,12 +214,12 @@ public class CzmlGroundStation extends AbstractPrimaryObject {
         }
     }
 
-
-    public void displayCircle(final Spacecraft satellite, final double angleOfAperture) {
-        visibilityCircle = StationVisibilityCircle.builder(topocentricFrame, satellite, header)
-                                                  .withAngleOfAperture(angleOfAperture)
-                                                  .build();
-        displayCircle    = true;
+    public void displayCircle(final Spacecraft satellite,
+                              final double angleOfAperture) {
+        visibilityCircle =
+            StationVisibilityCircle.builder(topocentricFrame, satellite, header)
+                .withAngleOfAperture(angleOfAperture).build();
+        displayCircle = true;
 
     }
 
@@ -242,24 +261,32 @@ public class CzmlGroundStation extends AbstractPrimaryObject {
         return model;
     }
 
-
     // Private functions
 
     /**
-     * This function aims at writing the billboard of the ground station (if one is necessary).
+     * This function aims at writing the billboard of the ground station (if one
+     * is necessary).
      *
      * @param packet : The packet that will write in the czml file.
-     * @param output : The output stream of cesium that will contain the strings to write into the CzmLFile.
+     * @param output : The output stream of cesium that will contain the strings
+     *        to write into the CzmLFile.
      */
     private void writeBillBoard(final PacketCesiumWriter packet,
-                                final CesiumOutputStream output) throws IOException, URISyntaxException {
+                                final CesiumOutputStream output)
+        throws IOException,
+            URISyntaxException {
         if (model == null) {
-            try (BillboardCesiumWriter billboardWriter = packet.getBillboardWriter()) {
+            try (BillboardCesiumWriter billboardWriter =
+                packet.getBillboardWriter()) {
                 billboardWriter.open(output);
-                billboardWriter.writeHorizontalOriginProperty(billboard.getCesiumHorizontalOrigin());
+                billboardWriter.writeHorizontalOriginProperty(billboard
+                    .getCesiumHorizontalOrigin());
                 billboardWriter.writeColorProperty(billboard.getColor());
-                try (UriCesiumWriter imageBillBoard = billboardWriter.openImageProperty()) {
-                    imageBillBoard.writeUri(billboard.getImageStr(), billboard.getCesiumResourceBehavior());
+                try (UriCesiumWriter imageBillBoard =
+                    billboardWriter.openImageProperty()) {
+                    imageBillBoard
+                        .writeUri(billboard.getImageStr(),
+                                  billboard.getCesiumResourceBehavior());
                 }
                 billboardWriter.writeScaleProperty(billboard.getScale());
                 billboardWriter.writeShowProperty(billboard.getShow());
@@ -270,13 +297,17 @@ public class CzmlGroundStation extends AbstractPrimaryObject {
     }
 
     /**
-     * This function will write the specific model for the given station when multiple stations are used.
+     * This function will write the specific model for the given station when
+     * multiple stations are used.
      *
      * @param packet : The packet that will write in the czml file.
-     * @param output : The output stream of cesium that will contain the strings to write into the CzmLFile.
+     * @param output : The output stream of cesium that will contain the strings
+     *        to write into the CzmLFile.
      */
     private void writeModel(final PacketCesiumWriter packet,
-                            final CesiumOutputStream output) throws IOException, URISyntaxException {
+                            final CesiumOutputStream output)
+        throws IOException,
+            URISyntaxException {
         if (model == null) {
             writeBillBoard(packet, output);
         } else {
@@ -286,10 +317,12 @@ public class CzmlGroundStation extends AbstractPrimaryObject {
 
     /**
      * This function aims at writing multiple models when several are loaded.
-     * The number of models should be the same as the number of ground stations wanted.
+     * The number of models should be the same as the number of ground stations
+     * wanted.
      *
      * @param packet : The packet that will write in the czml file.
-     * @param output : The output stream of cesium that will contain the strings to write into the CzmLFile.
+     * @param output : The output stream of cesium that will contain the strings
+     *        to write into the CzmLFile.
      */
     private void writeLabel(final PacketCesiumWriter packet,
                             final CesiumOutputStream output) {
@@ -297,20 +330,22 @@ public class CzmlGroundStation extends AbstractPrimaryObject {
         label.write(packet, output);
     }
 
-
     /**
      * This function aims at writing the position of the ground station.
      *
      * @param packet : The packet that will write in the czml file.
-     * @param output : The output stream of cesium that will contain the strings to write into the CzmLFile.
+     * @param output : The output stream of cesium that will contain the strings
+     *        to write into the CzmLFile.
      */
-    private void writePosition(final PacketCesiumWriter packet, final CesiumOutputStream output) {
+    private void writePosition(final PacketCesiumWriter packet,
+                               final CesiumOutputStream output) {
 
         try (PositionCesiumWriter positionWriter = packet.getPositionWriter()) {
             positionWriter.open(output);
             positionWriter.writeInterval(this.getAvailability());
-            final Cartesian cartesian = new Cartesian(positionOnEarth.getX(), positionOnEarth.getY(),
-                    positionOnEarth.getZ());
+            final Cartesian cartesian =
+                new Cartesian(positionOnEarth.getX(), positionOnEarth.getY(),
+                              positionOnEarth.getZ());
             positionWriter.writeCartesian(cartesian);
         }
     }

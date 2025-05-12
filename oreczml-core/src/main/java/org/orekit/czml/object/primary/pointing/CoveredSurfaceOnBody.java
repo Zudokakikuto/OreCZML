@@ -43,7 +43,9 @@ import java.util.List;
 /**
  * The type Covered surface on body.
  */
-public class CoveredSurfaceOnBody extends AbstractPrimaryObject {
+public class CoveredSurfaceOnBody
+    extends
+    AbstractPrimaryObject {
 
     /** The default color of the covered surface. */
     public static final Color DEFAULT_COLOR = new Color(34, 155, 83);
@@ -72,19 +74,22 @@ public class CoveredSurfaceOnBody extends AbstractPrimaryObject {
     private final FieldOfView fov;
 
     /**
-     * The transform inputted that represents the fov of the object and how it looks at the body.
+     * The transform inputted that represents the fov of the object and how it
+     * looks at the body.
      */
     private final Transform initialFovToBody;
 
     /**
-     * The field of observation of the satellite that will define the surface covered.
+     * The field of observation of the satellite that will define the surface
+     * covered.
      */
     private final FieldOfObservation fieldOfObservation;
 
     /**
      * The list of the footprints in time.
      */
-    private final List<List<List<GeodeticPoint>>> footprintsInTime = new ArrayList<>();
+    private final List<List<List<GeodeticPoint>>> footprintsInTime =
+        new ArrayList<>();
 
     /**
      * All the cartesians of all the points in time.
@@ -101,48 +106,62 @@ public class CoveredSurfaceOnBody extends AbstractPrimaryObject {
     /**
      * Basic constructor for the surface of the body.
      *
-     * @param satelliteInput          : The satellite that will look at the covered surface.
-     * @param fieldOfObservationInput : The field of observation of the satellite that will define the surface covered.
-     * @param header                  : The header considered.
+     * @param satelliteInput : The satellite that will look at the covered
+     *        surface.
+     * @param fieldOfObservationInput : The field of observation of the
+     *        satellite that will define the surface covered.
+     * @param header : The header considered.
      */
-    CoveredSurfaceOnBody(final Spacecraft satelliteInput, final FieldOfObservation fieldOfObservationInput,
+    CoveredSurfaceOnBody(final Spacecraft satelliteInput,
+                         final FieldOfObservation fieldOfObservationInput,
                          final Header header) {
         this(satelliteInput, fieldOfObservationInput,
-                DEFAULT_ID + satelliteInput.getId() + "/" + fieldOfObservationInput.getBody()
-                                                                                   .getBodyFrame()
-                                                                                   .toString(), false, true,
-                DEFAULT_COLOR, header);
+             DEFAULT_ID +
+                                                      satelliteInput.getId() +
+                                                      "/" +
+                                                      fieldOfObservationInput
+                                                          .getBody()
+                                                          .getBodyFrame()
+                                                          .toString(),
+             false, true, DEFAULT_COLOR, header);
     }
 
     /**
      * Constructor with a custom ID.
      *
-     * @param satelliteInput          : The satellite that will look at the covered surface.
-     * @param fieldOfObservationInput : The field of observation of the satellite that will define the surface covered.
-     * @param customID                : The custom ID of the covered surface on body object.
-     * @param fill                    : Custom parameter for the fill property
-     * @param outline                 : Custom parameter for the outline property
-     * @param color                   : Custom parameter for the color of the polygons.
-     * @param header                  : The header to consider when several headers are used.
+     * @param satelliteInput : The satellite that will look at the covered
+     *        surface.
+     * @param fieldOfObservationInput : The field of observation of the
+     *        satellite that will define the surface covered.
+     * @param customID : The custom ID of the covered surface on body object.
+     * @param fill : Custom parameter for the fill property
+     * @param outline : Custom parameter for the outline property
+     * @param color : Custom parameter for the color of the polygons.
+     * @param header : The header to consider when several headers are used.
      */
-    CoveredSurfaceOnBody(final Spacecraft satelliteInput, final FieldOfObservation fieldOfObservationInput,
-                         final String customID, final boolean fill, final boolean outline, final Color color,
+    CoveredSurfaceOnBody(final Spacecraft satelliteInput,
+                         final FieldOfObservation fieldOfObservationInput,
+                         final String customID, final boolean fill,
+                         final boolean outline, final Color color,
                          final Header header) {
 
         this.setId(customID);
-        this.setName(DEFAULT_NAME + satelliteInput.getId() + " on : " + fieldOfObservationInput.getBody()
-                                                                                               .getBodyFrame());
+        this.setName(DEFAULT_NAME +
+                     satelliteInput.getId() + " on : " +
+                     fieldOfObservationInput.getBody().getBodyFrame());
         this.setAvailability(satelliteInput.getAvailability());
 
-        this.satellite          = satelliteInput;
+        this.satellite = satelliteInput;
         this.fieldOfObservation = fieldOfObservationInput;
-        this.initialFovToBody   = fieldOfObservationInput.getInitialTransformFovToBody();
-        this.fov                = fieldOfObservationInput.getFov();
+        this.initialFovToBody =
+            fieldOfObservationInput.getInitialTransformFovToBody();
+        this.fov = fieldOfObservationInput.getFov();
 
-        final List<PointOnBody>     pointsOnBody   = fieldOfObservation.getPoints();
+        final List<PointOnBody> pointsOnBody = fieldOfObservation.getPoints();
         final List<List<Cartesian>> tempCartesians = new ArrayList<>();
         for (final PointOnBody currentPoint : pointsOnBody) {
-            final List<Cartesian> currentCartesian = currentPoint.getCartesians();
+            final List<Cartesian> currentCartesian =
+                currentPoint.getCartesians();
             tempCartesians.add(currentCartesian);
         }
 
@@ -155,48 +174,49 @@ public class CoveredSurfaceOnBody extends AbstractPrimaryObject {
         this.polygon = new ArrayList<>();
         for (int i = 0; i < pointsCartesiansInTime.size() - 1; i++) {
 
-            // Technically we'll be leaving off the very last polygon, but is that
+            // Technically we'll be leaving off the very last polygon, but is
+            // that
             // really such a big deal?
-            final JulianDate t0 = fieldOfObservation.getJulianDates()
-                                                    .get(i);
-            final JulianDate t1 = fieldOfObservation.getJulianDates()
-                                                    .get(i + 1);
+            final JulianDate t0 = fieldOfObservation.getJulianDates().get(i);
+            final JulianDate t1 =
+                fieldOfObservation.getJulianDates().get(i + 1);
             final TimeInterval tInterval = new TimeInterval(t0, t1);
             ;
 
             // Get current polygon and close it off
-            final List<Cartesian> currentCartesianList = pointsCartesiansInTime.get(i);
+            final List<Cartesian> currentCartesianList =
+                pointsCartesiansInTime.get(i);
 
             // Add polygon to list
             this.polygon.add(Polygon.builder(currentCartesianList, tInterval)
-                                    .withColor(color)
-                                    .withOutline(outline)
-                                    .withFill(fill)
-                                    .build());
+                .withColor(color).withOutline(outline).withFill(fill).build());
         }
 
     }
 
-
     /**
      * Builder covered surface on body builder.
      *
-     * @param satelliteInput          the satellite input
+     * @param satelliteInput the satellite input
      * @param fieldOfObservationInput the field of observation input
-     * @param header                  the header
+     * @param header the header
      * @return the covered surface on body builder
      */
-    public static CoveredSurfaceOnBodyBuilder builder(final Spacecraft satelliteInput,
-                                                      final FieldOfObservation fieldOfObservationInput,
-                                                      final Header header) {
-        return new CoveredSurfaceOnBodyBuilder(satelliteInput, fieldOfObservationInput, header);
+    public static CoveredSurfaceOnBodyBuilder
+        builder(final Spacecraft satelliteInput,
+                final FieldOfObservation fieldOfObservationInput,
+                final Header header) {
+        return new CoveredSurfaceOnBodyBuilder(satelliteInput,
+                                               fieldOfObservationInput, header);
     }
 
     // Overrides
 
     @Override
     public void writeCzmlBlock(final CesiumStreamWriter stream,
-                               final CesiumOutputStream output) throws URISyntaxException, IOException {
+                               final CesiumOutputStream output)
+        throws URISyntaxException,
+            IOException {
 
         output.setPrettyFormatting(true);
 
@@ -204,15 +224,21 @@ public class CoveredSurfaceOnBody extends AbstractPrimaryObject {
         for (Polygon poly : polygon) {
             try (PacketCesiumWriter packet = stream.openPacket(output)) {
 
-                final String currentId = getId() + "/" + fieldOfObservation.getBody()
-                                                                           .getBodyFrame()
-                                                                           .getName() + NUMBER + i;
+                final String currentId =
+                    getId() +
+                                         "/" +
+                                         fieldOfObservation.getBody()
+                                             .getBodyFrame().getName() +
+                                         NUMBER + i;
 
                 packet.writeId(currentId);
 
-                final String currentName = getName() + " " + satellite.getName() + " on " + fieldOfObservation.getBody()
-                                                                                                              .getBodyFrame()
-                                                                                                              .getName() + NUMBER + i;
+                final String currentName =
+                    getName() +
+                                           " " + satellite.getName() + " on " +
+                                           fieldOfObservation.getBody()
+                                               .getBodyFrame().getName() +
+                                           NUMBER + i;
                 packet.writeName(currentName);
                 packet.writeAvailability(poly.getAvailability());
 
@@ -221,7 +247,6 @@ public class CoveredSurfaceOnBody extends AbstractPrimaryObject {
             i += 1;
         }
     }
-
 
     // GETTERS
 
@@ -288,24 +313,22 @@ public class CoveredSurfaceOnBody extends AbstractPrimaryObject {
         return polygon;
     }
 
-
     // Private functions
 
     /**
-     * This method aims at reorganizing the list of list of objects by inverting indexes.
+     * This method aims at reorganizing the list of list of objects by inverting
+     * indexes.
      *
      * @param objects : A list of objects.
-     * @param <T>     : An object to be sorted.
+     * @param <T> : An object to be sorted.
      * @return A sorted list of objects.
      */
     private <T> List<List<T>> sortingListList(final List<List<T>> objects) {
         final List<List<T>> toReturn = new ArrayList<>();
-        for (int i = 0; i < objects.get(0)
-                                   .size(); i++) {
+        for (int i = 0; i < objects.get(0).size(); i++) {
             final List<T> sortedList = new ArrayList<>();
             for (List<T> object : objects) {
-                final T objectsToSort = object
-                        .get(i);
+                final T objectsToSort = object.get(i);
                 sortedList.add(objectsToSort);
             }
             toReturn.add(sortedList);

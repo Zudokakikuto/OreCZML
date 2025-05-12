@@ -74,34 +74,44 @@ public class LineOfVisibilityBuilder {
     /**
      * The constructor of the line of visibility builder.
      *
-     * @param topocentricFrameInput : The topocentric frame where the ground station is.
-     * @param satelliteInput        : The satellite observed.
-     * @param headerInput           : The header considered.
+     * @param topocentricFrameInput : The topocentric frame where the ground
+     *        station is.
+     * @param satelliteInput : The satellite observed.
+     * @param headerInput : The header considered.
      */
-    public LineOfVisibilityBuilder(final TopocentricFrame topocentricFrameInput, final Spacecraft satelliteInput,
+    public LineOfVisibilityBuilder(final TopocentricFrame topocentricFrameInput,
+                                   final Spacecraft satelliteInput,
                                    final Header headerInput) {
-        this.satellite        = satelliteInput;
+        this.satellite = satelliteInput;
         this.topocentricFrame = topocentricFrameInput;
-        this.customID         = LineOfVisibility.DEFAULT_ID + topocentricFrameInput.getName() + "/" + satelliteInput.getId();
-        this.header           = headerInput;
+        this.customID =
+            LineOfVisibility.DEFAULT_ID +
+                        topocentricFrameInput.getName() + "/" +
+                        satelliteInput.getId();
+        this.header = headerInput;
     }
 
-    public LineOfVisibilityBuilder(final TopocentricFrame topocentricFrameInput, final Constellation constellationInput,
+    public LineOfVisibilityBuilder(final TopocentricFrame topocentricFrameInput,
+                                   final Constellation constellationInput,
                                    final Header headerInput) {
-        this.constellation    = constellationInput;
+        this.constellation = constellationInput;
         this.topocentricFrame = topocentricFrameInput;
-        this.customID         = LineOfVisibility.DEFAULT_ID + topocentricFrameInput.getName() + "/" + constellationInput.getId();
-        this.header           = headerInput;
+        this.customID =
+            LineOfVisibility.DEFAULT_ID +
+                        topocentricFrameInput.getName() + "/" +
+                        constellationInput.getId();
+        this.header = headerInput;
     }
-
 
     /**
      * Function to set up an angle of aperture.
      *
      * @param angleOfApertureInput : The angle of aperture to set up.
-     * @return : The line of visibility builder with the given angle of aperture.
+     * @return : The line of visibility builder with the given angle of
+     *         aperture.
      */
-    public LineOfVisibilityBuilder withAngleOfAperture(final double angleOfApertureInput) {
+    public LineOfVisibilityBuilder
+        withAngleOfAperture(final double angleOfApertureInput) {
         this.angleOfAperture = angleOfApertureInput;
         return this;
     }
@@ -136,25 +146,33 @@ public class LineOfVisibilityBuilder {
     /**
      * The build function that generates a line of visibility object.
      *
-     * @return : A line of visibility object with the given parameters of the builder.
+     * @return : A line of visibility object with the given parameters of the
+     *         builder.
      * @throws URISyntaxException the uri syntax exception
-     * @throws IOException        the io exception
+     * @throws IOException the io exception
      */
-    public LineOfVisibility build() throws URISyntaxException, IOException {
+    public LineOfVisibility build()
+        throws URISyntaxException,
+            IOException {
         LineOfVisibility toReturn = null;
         if (satellite != null) {
-            toReturn = new LineOfVisibility(topocentricFrame, satellite, angleOfAperture, customID, header);
+            toReturn =
+                new LineOfVisibility(topocentricFrame, satellite,
+                                     angleOfAperture, customID, header);
 
         }
         if (constellation != null) {
-            toReturn = new LineOfVisibility(topocentricFrame, constellation, angleOfAperture, customID, header);
+            toReturn =
+                new LineOfVisibility(topocentricFrame, constellation,
+                                     angleOfAperture, customID, header);
         }
         if (displayTriangle) {
             if (satellite != null) {
                 toReturn.displayTriangle();
             } else {
                 if (constellation != null) {
-                    for (int i = 0; i < constellation.getTotalOfSatellite(); i++) {
+                    for (int i = 0; i < constellation.getTotalOfSatellite();
+                         i++) {
                         toReturn.displaySingleTriangle(i);
                     }
                 }
@@ -164,4 +182,3 @@ public class LineOfVisibilityBuilder {
     }
 
 }
-

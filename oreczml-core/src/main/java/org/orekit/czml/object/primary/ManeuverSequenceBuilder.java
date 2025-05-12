@@ -38,11 +38,12 @@ import java.util.List;
 public class ManeuverSequenceBuilder {
 
     /**
-     * The default path to the 3D model used to display an arrow that represents the thrust or the acceleration.
+     * The default path to the 3D model used to display an arrow that represents
+     * the thrust or the acceleration.
      */
-    public static final String DEFAULT_PATH_MODEL = ManeuverSequence.class.getClassLoader()
-                                                                          .getResource("maneuver_model.glb")
-                                                                          .getPath();
+    public static final String DEFAULT_PATH_MODEL =
+        ManeuverSequence.class.getClassLoader()
+            .getResource("maneuver_model.glb").getPath();
 
     /**
      * The satellite which performs maneuvers.
@@ -65,7 +66,8 @@ public class ManeuverSequenceBuilder {
     private List<Maneuver> maneuvers;
 
     /**
-     * If only one single maneuver is used, this object will be used instead of the list of maneuvers.
+     * If only one single maneuver is used, this object will be used instead of
+     * the list of maneuvers.
      */
     private Maneuver singleManeuver;
 
@@ -75,7 +77,8 @@ public class ManeuverSequenceBuilder {
     private Vector3D direction;
 
     /**
-     * The list of the direction of the maneuvers if several directions are inputted.
+     * The list of the direction of the maneuvers if several directions are
+     * inputted.
      */
     private List<Vector3D> directions = new ArrayList<>();
 
@@ -92,7 +95,8 @@ public class ManeuverSequenceBuilder {
     private String pathModel = DEFAULT_PATH_MODEL;
 
     /**
-     * To either show the acceleration or the thrust. By default, it shows the acceleration.
+     * To either show the acceleration or the thrust. By default, it shows the
+     * acceleration.
      */
     private boolean showTrust = false;
 
@@ -102,68 +106,85 @@ public class ManeuverSequenceBuilder {
     // Constructors
 
     /**
-     * The constructor with multiple maneuvers for the maneuver sequence builder object.
+     * The constructor with multiple maneuvers for the maneuver sequence builder
+     * object.
      *
-     * @param sequenceInput  : The sequence of attitude used during the mission.
+     * @param sequenceInput : The sequence of attitude used during the mission.
      * @param maneuversInput : The list of maneuvers to be done for the mission.
      * @param satelliteInput : The satellite which performs maneuvers.
-     * @param directionInput : Direction of the maneuvers. (multiple directions will soon be added)
-     * @param lofInput       : The local orbital frame of the satellite.
-     * @param headerInput    : The header considered.
+     * @param directionInput : Direction of the maneuvers. (multiple directions
+     *        will soon be added)
+     * @param lofInput : The local orbital frame of the satellite.
+     * @param headerInput : The header considered.
      */
-    public ManeuverSequenceBuilder(final AttitudesSequence sequenceInput, final List<Maneuver> maneuversInput,
-                                   final Spacecraft satelliteInput, final Vector3D directionInput, final LOF lofInput,
+    public ManeuverSequenceBuilder(final AttitudesSequence sequenceInput,
+                                   final List<Maneuver> maneuversInput,
+                                   final Spacecraft satelliteInput,
+                                   final Vector3D directionInput,
+                                   final LOF lofInput,
                                    final Header headerInput) {
-        this.sequence  = sequenceInput;
+        this.sequence = sequenceInput;
         this.satellite = satelliteInput;
         this.maneuvers = new ArrayList<>(maneuversInput);
         this.direction = directionInput;
-        this.lof       = lofInput;
-        this.customID  = ManeuverSequence.DEFAULT_ID + maneuvers.subList(0, maneuvers.size() - 1);
-        this.header    = headerInput;
+        this.lof = lofInput;
+        this.customID =
+            ManeuverSequence.DEFAULT_ID +
+                        maneuvers.subList(0, maneuvers.size() - 1);
+        this.header = headerInput;
     }
 
     /**
-     * The constructor with a single maneuver for the maneuver sequence builder object.
+     * The constructor with a single maneuver for the maneuver sequence builder
+     * object.
      *
-     * @param sequenceInput  : The sequence of attitude used during the mission.
-     * @param maneuverInput  : The maneuver to be done for the mission.
+     * @param sequenceInput : The sequence of attitude used during the mission.
+     * @param maneuverInput : The maneuver to be done for the mission.
      * @param satelliteInput : The satellite which performs the maneuver.
      * @param directionInput : Direction of the maneuver.
-     * @param lofInput       : The local orbital frame iof the satellite.
-     * @param headerInput    : The header considered.
+     * @param lofInput : The local orbital frame iof the satellite.
+     * @param headerInput : The header considered.
      */
-    public ManeuverSequenceBuilder(final AttitudesSequence sequenceInput, final Maneuver maneuverInput,
-                                   final Spacecraft satelliteInput, final Vector3D directionInput, final LOF lofInput,
+    public ManeuverSequenceBuilder(final AttitudesSequence sequenceInput,
+                                   final Maneuver maneuverInput,
+                                   final Spacecraft satelliteInput,
+                                   final Vector3D directionInput,
+                                   final LOF lofInput,
                                    final Header headerInput) {
-        this.sequence       = sequenceInput;
+        this.sequence = sequenceInput;
         this.singleManeuver = maneuverInput;
-        this.satellite      = satelliteInput;
-        this.direction      = directionInput;
-        this.lof            = lofInput;
-        this.customID       = ManeuverSequence.DEFAULT_ID + singleManeuver.getName();
-        this.header         = headerInput;
+        this.satellite = satelliteInput;
+        this.direction = directionInput;
+        this.lof = lofInput;
+        this.customID = ManeuverSequence.DEFAULT_ID + singleManeuver.getName();
+        this.header = headerInput;
     }
 
     /**
-     * The constructor with a single maneuver for the maneuver sequence builder object.
+     * The constructor with a single maneuver for the maneuver sequence builder
+     * object.
      *
-     * @param sequenceInput   : The sequence of attitude used during the mission.
-     * @param maneuversInput  : The list of maneuver to be done for the mission.
-     * @param satelliteInput  : The satellite which performs the maneuver.
+     * @param sequenceInput : The sequence of attitude used during the mission.
+     * @param maneuversInput : The list of maneuver to be done for the mission.
+     * @param satelliteInput : The satellite which performs the maneuver.
      * @param directionsInput : The list of directions of the maneuvers.
-     * @param lofInput        : The local orbital frame iof the satellite.
-     * @param headerInput     : The header considered.
+     * @param lofInput : The local orbital frame iof the satellite.
+     * @param headerInput : The header considered.
      */
-    public ManeuverSequenceBuilder(final AttitudesSequence sequenceInput, final List<Maneuver> maneuversInput,
-                                   final Spacecraft satelliteInput, final List<Vector3D> directionsInput,
-                                   final LOF lofInput, final Header headerInput) {
-        this.sequence   = sequenceInput;
-        this.maneuvers  = new ArrayList<>(maneuversInput);
-        this.satellite  = satelliteInput;
+    public ManeuverSequenceBuilder(final AttitudesSequence sequenceInput,
+                                   final List<Maneuver> maneuversInput,
+                                   final Spacecraft satelliteInput,
+                                   final List<Vector3D> directionsInput,
+                                   final LOF lofInput,
+                                   final Header headerInput) {
+        this.sequence = sequenceInput;
+        this.maneuvers = new ArrayList<>(maneuversInput);
+        this.satellite = satelliteInput;
         this.directions = new ArrayList<>(directionsInput);
-        this.lof        = lofInput;
-        this.customID   = ManeuverSequence.DEFAULT_ID + maneuvers.subList(0, maneuvers.size() - 1);
+        this.lof = lofInput;
+        this.customID =
+            ManeuverSequence.DEFAULT_ID +
+                        maneuvers.subList(0, maneuvers.size() - 1);
         this.header = headerInput;
     }
 
@@ -182,7 +203,8 @@ public class ManeuverSequenceBuilder {
      * Function to set up the arrow to show the acceleration of the thrust.
      *
      * @param showTrustInput : To display the thrust or not.
-     * @return : The maneuver sequence builder with a given direction for the arrow.
+     * @return : The maneuver sequence builder with a given direction for the
+     *         arrow.
      */
     public ManeuverSequenceBuilder withShowTrust(final boolean showTrustInput) {
         this.showTrust = showTrustInput;
@@ -214,22 +236,28 @@ public class ManeuverSequenceBuilder {
     /**
      * The build function that generates a maneuver sequence object.
      *
-     * @return : A maneuver sequence object with the given parameters of the builder.
+     * @return : A maneuver sequence object with the given parameters of the
+     *         builder.
      * @throws URISyntaxException the uri syntax exception
-     * @throws IOException        the io exception
+     * @throws IOException the io exception
      */
-    public ManeuverSequence build() throws URISyntaxException, IOException {
+    public ManeuverSequence build()
+        throws URISyntaxException,
+            IOException {
         if (!(maneuvers == null)) {
             if (direction == null) {
-                return new ManeuverSequence(sequence, maneuvers, satellite, directions, lof, showTrust, pathModel,
-                        customID, header);
+                return new ManeuverSequence(sequence, maneuvers, satellite,
+                                            directions, lof, showTrust,
+                                            pathModel, customID, header);
             } else {
-                return new ManeuverSequence(sequence, maneuvers, satellite, direction, lof, showTrust, pathModel,
-                        customID, header);
+                return new ManeuverSequence(sequence, maneuvers, satellite,
+                                            direction, lof, showTrust,
+                                            pathModel, customID, header);
             }
         } else {
-            return new ManeuverSequence(sequence, singleManeuver, satellite, direction, lof, showTrust, pathModel,
-                    customID, header);
+            return new ManeuverSequence(sequence, singleManeuver, satellite,
+                                        direction, lof, showTrust, pathModel,
+                                        customID, header);
         }
     }
 }
