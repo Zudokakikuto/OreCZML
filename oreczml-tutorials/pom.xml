@@ -11,7 +11,7 @@
     <packaging>jar</packaging>
 
     <name>oreczml-tutorials</name>
-    <url>https://gitlab.orekit.org/Zudo/oreczml</url>
+    <url>https://gitlab.orekit.org/orekit/oreczml</url>
     <description>OreCzml core module</description>
 
     <properties>

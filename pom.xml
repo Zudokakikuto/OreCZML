@@ -8,11 +8,12 @@
     <packaging>pom</packaging>
 
     <name>oreczml-parent</name>
-    <url>https://gitlab.orekit.org/Zudo/oreczml</url>
+    <url>https://gitlab.orekit.org/orekit/oreczml</url>
     <inceptionYear>2024</inceptionYear>
     <description>
-        OreCzml is a library that provides a bridge between libraries Orekit and czml-writer (by AnalyticalGraphicsInc).
-        The final goal is to display orbital 3D vizualisation using Cesium JS (.
+        OreCzml is a bridge library between Orekit and czml-writer (by
+        AnalyticalGraphicsInc) libraries. The goal is to display orbital 3D
+        vizualisation using CesiumJS.
     </description>
 
 

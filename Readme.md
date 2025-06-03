@@ -1,167 +1,225 @@
 ![Logo OreCzml](https://github.com/Zudokakikuto/OreCZML/blob/master/images/OreCZML.png?raw=true)
 
-# Global information
+# Introduction
 
-This JAVA project was created in order to assess the matter of display in the library Orekit using the library Cesium.
-The aim was to create an interface with some outputs of Orekit and to display them with Cesium.
-Cesium understands CZML file as inputs. Hence, this project provides a library to build a CZML file to input into Cesium.
+The OreCZML project aims to create an interface between the [Orekit][orekit]
+space dynamics library and the [Cesium][cesium] 3D visualization library. Like
+Orekit, OreCZML is developed in Java. It delegates calculations to Orekit and
+converts the results into [CZML][czml] files. These files can then be used by
+Cesium to visualize the trajectories and other orbit and attitude parameters
+of satellites.
 
 [![](http://img.shields.io/:license-apache-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
-[![Quality Gate Status](https://sonar.orekit.org/api/project_badges/measure?project=Zudo_oreczml_AZKVgjr8GI6o9WSLa4d5&metric=alert_status&token=sqb_ec26b77ffc69a7f8da60eab4b3c73ec9b1b851bf)](https://sonar.orekit.org/dashboard?id=Zudo_oreczml_AZKVgjr8GI6o9WSLa4d5)
-[![Coverage](https://sonar.orekit.org/api/project_badges/measure?project=Zudo_oreczml_AZKVgjr8GI6o9WSLa4d5&metric=coverage&token=sqb_ec26b77ffc69a7f8da60eab4b3c73ec9b1b851bf)](https://sonar.orekit.org/dashboard?id=Zudo_oreczml_AZKVgjr8GI6o9WSLa4d5)
-[![Security Rating](https://sonar.orekit.org/api/project_badges/measure?project=Zudo_oreczml_AZKVgjr8GI6o9WSLa4d5&metric=security_rating&token=sqb_ec26b77ffc69a7f8da60eab4b3c73ec9b1b851bf)](https://sonar.orekit.org/dashboard?id=Zudo_oreczml_AZKVgjr8GI6o9WSLa4d5)
-![Latest release](https://gitlab.orekit.org/Zudo/oreczml/-/badges/release.svg)
+[![Quality Gate Status](https://sonar.orekit.org/api/project_badges/measure?branch=master&project=orekit%3Aoreczml&metric=alert_status)](https://sonar.orekit.org/dashboard?id=orekit%3Aoreczml)
+[![Coverage](https://sonar.orekit.org/api/project_badges/measure?project=orekit%3Aoreczml&metric=coverage)](https://sonar.orekit.org/component_measures?metric=Coverage&id=orekit%3Aoreczml)
+[![Security Rating](https://sonar.orekit.org/api/project_badges/measure?project=orekit%3Aoreczml&metric=security_rating)](https://sonar.orekit.org/component_measures?metric=security_review_rating&id=orekit%3Aoreczml)
+![Latest release](https://gitlab.orekit.org/orekit/oreczml/-/badges/release.svg)
 
 <p align="center">
-  <img src=https://github.com/Zudokakikuto/OreCZML/blob/master/images/sinusoidalAttitudeFovGIF.gif?raw=true alt=""/>
+  <img src="https://github.com/Zudokakikuto/OreCZML/blob/master/images/sinusoidalAttitudeFovGIF.gif?raw=true" alt=""/>
 </p>
 
-## DEPENDENCIES
+## Dependencies
 
-- Orekit available here : https://gitlab.orekit.org/orekit/orekit
-- CesiumLanguageWriter available here : https://github.com/AnalyticalGraphicsInc/czml-writer
-- Java 8 minimum version is required
+* [Orekit](https://gitlab.orekit.org/orekit/orekit)
+* [CesiumLanguageWriter](https://github.com/AnalyticalGraphicsInc/czml-writer)
+* Java 17 minimum version is required
 
-### Installation
+# Installation
 
-#### With maven
+## With Maven
 
-Orekit and junit can be installed with maven using a pom.xml with dependencies :
+Orekit and Junit can be installed with Maven using a pom.xml with dependencies:
 * [Orekit](https://mvnrepository.com/artifact/org.orekit/orekit)
 * [junit-jupiter](https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter)
 
-For the czml writer you will need to install it differently, because no maven repository exists, two methods can be used :
-* You download the .jar, and you install it directly. Let name the groupId `com.agi`, the artifactId `czml-writer` and the version will be `3.0.0`. You will need to add in the pom.xml the following lines to do so :
-```xml
- <dependency>
-  <groupId>com.agi</groupId>
-  <artifactId>czml-writer</artifactId>
-  <version>3.0.0</version>
-</dependency>
-```
+The CZML writer must be installed differently, as the package is not available
+in any Maven repository. Two methods can be used:
 
-Now that the dependency is added you can now use the following command in maven to install it :
+1. Download the `.jar` file and install it directly.
 
-`mvn install:install-file -Dfile=.\cicd\cesiumlanguagewriter-3.0.0.jar -DgroupId=com.agi -DartifactId=cesiumlanguagewriter -Dversion=3.0.0 -Dpackaging=jar -DgeneratePom=true`
+   To begin, specify the groupId (`com.agi`), artifactId (`czml-writer`) and
+   version (`3.0.0`) in the `pom.xml` file by adding the following lines:
 
-(If maven do't find the path with '.\\' , replace the dot with your local path.)
+    ```xml
+    <dependency>
+      <groupId>com.agi</groupId>
+      <artifactId>czml-writer</artifactId>
+      <version>3.0.0</version>
+    </dependency>
+    ```
 
-* You can directly add the file locally in your IDE, here are some methods for the most used IDE :
+    Then, install this dependency using the command below:
 
-  * [Eclipse](https://stackoverflow.com/questions/3280353/how-to-import-a-jar-in-eclipse)
-  * [IntelliJ](https://www.geeksforgeeks.org/how-to-add-external-jar-file-to-an-intellij-idea-project/)
-  * [VS Code](https://www.codeproject.com/Questions/5281024/How-to-import-jar-file-in-vs-code)
-  * [Net Beans](https://stackoverflow.com/questions/17693040/adding-external-jar-to-maven-project-in-netbeans)
+    ```bash
+    mvn install:install-file \
+        -Dfile=.\cicd\cesiumlanguagewriter-3.0.0.jar \
+        -DgroupId=com.agi \
+        -DartifactId=czml-writer \
+        -Dversion=3.0.0 \
+        -Dpackaging=jar \
+        -DgeneratePom=true
+    ```
+
+    If Maven doesn't find the path with `.\`, replace the dot with your local
+    path.
+
+2. Directly add the `.jar` file locally in your IDE, here are some methods for
+   the most used IDE:
+
+    * [Eclipse](https://stackoverflow.com/questions/3280353/how-to-import-a-jar-in-eclipse)
+    * [IntelliJ](https://www.geeksforgeeks.org/how-to-add-external-jar-file-to-an-intellij-idea-project/)
+    * [VS Code](https://www.codeproject.com/Questions/5281024/How-to-import-jar-file-in-vs-code)
+    * [Net Beans](https://stackoverflow.com/questions/17693040/adding-external-jar-to-maven-project-in-netbeans)
 
 ## Clone the repository
 
-Because the project depends on a certain version of the Orekit-Data for test, it is recommended to clone the repository by including the submodules. To so so you can write : 
+Because the project depends on a certain version of the Orekit-Data for test,
+it is recommended to clone the repository by including the submodules. To do
+so you can write:
 
 ```git
 git clone --recurse-submodules https://gitlab.orekit.org/orekit/oreczml.git
 ```
 
-If you cloned the repository without the submodules you can still do :
+If you cloned the repository without the submodules, you can still do:
 
 ```git
 git submodule update --init
 ```
 
-## Deployment
+# Deployment
 
-To use a deployed version of OreCzml, you will need to download the .jar of the core. You can find the last version in the [releases](https://gitlab.orekit.org/Zudo/oreczml/-/releases).
-Then you run this maven command :
+To use a deployed version of OreCzml, you will need to download the `.jar`
+file of the core module. You can find the last version in the
+[releases](https://gitlab.orekit.org/orekit/oreczml/-/releases). Then, run
+this Maven command:
 
-`mvn install:install-file -Dfile=[PATH]\oreczml-core-1.0.jar -DgroupId=org.orekit -DartifactId=OreCzml -Dversion=1.0 -Dpackaging=jar -DgeneratePom=true`
+```bash
+mvn install:install-file \
+    -Dfile=[PATH]\oreczml-core-1.0.jar \
+    -DgroupId=org.orekit \
+    -DartifactId=OreCzml \
+    -Dversion=1.0 \
+    -Dpackaging=jar \
+    -DgeneratePom=true
+```
 
-(replace the [PATH] with your local path where you stored the .jar)
+Replace `[PATH]` with your local path where you stored the `.jar` file.
 
-## Tutorials
+# Tutorials
 
-if you want to launch a tutorial, you will need to replace on each of them the line :
+If you want to launch a tutorial, you will need to edit the source file and
+modify following Java instruction:
 
 ```java
 final String pathToJSFolder = TutorialUtils.generateJSPath(
         System.getProperty("user.dir"));
 ```
 
-Replace the `System.getProperty("user.dir")` with the path of the file where you wants your external resources to be taken if you use some.
+Replace the `System.getProperty("user.dir")` with the path of the file where
+you want your external resources to be taken from if you use some.
 
-The Czml file will be outputted in the 'Output' folder.
+The CZML file will be outputted in the `Output` folder.
 
-## Linting
+# Linting
 
-This project uses [checkstyle](https://checkstyle.sourceforge.io/) to check the code style, the rules are the same as used in Orekit and is located in [checkstyle.xml](./checkstyle.xml). You can run the check with the command:
+This project uses [checkstyle](https://checkstyle.sourceforge.io/) to check
+the code style. The rules are the same as used in Orekit and are located in
+[checkstyle.xml](./checkstyle.xml). You can run the check with the command:
 
 ```bash
 mvn checkstyle:check
 ```
 
-For formatting the eclipse formatting rules, also copied over from Orekit, are used and found in [orekit-eclipse-formatter.xml](./orekit-eclipse-formatter.xml). [Spotless](https://github.com/diffplug/spotless/tree/main/plugin-maven) is used to check and apply these formatting rules to the codebase, and can be run using:
-
+The Eclipse code formatting rules, copied over from Orekit, are provided in
+[orekit-eclipse-formatter.xml](./orekit-eclipse-formatter.xml).
+[Spotless](https://github.com/diffplug/spotless/tree/main/plugin-maven) is
+used to check and apply these formatting rules to the codebase, and can be run
+using:
 
 ```bash
 mvn spotless:check
 mvn spotless:apply
 ```
 
-## Wiki and more #
+# Wiki and more
 
-Check out the [wiki](https://gitlab.orekit.org/Zudo/oreczml/-/wikis/home), including the [Get Started](https://gitlab.orekit.org/Zudo/oreczml/-/wikis/Get-Started?redirected_from=How-to-get-started). Also browse the [Orekit Forum](https://https://forum.orekit.org) or the [Cesium Forum](https://community.cesium.com/) for related questions.
+Check out the [wiki](https://gitlab.orekit.org/orekit/oreczml/-/wikis/home),
+including the [Get Started](https://gitlab.orekit.org/orekit/oreczml/-/wikis/Get-Started).
+Also visit the [Orekit Forum](https://https://forum.orekit.org) or the
+[Cesium Forum](https://community.cesium.com/) for related questions.
 
-## Input Accepted
+# Input accepted
 
-This converter accepts several inputs to write a CZML file :
+This converter accepts several inputs to write a CZML file:
 
-- An Oem file (TXT or XML file are supported)
-- A list of Orekit SpacecraftStates
-- A Tle file
-- An Orekit Orbit defined with orbital parameters, the orbital parameters supported are :
-  - Keplerian parameters
-  - Cartesian parameters
-  - Equinoctial parameters
-  - Circular parameters
+* An OEM (Orbit Ephemeris Message, CCSDS) file (TXT and XML formats are
+  supported)
+* A list of Orekit SpacecraftStates
+* A TLE (Two-Line Elements message) file
+* An Orekit Orbit defined with orbital parameters, the orbital parameters
+  supported are:
+  * Keplerian parameters
+  * Cartesian parameters
+  * Equinoctial parameters
+  * Circular parameters
 
+# Output
 
-## Output
-
-The output obtained will be a .czml file that you can directly enter in cesium to display.
-
+The output obtained will be a `.czml` file that you can directly enter in
+Cesium to display.
 
 # Examples
 
-<h1 style="text-align: center;">Solar System Display</h1>
+## Solar system display
 
-<p align="center">
-  <img src=https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExY2I4NGc2aWtkOHU2dGhrajZnYWh5cnlud3lqbjB6eG83N3g0bzk3MyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/uV5Ke9trgpX0sQt5rp/giphy.gif alt=""/>
+<p style="text-align=center">
+  <img src=https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExY2I4NGc2aWtkOHU2dGhrajZnYWh5cnlud3lqbjB6eG83N3g0bzk3MyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/uV5Ke9trgpX0sQt5rp/giphy.gif alt="Solar system display"/>
 </p>
 
-<h1 style="text-align: center;">Covered Surface</h1>
+## Covered surface
 
-<p align="center">
-  <img src=https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExbnkyNGdpcnZidzBjaXJ5cjEwcWFlNHJpOGlocTllMmZ3NWkycGt3aCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/QWsSZDpUdEXCeXIo6U/giphy-downsized-large.gif alt=""/>
+<p style="text-align=center">
+  <img src=https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExbnkyNGdpcnZidzBjaXJ5cjEwcWFlNHJpOGlocTllMmZ3NWkycGt3aCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/QWsSZDpUdEXCeXIo6U/giphy-downsized-large.gif alt="Covered surface"/>
 </p>
 
-<h1 style="text-align: center;">Field of view with sinusoidal attitude </h1>
+## Field of view with sinusoidal attitude
 
-<p align="center">
-  <img src=https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExdWhiN2R2aDI3dXNkaHBjeDFtMGw4OTBxODMzYW54eGY1cGdkZDZnMCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/02iHrLPwHaXnWME0XC/giphy.gif alt=""/>
+<p style="text-align=center">
+  <img src=https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExdWhiN2R2aDI3dXNkaHBjeDFtMGw4OTBxODMzYW54eGY1cGdkZDZnMCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/02iHrLPwHaXnWME0XC/giphy.gif alt="Field of view with sinusoidal attitude"/>
 </p>
 
-<h1 style="text-align: center;">Attitude Path along the orbit</h1>
+## Attitude path along the orbit
 
-<p align="center">
-  <img src=https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExbzFpb2F2Ym9tdTRtcGhmOHl2cGZvenRzM2k1bHhwZW9sY3RicTRtMyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/2E8NLtxAs2FIfSMgk3/giphy-downsized-large.gif alt=""/>
+<p style="text-align=center">
+  <img src=https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExbzFpb2F2Ym9tdTRtcGhmOHl2cGZvenRzM2k1bHhwZW9sY3RicTRtMyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/2E8NLtxAs2FIfSMgk3/giphy-downsized-large.gif alt="Attitude path along the orbit"/>
 </p>
 
-<h1 style="text-align: center;">Ground Track</h1>
+## Ground track
 
-<p align="center">
-  <img src=https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExcW4wb3NuMjdnZGxzczR4ajNmbXNqNjFwc2Nua3NrejljNmFmZW82OSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/H75MxF2ReiOjM4gUvN/giphy.gif alt=""/>
+<p style="text-align=center">
+  <img src=https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExcW4wb3NuMjdnZGxzczR4ajNmbXNqNjFwc2Nua3NrejljNmFmZW82OSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/H75MxF2ReiOjM4gUvN/giphy.gif alt="Ground track"/>
 </p>
 
-<h1 style="text-align: center;">Inter-Sat Visu Constellation</h1>
+## Inter-satellite constellation visualisation
 
-<p align="center">
-  <img src=https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExMTI5M21jc2tvcmFxYm5iMGdhZXFwd3ZwYTI2aGt3MTk2eTBleXUxZCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/X4zRZIzjea8V58uuH3/giphy.gif alt=""/>
+<p style="text-align=center">
+  <img src=https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExMTI5M21jc2tvcmFxYm5iMGdhZXFwd3ZwYTI2aGt3MTk2eTBleXUxZCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/X4zRZIzjea8V58uuH3/giphy.gif alt="Inter-satellite constellation visualisation"/>
 </p>
+
+# Copyright and license
+
+Copyright © 2024–2025, [CS GROUP][csgroup] and other contributors
+
+All Rights Reserved.
+
+Permission to modify and redistribute OreCZML is granted under the terms of
+the Apache 2.0 license. See the [LICENSE.txt](LICENSE.txt) file for the full
+license.
+
+
+[orekit]: https://orekit.org/
+[cesium]: https://cesium.com/platform/cesiumjs/
+[czml]: https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/CZML-Guide
+[csgroup]: https://www.cs-soprasteria.com/
