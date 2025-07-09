@@ -103,8 +103,7 @@ public class InfluenceSphere
     InfluenceSphere(final Body bodyInput, final Body centralBody,
                     final Header headerInput) {
         final AbsoluteDate startDate =
-            DateUtils.toAbsoluteDate(headerInput.getAvailability().getStart(),
-                                     headerInput.getTimeScale());
+            DateUtils.toAbsoluteDate(headerInput.getAvailability().getStart());
 
         this.centralBodyMass =
             centralBody.getCelestialBody().getGM() / GRAVITATIONAL_CONSTANT;

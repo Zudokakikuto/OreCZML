@@ -80,14 +80,13 @@ public class LineOfVisuSatStationExample {
             TutorialUtils.loadResources("Default3DModels/ground_Station.glb");
 
         // Creation of the clock.
-
         final AbsoluteDate startDate =
             new AbsoluteDate(2024, 3, 15, 0, 0, 0.0,
                              TimeScalesFactory.getUTC());
         final AbsoluteDate finalDate =
             startDate.shiftedBy(TutorialUtils.CLASSIC_DURATION_OF_SIMULATION);
         final Clock clock =
-            new Clock(startDate, finalDate, TimeScalesFactory.getUTC(),
+            new Clock(startDate, finalDate,
                       TutorialUtils.STEP_BETWEEN_EACH_INSTANT);
 
         final Header header =

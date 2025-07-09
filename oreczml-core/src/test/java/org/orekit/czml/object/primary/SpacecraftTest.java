@@ -22,7 +22,6 @@ import org.orekit.czml.object.Utils.DateUtils;
 import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.propagation.BoundedPropagator;
 import org.orekit.time.AbsoluteDate;
-import org.orekit.time.TimeScalesFactory;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -49,8 +48,7 @@ public class SpacecraftTest
 
         final Header header = dummyHeader();
         final AbsoluteDate startDate =
-            DateUtils.toAbsoluteDate(header.getAvailability().getStart(),
-                                     TimeScalesFactory.getUTC());
+            DateUtils.toAbsoluteDate(header.getAvailability().getStart());
         final AbsoluteDate finalDate = startDate.shiftedBy(60.0);
 
         final BoundedPropagator propagator =
@@ -79,8 +77,7 @@ public class SpacecraftTest
         final Header header = dummyHeader();
 
         final AbsoluteDate startDate =
-            DateUtils.toAbsoluteDate(header.getAvailability().getStart(),
-                                     TimeScalesFactory.getUTC());
+            DateUtils.toAbsoluteDate(header.getAvailability().getStart());
         final AbsoluteDate finalDate = startDate.shiftedBy(60.0);
 
         final BoundedPropagator propagator =

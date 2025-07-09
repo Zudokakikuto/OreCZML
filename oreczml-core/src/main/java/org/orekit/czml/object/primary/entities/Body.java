@@ -194,9 +194,8 @@ public class Body
             header.getClock().getJulianDatesSimulation();
 
         this.cartesianList =
-            fillCartesian(header, body, julianDatesSimulation, frameToExpress);
-        this.orientation =
-            generateOrientation(header, body, julianDatesSimulation);
+            fillCartesian(body, julianDatesSimulation, frameToExpress);
+        this.orientation = generateOrientation(body, julianDatesSimulation);
     }
 
     // Builders
@@ -498,23 +497,18 @@ public class Body
      * This function aims at getting the cartesian position of a body at
      * specific julian dates.
      *
-     * @param headerInput : The header considered.
      * @param bodyInput : The body to which the cartesian are computed.
      * @param julianDates : The julian dates when the cartesian must be
      *        computed.
-     * @param frameToExpressInput : The frame in which the position of the body
-     *        is expressed.
+     * @param frameToExpressInput : The frame in which to express the output
      * @return : The list of cartesian position of the body.
      */
-    private static List<Cartesian>
-        fillCartesian(final Header headerInput, final CelestialBody bodyInput,
-                      final List<JulianDate> julianDates,
-                      final Frame frameToExpressInput) {
+    private List<Cartesian> fillCartesian(final CelestialBody bodyInput,
+                                          final List<JulianDate> julianDates,
+                                          final Frame frameToExpressInput) {
         final List<Cartesian> toReturn = new ArrayList<>();
         for (JulianDate julianDate : julianDates) {
-            final AbsoluteDate date =
-                DateUtils.toAbsoluteDate(julianDate,
-                                         headerInput.getTimeScale());
+            final AbsoluteDate date = DateUtils.toAbsoluteDate(julianDate);
             final Vector3D currentPosition =
                 bodyInput.getPosition(date, frameToExpressInput);
             final Cartesian currentCartesian =
@@ -530,24 +524,20 @@ public class Body
      * because the major part of bodies computed rotate around themselves, we
      * need to take this into account when computing the orientation.
      *
-     * @param headerInput : The header considered.
      * @param bodyInput : The body to which the orientation must be computed.
      * @param julianDates : The julian dates when the orientation must be
      *        computed.
      * @return : The orientation of the body in time.
      */
     private Orientation
-        generateOrientation(final Header headerInput,
-                            final CelestialBody bodyInput,
+        generateOrientation(final CelestialBody bodyInput,
                             final List<JulianDate> julianDates) {
         final List<Attitude> attitudes = new ArrayList<>();
         final Frame bodyInertialFrame = bodyInput.getInertiallyOrientedFrame();
         final Frame bodyRotatingFrame = bodyInput.getBodyOrientedFrame();
 
         for (JulianDate julianDate : julianDates) {
-            final AbsoluteDate date =
-                DateUtils.toAbsoluteDate(julianDate,
-                                         headerInput.getTimeScale());
+            final AbsoluteDate date = DateUtils.toAbsoluteDate(julianDate);
             final Transform currentTransform =
                 bodyRotatingFrame.getTransformTo(bodyInertialFrame, date);
             final Rotation currentRotation = currentTransform.getRotation();

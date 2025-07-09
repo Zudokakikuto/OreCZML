@@ -27,7 +27,6 @@ import org.orekit.czml.errors.OreCzmlException;
 import org.orekit.czml.errors.OreCzmlMessages;
 import org.orekit.czml.object.Utils.DateUtils;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
-import org.orekit.czml.object.primary.CzmlPrimaryObject;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.errors.OrekitException;
@@ -42,7 +41,6 @@ import org.orekit.propagation.events.ExtremumApproachDetector;
 import org.orekit.propagation.events.FilterType;
 import org.orekit.propagation.events.handlers.ContinueOnEvent;
 import org.orekit.time.AbsoluteDate;
-import org.orekit.time.TimeScale;
 import org.orekit.utils.TimeSpanMap;
 
 import java.io.IOException;
@@ -55,16 +53,14 @@ import java.util.List;
  * <p>
  * This class aims at representing the probability of collision between two
  * satellites. In order to do so, the class uses the covariances of each
- * satellites and checks if there is an intersection of the covariance in time.
+ * satellite and checks if there is an intersection of the covariance in time.
  *
  * @author Julien LEBLOND.
  * @since 1.0.0
  */
 public class Collision
     extends
-    AbstractPrimaryObject
-    implements
-    CzmlPrimaryObject {
+    AbstractPrimaryObject {
 
     /**
      * The default id for the collision object.
@@ -176,7 +172,7 @@ public class Collision
 
         final List<TimeInterval> intervalsOfClosing =
             postPropagationProcessing(closeApproachDetector, visuMap,
-                                      firstSatelliteInput, header);
+                                      firstSatelliteInput);
         covarianceFirstSatellite.setAvailabilities(intervalsOfClosing);
         covarianceSecondSatellite.setAvailabilities(intervalsOfClosing);
     }
@@ -307,15 +303,13 @@ public class Collision
      *        the satellites meet.
      * @param firstSatelliteInput : The first satellite defined with the
      *        propagator where the event detector was added
-     * @param header : The header to use if several are used.
      * @return : A list of time intervals that represents the intervals when the
      *         covariances will be displayed.
      */
     private List<TimeInterval>
         postPropagationProcessing(final EventDetector approachDetector,
                                   final TimeSpanMap<Boolean> visuMap,
-                                  final Spacecraft firstSatelliteInput,
-                                  final Header header) {
+                                  final Spacecraft firstSatelliteInput) {
 
         final List<TimeInterval> toReturn = new ArrayList<>();
         final SpacecraftState initialState =
@@ -335,18 +329,16 @@ public class Collision
             if (span.getData()) {
                 if (!close) {
                     final TimeInterval currentTimeClosing =
-                        spanToInterval(span, header.getTimeScale());
+                        spanToInterval(span);
                     toReturn.add(currentTimeClosing);
                 } else {
                     final TimeInterval currentTimeClosing;
                     if (!firstTimeIntervalFilled) {
                         currentTimeClosing =
                             new TimeInterval(firstJulianDate, DateUtils
-                                .toJulianDate(span.getEnd(),
-                                              header.getTimeScale()));
+                                .toJulianDate(span.getEnd()));
                     } else {
-                        currentTimeClosing =
-                            spanToInterval(span, header.getTimeScale());
+                        currentTimeClosing = spanToInterval(span);
                     }
                     toReturn.add(currentTimeClosing);
                 }
@@ -370,14 +362,10 @@ public class Collision
      * This function aims at converting a span into a time interval.
      *
      * @param span : A span from a time span map, here a boolean one.
-     * @param timeScale : The time scale to use.
      * @return : A time interval from the start to the end of the given span.
      */
-    private TimeInterval spanToInterval(final TimeSpanMap.Span<Boolean> span,
-                                        final TimeScale timeScale) {
-        return new TimeInterval(DateUtils.toJulianDate(span.getStart(),
-                                                       timeScale),
-                                DateUtils.toJulianDate(span.getEnd(),
-                                                       timeScale));
+    private TimeInterval spanToInterval(final TimeSpanMap.Span<Boolean> span) {
+        return new TimeInterval(DateUtils.toJulianDate(span.getStart()),
+                                DateUtils.toJulianDate(span.getEnd()));
     }
 }

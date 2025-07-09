@@ -36,7 +36,7 @@ import java.util.List;
  */
 public class ConstellationBuilder {
 
-    /** Default Id of the constellation. */
+    /** Default id of the constellation. */
     public static final String DEFAULT_ID = "Constellation/";
 
     /**

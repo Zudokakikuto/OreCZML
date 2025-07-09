@@ -66,7 +66,7 @@ public class BodyDisplayExample {
         final AbsoluteDate finalDate =
             startDate.shiftedBy(durationOfSimulation);
         final Clock clock =
-            new Clock(startDate, finalDate, TimeScalesFactory.getUTC(),
+            new Clock(startDate, finalDate,
                       TutorialUtils.STEP_BETWEEN_EACH_INSTANT);
 
         final Header header =

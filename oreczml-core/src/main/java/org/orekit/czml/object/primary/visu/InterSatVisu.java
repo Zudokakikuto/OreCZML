@@ -50,7 +50,6 @@ import org.orekit.propagation.events.EventsLogger.LoggedEvent;
 import org.orekit.propagation.events.InterSatDirectViewDetector;
 import org.orekit.propagation.events.handlers.EventHandler;
 import org.orekit.time.AbsoluteDate;
-import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.Constants;
 import org.orekit.utils.IERSConventions;
 import org.orekit.utils.TimeSpanMap;
@@ -307,8 +306,7 @@ public class InterSatVisu
         this.showList =
             this.buildShowList(singleTimeIntervalsOfVisu, booleanList);
         this.stopDate =
-            DateUtils.toAbsoluteDate(header.getAvailability().getStop(),
-                                     header.getTimeScale());
+            DateUtils.toAbsoluteDate(header.getAvailability().getStop());
     }
 
     /**
@@ -391,8 +389,7 @@ public class InterSatVisu
 
         this.idsSatellites = constellationPropagators.getIds();
         this.startDate =
-            DateUtils.toAbsoluteDate((header.getAvailability()).getStart(),
-                                     header.getTimeScale());
+            DateUtils.toAbsoluteDate((header.getAvailability()).getStart());
 
         this.stopDate = finalDate;
 
@@ -775,19 +772,15 @@ public class InterSatVisu
         if (durationAvailabilityFirstSat < durationAvailabilitySecondSat) {
 
             this.startDate =
-                DateUtils.toAbsoluteDate(
-                                         satellite1Input.getAvailability()
-                                             .getStart(),
-                                         headerInput.getTimeScale());
+                DateUtils.toAbsoluteDate(satellite1Input.getAvailability()
+                    .getStart());
             minimumInterval = satellite1Input.getAvailability();
 
         } else {
 
             this.startDate =
-                DateUtils.toAbsoluteDate(
-                                         satellite2Input.getAvailability()
-                                             .getStart(),
-                                         headerInput.getTimeScale());
+                DateUtils.toAbsoluteDate(satellite2Input.getAvailability()
+                    .getStart());
             minimumInterval = satellite2Input.getAvailability();
         }
         return minimumInterval;
@@ -811,8 +804,7 @@ public class InterSatVisu
             satellite2Input.getSpacecraftBoundedPropagator();
 
         final AbsoluteDate finalDate =
-            DateUtils.toAbsoluteDate(getAvailability().getStop(),
-                                     TimeScalesFactory.getUTC());
+            DateUtils.toAbsoluteDate(getAvailability().getStop());
 
         // Create an instance of the handler for inter-satellite visibility
         // events
@@ -953,22 +945,16 @@ public class InterSatVisu
         if (span.getData() != null) {
             AbsoluteDate stopTime = span.getEnd();
             final AbsoluteDate startTime = span.getStart();
-            if (span.getEnd()
-                .isAfter(DateUtils
-                    .toAbsoluteDate(headerInput.getAvailability().getStop(),
-                                    headerInput.getTimeScale()))) {
+            if (span.getEnd().isAfter(DateUtils
+                .toAbsoluteDate(headerInput.getAvailability().getStop()))) {
                 stopTime =
-                    DateUtils
-                        .toAbsoluteDate(headerInput.getAvailability().getStop(),
-                                        headerInput.getTimeScale());
+                    DateUtils.toAbsoluteDate(headerInput.getAvailability()
+                        .getStop());
             }
             tempBooleansList.add(span.getData());
             tempTimeIntervals
-                .add(new TimeInterval(DateUtils
-                    .toJulianDate(startTime, headerInput.getTimeScale()),
-                                      DateUtils
-                                          .toJulianDate(stopTime, headerInput
-                                              .getTimeScale())));
+                .add(new TimeInterval(DateUtils.toJulianDate(startTime),
+                                      DateUtils.toJulianDate(stopTime)));
         }
     }
 
@@ -1067,18 +1053,14 @@ public class InterSatVisu
         // Adds the first interval
         if (seenAtTheBeginning) {
             final TimeInterval viewInterval =
-                new TimeInterval(availability.getStart(),
-                                 DateUtils
-                                     .toJulianDate(datesWhenNotVisuInput.get(0),
-                                                   fileHeader.getTimeScale()));
+                new TimeInterval(availability.getStart(), DateUtils
+                    .toJulianDate(datesWhenNotVisuInput.get(0)));
             toReturn.add(viewInterval);
             currentlyInView = false;
         } else {
             final TimeInterval viewInterval =
-                new TimeInterval(availability.getStart(),
-                                 DateUtils
-                                     .toJulianDate(datesWhenVisuInput.get(0),
-                                                   fileHeader.getTimeScale()));
+                new TimeInterval(availability.getStart(), DateUtils
+                    .toJulianDate(datesWhenVisuInput.get(0)));
             toReturn.add(viewInterval);
         }
 
@@ -1087,11 +1069,9 @@ public class InterSatVisu
                notViewIter < datesWhenNotVisuInput.size()) {
 
             final JulianDate inView =
-                DateUtils.toJulianDate(datesWhenVisuInput.get(viewIter),
-                                       fileHeader.getTimeScale());
+                DateUtils.toJulianDate(datesWhenVisuInput.get(viewIter));
             final JulianDate outOfView =
-                DateUtils.toJulianDate(datesWhenNotVisuInput.get(notViewIter),
-                                       fileHeader.getTimeScale());
+                DateUtils.toJulianDate(datesWhenNotVisuInput.get(notViewIter));
 
             if (currentlyInView) {
                 toReturn.add(new TimeInterval(inView, outOfView));
@@ -1107,13 +1087,11 @@ public class InterSatVisu
         final JulianDate initialDate;
         if (currentlyInView) {
             initialDate =
-                DateUtils.toJulianDate(datesWhenVisuInput.get(viewIter),
-                                       fileHeader.getTimeScale());
+                DateUtils.toJulianDate(datesWhenVisuInput.get(viewIter));
             this.booleanList.add(true);
         } else {
             initialDate =
-                DateUtils.toJulianDate(datesWhenNotVisuInput.get(notViewIter),
-                                       fileHeader.getTimeScale());
+                DateUtils.toJulianDate(datesWhenNotVisuInput.get(notViewIter));
             this.booleanList.add(false);
         }
         toReturn.add(new TimeInterval(initialDate, availability.getStop()));

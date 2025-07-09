@@ -59,6 +59,9 @@ public class PathTest
         verifyFileOutput(pathFile, path.toString(), 1e-8);
         verifyFileOutput(pathCoverageFile, pathCoverage.toString(), 1e-8);
 
+        verifyFileOutput(pathFile, path.toString(), 1e-8);
+        verifyFileOutput(pathCoverageFile, pathCoverage.toString(), 1e-8);
+
         Assertions.assertTrue(pathCoverage.isShow());
         Assertions.assertEquals(availability, pathCoverage.getAvailability());
     }

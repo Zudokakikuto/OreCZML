@@ -24,13 +24,10 @@ import cesiumlanguagewriter.ClockStep;
 import cesiumlanguagewriter.JulianDate;
 import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.TimeInterval;
-import org.hipparchus.util.FastMath;
 import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.object.Utils.DateUtils;
-import org.orekit.data.DataContext;
 import org.orekit.files.ccsds.ndm.odm.oem.Oem;
 import org.orekit.time.AbsoluteDate;
-import org.orekit.time.TimeScale;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -76,11 +73,6 @@ public class Clock
     private final ClockStep step;
 
     /**
-     * The timescale of the clock.
-     */
-    private TimeScale timeScale;
-
-    /**
      * The list of all the julian dates of the simulation.
      */
     private List<JulianDate> JulianDateSimulation = new ArrayList<>();
@@ -98,34 +90,12 @@ public class Clock
     public Clock(final AbsoluteDate startDate, final AbsoluteDate stopDate,
                  final double multiplier) {
         this.step = ClockStep.TICK_DEPENDENT;
-        this.timeScale = DataContext.getDefault().getTimeScales().getUTC();
         this.availability =
-            new TimeInterval(DateUtils.toJulianDate(startDate, timeScale),
-                             DateUtils.toJulianDate(stopDate, timeScale));
+            new TimeInterval(DateUtils.toJulianDate(startDate),
+                             DateUtils.toJulianDate(stopDate));
         this.multiplier = multiplier;
         this.range = ClockRange.LOOP_STOP;
-        this.currentTime = DateUtils.toJulianDate(startDate, timeScale);
-        this.JulianDateSimulation = computeJulianDates();
-    }
-
-    /**
-     * The basic constructor for the clock object, with default parameters.
-     *
-     * @param startDate : The start date of the simulation
-     * @param stopDate : The stop date of the simulation
-     * @param timeScale : The timescale of the simulation
-     * @param multiplier : Seconds between each step.
-     */
-    public Clock(final AbsoluteDate startDate, final AbsoluteDate stopDate,
-                 final TimeScale timeScale, final double multiplier) {
-        this.step = ClockStep.TICK_DEPENDENT;
-        this.availability =
-            new TimeInterval(DateUtils.toJulianDate(startDate, timeScale),
-                             DateUtils.toJulianDate(stopDate, timeScale));
-        this.multiplier = multiplier;
-        this.range = ClockRange.LOOP_STOP;
-        this.currentTime = DateUtils.toJulianDate(startDate, timeScale);
-        this.timeScale = timeScale;
+        this.currentTime = DateUtils.toJulianDate(startDate);
         this.JulianDateSimulation = computeJulianDates();
     }
 
@@ -171,12 +141,8 @@ public class Clock
         final AbsoluteDate startTime = oem.getSegments().get(0).getStart();
         final AbsoluteDate stopTime = oem.getSegments().get(0).getStop();
 
-        this.timeScale = oem.getDataContext().getTimeScales().getUTC();
-
-        final JulianDate startJulianDate =
-            DateUtils.toJulianDate(startTime, timeScale);
-        final JulianDate stopJulianDate =
-            DateUtils.toJulianDate(stopTime, timeScale);
+        final JulianDate startJulianDate = DateUtils.toJulianDate(startTime);
+        final JulianDate stopJulianDate = DateUtils.toJulianDate(stopTime);
 
         this.step = ClockStep.SYSTEM_CLOCK_MULTIPLIER;
         this.availability = new TimeInterval(startJulianDate, stopJulianDate);
@@ -249,15 +215,6 @@ public class Clock
     }
 
     /**
-     * Gets time scale.
-     *
-     * @return the time scale
-     */
-    public TimeScale getTimeScale() {
-        return timeScale;
-    }
-
-    /**
      * Gets julian dates simulation.
      *
      * @return the julian dates simulation
@@ -275,15 +232,15 @@ public class Clock
      * @return : The list of all the julian dates of the simulation.
      */
     private List<JulianDate> computeJulianDates() {
+
+        // Initializes JulianDate array and starting point
         final List<JulianDate> toReturn = new ArrayList<>();
-        final JulianDate startDate = availability.getStart();
-        final JulianDate stopDate = availability.getStop();
-        final double totalSeconds = startDate.secondsDifference(stopDate);
-        final double numberOfIterationNotRounded = totalSeconds / multiplier;
-        final int numberOfIteration =
-            (int) FastMath.round(numberOfIterationNotRounded);
-        for (int i = 0; i < numberOfIteration; i++) {
-            toReturn.add(startDate.addSeconds(multiplier * i));
+        JulianDate startDate = availability.getStart();
+
+        // Iterates through time interval until startDate > stopDate
+        while (startDate.compareTo(availability.getStop()) < 1) {
+            toReturn.add(startDate);
+            startDate = startDate.addSeconds(multiplier);
         }
         return toReturn;
     }

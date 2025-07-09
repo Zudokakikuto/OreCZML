@@ -34,7 +34,6 @@ import org.orekit.czml.object.secondary.Cylinder;
 import org.orekit.frames.TopocentricFrame;
 import org.orekit.propagation.BoundedPropagator;
 import org.orekit.time.AbsoluteDate;
-import org.orekit.time.TimeScalesFactory;
 
 import cesiumlanguagewriter.CesiumHeightReference;
 
@@ -60,8 +59,7 @@ public class VisibilityConeTest
 
         final Header header = dummyHeader();
         final AbsoluteDate startDate =
-            DateUtils.toAbsoluteDate(header.getAvailability().getStart(),
-                                     TimeScalesFactory.getUTC());
+            DateUtils.toAbsoluteDate(header.getAvailability().getStart());
         final AbsoluteDate finalDate = startDate.shiftedBy(60.0);
 
         final GeodeticPoint toulouseFrame =

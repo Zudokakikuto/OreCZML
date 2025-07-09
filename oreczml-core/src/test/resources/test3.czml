@@ -21,7 +21,7 @@
       "referenceFrame":"INERTIAL"
     },
     "orientation":{
-      "interval":"2024-03-15T00:00:00Z/2024-03-15T05:00:30Z",
+      "interval":"2024-03-15T00:00:00Z/2024-03-15T05:00:00Z",
       "epoch":"2024-03-15T00:00:00Z",
       "unitQuaternion":[
         0,-0.5185780676446246,0.4814661419378099,0.5005004828613225,0.4987648830672333,
@@ -1285,7 +1285,7 @@
     "id":"GROUND_STATION/Toulouse Frame",
     "name":"Ground station : Toulouse Frame",
     "availability":"2024-03-15T00:00:00Z/2024-03-15T05:00:00Z",
-    "description":"<!--HTML-->\r\n<p>Id : GROUND_STATION/Toulouse Frame</p\r\n<p>Longitude : 0.025206045057302107</p>\r\n<p>Latitude : 0.7610455843443714</p>\r\n<p>Simulated from : 2460384:43200 UTC (3/15/2024 12:00:00 AM) to 2460384:61200 UTC (3/15/2024 5:00:00 AM)</p>",
+    "description":"<!--HTML-->\r\n<p>Id : GROUND_STATION/Toulouse Frame</p\r\n<p>Longitude : 0.025206045057302107</p>\r\n<p>Latitude : 0.7610455843443714</p>\r\n<p>Simulated from : 2460384:43237 TAI (3/15/2024 12:00:00 AM) to 2460384:61237 TAI (3/15/2024 5:00:00 AM)</p>",
     "billboard":{
       "horizontalOrigin":"CENTER",
       "color":{
@@ -1320,7 +1320,7 @@
     "id":"GROUND_STATION/Las Vegas Frame",
     "name":"Ground station : Las Vegas Frame",
     "availability":"2024-03-15T00:00:00Z/2024-03-15T05:00:00Z",
-    "description":"<!--HTML-->\r\n<p>Id : GROUND_STATION/Las Vegas Frame</p\r\n<p>Longitude : -2.009556392783003</p>\r\n<p>Latitude : 0.6313135157143809</p>\r\n<p>Simulated from : 2460384:43200 UTC (3/15/2024 12:00:00 AM) to 2460384:61200 UTC (3/15/2024 5:00:00 AM)</p>",
+    "description":"<!--HTML-->\r\n<p>Id : GROUND_STATION/Las Vegas Frame</p\r\n<p>Longitude : -2.009556392783003</p>\r\n<p>Latitude : 0.6313135157143809</p>\r\n<p>Simulated from : 2460384:43237 TAI (3/15/2024 12:00:00 AM) to 2460384:61237 TAI (3/15/2024 5:00:00 AM)</p>",
     "billboard":{
       "horizontalOrigin":"CENTER",
       "color":{
@@ -1443,7 +1443,7 @@
       "reference":"SPACECRAFT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}#position"
     },
     "orientation":{
-      "interval":"2024-03-15T02:00:00Z/2024-03-15T03:00:30Z",
+      "interval":"2024-03-15T02:00:00Z/2024-03-15T03:00:00Z",
       "epoch":"2024-03-15T02:00:00Z",
       "unitQuaternion":[
         0,-0.6830320416078882,0.15611097842188906,-0.183075666765294,0.6896230077307192,
@@ -1588,7 +1588,7 @@
       "reference":"SPACECRAFT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}#position"
     },
     "orientation":{
-      "interval":"2024-03-15T03:00:00Z/2024-03-15T04:00:30Z",
+      "interval":"2024-03-15T03:00:00Z/2024-03-15T04:00:00Z",
       "epoch":"2024-03-15T03:00:00Z",
       "unitQuaternion":[
         0,-0.034998267209696406,-0.17177259460169012,-0.4406924940801039,0.8803745922603513,

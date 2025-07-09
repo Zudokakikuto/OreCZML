@@ -129,7 +129,8 @@ public class ManeuverSequenceTest
 
         // Firing dates
         final AbsoluteDate firingDateLOF =
-            new AbsoluteDate(2024, 3, 15, 5, 0, 0.0, header.getTimeScale());
+            new AbsoluteDate(2024, 3, 15, 5, 0, 0.0,
+                             TimeScalesFactory.getUTC());
         final double duration = 3600;
 
         //// Attitude sequence to modelize the maneuver

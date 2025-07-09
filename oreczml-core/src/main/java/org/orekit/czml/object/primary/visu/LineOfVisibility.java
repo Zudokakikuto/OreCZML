@@ -307,7 +307,7 @@ public class LineOfVisibility
 
     public void displayTriangle() {
         if (lines.isEmpty()) {
-            this.triangle = new VisibilityTriangle(this, header);
+            this.triangle = new VisibilityTriangle(this);
         } else {
             throw new OreCzmlException(OreCzmlMessages.NOT_A_SINGLE_TRIANGLE_LINE);
         }
@@ -317,7 +317,7 @@ public class LineOfVisibility
         if (lines.isEmpty()) {
             throw new OreCzmlException(OreCzmlMessages.NOT_A_MULTIPLE_TRIANGLE_LINE);
         } else {
-            this.triangles.add(new VisibilityTriangle(lines.get(i), header));
+            this.triangles.add(new VisibilityTriangle(lines.get(i)));
         }
     }
 
@@ -485,12 +485,8 @@ public class LineOfVisibility
             new GregorianDate(1, 1, 1, 0, 0, 0.0);
         final JulianDate firstStartDate = new JulianDate(firstGregorianDate);
         final JulianDate lastDate =
-            DateUtils.toJulianDate(
-                                   satellite_input.getOrbits()
-                                       .get(satellite_input.getOrbits().size() -
-                                            1)
-                                       .getDate(),
-                                   headerInput.getTimeScale());
+            DateUtils.toJulianDate(satellite_input.getOrbits()
+                .get(satellite_input.getOrbits().size() - 1).getDate());
 
         final SpacecraftState initialState = propagator.getInitialState();
 
@@ -514,18 +510,15 @@ public class LineOfVisibility
 
         for (TimeSpanMap.Span<Boolean> span = visuMap.getFirstNonNullSpan();
              span != null; span = span.next()) {
-            if (span.getEnd()
-                .isAfter(DateUtils
-                    .toAbsoluteDate(headerInput.getAvailability().getStop(),
-                                    headerInput.getTimeScale()))) {
+            if (span.getEnd().isAfter(DateUtils
+                .toAbsoluteDate(headerInput.getAvailability().getStop()))) {
                 if (visuList.get(visuList.size() - 1)) {
                     visuList.add(false);
                 } else {
                     visuList.add(true);
                 }
                 final JulianDate startDate =
-                    DateUtils.toJulianDate(span.getStart(),
-                                           headerInput.getTimeScale());
+                    DateUtils.toJulianDate(span.getStart());
                 final JulianDate stopDate =
                     headerInput.getAvailability().getStop();
                 final TimeInterval currentTimeInterval =
@@ -534,11 +527,9 @@ public class LineOfVisibility
             } else {
                 visuList.add(span.getData());
                 final JulianDate startDate =
-                    DateUtils.toJulianDate(span.getStart(),
-                                           headerInput.getTimeScale());
+                    DateUtils.toJulianDate(span.getStart());
                 final JulianDate stopDate =
-                    DateUtils.toJulianDate(span.getEnd(),
-                                           headerInput.getTimeScale());
+                    DateUtils.toJulianDate(span.getEnd());
                 final TimeInterval currentTimeInterval =
                     new TimeInterval(startDate, stopDate);
                 timeIntervals.add(currentTimeInterval);

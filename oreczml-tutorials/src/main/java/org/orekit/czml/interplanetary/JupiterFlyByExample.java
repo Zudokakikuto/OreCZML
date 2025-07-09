@@ -90,7 +90,7 @@ public class JupiterFlyByExample {
         final AbsoluteDate finalDate =
             initialDate.shiftedBy(durationOfSimulation);
         final Clock clock =
-            new Clock(initialDate, finalDate, TimeScalesFactory.getUTC(),
+            new Clock(initialDate, finalDate,
                       TutorialUtils.STEP_BETWEEN_EACH_INSTANT);
 
         final Header header =

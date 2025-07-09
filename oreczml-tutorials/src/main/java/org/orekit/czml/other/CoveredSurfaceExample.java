@@ -96,7 +96,6 @@ public class CoveredSurfaceExample {
             TutorialUtils.loadResources("Default3DModels/ISSModel.glb");
 
         // Creation of the clock.
-
         final double durationOfSimulation = 1800.0; // in seconds;
         final AbsoluteDate startDate =
             new AbsoluteDate(2024, 3, 15, 0, 0, 0.0,
@@ -104,7 +103,7 @@ public class CoveredSurfaceExample {
         final AbsoluteDate finalDate =
             startDate.shiftedBy(durationOfSimulation);
         final Clock clock =
-            new Clock(startDate, finalDate, TimeScalesFactory.getUTC(),
+            new Clock(startDate, finalDate,
                       TutorialUtils.STEP_BETWEEN_EACH_INSTANT);
 
         final Header header =

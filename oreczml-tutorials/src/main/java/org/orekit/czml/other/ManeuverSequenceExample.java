@@ -103,8 +103,7 @@ public class ManeuverSequenceExample {
         final AbsoluteDate finalDate =
             startDate.shiftedBy(durationOfSimulation);
         final Clock clock =
-            new Clock(startDate, finalDate, TimeScalesFactory.getUTC(),
-                      stepBetweenEachInstant);
+            new Clock(startDate, finalDate, stepBetweenEachInstant);
 
         // Build of the header
         final Header header =
@@ -156,7 +155,8 @@ public class ManeuverSequenceExample {
 
         // Firing dates
         final AbsoluteDate firingDateLOF =
-            new AbsoluteDate(2024, 3, 15, 5, 0, 0.0, clock.getTimeScale());
+            new AbsoluteDate(2024, 3, 15, 5, 0, 0.0,
+                             TimeScalesFactory.getUTC());
         final double duration = 3600;
 
         //// Attitude sequence to modelize the maneuver

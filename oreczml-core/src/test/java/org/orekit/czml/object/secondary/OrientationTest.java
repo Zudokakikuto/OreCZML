@@ -27,7 +27,6 @@ import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.frames.FramesFactory;
 import org.orekit.propagation.BoundedPropagator;
 import org.orekit.time.AbsoluteDate;
-import org.orekit.time.TimeScalesFactory;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -55,8 +54,7 @@ public class OrientationTest
 
         final Header header = dummyHeader();
         final AbsoluteDate startDate =
-            DateUtils.toAbsoluteDate(header.getAvailability().getStart(),
-                                     TimeScalesFactory.getUTC());
+            DateUtils.toAbsoluteDate(header.getAvailability().getStart());
         final AbsoluteDate stopDate = startDate.shiftedBy(60.0);
 
         final BoundedPropagator propagator =

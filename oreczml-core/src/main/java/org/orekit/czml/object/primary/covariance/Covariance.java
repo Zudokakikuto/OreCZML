@@ -177,8 +177,7 @@ public class Covariance
         this.setAvailability(spacecraft.getAvailability());
         this.julianDates =
             Collections.unmodifiableList(DateUtils
-                .toJulianDates(spacecraft.getAbsoluteDateList(),
-                               header.getTimeScale()));
+                .toJulianDates(spacecraft.getAbsoluteDateList()));
         this.positionReference =
             new Reference(spacecraft.getId() + DEFAULT_H_POSITION);
         this.covarianceList = new ArrayList<>(covariances);

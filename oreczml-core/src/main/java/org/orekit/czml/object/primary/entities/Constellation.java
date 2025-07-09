@@ -26,7 +26,6 @@ import org.orekit.czml.object.primary.Header;
 import org.orekit.orbits.Orbit;
 import org.orekit.propagation.BoundedPropagator;
 import org.orekit.time.AbsoluteDate;
-import org.orekit.time.TimeScale;
 
 import java.awt.Color;
 import java.io.IOException;
@@ -91,11 +90,6 @@ public class Constellation
      * The total number of satellites of the constellation.
      */
     private final int totalOfSatellite;
-
-    /**
-     * The timescale from {@link org.orekit.time.TimeScale}.
-     */
-    private final TimeScale timeScale;
 
     /**
      * The list referencing all the satellites.
@@ -177,7 +171,6 @@ public class Constellation
         this.setId(customID);
         this.setAvailability(intervalOfStudy);
         this.propagators = new ArrayList<>(propagatorsInput);
-        this.timeScale = header.getTimeScale();
         this.defineMultipleArgument(finalDate, colorList, multipleModels,
                                     modelsInput);
     }
@@ -225,15 +218,6 @@ public class Constellation
     }
 
     // Getters
-
-    /**
-     * This getter returns the timescale.
-     *
-     * @return : The timescale used.
-     */
-    public TimeScale getTimeScale() {
-        return timeScale;
-    }
 
     /**
      * This getter returns all the satellites of the constellation.

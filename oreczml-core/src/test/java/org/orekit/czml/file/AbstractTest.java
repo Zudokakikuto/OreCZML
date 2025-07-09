@@ -16,23 +16,9 @@
  */
 package org.orekit.czml.file;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.NavigableSet;
-import java.util.TreeSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
-import org.hipparchus.util.Pair;
 import org.junit.jupiter.api.Assertions;
 import org.orekit.bodies.OneAxisEllipsoid;
 import org.orekit.czml.errors.OreCzmlException;
@@ -68,6 +54,19 @@ import org.orekit.utils.Constants;
 import org.orekit.utils.IERSConventions;
 
 import cesiumlanguagewriter.Cartesian;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.NavigableSet;
+import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * The type Abstract test.
@@ -121,8 +120,7 @@ public class AbstractTest {
         final AbsoluteDate starDate =
             new AbsoluteDate(2024, 1, 1, 0, 0, 0.0, TimeScalesFactory.getUTC());
         final AbsoluteDate stopDate = starDate.shiftedBy(60.0);
-        final Clock clockForHeader =
-            new Clock(starDate, stopDate, TimeScalesFactory.getUTC(), 10.0);
+        final Clock clockForHeader = new Clock(starDate, stopDate, 10.0);
         return new Header("Dummy_Header", clockForHeader);
     }
 
@@ -275,24 +273,19 @@ public class AbstractTest {
             new TreeSet<>(findNewlineChars(templateFile));
 
         // Compares unit test output to template value
-        final ParseOutput testOutput =
+        final Pair<Integer, String> testOutput =
             compareValues(templateValues, testValues, lineStartValues,
                           accuracy);
 
-        if (testOutput.parseStatus == ParseOutput.ParseStatus.SUCCESS) {
-            Assertions.assertNull(testOutput.parseError);
+        if (testOutput.first() == -1) {
+            Assertions.assertEquals(-1, testOutput.first());
         } else {
-            final ParseError parseError = testOutput.parseError;
-            final StringBuilder msgBuilder =
-                new StringBuilder(parseError.getError() + " found at line ");
-            msgBuilder.append(String.valueOf(parseError.lineNumber))
-                .append(" of ").append(templateFileName);
-            msgBuilder.append(". Found '").append(parseError.testValue)
-                .append("'");
-            msgBuilder.append("instead of '").append(parseError.templateValue)
-                .append("'");
-
-            throw new AssertionError(msgBuilder.toString());
+            final String message =
+                testOutput.second() +
+                                   " found at line " +
+                                   String.valueOf(testOutput.first()) + " of " +
+                                   templateFileName;
+            throw new AssertionError(message);
         }
     }
 
@@ -370,7 +363,7 @@ public class AbstractTest {
      * @param accuracy Required significant figure level of accuracy
      * @return boolean
      */
-    private static ParseOutput
+    private static Pair<Integer, String>
         compareValues(final List<Pair<Integer, Object>> templateValues,
                       final List<Pair<Integer, Object>> testValues,
                       final NavigableSet<Integer> lineStartValues,
@@ -384,8 +377,8 @@ public class AbstractTest {
         // Compare individual values in the arrays.
         for (int i = 0; i < max_val; i++) {
 
-            final Object templateValue = templateValues.get(i).getValue();
-            final Object testValue = testValues.get(i).getValue();
+            final Object templateValue = templateValues.get(i).second();
+            final Object testValue = testValues.get(i).second();
 
             // Compare two doubles
             if (templateValue instanceof Double &&
@@ -396,10 +389,7 @@ public class AbstractTest {
                     final Integer lineValue =
                         findErrorLineValue(lineStartValues,
                                            templateValues.get(i));
-                    return new ParseOutput(ParseOutput.ParseStatus.ERROR,
-                                           new ParseError(lineValue,
-                                                          "Numeric Error",
-                                                          decimal1, decimal2));
+                    return new Pair<>(lineValue, "Numeric error");
                 }
                 // Compare two strings of text
             } else if (templateValue instanceof String &&
@@ -416,10 +406,7 @@ public class AbstractTest {
                     final Integer lineValue =
                         findErrorLineValue(lineStartValues,
                                            templateValues.get(i));
-                    return new ParseOutput(ParseOutput.ParseStatus.ERROR,
-                                           new ParseError(lineValue,
-                                                          "Text Error", str1,
-                                                          str2));
+                    return new Pair<>(lineValue, "Text error");
                 }
             }
             // Type mismatch error - means there is a mismatch in the data
@@ -427,16 +414,13 @@ public class AbstractTest {
             else {
                 final Integer lineValue =
                     findErrorLineValue(lineStartValues, templateValues.get(i));
-                return new ParseOutput(ParseOutput.ParseStatus.ERROR,
-                                       new ParseError(lineValue,
-                                                      "Type Mismatch Error",
-                                                      templateValue,
-                                                      testValue));
+                return new Pair<>(lineValue, "Type mismatch error");
             }
         }
 
         // Can only reach this point if the files match perfectly.
-        return new ParseOutput(ParseOutput.ParseStatus.SUCCESS, null);
+        return new Pair<>(-1, "test succeeded");
+
     }
 
     /**
@@ -514,26 +498,8 @@ public class AbstractTest {
         findErrorLineValue(final NavigableSet<Integer> lineStartValues,
                            final Pair<Integer, Object> templateValue) {
         final Integer lineStartCharValue =
-            lineStartValues.lower(templateValue.getKey());
+            lineStartValues.lower(templateValue.first());
         return lineStartValues.headSet(lineStartCharValue).size() + 1;
     }
 
-    /**
-     * Record for output of parsing and comparing Czml against a template
-     * reference.
-     */
-    private record ParseOutput(AbstractTest.ParseOutput.ParseStatus parseStatus,
-                               ParseError parseError) {
-
-        /** Status. */
-        private enum ParseStatus{ERROR,SUCCESS;}
-
-    }
-
-    /** Record for storing info on a parsing error. */
-    private record ParseError(Integer lineNumber, String errorType, Object templateValue, Object testValue) {
-        public String getError() {
-            return errorType;
-        }
-    }
 }

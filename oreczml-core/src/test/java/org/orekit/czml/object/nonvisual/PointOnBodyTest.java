@@ -66,7 +66,7 @@ public class PointOnBodyTest
                                           availability3, availability4));
 
         final List<JulianDate> julianDates =
-            DateUtils.toJulianDates(availabilities);
+            DateUtils.toJulianDateList(availabilities);
 
         final List<GeodeticPoint> points = getPoints();
 

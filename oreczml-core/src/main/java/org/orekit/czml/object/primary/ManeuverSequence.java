@@ -200,11 +200,9 @@ public class ManeuverSequence
         this.setName(DEFAULT_NAME +
                      length + DEFAULT_APPLIED + propagator.toString());
         final JulianDate startDate =
-            DateUtils.toJulianDate(propagator.getMinDate(),
-                                   header.getTimeScale());
+            DateUtils.toJulianDate(propagator.getMinDate());
         final JulianDate stopDate =
-            DateUtils.toJulianDate(propagator.getMaxDate(),
-                                   header.getTimeScale());
+            DateUtils.toJulianDate(propagator.getMaxDate());
         this.setAvailability(new TimeInterval(startDate, stopDate));
         this.satellitePositionReference =
             new Reference(satelliteInput.getId() + DEFAULT_H_POSITION);
@@ -328,11 +326,9 @@ public class ManeuverSequence
         this.setName(DEFAULT_NAME +
                      length + DEFAULT_APPLIED + propagator.toString());
         final JulianDate startDate =
-            DateUtils.toJulianDate(propagator.getMinDate(),
-                                   header.getTimeScale());
+            DateUtils.toJulianDate(propagator.getMinDate());
         final JulianDate stopDate =
-            DateUtils.toJulianDate(propagator.getMaxDate(),
-                                   header.getTimeScale());
+            DateUtils.toJulianDate(propagator.getMaxDate());
         this.setAvailability(new TimeInterval(startDate, stopDate));
         this.satellitePositionReference =
             new Reference(satelliteInput.getId() + DEFAULT_H_POSITION);
@@ -595,28 +591,28 @@ public class ManeuverSequence
             for (TimeSpanMap.Span<Boolean> span = map.getFirstNonNullSpan();
                  span != null; span = span.next()) {
                 if (span.getData()) {
-                    if (span.getEnd().isAfter(DateUtils
-                        .toAbsoluteDate(headerInput.getAvailability().getStop(),
-                                        headerInput.getTimeScale()))) {
+                    if (span.getEnd()
+                        .isAfter(DateUtils.toAbsoluteDate(headerInput
+                            .getAvailability().getStop()))) {
                         toReturn
                             .add(new TimeInterval(DateUtils
-                                .toJulianDate(span.getStart(),
-                                              headerInput.getTimeScale()),
+                                .toJulianDate(span.getStart()),
                                                   headerInput.getAvailability()
                                                       .getStop()));
                     } else if (span.getStart()
-                        .isBefore(DateUtils
-                            .toAbsoluteDate(headerInput.getAvailability()
-                                .getStart(), headerInput.getTimeScale()))) {
+                        .isBefore(DateUtils.toAbsoluteDate(headerInput
+                            .getAvailability().getStart()))) {
                         toReturn
-                            .add(new TimeInterval(headerInput.getAvailability()
-                                .getStart(), DateUtils.toJulianDate(span.getEnd(), headerInput.getTimeScale())));
+                            .add(new TimeInterval(headerInput
+                                .getAvailability().getStart(),
+                                                  DateUtils.toJulianDate(span
+                                                      .getEnd())));
                     } else {
-                        toReturn.add(new TimeInterval(DateUtils
-                            .toJulianDate(span.getStart(), headerInput
-                                .getTimeScale()), DateUtils
-                                    .toJulianDate(span.getEnd(),
-                                                  headerInput.getTimeScale())));
+                        toReturn
+                            .add(new TimeInterval(DateUtils
+                                .toJulianDate(span.getStart()),
+                                                  DateUtils.toJulianDate(span
+                                                      .getEnd())));
                     }
                 }
             }
