@@ -167,7 +167,7 @@ class GlobalTests
         // Creation of the clock
         final double stepBetweenEachInstant = 60.0; // in seconds
         final Clock clock =
-            new Clock(startDate, finalDate, UTC, stepBetweenEachInstant);
+            new Clock(startDate, finalDate, stepBetweenEachInstant);
 
         // Creation of the header
         final Header header =
@@ -282,7 +282,7 @@ class GlobalTests
         // Creation of the clock
         final double stepBetweenEachInstant = 60.0; // in seconds
         final Clock clock =
-            new Clock(startDate, finalDate, UTC, stepBetweenEachInstant);
+            new Clock(startDate, finalDate, stepBetweenEachInstant);
 
         final IERSConventions IERS = IERSConventions.IERS_2010;
         final Frame ITRF = FramesFactory.getITRF(IERS, true);
@@ -593,7 +593,7 @@ class GlobalTests
         final AbsoluteDate finalDate =
             startDate.shiftedBy(durationOfSimulation);
         final Clock clock =
-            new Clock(startDate, finalDate, UTC, stepBetweenEachInstant);
+            new Clock(startDate, finalDate, stepBetweenEachInstant);
 
         // Build of the header
         final Header header =
@@ -650,7 +650,8 @@ class GlobalTests
 
         // Firing dates
         final AbsoluteDate firingDateLOF =
-            new AbsoluteDate(2024, 3, 15, 2, 0, 0.0, clock.getTimeScale());
+            new AbsoluteDate(2024, 3, 15, 2, 0, 0.0,
+                             TimeScalesFactory.getUTC());
         final double duration = 3600;
 
         //// Attitude sequence to modelize the maneuver
@@ -768,8 +769,6 @@ class GlobalTests
             new CzmlGroundStation(topocentricLasVegas, header);
         groundStation.add(groundStationToulouse);
         groundStation.add(groundStationLasVegas);
-        final CzmlGroundStation soloGroundStation =
-            new CzmlGroundStation(topocentricToulouse, header);
 
         final List<ManeuverSequence> sequences = new ArrayList<>();
         sequences.add(maneuverSequence);

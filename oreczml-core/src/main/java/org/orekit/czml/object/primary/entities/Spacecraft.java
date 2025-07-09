@@ -263,11 +263,7 @@ public class Spacecraft
         this.setId(customID);
         this.setName(DEFAULT_NAME);
         this.setAvailability(new TimeInterval(DateUtils
-            .toJulianDate(startDateInput, header.getTimeScale()),
-                                              DateUtils
-                                                  .toJulianDate(finalDateInput,
-                                                                header
-                                                                    .getTimeScale())));
+            .toJulianDate(startDateInput), DateUtils.toJulianDate(finalDateInput)));
         this.spacecraftPropagator = propagator;
         this.description =
             "<!--HTML-->\r\n<p>Id : " +
@@ -551,8 +547,7 @@ public class Spacecraft
      * @return the julian dates
      */
     public List<JulianDate> getJulianDates() {
-        return DateUtils.toJulianDates(getAbsoluteDateList(),
-                                       header.getTimeScale());
+        return DateUtils.toJulianDates(getAbsoluteDateList());
     }
 
     /**

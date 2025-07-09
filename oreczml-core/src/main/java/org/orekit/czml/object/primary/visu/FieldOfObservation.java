@@ -255,8 +255,7 @@ public class FieldOfObservation
         final List<SpacecraftState> satelliteSpaceCraftStates =
             satellite.getSpaceCraftStates();
         this.julianDates =
-            DateUtils.toJulianDates(satellite.getAbsoluteDateList(),
-                                    header.getTimeScale());
+            DateUtils.toJulianDates(satellite.getAbsoluteDateList());
         for (int i = 0; i < julianDates.size(); i++) {
             final SpacecraftState currentState =
                 satelliteSpaceCraftStates.get(i);
@@ -264,8 +263,7 @@ public class FieldOfObservation
                 currentState.getFrame().getTransformTo(body.getBodyFrame(),
                                                        currentState.getDate());
             final Transform currentTransformFovToBody =
-                new Transform(DateUtils.toAbsoluteDate(julianDates.get(i),
-                                                       header.getTimeScale()),
+                new Transform(DateUtils.toAbsoluteDate(julianDates.get(i)),
                               currentState.toTransform().getInverse(),
                               currentInertToBody);
             final List<List<GeodeticPoint>> currentFootprints =

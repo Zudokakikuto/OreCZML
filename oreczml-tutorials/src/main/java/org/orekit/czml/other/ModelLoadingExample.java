@@ -84,8 +84,7 @@ public class ModelLoadingExample {
         final AbsoluteDate finalDate =
             startDate.shiftedBy(TutorialUtils.CLASSIC_DURATION_OF_SIMULATION);
         final Clock clock =
-            new Clock(startDate, finalDate, TimeScalesFactory.getUTC(),
-                      stepBetweenEachInstant);
+            new Clock(startDate, finalDate, stepBetweenEachInstant);
 
         // Build of the header
         final Header header =

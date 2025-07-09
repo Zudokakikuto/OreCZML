@@ -95,21 +95,22 @@ public class VisibilityTriangle
     /** Availability of the triangles. */
     private List<CzmlShow> shows;
 
-    /** Header of the simulations. */
-    private Header header;
-
     /** The list containing all the id of the references points. */
     private List<List<String>> idRefPoints = new ArrayList<>();
 
     /** List of three points for each triangle. */
     private List<List<Cartesian>> trianglesCartesians = new ArrayList<>();
 
-    VisibilityTriangle(final LineOfVisibility line, final Header header) {
+    /**
+     * Default constructor of the visibility triangle.
+     *
+     * @param line : The line of visibility
+     */
+    VisibilityTriangle(final LineOfVisibility line) {
         this.shows = line.getShowList();
         this.setId(DEFAULT_ID + line.getSatellite().getId());
         this.setName(DEFAULT_NAME + line.getSatellite().getName());
         this.line = line;
-        this.header = header;
         this.spacecraftStatesSatellite =
             line.getSatellite().getSpaceCraftStates();
         this.trianglesCartesians =
@@ -205,11 +206,9 @@ public class VisibilityTriangle
                 final TimeInterval currentTimeInterval =
                     currentShow.getAvailability();
                 final AbsoluteDate startInterval =
-                    DateUtils.toAbsoluteDate(currentTimeInterval.getStart(),
-                                             header.getTimeScale());
+                    DateUtils.toAbsoluteDate(currentTimeInterval.getStart());
                 final AbsoluteDate stopInterval =
-                    DateUtils.toAbsoluteDate(currentTimeInterval.getStop(),
-                                             header.getTimeScale());
+                    DateUtils.toAbsoluteDate(currentTimeInterval.getStop());
 
                 for (final SpacecraftState currentState : statesInput) {
                     // If the state is the starting state of the approach

@@ -16,16 +16,15 @@
  */
 package org.orekit.czml.object.secondary;
 
-import java.awt.Color;
-import java.io.IOException;
-import java.net.URISyntaxException;
-
-import org.junit.jupiter.api.Test;
-import org.orekit.czml.file.AbstractTest;
-
 import cesiumlanguagewriter.CesiumHorizontalOrigin;
 import cesiumlanguagewriter.CesiumLabelStyle;
 import cesiumlanguagewriter.CesiumVerticalOrigin;
+import org.junit.jupiter.api.Test;
+import org.orekit.czml.file.AbstractTest;
+
+import java.awt.Color;
+import java.io.IOException;
+import java.net.URISyntaxException;
 
 /**
  * The type Label test.

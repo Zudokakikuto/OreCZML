@@ -24,7 +24,6 @@ import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.TimeInterval;
 import org.orekit.czml.file.CzmlFile;
 import org.orekit.czml.object.secondary.Clock;
-import org.orekit.time.TimeScale;
 
 import java.io.StringWriter;
 
@@ -213,15 +212,6 @@ public class Header
      */
     public Clock getClock() {
         return clock;
-    }
-
-    /**
-     * Gets time scale.
-     *
-     * @return the time scale
-     */
-    public TimeScale getTimeScale() {
-        return getClock().getTimeScale();
     }
 
     /**

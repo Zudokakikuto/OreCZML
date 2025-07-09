@@ -128,23 +128,17 @@ public class Orientation
         if (!invertToItrf) {
             this.attitudes = attitudesTemp;
             final JulianDate startDate =
-                DateUtils.toJulianDate(attitudes.get(0).getDate(),
-                                       header.getTimeScale());
+                DateUtils.toJulianDate(attitudes.get(0).getDate());
             final JulianDate finalDate =
-                DateUtils.toJulianDate(
-                                       attitudes.get(attitudes.size() - 1)
-                                           .getDate()
-                                           .shiftedBy(header.getClock()
-                                               .getMultiplier()),
-                                       header.getTimeScale());
+                DateUtils.toJulianDate(attitudes.get(attitudes.size() - 1)
+                    .getDate());
             final Frame ITRF =
                 FramesFactory.getITRF(IERSConventions.IERS_2010, true);
             this.interval = new TimeInterval(startDate, finalDate);
 
             for (final Attitude currentAttitude : attitudes) {
                 final JulianDate currentDate =
-                    DateUtils.toJulianDate(currentAttitude.getDate(),
-                                           header.getTimeScale());
+                    DateUtils.toJulianDate(currentAttitude.getDate());
                 this.julianDates.add(currentDate);
 
                 final Rotation rotationFromObjectFrameToITRF =
@@ -198,21 +192,15 @@ public class Orientation
         } else {
             this.attitudes = attitudesTemp;
             final JulianDate startDate =
-                DateUtils.toJulianDate(attitudes.get(0).getDate(),
-                                       header.getTimeScale());
+                DateUtils.toJulianDate(attitudes.get(0).getDate());
             final JulianDate finalDate =
-                DateUtils.toJulianDate(
-                                       attitudes.get(attitudes.size() - 1)
-                                           .getDate()
-                                           .shiftedBy(header.getClock()
-                                               .getMultiplier()),
-                                       header.getTimeScale());
+                DateUtils.toJulianDate(attitudes.get(attitudes.size() - 1)
+                    .getDate().shiftedBy(header.getClock().getMultiplier()));
             this.interval = new TimeInterval(startDate, finalDate);
 
             for (final Attitude currentAttitude : attitudes) {
                 final JulianDate currentDate =
-                    DateUtils.toJulianDate(currentAttitude.getDate(),
-                                           header.getTimeScale());
+                    DateUtils.toJulianDate(currentAttitude.getDate());
                 this.julianDates.add(currentDate);
 
                 final Rotation objectRotation = currentAttitude.getRotation();
@@ -297,23 +285,17 @@ public class Orientation
         if (!invertToITRF) {
             this.attitudes = attitudes;
             final JulianDate startDate =
-                DateUtils.toJulianDate(attitudes.get(0).getDate(),
-                                       header.getTimeScale());
+                DateUtils.toJulianDate(attitudes.get(0).getDate());
             final JulianDate finalDate =
-                DateUtils.toJulianDate(
-                                       attitudes.get(attitudes.size() - 1)
-                                           .getDate()
-                                           .shiftedBy(header.getClock()
-                                               .getMultiplier()),
-                                       header.getTimeScale());
+                DateUtils.toJulianDate(attitudes.get(attitudes.size() - 1)
+                    .getDate());
             final Frame ITRF =
                 FramesFactory.getITRF(IERSConventions.IERS_2010, true);
             this.interval = new TimeInterval(startDate, finalDate);
 
             for (final Attitude currentAttitude : attitudes) {
                 final JulianDate currentDate =
-                    DateUtils.toJulianDate(currentAttitude.getDate(),
-                                           header.getTimeScale());
+                    DateUtils.toJulianDate(currentAttitude.getDate());
                 this.julianDates.add(currentDate);
 
                 final Rotation rotationFromObjectFrameToITRF =
@@ -367,21 +349,15 @@ public class Orientation
         } else {
             this.attitudes = attitudes;
             final JulianDate startDate =
-                DateUtils.toJulianDate(attitudes.get(0).getDate(),
-                                       header.getTimeScale());
+                DateUtils.toJulianDate(attitudes.get(0).getDate());
             final JulianDate finalDate =
-                DateUtils.toJulianDate(
-                                       attitudes.get(attitudes.size() - 1)
-                                           .getDate()
-                                           .shiftedBy(header.getClock()
-                                               .getMultiplier()),
-                                       header.getTimeScale());
+                DateUtils.toJulianDate(attitudes.get(attitudes.size() - 1)
+                    .getDate());
             this.interval = new TimeInterval(startDate, finalDate);
 
             for (final Attitude currentAttitude : attitudes) {
                 final JulianDate currentDate =
-                    DateUtils.toJulianDate(currentAttitude.getDate(),
-                                           header.getTimeScale());
+                    DateUtils.toJulianDate(currentAttitude.getDate());
                 this.julianDates.add(currentDate);
 
                 final Rotation objectRotation = currentAttitude.getRotation();

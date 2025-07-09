@@ -36,7 +36,6 @@ import org.orekit.propagation.EphemerisGenerator;
 import org.orekit.propagation.SpacecraftState;
 import org.orekit.propagation.numerical.NumericalPropagator;
 import org.orekit.time.AbsoluteDate;
-import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.Constants;
 
 import java.io.IOException;
@@ -66,8 +65,7 @@ public class ConstellationTest
 
         final Header header = dummyHeader();
         final AbsoluteDate startDate =
-            DateUtils.toAbsoluteDate(header.getAvailability().getStart(),
-                                     TimeScalesFactory.getUTC());
+            DateUtils.toAbsoluteDate(header.getAvailability().getStart());
         final AbsoluteDate finalDate = startDate.shiftedBy(60.0);
 
         final String ISSModel = loadResources("Default3DModels/ISSModel.glb");

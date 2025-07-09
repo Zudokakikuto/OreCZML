@@ -23,7 +23,6 @@ import org.orekit.czml.object.primary.entities.Constellation;
 import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.propagation.BoundedPropagator;
 import org.orekit.time.AbsoluteDate;
-import org.orekit.time.TimeScalesFactory;
 
 import java.awt.Color;
 import java.io.IOException;
@@ -53,8 +52,7 @@ public class GroundTrackTest
 
         final Header header = dummyHeader();
         final AbsoluteDate startDate =
-            DateUtils.toAbsoluteDate(header.getAvailability().getStart(),
-                                     TimeScalesFactory.getUTC());
+            DateUtils.toAbsoluteDate(header.getAvailability().getStart());
         final AbsoluteDate finalDate = startDate.shiftedBy(60.0);
 
         final BoundedPropagator propagator =

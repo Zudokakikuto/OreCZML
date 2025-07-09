@@ -28,7 +28,6 @@ import org.orekit.files.ccsds.ndm.ParserBuilder;
 import org.orekit.files.ccsds.ndm.odm.oem.Oem;
 import org.orekit.files.ccsds.ndm.odm.oem.OemParser;
 import org.orekit.time.AbsoluteDate;
-import org.orekit.time.TimeScalesFactory;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -54,8 +53,7 @@ public class ClockTest
 
         final Header header = dummyHeader();
         final AbsoluteDate startDate =
-            DateUtils.toAbsoluteDate(header.getAvailability().getStart(),
-                                     TimeScalesFactory.getUTC());
+            DateUtils.toAbsoluteDate(header.getAvailability().getStart());
         final AbsoluteDate finalDate = startDate.shiftedBy(60.0);
         final TimeInterval interval =
             new TimeInterval(header.getAvailability().getStart(),
@@ -67,8 +65,7 @@ public class ClockTest
         final OemParser oemParser = parserBuilder.buildOemParser();
         final Oem oem = oemParser.parse(dataSource);
 
-        final Clock clock =
-            new Clock(startDate, finalDate, TimeScalesFactory.getUTC(), 10.0);
+        final Clock clock = new Clock(startDate, finalDate, 10.0);
 
         final Clock clockCoverage =
             new Clock(interval, header.getAvailability().getStart(), 60.0,
