@@ -151,8 +151,6 @@ public class DateUtils {
      * Converts a julian date to an absolute date, given the timescale.
      *
      * @param julianDate : The julian date to convert
-     * @param timeScale : The timescale in which the absolute date must be
-     *        expressed.
      * @return : The absolute date from the conversion in the timescale.
      */
     public static AbsoluteDate toAbsoluteDate(final JulianDate julianDate) {
@@ -166,8 +164,6 @@ public class DateUtils {
      * timescale.
      *
      * @param julianDates : The list of julian dates to convert
-     * @param timeScale : The timescale in which the absolute date will be
-     *        expressed
      * @return : A list of absolute date from the conversion
      */
     public static List<AbsoluteDate>
