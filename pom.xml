@@ -21,6 +21,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.compiler.source>17</project.compiler.source>
         <project.compiler.target>17</project.compiler.target>
+        <sonar.projectKey>${env.CI_PROJECT_NAMESPACE}:${env.CI_PROJECT_NAME}</sonar.projectKey>
+        <sonar.projectName>${env.CI_PROJECT_TITLE} (${env.CI_PROJECT_NAMESPACE}:${env.CI_PROJECT_NAME})</sonar.projectName>
+        <sonar.qualitygate.wait>true</sonar.qualitygate.wait>
         <oreczml.orekit.version>12.2</oreczml.orekit.version>
         <oreczml.maven-compiler-plugin.version>3.13.0</oreczml.maven-compiler-plugin.version>
         <oreczml.maven-source-plugin.version>3.3.1</oreczml.maven-source-plugin.version>
