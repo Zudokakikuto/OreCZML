@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -16,8 +16,8 @@
  */
 package org.orekit.czml.object.primary.systems;
 
+import cesiumlanguagewriter.TimeInterval;
 import org.orekit.bodies.OneAxisEllipsoid;
-import org.orekit.czml.object.primary.Header;
 import org.orekit.frames.FramesFactory;
 import org.orekit.utils.Constants;
 import org.orekit.utils.IERSConventions;
@@ -99,8 +99,8 @@ public class CentralBodyReferenceSystemBuilder {
      */
     private String name = DEFAULT_NAME;
 
-    /** The header to use if several headers are used. */
-    private Header header;
+    /** The availability of the central body reference system. */
+    private TimeInterval availability;
 
     // Constructor
 
@@ -108,10 +108,10 @@ public class CentralBodyReferenceSystemBuilder {
      * The basic constructor for the central body reference system, it does not
      * need an argument, all arguments have a default value.
      *
-     * @param headerInput : The header considered
+     * @param availability : The availability
      */
-    public CentralBodyReferenceSystemBuilder(final Header headerInput) {
-        this.header = headerInput;
+    public CentralBodyReferenceSystemBuilder(final TimeInterval availability) {
+        this.availability = availability;
     }
 
     /**
@@ -168,15 +168,15 @@ public class CentralBodyReferenceSystemBuilder {
     }
 
     /**
-     * Function to set up the header.
+     * Function to set up the availability.
      *
-     * @param headerInput : The header to set up.
+     * @param availabilityInput : The availability to set up.
      * @return : The central body reference system builder with the given
-     *         header.
+     *         availability.
      */
     public CentralBodyReferenceSystemBuilder
-        withHeader(final Header headerInput) {
-        this.header = headerInput;
+        withAvailability(final TimeInterval availabilityInput) {
+        this.availability = availabilityInput;
         return this;
     }
 
@@ -188,7 +188,7 @@ public class CentralBodyReferenceSystemBuilder {
      */
     public CentralBodyReferenceSystem build() {
         return new CentralBodyReferenceSystem(body, id, name, color1, color2,
-                                              color3, header);
+                                              color3, availability);
     }
 
 }

@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -76,10 +76,9 @@ public class EarthOffline {
         // zoom out. To be able to zoom in,
         // please use a token from CesiumIon, available here :
         // https://ion.cesium.com/tokens?page=1
-        final Body earth = BodyFactory.getEarth(header);
+        final Body earth = BodyFactory.getEarth(clock);
 
-        final CzmlFile file =
-            CzmlFile.builder().withHeader(header).withBody(earth).build();
+        final CzmlFile file = CzmlFile.builder(header).withBody(earth).build();
 
         file.write(output);
     }

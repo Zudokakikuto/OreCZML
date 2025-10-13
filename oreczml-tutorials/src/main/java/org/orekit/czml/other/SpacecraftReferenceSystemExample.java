@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -14,14 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.orekit.czml.other;
 
-import java.awt.Color;
-
+import org.orekit.czml.TutorialUtils;
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
-import org.orekit.czml.TutorialUtils;
 import org.orekit.czml.file.CzmlFile;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.primary.entities.Spacecraft;
@@ -42,6 +41,8 @@ import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.Constants;
 import org.orekit.utils.IERSConventions;
+
+import java.awt.Color;
 
 /**
  * This tutorial provides an example of how a satellite reference system can be
@@ -75,6 +76,7 @@ public class SpacecraftReferenceSystemExample {
                                          "/Javascript/public");
 
         // Creation of the clock.
+
         final AbsoluteDate startDate =
             new AbsoluteDate(2024, 3, 15, 0, 0, 0.0,
                              TimeScalesFactory.getUTC());
@@ -129,13 +131,12 @@ public class SpacecraftReferenceSystemExample {
 
         // Creation of the satellite
         final Spacecraft satellite =
-            Spacecraft.builder(boundedPropagator, header)
-                .withColor(Color.ORANGE).withReferenceSystem().build();
+            Spacecraft.builder(boundedPropagator, clock).withColor(Color.ORANGE)
+                .withReferenceSystem().build();
 
         // Creation of the file
         final CzmlFile file =
-            CzmlFile.builder().withHeader(header).withSpacecraft(satellite)
-                .build();
+            CzmlFile.builder(header).withSpacecraft(satellite).build();
 
         // Write inside the CzmlFile the objects
         file.write(output);

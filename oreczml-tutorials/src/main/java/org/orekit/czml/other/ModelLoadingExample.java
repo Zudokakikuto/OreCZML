@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -131,14 +131,12 @@ public class ModelLoadingExample {
 
         // Build of the satellite
         final Spacecraft satellite =
-            Spacecraft.builder(boundedPropagator, header)
-                .withModelPath(IssModel).withOnlyOnePeriod()
-                .withReferenceSystem().build();
+            Spacecraft.builder(boundedPropagator, clock).withModelPath(IssModel)
+                .withOnlyOnePeriod().withReferenceSystem().build();
 
         // Creation of the file
         final CzmlFile file =
-            CzmlFile.builder().withHeader(header).withSpacecraft(satellite)
-                .build();
+            CzmlFile.builder(header).withSpacecraft(satellite).build();
 
         // Write inside the CzmlFile the objects
         file.write(output);

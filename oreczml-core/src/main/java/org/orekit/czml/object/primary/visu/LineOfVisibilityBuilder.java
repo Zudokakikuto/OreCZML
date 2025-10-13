@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -16,7 +16,7 @@
  */
 package org.orekit.czml.object.primary.visu;
 
-import org.orekit.czml.object.primary.Header;
+import cesiumlanguagewriter.TimeInterval;
 import org.orekit.czml.object.primary.entities.Constellation;
 import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.frames.TopocentricFrame;
@@ -60,8 +60,8 @@ public class LineOfVisibilityBuilder {
      */
     private String customID;
 
-    /** The header considered when several are used. */
-    private Header header;
+    /** The availability considered when several are used. */
+    private TimeInterval availability;
 
     /** The constellation of the lines. */
     private Constellation constellation;
@@ -77,30 +77,30 @@ public class LineOfVisibilityBuilder {
      * @param topocentricFrameInput : The topocentric frame where the ground
      *        station is.
      * @param satelliteInput : The satellite observed.
-     * @param headerInput : The header considered.
+     * @param availability : The availability considered.
      */
     public LineOfVisibilityBuilder(final TopocentricFrame topocentricFrameInput,
                                    final Spacecraft satelliteInput,
-                                   final Header headerInput) {
+                                   final TimeInterval availability) {
         this.satellite = satelliteInput;
         this.topocentricFrame = topocentricFrameInput;
         this.customID =
             LineOfVisibility.DEFAULT_ID +
                         topocentricFrameInput.getName() + "/" +
                         satelliteInput.getId();
-        this.header = headerInput;
+        this.availability = availability;
     }
 
     public LineOfVisibilityBuilder(final TopocentricFrame topocentricFrameInput,
                                    final Constellation constellationInput,
-                                   final Header headerInput) {
+                                   final TimeInterval availability) {
         this.constellation = constellationInput;
         this.topocentricFrame = topocentricFrameInput;
         this.customID =
             LineOfVisibility.DEFAULT_ID +
                         topocentricFrameInput.getName() + "/" +
                         constellationInput.getId();
-        this.header = headerInput;
+        this.availability = availability;
     }
 
     /**
@@ -128,13 +128,14 @@ public class LineOfVisibilityBuilder {
     }
 
     /**
-     * Function to set up a header.
+     * Function to set up a availability.
      *
-     * @param headerInput : The header to set up.
-     * @return : The line of visibility object with a header.
+     * @param availabilityInput : The availability to set up.
+     * @return : The line of visibility object with a availability.
      */
-    public LineOfVisibilityBuilder withHeader(final Header headerInput) {
-        this.header = headerInput;
+    public LineOfVisibilityBuilder
+        withAvailability(final TimeInterval availabilityInput) {
+        this.availability = availabilityInput;
         return this;
     }
 
@@ -158,13 +159,13 @@ public class LineOfVisibilityBuilder {
         if (satellite != null) {
             toReturn =
                 new LineOfVisibility(topocentricFrame, satellite,
-                                     angleOfAperture, customID, header);
+                                     angleOfAperture, customID, availability);
 
         }
         if (constellation != null) {
             toReturn =
                 new LineOfVisibility(topocentricFrame, constellation,
-                                     angleOfAperture, customID, header);
+                                     angleOfAperture, customID, availability);
         }
         if (displayTriangle) {
             if (satellite != null) {

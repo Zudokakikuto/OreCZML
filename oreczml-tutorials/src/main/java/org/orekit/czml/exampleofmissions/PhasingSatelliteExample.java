@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -130,7 +130,7 @@ public class PhasingSatelliteExample {
         final NumericalPropagator propagatorPhased =
             new NumericalPropagator(integratorPhased);
         final NumericalPropagator propagatorPhasing =
-            new NumericalPropagator(integratorPhased);
+            new NumericalPropagator(integratorPhasing);
 
         final NormalizedSphericalHarmonicsProvider provider =
             GravityFieldFactory.getNormalizedProvider(10, 10);
@@ -161,18 +161,17 @@ public class PhasingSatelliteExample {
 
         // Creation of the two satellites
         final Spacecraft satellitePhased =
-            Spacecraft.builder(boundedPropagatorPhased, header)
+            Spacecraft.builder(boundedPropagatorPhased, clock)
                 .withColor(Color.RED).withOnlyOnePeriod().withDisplayAttitude()
                 .build();
 
         final Spacecraft satellitePhasing =
-            Spacecraft.builder(boundedPropagatorPhasing, header)
+            Spacecraft.builder(boundedPropagatorPhasing, clock)
                 .withColor(Color.GREEN).withOnlyOnePeriod()
                 .withDisplayAttitude().build();
 
         final CzmlFile file =
-            CzmlFile.builder().withHeader(header)
-                .withSpacecraft(satellitePhased)
+            CzmlFile.builder(header).withSpacecraft(satellitePhased)
                 .withSpacecraft(satellitePhasing).build();
 
         file.write(output);

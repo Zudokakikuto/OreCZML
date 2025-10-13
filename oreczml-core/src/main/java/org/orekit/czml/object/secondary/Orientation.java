@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -31,8 +31,7 @@ import org.orekit.attitudes.Attitude;
 import org.orekit.attitudes.BoundedAttitudeProvider;
 import org.orekit.czml.errors.OreCzmlException;
 import org.orekit.czml.errors.OreCzmlMessages;
-import org.orekit.czml.object.Utils.DateUtils;
-import org.orekit.czml.object.primary.Header;
+import org.orekit.czml.object.utils.DateUtils;
 import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.frames.Frame;
 import org.orekit.frames.FramesFactory;
@@ -100,23 +99,23 @@ public class Orientation
      * @param provider : The bounded attitude provider that will determine the
      *        attitudes.
      * @param propagator : The propagator considered.
+     * @param clock : provides time interval information
      * @param optionalRotation : An optional rotation to add to the orientation
      * @param invertToItrf : To put the referential into the ITR frame
-     * @param header : THe header considered.
      * @throws URISyntaxException the uri syntax exception
      * @throws IOException the io exception
      */
     public Orientation(final BoundedAttitudeProvider provider,
-                       final BoundedPropagator propagator,
+                       final BoundedPropagator propagator, final Clock clock,
                        final Rotation optionalRotation,
-                       final boolean invertToItrf, final Header header)
+                       final boolean invertToItrf)
         throws URISyntaxException,
             IOException {
 
         final List<Attitude> attitudesTemp = new ArrayList<>();
 
         final List<AbsoluteDate> dateList =
-            new Spacecraft(propagator, header).getAbsoluteDateList();
+            new Spacecraft(propagator, clock).getAbsoluteDateList();
 
         final Frame objectFrame = propagator.getFrame();
 
@@ -195,7 +194,7 @@ public class Orientation
                 DateUtils.toJulianDate(attitudes.get(0).getDate());
             final JulianDate finalDate =
                 DateUtils.toJulianDate(attitudes.get(attitudes.size() - 1)
-                    .getDate().shiftedBy(header.getClock().getMultiplier()));
+                    .getDate().shiftedBy(clock.getMultiplier()));
             this.interval = new TimeInterval(startDate, finalDate);
 
             for (final Attitude currentAttitude : attitudes) {
@@ -224,11 +223,9 @@ public class Orientation
      *
      * @param attitude : The attitude of the object.
      * @param objectFrame : The frame of the considered object.
-     * @param header : The header considered.
      */
-    public Orientation(final Attitude attitude, final Frame objectFrame,
-                       final Header header) {
-        this(attitude, objectFrame, true, header);
+    public Orientation(final Attitude attitude, final Frame objectFrame) {
+        this(attitude, objectFrame, true);
     }
 
     /**
@@ -240,12 +237,11 @@ public class Orientation
      * @param invertToITRF : To convert the object into the ITRF or not, by
      *        default it is true. (The default is true because cesium only
      *        understands the ITRF as a base for the position).
-     * @param header : The header considered.
      */
     public Orientation(final Attitude attitude, final Frame objectFrame,
-                       final boolean invertToITRF, final Header header) {
+                       final boolean invertToITRF) {
         this(Collections.singletonList(attitude), objectFrame, invertToITRF,
-             null, header);
+             null);
     }
 
     /**
@@ -253,12 +249,11 @@ public class Orientation
      * parameters.
      *
      * @param attitudes : The attitudes of the object.
-     * @param objectFrame : The frame of the considered object.
-     * @param header : The header considered.
+     * @param objectFrame : The frame of the considered object
      */
-    public Orientation(final List<Attitude> attitudes, final Frame objectFrame,
-                       final Header header) {
-        this(attitudes, objectFrame, true, null, header);
+    public Orientation(final List<Attitude> attitudes,
+                       final Frame objectFrame) {
+        this(attitudes, objectFrame, true, null);
     }
 
     /**
@@ -272,11 +267,10 @@ public class Orientation
      *        understands the ITRF as a base for the position).
      * @param optionalRotation : An optional rotation that can be applied to the
      *        attitude.
-     * @param header : The header considered.
      */
     public Orientation(final List<Attitude> attitudes, final Frame objectFrame,
                        final boolean invertToITRF,
-                       final Rotation optionalRotation, final Header header) {
+                       final Rotation optionalRotation) {
         // The invert to ITRF allows the user to put an object frame in
         // topocentric frame,
         // usually it is advised to put invertToITRF true for the study of
@@ -382,13 +376,11 @@ public class Orientation
      *
      * @param attitude the attitude
      * @param objectFrame the object frame
-     * @param header the header
      * @return the orientation builder
      */
     public static OrientationBuilder builder(final Attitude attitude,
-                                             final Frame objectFrame,
-                                             final Header header) {
-        return new OrientationBuilder(attitude, objectFrame, header);
+                                             final Frame objectFrame) {
+        return new OrientationBuilder(attitude, objectFrame);
     }
 
     /**
@@ -396,13 +388,11 @@ public class Orientation
      *
      * @param attitudes the attitudes
      * @param objectFrame the object frame
-     * @param header the header
      * @return the orientation builder
      */
     public static OrientationBuilder builder(final List<Attitude> attitudes,
-                                             final Frame objectFrame,
-                                             final Header header) {
-        return new OrientationBuilder(attitudes, objectFrame, header);
+                                             final Frame objectFrame) {
+        return new OrientationBuilder(attitudes, objectFrame);
     }
 
     // Overrides

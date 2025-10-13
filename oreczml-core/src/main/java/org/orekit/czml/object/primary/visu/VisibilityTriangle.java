@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -29,9 +29,8 @@ import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.bodies.OneAxisEllipsoid;
 import org.orekit.czml.object.CzmlShow;
-import org.orekit.czml.object.Utils.DateUtils;
+import org.orekit.czml.object.utils.DateUtils;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
-import org.orekit.czml.object.primary.Header;
 import org.orekit.frames.Frame;
 import org.orekit.frames.FramesFactory;
 import org.orekit.frames.TopocentricFrame;
@@ -68,50 +67,22 @@ public class VisibilityTriangle
     /** The default string for the ID of the triangle. */
     public static final String DEFAULT_ID = "TRIANGLE_VIS/";
 
-    /** The default string for references points. */
-    public static final String REFERENCE_POINT = "REF_POINT/";
-
-    /** The default string for the reference to the position. */
-    public static final String DEFAULT_H_POSITION = "#position";
-
     /** The default name for the visibility triangle. */
     public static final String DEFAULT_NAME = "Visibility triangle for ";
-
-    /** Line of visibility created to build the object. */
-    private LineOfVisibility line;
-
-    /** The positions in cartesian of the satellite. */
-    private List<SpacecraftState> spacecraftStatesSatellite;
-
-    /** The topocentric frame representing the ground station. */
-    private TopocentricFrame topocentricStation;
 
     /** The list of the availability of the triangles. */
     private List<TimeInterval> availabilityTriangles = new ArrayList<>();
 
-    /** The topocentric frame when several stations are considered. */
-    private List<TopocentricFrame> topocentricFrames = new ArrayList<>();
-
-    /** Availability of the triangles. */
-    private List<CzmlShow> shows;
-
-    /** The list containing all the id of the references points. */
-    private List<List<String>> idRefPoints = new ArrayList<>();
-
     /** List of three points for each triangle. */
     private List<List<Cartesian>> trianglesCartesians = new ArrayList<>();
 
-    /**
-     * Default constructor of the visibility triangle.
-     *
-     * @param line : The line of visibility
-     */
     VisibilityTriangle(final LineOfVisibility line) {
-        this.shows = line.getShowList();
+        /* Availability of the triangles. */
+        final List<CzmlShow> shows = line.getShowList();
         this.setId(DEFAULT_ID + line.getSatellite().getId());
         this.setName(DEFAULT_NAME + line.getSatellite().getName());
-        this.line = line;
-        this.spacecraftStatesSatellite =
+        /* The positions in cartesian of the satellite. */
+        final List<SpacecraftState> spacecraftStatesSatellite =
             line.getSatellite().getSpaceCraftStates();
         this.trianglesCartesians =
             buildTriangleCartesians(shows, spacecraftStatesSatellite);

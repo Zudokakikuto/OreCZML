@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -16,24 +16,6 @@
  */
 package org.orekit.czml.object.primary.visu;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.hipparchus.geometry.euclidean.threed.Vector3D;
-import org.hipparchus.util.FastMath;
-import org.orekit.bodies.GeodeticPoint;
-import org.orekit.bodies.OneAxisEllipsoid;
-import org.orekit.czml.object.primary.AbstractPrimaryObject;
-import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.entities.Spacecraft;
-import org.orekit.frames.Frame;
-import org.orekit.frames.FramesFactory;
-import org.orekit.frames.TopocentricFrame;
-import org.orekit.utils.Constants;
-import org.orekit.utils.IERSConventions;
-
 import cesiumlanguagewriter.BooleanCesiumWriter;
 import cesiumlanguagewriter.Cartesian;
 import cesiumlanguagewriter.CesiumOutputStream;
@@ -42,6 +24,23 @@ import cesiumlanguagewriter.MaterialCesiumWriter;
 import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.PolygonCesiumWriter;
 import cesiumlanguagewriter.SolidColorMaterialCesiumWriter;
+import cesiumlanguagewriter.TimeInterval;
+import org.hipparchus.geometry.euclidean.threed.Vector3D;
+import org.hipparchus.util.FastMath;
+import org.orekit.bodies.GeodeticPoint;
+import org.orekit.bodies.OneAxisEllipsoid;
+import org.orekit.czml.object.primary.AbstractPrimaryObject;
+import org.orekit.czml.object.primary.entities.Spacecraft;
+import org.orekit.frames.Frame;
+import org.orekit.frames.FramesFactory;
+import org.orekit.frames.TopocentricFrame;
+import org.orekit.utils.Constants;
+import org.orekit.utils.IERSConventions;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Station visibility circle.
@@ -56,43 +55,20 @@ public class StationVisibilityCircle
     extends
     AbstractPrimaryObject {
 
-    /** The default id prefix for station visibility circles. */
+    /** The default id for the visibility station circle. */
     public static final String DEFAULT_ID = "STATION_CIRCLE/";
 
-    /** The first default string for the name. */
+    /** The default name of the visibility station circle. */
     public static final String DEFAULT_NAME =
         "Circle of visibility of the station : ";
-
-    /** The default angle of aperture of the station. */
-    public static final double DEFAULT_ANGLE_OF_APERTURE = 90.0;
-
-    /** The header. */
-    private Header header;
-
-    /** The topocentric frame representing the station. */
-    private TopocentricFrame topocentricFrame;
-
-    /** The angle of aperture of the station. */
-    private double angleOfAperture = DEFAULT_ANGLE_OF_APERTURE;
 
     /** The satellite observed. */
     private Spacecraft satellite;
 
-    /** The visibility cone. */
-    private VisibilityCone cone;
-
-    /** The radius of the top of the visibility cone. */
-    private double topRadius;
-
-    /**
-     * The points making up the visibility circle expressed as geodetic points.
-     */
+    /** The list of geodetic point representing the visibility circle. */
     private List<GeodeticPoint> circleGeodetic = new ArrayList<>();
 
-    /**
-     * The points making up the visibility circle expressed as cartesian
-     * vectors.
-     */
+    /** The list of cartesians points representing the visibility circle. */
     private List<Cartesian> circleCartesian = new ArrayList<>();
 
     /**
@@ -103,23 +79,21 @@ public class StationVisibilityCircle
      * @param satellite : The satellite observed.
      * @param angleOfAperture : The angle of aperture of the visibility of the
      *        station.
-     * @param header : The header considered.
+     * @param availability : The availability considered.
      */
     StationVisibilityCircle(final TopocentricFrame topocentricFrame,
                             final Spacecraft satellite,
-                            final double angleOfAperture, final Header header) {
+                            final double angleOfAperture,
+                            final TimeInterval availability) {
         this.setId(DEFAULT_ID +
                    topocentricFrame.getName() + "/" + satellite.getId());
         this.setName(DEFAULT_NAME + topocentricFrame.getName());
-        this.header = header;
-        this.setAvailability(header.getAvailability());
-        this.topocentricFrame = topocentricFrame;
-        this.angleOfAperture = angleOfAperture;
+        this.setAvailability(availability);
         this.satellite = satellite;
-        this.cone =
+        // Visibility cone need to be built, even if not used.
+        final VisibilityCone cone =
             new VisibilityCone(topocentricFrame, satellite, angleOfAperture,
-                               header);
-        this.topRadius = cone.getCylinder().getTopRadius();
+                               availability);
         this.circleGeodetic =
             computePointPositions(topocentricFrame, satellite, angleOfAperture);
         this.circleCartesian = cartesianGround(circleGeodetic);
@@ -127,20 +101,12 @@ public class StationVisibilityCircle
 
     // Builder
 
-    /**
-     * This function builds a station visibility circle.
-     *
-     * @param topocentricFrameInput : The topocentric frame representing the
-     *        ground station.
-     * @param satelliteInput : The satellite observed.
-     * @param headerInput : The header considered.
-     * @return : The station visibility circle built.
-     */
     public static StationVisibilityCircleBuilder
         builder(final TopocentricFrame topocentricFrameInput,
-                final Spacecraft satelliteInput, final Header headerInput) {
+                final Spacecraft satelliteInput,
+                final TimeInterval availability) {
         return new StationVisibilityCircleBuilder(topocentricFrameInput,
-                                                  satelliteInput, headerInput);
+                                                  satelliteInput, availability);
     }
 
     @Override
@@ -178,23 +144,12 @@ public class StationVisibilityCircle
 
     // Private functions
 
-    /**
-     * This function computes the geodetic points making up the visibility
-     * circle.
-     *
-     * @param topocentricFrameInput : The topocentric frame representing the
-     *        ground station.
-     * @param satelliteInput : The satellite observed.
-     * @param angleOfApertureInput : The angle of aperture of the visibility of
-     *        the station.
-     * @return : The geodetic points making up the visibility circle.
-     */
-    static final List<GeodeticPoint>
+    final List<GeodeticPoint>
         computePointPositions(final TopocentricFrame topocentricFrameInput,
                               final Spacecraft satelliteInput,
-                              final double angleOfApertureInput) {
+                              final double angleOfAperture) {
         final List<GeodeticPoint> toReturn = new ArrayList<>();
-        final double fixedElevation = 90.0 - angleOfApertureInput;
+        final double fixedElevation = 90.0 - angleOfAperture;
         final double radiansElevation = FastMath.toRadians(fixedElevation);
         for (int i = 0; i < 360; i = i + 5) {
             final double radiansI = FastMath.toRadians(i);
@@ -206,15 +161,7 @@ public class StationVisibilityCircle
         return toReturn;
     }
 
-    /**
-     * This function computes the cartesian points making up the visibility
-     * circle.
-     *
-     * @param geodetics : The geodetic points making up the visibility circle.
-     * @return : The cartesian points making up the visibility circle.
-     */
-    static final List<Cartesian>
-        cartesianGround(final List<GeodeticPoint> geodetics) {
+    final List<Cartesian> cartesianGround(final List<GeodeticPoint> geodetics) {
         final List<Cartesian> toReturn = new ArrayList<>();
         final Frame ITRF =
             FramesFactory.getITRF(IERSConventions.IERS_2010, true);

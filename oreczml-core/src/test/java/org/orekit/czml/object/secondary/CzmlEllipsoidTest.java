@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -110,7 +110,8 @@ public class CzmlEllipsoidTest
         final BoundedPropagator boundedPropagator =
             generator.getGeneratedEphemeris();
 
-        final Spacecraft satellite = new Spacecraft(boundedPropagator, header);
+        final Spacecraft satellite =
+            new Spacecraft(boundedPropagator, header.getClock());
 
         final List<JulianDate> julianDates = satellite.getJulianDates();
 
@@ -118,17 +119,19 @@ public class CzmlEllipsoidTest
             computeRandomCartesians(julianDates.size());
 
         final CzmlEllipsoid ellipsoid =
-            new CzmlEllipsoid(julianDates, randomCartesians, header);
+            new CzmlEllipsoid(julianDates, randomCartesians,
+                              header.getAvailability());
 
         final CzmlEllipsoid ellipsoidBuilder =
-            CzmlEllipsoid.builder(new Cartesian(0, 0, 0), header)
+            CzmlEllipsoid
+                .builder(new Cartesian(0, 0, 0), header.getAvailability())
                 .withColor(Color.ORANGE).withFill(true).withOutline(true)
                 .withSliceStackPartition(6, 5).build();
 
         final String pathFile =
-            loadResources("templateFile/secondary/CzmlEllipsoidTemplate.txt");
+            loadResources("templateFile/object/secondary/CzmlEllipsoidTemplate.txt");
         final String builderPathFile =
-            loadResources("templateFile/secondary/CzmlEllipsoidWithBuilderTemplate.txt");
+            loadResources("templateFile/object/secondary/CzmlEllipsoidWithBuilderTemplate.txt");
 
         verifyFileOutput(pathFile, ellipsoid.toString(), 1e-8);
         verifyFileOutput(builderPathFile, ellipsoidBuilder.toString(), 1e-8);

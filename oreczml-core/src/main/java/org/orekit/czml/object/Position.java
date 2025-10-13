@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -28,7 +28,6 @@ import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.hipparchus.util.FastMath;
 import org.orekit.czml.errors.OreCzmlException;
 import org.orekit.czml.errors.OreCzmlMessages;
-import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.secondary.TimePosition;
 
 import java.io.StringWriter;
@@ -67,6 +66,7 @@ public class Position {
     private double height;
 
     // Cartographic radians
+
     /**
      * The longitude in radians.
      */
@@ -78,6 +78,7 @@ public class Position {
     private double latitude;
 
     // Cartographic degrees
+
     /**
      * The longitude in degrees.
      */
@@ -91,6 +92,7 @@ public class Position {
     //// Cartesian :
 
     // Cartesian3Value:
+
     /**
      * The cartesian position in the x-axis.
      */
@@ -106,8 +108,10 @@ public class Position {
      */
     private double z;
 
-    /** The header considered. */
-    private Header header;
+    /**
+     * The timeframe for which the feature is visible.
+     */
+    private TimeInterval availability;
 
     // Constructor
 
@@ -120,11 +124,11 @@ public class Position {
      *        or latitude deg)
      * @param param3 : The third parameter of the tuple (can be z, vz or height)
      * @param positionType : The type of the tuple.
-     * @param header : The header considered.
+     * @param availability : The availability of the position
      */
     public Position(final double param1, final double param2,
                     final double param3, final PositionType positionType,
-                    final Header header) {
+                    final TimeInterval availability) {
         if (positionType == PositionType.CARTESIAN_POSITION) {
             this.x = param1;
             this.y = param2;
@@ -143,7 +147,7 @@ public class Position {
 
         this.positionType = positionType;
         this.ReferenceFrame = "INERTIAL";
-        this.header = header;
+        this.availability = availability;
     }
 
     // Display functions
@@ -154,11 +158,9 @@ public class Position {
      *
      * @param packetWriter : packet to write in the CZML
      * @param output : Output that will contain the string
-     * @param availability : when the position is displayed on Cesium
      */
     public void write(final PacketCesiumWriter packetWriter,
-                      final CesiumOutputStream output,
-                      final TimeInterval availability) {
+                      final CesiumOutputStream output) {
         try (PositionCesiumWriter positionWriter =
             packetWriter.getPositionWriter()) {
             positionWriter.open(output);
@@ -188,12 +190,10 @@ public class Position {
      *
      * @param packetWriter : packet to write in the CZML
      * @param output : Output that will contain the string
-     * @param availability : when the position is displayed on Cesium
      * @param referenceFrame : the frame where the position is referenced
      */
     public void write(final PacketCesiumWriter packetWriter,
                       final CesiumOutputStream output,
-                      final TimeInterval availability,
                       final String referenceFrame) {
         try (PositionCesiumWriter positionWriter =
             packetWriter.getPositionWriter()) {
@@ -233,9 +233,8 @@ public class Position {
         final CesiumOutputStream output = new CesiumOutputStream(writerTemp);
         final CesiumStreamWriter streamWriter = new CesiumStreamWriter();
         output.setPrettyFormatting(true);
-        final TimeInterval availability = header.getAvailability();
         try (PacketCesiumWriter packet = streamWriter.openPacket(output)) {
-            this.write(packet, output, availability);
+            this.write(packet, output);
         }
         return writerTemp.toString();
     }
@@ -253,9 +252,8 @@ public class Position {
         final CesiumOutputStream output = new CesiumOutputStream(writerTemp);
         final CesiumStreamWriter streamWriter = new CesiumStreamWriter();
         output.setPrettyFormatting(true);
-        final TimeInterval availability = header.getAvailability();
         try (PacketCesiumWriter packet = streamWriter.openPacket(output)) {
-            this.write(packet, output, availability, referenceFrame);
+            this.write(packet, output, referenceFrame);
         }
         return writerTemp.toString();
     }

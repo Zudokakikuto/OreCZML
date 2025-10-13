@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -64,13 +64,13 @@ public class BillboardTest
                           Color.RED, nearFarScalar);
 
         final String pathFile =
-            loadResources("templateFile/secondary/BillboardTemplate.txt");
+            loadResources("templateFile/object/secondary/BillboardTemplate.txt");
         final String coveragePathFile =
-            loadResources("templateFile/secondary/BillboardCoverageTemplate.txt");
+            loadResources("templateFile/object/secondary/BillboardCoverageTemplate.txt");
         final String nearFarPathFile =
-            loadResources("templateFile/secondary/BillboardNearFarTemplate.txt");
+            loadResources("templateFile/object/secondary/BillboardNearFarTemplate.txt");
         final String complexConstructorPathFile =
-            loadResources("templateFile/secondary/BillboardComplexConstructorTemplate.txt");
+            loadResources("templateFile/object/secondary/BillboardComplexConstructorTemplate.txt");
 
         verifyFileOutput(pathFile, billboard.toString(), 1e-8);
         verifyFileOutput(coveragePathFile, billboardCoverage.toString(), 1e-8);

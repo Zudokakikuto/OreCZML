@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -78,6 +78,7 @@ public class GroundTrackConstellationExample {
                                          "/Javascript/public");
 
         // Creation of the clock.
+
         final AbsoluteDate startDate =
             new AbsoluteDate(2024, 3, 15, 0, 0, 0.0,
                              TimeScalesFactory.getUTC());
@@ -138,18 +139,18 @@ public class GroundTrackConstellationExample {
 
         // Creation of the Constellation
         final Constellation constellation =
-            Constellation.builder(propagators, finalDate, header).build();
+            Constellation.builder(propagators, finalDate, clock).build();
 
         // Build of the ground track
         final GroundTrack groundTrack =
-            GroundTrack.builder(constellation, TutorialUtils.getEarth(), header)
+            GroundTrack.builder(constellation, TutorialUtils.getEarth(),
+                                clock.getAvailability())
                 .build();
         groundTrack.displayLinkSatellite();
 
         final CzmlFile file =
-            CzmlFile.builder().withHeader(header)
-                .withConstellation(constellation).withGroundTrack(groundTrack)
-                .build();
+            CzmlFile.builder(header).withConstellation(constellation)
+                .withGroundTrack(groundTrack).build();
 
         // Writing in the file
         file.write(output);

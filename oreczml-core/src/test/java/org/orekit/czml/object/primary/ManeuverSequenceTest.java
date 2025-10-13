@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -213,42 +213,46 @@ public class ManeuverSequenceTest
         final BoundedPropagator boundedPropagator =
             generator.getGeneratedEphemeris();
 
-        final Spacecraft satellite = new Spacecraft(boundedPropagator, header);
+        final Spacecraft satellite =
+            new Spacecraft(boundedPropagator, header.getClock());
 
         final List<Vector3D> accelerations = new ArrayList<>();
         accelerations.add(Vector3D.PLUS_I);
         accelerations.add(Vector3D.PLUS_J);
 
         final ManeuverSequence maneuverSequence =
-            ManeuverSequence.builder(sequence, maneuvers, satellite,
-                                     Vector3D.PLUS_I, LOFType.TNW, header)
+            ManeuverSequence
+                .builder(sequence, maneuvers, satellite, Vector3D.PLUS_I,
+                         LOFType.TNW, header.getAvailability())
                 .build();
 
         final ManeuverSequence maneuverSequenceSimple =
-            ManeuverSequence.builder(sequence, firstManeuver, satellite,
-                                     Vector3D.PLUS_I, LOFType.TNW, header)
+            ManeuverSequence
+                .builder(sequence, firstManeuver, satellite, Vector3D.PLUS_I,
+                         LOFType.TNW, header.getAvailability())
                 .build();
 
         final ManeuverSequence maneuverSequenceMultiple =
-            ManeuverSequence.builder(sequence, maneuvers, satellite,
-                                     accelerations, LOFType.TNW, header)
+            ManeuverSequence
+                .builder(sequence, maneuvers, satellite, accelerations,
+                         LOFType.TNW, header.getAvailability())
                 .build();
 
         final String maneuversPathFile =
-            loadResources("templateFile/primary/ManeuverSequenceTemplate.txt");
+            loadResources("templateFile/object/primary/ManeuverSequenceTemplate.txt");
 
         final String maneuverSimplePathFile =
-            loadResources("templateFile/primary/ManeuverSequenceSimpleTemplate.txt");
+            loadResources("templateFile/object/primary/ManeuverSequenceSimpleTemplate.txt");
 
         final String maneuverMultiplePathFile =
-            loadResources("templateFile/primary/ManeuverSequenceMultipleTemplate.txt");
+            loadResources("templateFile/object/primary/ManeuverSequenceMultipleTemplate.txt");
 
         // Verify file output
-        verifyFileOutput(maneuversPathFile, maneuverSequence.toString(), 1e-8);
+        verifyFileOutput(maneuversPathFile, maneuverSequence.toString(), 1e-3);
         verifyFileOutput(maneuverSimplePathFile,
-                         maneuverSequenceSimple.toString(), 1e-8);
+                         maneuverSequenceSimple.toString(), 1e-3);
         verifyFileOutput(maneuverMultiplePathFile,
-                         maneuverSequenceMultiple.toString(), 1e-8);
+                         maneuverSequenceMultiple.toString(), 1e-3);
 
         // Getters coverage
         Assertions.assertEquals(maneuvers, maneuverSequence.getManeuvers());

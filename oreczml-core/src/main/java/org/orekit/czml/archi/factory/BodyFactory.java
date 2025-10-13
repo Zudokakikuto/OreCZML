@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -18,8 +18,8 @@ package org.orekit.czml.archi.factory;
 
 import org.orekit.bodies.CelestialBody;
 import org.orekit.bodies.CelestialBodyFactory;
-import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.primary.entities.Body;
+import org.orekit.czml.object.secondary.Clock;
 import org.orekit.frames.Frame;
 import org.orekit.frames.FramesFactory;
 import org.orekit.utils.IERSConventions;
@@ -34,11 +34,25 @@ import org.orekit.utils.IERSConventions;
  */
 public class BodyFactory {
 
+    /** The frame of the sun. */
+    public static final Frame SUN_FRAME =
+        CelestialBodyFactory.getSun().getBodyOrientedFrame();
+
+    /** The frame of the earth. */
+    public static final Frame EARTH_FRAME =
+        CelestialBodyFactory.getEarth().getBodyOrientedFrame();
+
     /**
      * The default folder where the 3D models of bodies are loaded from.
      */
     public static final String BODIES_SOURCES =
         Body.class.getClassLoader().getResource("Bodies").getPath();
+
+    /** The default string for the description. */
+    private static final String ID_BODY = "ID : BODY/";
+
+    /** The default header for the description. */
+    private static final String DESCRIPTION_HEADER = "<!--HTML-->\r\n<p>";
 
     /**
      * The default 3D model of The Moon.
@@ -93,20 +107,6 @@ public class BodyFactory {
      */
     public static final String SUN_MODEL = BODIES_SOURCES + "/sun.glb";
 
-    /** The frame of the sun. */
-    public static final Frame SUN_FRAME =
-        CelestialBodyFactory.getSun().getBodyOrientedFrame();
-
-    /** The frame of the earth. */
-    public static final Frame EARTH_FRAME =
-        CelestialBodyFactory.getEarth().getBodyOrientedFrame();
-
-    /** The default string for the description. */
-    private static final String ID_BODY = "ID : BODY/";
-
-    /** The default header for the description. */
-    private static final String DESCRIPTION_HEADER = "<!--HTML-->\r\n<p>";
-
     // Constructor
 
     /**
@@ -118,13 +118,13 @@ public class BodyFactory {
     /**
      * Function to get The Moon.
      *
-     * @param header : The header considered.
+     * @param clock The clock for the availability
      * @return : A body object with the 3D models and the default parameters of
      *         The Moon loaded.
      */
-    public static Body getMoon(final Header header) {
+    public static Body getMoon(final Clock clock) {
         final CelestialBody moon = CelestialBodyFactory.getMoon();
-        return Body.builder(moon, MOON_MODEL, EARTH_FRAME, header)
+        return Body.builder(moon, MOON_MODEL, EARTH_FRAME, clock)
             .withModelScale(1e120).withModelMinimumPixelSize(400)
             .withModelMaximumScale(5e6)
             .withDescription(DESCRIPTION_HEADER +
@@ -137,13 +137,13 @@ public class BodyFactory {
     /**
      * Function to get Mercury.
      *
-     * @param header : The header considered.
+     * @param clock The clock for the availability
      * @return : A body object with the 3D models and the default parameters of
      *         Mercury loaded.
      */
-    public static Body getMercury(final Header header) {
+    public static Body getMercury(final Clock clock) {
         final CelestialBody mercury = CelestialBodyFactory.getMercury();
-        return Body.builder(mercury, MERCURY_MODEL, SUN_FRAME, header)
+        return Body.builder(mercury, MERCURY_MODEL, SUN_FRAME, clock)
             .withModelScale(1).withModelMinimumPixelSize(400)
             .withModelMaximumScale(1e09)
             .withDescription(DESCRIPTION_HEADER +
@@ -156,13 +156,13 @@ public class BodyFactory {
     /**
      * Function to get Venus.
      *
-     * @param header : The header considered.
+     * @param clock The clock for the availability
      * @return : A body object with the 3D models and the default parameters of
      *         Venus loaded.
      */
-    public static Body getVenus(final Header header) {
+    public static Body getVenus(final Clock clock) {
         final CelestialBody venus = CelestialBodyFactory.getVenus();
-        return Body.builder(venus, VENUS_MODEL, SUN_FRAME, header)
+        return Body.builder(venus, VENUS_MODEL, SUN_FRAME, clock)
             .withModelScale(1).withModelMinimumPixelSize(400)
             .withModelMaximumScale(1e09)
             .withDescription(DESCRIPTION_HEADER +
@@ -175,16 +175,16 @@ public class BodyFactory {
     /**
      * Function to get The Earth.
      *
-     * @param header : The header considered.
-     * @return : A body object with the 3D models and the default parameters of
+     * @param clock The clock for the availability
+     * @return :A body object with the 3D models and the default parameters of
      *         The Earth loaded.
      */
-    public static Body getEarth(final Header header) {
+    public static Body getEarth(final Clock clock) {
         final CelestialBody earth = CelestialBodyFactory.getEarth();
         return Body
             .builder(earth, EARTH_MODEL,
                      FramesFactory.getITRF(IERSConventions.IERS_2010, true),
-                     header)
+                     clock)
             .withModelScale(1).withModelMinimumPixelSize(1180)
             .withModelMaximumScale(1.02e6)
             .withDescription(DESCRIPTION_HEADER +
@@ -197,13 +197,13 @@ public class BodyFactory {
     /**
      * Function to get Mars.
      *
-     * @param header : The header considered.
+     * @param clock The clock for the availability
      * @return : A body object with the 3D models and the default parameters of
      *         Mars loaded.
      */
-    public static Body getMars(final Header header) {
+    public static Body getMars(final Clock clock) {
         final CelestialBody mars = CelestialBodyFactory.getMars();
-        return Body.builder(mars, MARS_MODEL, SUN_FRAME, header)
+        return Body.builder(mars, MARS_MODEL, SUN_FRAME, clock)
             .withModelScale(1).withModelMinimumPixelSize(400)
             .withModelMaximumScale(2e09)
             .withDescription(DESCRIPTION_HEADER +
@@ -216,13 +216,13 @@ public class BodyFactory {
     /**
      * Function to get Jupiter.
      *
-     * @param header : The header considered.
+     * @param clock The clock for the availability
      * @return : A body object with the 3D models and the default parameters of
      *         Jupiter loaded.
      */
-    public static Body getJupiter(final Header header) {
+    public static Body getJupiter(final Clock clock) {
         final CelestialBody jupiter = CelestialBodyFactory.getJupiter();
-        return Body.builder(jupiter, JUPITER_MODEL, SUN_FRAME, header)
+        return Body.builder(jupiter, JUPITER_MODEL, SUN_FRAME, clock)
             .withModelScale(1).withModelMinimumPixelSize(400)
             .withModelMaximumScale(5e09)
             .withDescription(DESCRIPTION_HEADER +
@@ -235,13 +235,13 @@ public class BodyFactory {
     /**
      * Function to get Saturn.
      *
-     * @param header : The header considered.
+     * @param clock The clock for the availability
      * @return : A body object with the 3D models and the default parameters of
      *         Saturn loaded.
      */
-    public static Body getSaturn(final Header header) {
+    public static Body getSaturn(final Clock clock) {
         final CelestialBody saturn = CelestialBodyFactory.getSaturn();
-        return Body.builder(saturn, SATURN_MODEL, SUN_FRAME, header)
+        return Body.builder(saturn, SATURN_MODEL, SUN_FRAME, clock)
             .withModelScale(1).withModelMinimumPixelSize(400)
             .withModelMaximumScale(1e10)
             .withDescription(DESCRIPTION_HEADER +
@@ -254,13 +254,13 @@ public class BodyFactory {
     /**
      * Function to get Uranus.
      *
-     * @param header : The header considered.
+     * @param clock The clock for the availability
      * @return : A body object with the 3D models and the default parameters of
      *         Uranus loaded.
      */
-    public static Body getUranus(final Header header) {
+    public static Body getUranus(final Clock clock) {
         final CelestialBody uranus = CelestialBodyFactory.getUranus();
-        return Body.builder(uranus, URANUS_MODEL, SUN_FRAME, header)
+        return Body.builder(uranus, URANUS_MODEL, SUN_FRAME, clock)
             .withModelScale(1).withModelMinimumPixelSize(400)
             .withModelMaximumScale(1e10)
             .withDescription(DESCRIPTION_HEADER +
@@ -273,13 +273,13 @@ public class BodyFactory {
     /**
      * Function to get Neptune.
      *
-     * @param header : The header considered.
+     * @param clock The clock for the availability
      * @return : A body object with the 3D models and the default parameters of
      *         Neptune loaded.
      */
-    public static Body getNeptune(final Header header) {
+    public static Body getNeptune(final Clock clock) {
         final CelestialBody neptune = CelestialBodyFactory.getNeptune();
-        return Body.builder(neptune, NEPTUNE_MODEL, SUN_FRAME, header)
+        return Body.builder(neptune, NEPTUNE_MODEL, SUN_FRAME, clock)
             .withModelScale(1).withModelMinimumPixelSize(400)
             .withModelMaximumScale(1e10)
             .withDescription(ID_BODY +
@@ -291,13 +291,13 @@ public class BodyFactory {
     /**
      * Function to get Pluto.
      *
-     * @param header : The header considered.
+     * @param clock The clock for the availability
      * @return : A body object with the 3D models and the default parameters of
      *         Pluto loaded.
      */
-    public static Body getPluto(final Header header) {
+    public static Body getPluto(final Clock clock) {
         final CelestialBody pluto = CelestialBodyFactory.getPluto();
-        return Body.builder(pluto, PLUTO_MODEL, SUN_FRAME, header)
+        return Body.builder(pluto, PLUTO_MODEL, SUN_FRAME, clock)
             .withModelScale(1).withModelMinimumPixelSize(400)
             .withModelMaximumScale(1e10)
             .withDescription(ID_BODY +
@@ -309,13 +309,13 @@ public class BodyFactory {
     /**
      * Function to get The Sun.
      *
-     * @param header : The header considered.
+     * @param clock The clock for the availability
      * @return : A body object with the 3D models and the default parameters of
      *         The Sun loaded.
      */
-    public static Body getSun(final Header header) {
+    public static Body getSun(final Clock clock) {
         final CelestialBody sun = CelestialBodyFactory.getSun();
-        return Body.builder(sun, SUN_MODEL, SUN_FRAME, header).withModelScale(1)
+        return Body.builder(sun, SUN_MODEL, SUN_FRAME, clock).withModelScale(1)
             .withModelMinimumPixelSize(400).withModelMaximumScale(1e09)
             .withDescription(ID_BODY +
                              CelestialBodyFactory.getJupiter().getName() +

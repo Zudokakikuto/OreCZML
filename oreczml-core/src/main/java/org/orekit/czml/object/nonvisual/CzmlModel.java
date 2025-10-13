@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -107,12 +107,6 @@ public class CzmlModel {
     private final String absolutePath;
 
     /**
-     * The relative path of the file. When CesiumJS is used, it will be the
-     * 'public' folder used as a relative one.
-     */
-    private String relativePath;
-
-    /**
      * The name of the object loaded.
      */
     private String nameOfObject;
@@ -138,11 +132,6 @@ public class CzmlModel {
      */
     private File duplicatedLocalFile;
 
-    /**
-     * Boolean to check is the external resource path is used or not.
-     */
-    private boolean pathExternalUsed;
-
     /** Check if the model is for a satellite. */
     private boolean isSatellite;
 
@@ -151,12 +140,14 @@ public class CzmlModel {
      *
      * @param absolutePathToObject : The string leading to the absolute path of
      *        the object
-     * @param header : The header considered.
      * @param isSatelliteInput : Is the mode loaded for a satellite?
+     * @param availability : The availability of the model
      */
     public CzmlModel(final String absolutePathToObject,
-                     final boolean isSatelliteInput, final Header header) {
-        this(absolutePathToObject, 5000000, 400, 1, isSatelliteInput, header);
+                     final boolean isSatelliteInput,
+                     final TimeInterval availability) {
+        this(absolutePathToObject, 5000000, 400, 1, isSatelliteInput,
+             availability);
     }
 
     /**
@@ -169,36 +160,37 @@ public class CzmlModel {
      * @param minimumPixelSizeInput : The minimum of pixel displayed for the
      *        object
      * @param scale : The scale of the 3D model
-     * @param isSatelliteInput : Is the model loaded for a satellite?
-     * @param header : The header considered.
+     * @param isSatelliteInput : Is the model loaded for a satellite
+     * @param availability : The availability of the model
      */
     public CzmlModel(final String absolutePathToObject,
                      final double maximumScale,
                      final double minimumPixelSizeInput, final double scale,
-                     final boolean isSatelliteInput, final Header header) {
+                     final boolean isSatelliteInput,
+                     final TimeInterval availability) {
 
         this.isSatellite = isSatelliteInput;
         this.modelType = getModelTypeFromString(absolutePathToObject);
 
         if (this.modelType == ModelType.MODEL_3D) {
             this.absolutePath = absolutePathToObject;
-            this.availability = header.getAvailability();
+            this.availability = availability;
             this.show = true;
             this.minimumPixelSize = minimumPixelSizeInput;
             this.maximumScale = maximumScale;
             this.scale = scale;
         } else if (this.modelType == ModelType.MODEL_2D) {
             this.absolutePath = absolutePathToObject;
-            this.availability = header.getAvailability();
+            this.availability = availability;
             this.show = true;
         } else {
             if (isSatellite) {
                 this.absolutePath = getSatelliteResourcePath();
-                this.availability = header.getAvailability();
+                this.availability = availability;
                 this.show = true;
             } else {
                 this.absolutePath = "";
-                this.availability = header.getAvailability();
+                this.availability = availability;
                 this.show = false;
             }
         }
@@ -272,39 +264,12 @@ public class CzmlModel {
     }
 
     /**
-     * This getter returns the billboard of the model.
-     *
-     * @return : The absolute path of the object.
-     */
-    public String getAbsolutePath() {
-        return absolutePath;
-    }
-
-    /**
-     * This getter returns the name of the object.
-     *
-     * @return : The name of the object.
-     */
-    public String getNameOfObject() {
-        return nameOfObject;
-    }
-
-    /**
      * This getter returns the availability of the packet.
      *
      * @return : The availability used.
      */
     public TimeInterval getAvailability() {
         return availability;
-    }
-
-    /**
-     * This getter returns the relative path of the object.
-     *
-     * @return : The relative path used.
-     */
-    public String getRelativePath() {
-        return relativePath;
     }
 
     /**
@@ -335,15 +300,6 @@ public class CzmlModel {
     }
 
     /**
-     * Gets extension.
-     *
-     * @return the extension
-     */
-    public String getExtension() {
-        return extension;
-    }
-
-    /**
      * Gets uri.
      *
      * @return the uri
@@ -359,15 +315,6 @@ public class CzmlModel {
      */
     public boolean isShow() {
         return show;
-    }
-
-    /**
-     * Gets duplicated local file.
-     *
-     * @return the duplicated local file
-     */
-    public File getDuplicatedLocalFile() {
-        return duplicatedLocalFile;
     }
 
     /**
@@ -388,13 +335,15 @@ public class CzmlModel {
             // Else way, put the path to the resource folder that you are using.
             final String Javascript = Header.getPathToExternalResourceFolder();
             if (Javascript.isEmpty()) {
-                pathExternalUsed = false;
                 this.duplicatedLocalFile = new File(absolutePathInputted);
                 return;
             }
 
-            pathExternalUsed = true;
-            this.relativePath = Javascript + "/" + nameOfObject;
+            /**
+             * The relative path of the file. When CesiumJS is used, it will be
+             * the 'public' folder used as a relative one.
+             */
+            final String relativePath = Javascript + "/" + nameOfObject;
 
             final File absoluteFile = new File(absolutePath);
             final File relativeFile = new File(relativePath);

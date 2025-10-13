@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -16,6 +16,7 @@
  */
 package org.orekit.czml.file;
 
+import cesiumlanguagewriter.Cartesian;
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
@@ -52,8 +53,6 @@ import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.Constants;
 import org.orekit.utils.IERSConventions;
-
-import cesiumlanguagewriter.Cartesian;
 
 import java.io.File;
 import java.io.IOException;
@@ -209,14 +208,14 @@ public class AbstractTest {
      * @param satellite the satellite
      * @param propagator the propagator
      * @param initCovariance the init covariance
-     * @param header the header
+     * @param clockMultiplier clock multiplier
      * @return the list
      */
     public static List<StateCovariance>
         covariancePropagation(final Spacecraft satellite,
                               final Propagator propagator,
                               final StateCovariance initCovariance,
-                              final Header header) {
+                              final double clockMultiplier) {
 
         final List<StateCovariance> covarianceListTemp = new ArrayList<>();
 
@@ -233,13 +232,11 @@ public class AbstractTest {
 
         propagator.addAdditionalStateProvider(provider);
 
-        propagator.getMultiplexer().add(header.getClock().getMultiplier(),
-                                        spacecraftState -> {
-                                            final StateCovariance covariance =
-                                                provider
-                                                    .getStateCovariance(spacecraftState);
-                                            covarianceListTemp.add(covariance);
-                                        });
+        propagator.getMultiplexer().add(clockMultiplier, spacecraftState -> {
+            final StateCovariance covariance =
+                provider.getStateCovariance(spacecraftState);
+            covarianceListTemp.add(covariance);
+        });
 
         propagator.propagate(orbits.get(0).getDate(),
                              orbits.get(orbits.size() - 1).getDate());
@@ -282,9 +279,8 @@ public class AbstractTest {
         } else {
             final String message =
                 testOutput.second() +
-                                   " found at line " +
-                                   String.valueOf(testOutput.first()) + " of " +
-                                   templateFileName;
+                                   " found at line " + testOutput.first() +
+                                   " of " + templateFileName;
             throw new AssertionError(message);
         }
     }
@@ -383,9 +379,9 @@ public class AbstractTest {
             // Compare two doubles
             if (templateValue instanceof Double &&
                 testValue instanceof Double) {
-                final Double decimal1 = getSignificantFigures(templateValue);
-                final Double decimal2 = getSignificantFigures(testValue);
-                if (Math.abs(decimal1 - decimal2) > accuracy) {
+                boolean accurate =
+                    compareDoubles(templateValue, testValue, accuracy);
+                if (!accurate) {
                     final Integer lineValue =
                         findErrorLineValue(lineStartValues,
                                            templateValues.get(i));
@@ -462,28 +458,69 @@ public class AbstractTest {
     /**
      * Verifies unit test output.
      *
-     * @param value Double/Object value
+     * @param value1 Double/Object value
+     * @param value2 Double/Object value
+     * @param accuracy Accuracy
      * @return Double
      */
-    static Double getSignificantFigures(final Object value) {
+    static boolean compareDoubles(final Object value1, final Object value2,
+                                  final double accuracy) {
 
-        Double decimalValue = (Double) value;
+        double decimalValue1 = (double) value1;
+        double decimalValue2 = (double) value2;
 
-        // A negative sign in the string interferes with the decimal place value
-        // finder
-        boolean negative = false;
-        if (decimalValue < 0.0) {
-            decimalValue *= 1.0;
-            negative = true;
+        // Ensures that string compared only has 1 value in front of decimal
+        // point
+        if (FastMath.abs(decimalValue1) >= 10) {
+            int decVal =
+                String.valueOf(FastMath.abs(decimalValue1)).indexOf(".");
+            double mult =
+                Double.parseDouble("1e-" + String.valueOf(decVal - 1));
+            decimalValue1 *= mult;
+            decimalValue2 *= mult;
         }
-        final int decimalPlace = String.valueOf(decimalValue).indexOf(".");
 
-        // Switch the negative back once we're done
-        if (negative) {
-            decimalValue *= 1.0;
+        // Removes negative sign from consideration
+        if (decimalValue1 < 0) {
+            decimalValue1 *= -1.0;
+            decimalValue2 *= -1.0;
         }
 
-        return decimalValue / Math.pow(10.0, decimalPlace - 1);
+        // Converting back to string keeps decimal values exact
+        String str1 = String.valueOf(decimalValue1);
+        String str2 = String.valueOf(decimalValue2);
+
+        // Takes care of possibility of new string having scientific notation,
+        // as
+        // zeros that come right after the decimal point are significant figures
+        // when
+        // checking accuracy
+        if (str1.substring(str1.length() - 2, str1.length() - 1).equals("-")) {
+            int moveUp = Integer.valueOf(str1.substring(str1.length() - 1)) - 1;
+            String filler = new String(new char[moveUp]).replace('\0', '0');
+            str1 =
+                "0." +
+                   filler + str1.substring(0, 1) +
+                   str1.substring(2, str1.length() - 3);
+            str2 =
+                "0." +
+                   filler + str2.substring(0, 1) +
+                   str2.substring(2, str2.length() - 3);
+        }
+
+        // Makes sure we do not call a character after the end of the string
+        // length value
+        double check =
+            Double.parseDouble(String.valueOf(accuracy)
+                .substring(String.valueOf(accuracy).length() - 1));
+        double strMax =
+            str1.length() < str2.length() ? str1.length() : str2.length();
+        if (check + 2 > strMax) {
+            check = strMax - 2;
+        }
+
+        return str1.substring(2, (int) (2 + check))
+            .equals(str2.substring(2, (int) (2 + check)));
     }
 
     /**

@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -109,7 +109,8 @@ public class TimePositionTest
         final BoundedPropagator boundedPropagator =
             generator.getGeneratedEphemeris();
 
-        final Spacecraft satellite = new Spacecraft(boundedPropagator, header);
+        final Spacecraft satellite =
+            new Spacecraft(boundedPropagator, header.getClock());
 
         final List<JulianDate> julianDates = satellite.getJulianDates();
 
@@ -120,7 +121,7 @@ public class TimePositionTest
             new TimePosition(randomCartesians, julianDates);
 
         final String pathFile =
-            loadResources("templateFile/secondary/TimePositionTemplate.txt");
+            loadResources("templateFile/object/secondary/TimePositionTemplate.txt");
 
         verifyFileOutput(pathFile, timePosition.toString(), 1e-8);
     }

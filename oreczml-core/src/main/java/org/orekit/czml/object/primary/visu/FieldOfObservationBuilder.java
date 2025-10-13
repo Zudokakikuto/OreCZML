@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -18,7 +18,6 @@ package org.orekit.czml.object.primary.visu;
 
 import org.hipparchus.util.FastMath;
 import org.orekit.bodies.OneAxisEllipsoid;
-import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.frames.FramesFactory;
 import org.orekit.frames.Transform;
@@ -90,9 +89,6 @@ public class FieldOfObservationBuilder {
      */
     private double angularStep = DEFAULT_ANGULAR_STEP;
 
-    /** The header to consider when several are used. */
-    private Header header = null;
-
     // Constructor
 
     /**
@@ -102,16 +98,13 @@ public class FieldOfObservationBuilder {
      * @param fieldOfViewInput : The field of view of the satellite.
      * @param fovToBodyInput : The transform between the frame of the fov to the
      *        frame of the body.
-     * @param headerInput : The header considered.
      */
     public FieldOfObservationBuilder(final Spacecraft satelliteInput,
                                      final FieldOfView fieldOfViewInput,
-                                     final Transform fovToBodyInput,
-                                     final Header headerInput) {
+                                     final Transform fovToBodyInput) {
         this.satellite = satelliteInput;
         this.fieldOfView = fieldOfViewInput;
         this.fovToBody = fovToBodyInput;
-        this.header = headerInput;
     }
 
     /**
@@ -161,17 +154,6 @@ public class FieldOfObservationBuilder {
     }
 
     /**
-     * Function to set up a header.
-     *
-     * @param headerInput : The header to set up.
-     * @return : The field of observation builder with the given header.
-     */
-    public FieldOfObservationBuilder withHeader(final Header headerInput) {
-        this.header = headerInput;
-        return this;
-    }
-
-    /**
      * The build function that generates a field of observation object.
      *
      * @return : A field of observation object with the given parameters of the
@@ -183,7 +165,7 @@ public class FieldOfObservationBuilder {
         throws URISyntaxException,
             IOException {
         return new FieldOfObservation(satellite, fieldOfView, fovToBody, body,
-                                      angularStep, color, customID, header);
+                                      angularStep, color, customID);
     }
 
 }

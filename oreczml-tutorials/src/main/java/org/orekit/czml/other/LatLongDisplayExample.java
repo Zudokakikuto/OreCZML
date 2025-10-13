@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -55,6 +55,7 @@ public class LatLongDisplayExample {
                                          "/Javascript/public");
 
         // Creation of the clock.
+
         final AbsoluteDate startDate =
             new AbsoluteDate(2024, 3, 15, 0, 0, 0.0,
                              TimeScalesFactory.getUTC());
@@ -70,13 +71,13 @@ public class LatLongDisplayExample {
 
         // LatLongLinesDisplay
         final LatLongLines latLongLines =
-            LatLongLines.builder(header).withLatitudeAngularStep(30)
-                .withLongitudeAngularStep(30).withDisplay(true)
-                .withCustomID(LatLongLines.DEFAULT_ID).build();
+            LatLongLines.builder(header.getAvailability())
+                .withLatitudeAngularStep(30).withLongitudeAngularStep(30)
+                .withDisplay(true).withCustomID(LatLongLines.DEFAULT_ID)
+                .build();
 
         final CzmlFile file =
-            CzmlFile.builder().withHeader(header).withLatLong(latLongLines)
-                .build();
+            CzmlFile.builder(header).withLatLong(latLongLines).build();
 
         // Writing in the file
         file.write(output);

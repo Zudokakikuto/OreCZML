@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -19,13 +19,13 @@ package org.orekit.czml.object.primary.visu;
 import cesiumlanguagewriter.CesiumOutputStream;
 import cesiumlanguagewriter.CesiumStreamWriter;
 import cesiumlanguagewriter.PacketCesiumWriter;
+import cesiumlanguagewriter.TimeInterval;
 import org.hipparchus.util.FastMath;
 import org.orekit.czml.errors.OreCzmlException;
 import org.orekit.czml.errors.OreCzmlMessages;
 import org.orekit.czml.object.Position;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
 import org.orekit.czml.object.primary.entities.CzmlGroundStation;
-import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.secondary.Cylinder;
 import org.orekit.frames.TopocentricFrame;
@@ -96,11 +96,12 @@ public class VisibilityCone
      * @param id : The id of the visibility cone
      * @param name : The name of the visibility cone
      * @param cylinder : The cylinder for the visibility cone
-     * @param header : The header considered.
+     * @param availability : The availability considered.
      */
     public VisibilityCone(final String id, final String name,
-                          final Cylinder cylinder, final Header header) {
-        this(id, name, cylinder, DEFAULT_SPACECRAFT_PARAMETER, header);
+                          final Cylinder cylinder,
+                          final TimeInterval availability) {
+        this(id, name, cylinder, DEFAULT_SPACECRAFT_PARAMETER, availability);
     }
 
     /**
@@ -110,14 +111,14 @@ public class VisibilityCone
      * @param name : The name of the visibility cone
      * @param cylinder : The cylinder for the visibility cone
      * @param satellite : The satellite that will enter the visibility cone
-     * @param header : The header considered.
+     * @param availability : The time frame for which the feature is available.
      */
     public VisibilityCone(final String id, final String name,
                           final Cylinder cylinder, final Spacecraft satellite,
-                          final Header header) {
+                          final TimeInterval availability) {
         this.setId(id);
         this.setName(name);
-        this.setAvailability(header.getAvailability());
+        this.setAvailability(availability);
         this.cylinder = cylinder;
         this.position = cylinder.getPosition();
         this.satellite = satellite;
@@ -128,17 +129,18 @@ public class VisibilityCone
      *
      * @param groundStation : The ground station that will be linked to the
      *        visibility cone
-     * @param header : The header to consider
+     * @param availability : The time frame for which the feature is available.
      */
     public VisibilityCone(final CzmlGroundStation groundStation,
-                          final Header header) {
+                          final TimeInterval availability) {
 
         this.setId(DEFAULT_ID_VIS + groundStation.getName());
         this.setName(DEFAULT_NAME + groundStation.getName());
-        this.setAvailability(header.getAvailability());
+        this.setAvailability(availability);
         this.cylinder =
             new Cylinder(groundStation,
-                         FastMath.toRadians(DEFAULT_ANGLE_OF_APERTURE), header);
+                         FastMath.toRadians(DEFAULT_ANGLE_OF_APERTURE),
+                         availability);
         this.position = cylinder.getPosition();
     }
 
@@ -151,11 +153,12 @@ public class VisibilityCone
      * @param satellite : The satellite that will go to the visibility cone, the
      *        height of the cone will be limited to the altitude of the
      *        satellite.
-     * @param header : The header considered.
+     * @param availability : The time frame for which the feature is available.
      */
     public VisibilityCone(final CzmlGroundStation groundStation,
-                          final Spacecraft satellite, final Header header) {
-        this(groundStation, satellite, DEFAULT_ANGLE_OF_APERTURE, header);
+                          final Spacecraft satellite,
+                          final TimeInterval availability) {
+        this(groundStation, satellite, DEFAULT_ANGLE_OF_APERTURE, availability);
     }
 
     /**
@@ -168,21 +171,22 @@ public class VisibilityCone
      *        height of the cone will be limited to the altitude of the
      *        satellite.
      * @param angleOfAperture : The angle of aperture of the ground station.
-     * @param header : The header considered.
+     * @param availability : The time frame for which the feature is available.
      */
     public VisibilityCone(final CzmlGroundStation groundStation,
                           final Spacecraft satellite,
-                          final double angleOfAperture, final Header header) {
+                          final double angleOfAperture,
+                          final TimeInterval availability) {
 
         this.setId(DEFAULT_ID_VIS +
                    groundStation.getName() + "/" + satellite.getName());
         this.setName(DEFAULT_NAME +
                      groundStation.getName() + DEFAULT_LOOKING_AT +
                      satellite.getName());
-        this.setAvailability(header.getAvailability());
+        this.setAvailability(availability);
         this.cylinder =
             new Cylinder(groundStation.getTopocentricFrame(), satellite,
-                         angleOfAperture, header);
+                         angleOfAperture, availability);
         this.position = cylinder.getPosition();
         this.satellite = satellite;
     }
@@ -195,11 +199,13 @@ public class VisibilityCone
      *        be.
      * @param satellite : The satellite that will go through the visibility
      *        cone.
-     * @param header : The header considered.
+     * @param availability : The time frame for which the feature is available.
      */
     public VisibilityCone(final TopocentricFrame topocentricFrame,
-                          final Spacecraft satellite, final Header header) {
-        this(topocentricFrame, satellite, DEFAULT_ANGLE_OF_APERTURE, header);
+                          final Spacecraft satellite,
+                          final TimeInterval availability) {
+        this(topocentricFrame, satellite, DEFAULT_ANGLE_OF_APERTURE,
+             availability);
     }
 
     /**
@@ -211,20 +217,22 @@ public class VisibilityCone
      * @param satellite : The satellite that will go through the visibility
      *        cone.
      * @param angleOfAperture : The angle of aperture of the ground station.
-     * @param header : The header to consider.
+     * @param availability : The time frame for which the feature is available.
      */
     public VisibilityCone(final TopocentricFrame topocentricFrame,
                           final Spacecraft satellite,
-                          final double angleOfAperture, final Header header) {
+                          final double angleOfAperture,
+                          final TimeInterval availability) {
 
         this.setId(DEFAULT_ID_VIS +
                    topocentricFrame.getName() + "/" + satellite.getName());
         this.setName(DEFAULT_NAME +
                      topocentricFrame.getName() + DEFAULT_LOOKING_AT +
                      satellite.getName());
-        this.setAvailability(header.getAvailability());
+        this.setAvailability(availability);
         this.cylinder =
-            new Cylinder(topocentricFrame, satellite, angleOfAperture, header);
+            new Cylinder(topocentricFrame, satellite, angleOfAperture,
+                         availability);
         this.position = cylinder.getPosition();
         this.satellite = satellite;
     }
@@ -242,7 +250,7 @@ public class VisibilityCone
 
             cylinder.write(packet, output);
 
-            position.write(packet, output, getAvailability());
+            position.write(packet, output);
         }
     }
 

@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -17,7 +17,6 @@
 
 package org.orekit.czml.object.primary.pointing;
 
-import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.primary.visu.FieldOfObservation;
 
@@ -42,9 +41,6 @@ public class CoveredSurfaceOnBodyBuilder {
     /** The custom id of the covered surface. */
     private String customId;
 
-    /** The header to consider when several are used. */
-    private Header header = null;
-
     /** To fill or not the covered surface. */
     private boolean fill = false;
 
@@ -60,18 +56,15 @@ public class CoveredSurfaceOnBodyBuilder {
      * @param satelliteInput : The satellite to consider for the coverage.
      * @param fieldOfObservationInput : The field of observation of the
      *        satellite.
-     * @param headerInput : The header considered.
      */
     public CoveredSurfaceOnBodyBuilder(final Spacecraft satelliteInput,
-                                       final FieldOfObservation fieldOfObservationInput,
-                                       final Header headerInput) {
+                                       final FieldOfObservation fieldOfObservationInput) {
         this.satellite = satelliteInput;
         this.fieldOfObservation = fieldOfObservationInput;
         this.customId =
             "COVERED_SURFACE/" +
                         satelliteInput.getId() + "/" + fieldOfObservationInput
                             .getBody().getBodyFrame().toString();
-        this.header = headerInput;
     }
 
     /**
@@ -83,17 +76,6 @@ public class CoveredSurfaceOnBodyBuilder {
     public CoveredSurfaceOnBodyBuilder
         withCustomId(final String customIdInput) {
         this.customId = customIdInput;
-        return this;
-    }
-
-    /**
-     * Function to set up a header.
-     *
-     * @param headerInput : The header to set up
-     * @return : A covered surface on body builder with a header.
-     */
-    public CoveredSurfaceOnBodyBuilder withHeader(final Header headerInput) {
-        this.header = headerInput;
         return this;
     }
 
@@ -138,6 +120,6 @@ public class CoveredSurfaceOnBodyBuilder {
      */
     public CoveredSurfaceOnBody build() {
         return new CoveredSurfaceOnBody(satellite, fieldOfObservation, customId,
-                                        fill, outline, color, header);
+                                        fill, outline, color);
     }
 }

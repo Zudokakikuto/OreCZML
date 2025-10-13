@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -15,10 +15,6 @@
  * limitations under the License.
  */
 package org.orekit.czml.file;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import org.orekit.czml.object.primary.GroundTrack;
 import org.orekit.czml.object.primary.Header;
@@ -40,6 +36,10 @@ import org.orekit.czml.object.primary.visu.InterSatVisu;
 import org.orekit.czml.object.primary.visu.LineOfVisibility;
 import org.orekit.czml.object.primary.visu.StationVisibilityCircle;
 import org.orekit.czml.object.primary.visu.VisibilityTriangle;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Czml File Builder
@@ -156,19 +156,11 @@ public class CzmlFileBuilder {
 
     /**
      * The constructor of the czml file builder object.
-     */
-    public CzmlFileBuilder() {
-    }
-
-    /**
-     * Function to set up the header.
      *
-     * @param headerInput : The header to set up.
-     * @return : The czml file builder with the given header.
+     * @param headerInput : The header considered.
      */
-    public CzmlFileBuilder withHeader(final Header headerInput) {
+    public CzmlFileBuilder(final Header headerInput) {
         this.header = headerInput;
-        return this;
     }
 
     // Satellite
@@ -270,7 +262,7 @@ public class CzmlFileBuilder {
      */
     public CzmlFileBuilder
         withInfluenceSphere(final List<InfluenceSphere> influenceSpheresInput) {
-        influenceSpheres.addAll(influenceSpheresInput);
+        this.influenceSpheres.addAll(influenceSpheresInput);
         return this;
     }
 
@@ -434,7 +426,7 @@ public class CzmlFileBuilder {
      */
     public CzmlFileBuilder
         withVisibilityTriangle(final List<VisibilityTriangle> visibilityTrianglesInput) {
-        visibilityTriangles.addAll(visibilityTrianglesInput);
+        this.visibilityTriangles.addAll(visibilityTrianglesInput);
         return this;
     }
 

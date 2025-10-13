@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -155,15 +155,14 @@ public class SSOAttitudeExample {
 
         // Creation of the satellite
         final Spacecraft satellite =
-            Spacecraft.builder(boundedPropagator, header)
-                .withModelPath(IssModel).withColor(Color.RED)
-                .withOnlyOnePeriod().withDisplayAttitude().withReferenceSystem()
-                .build();
+            Spacecraft.builder(boundedPropagator, clock).withModelPath(IssModel)
+                .withColor(Color.RED).withOnlyOnePeriod().withDisplayAttitude()
+                .withReferenceSystem().build();
 
         final AttitudePointing pointing =
             AttitudePointing
                 .builder(satellite, TutorialUtils.getEarth(), Vector3D.MINUS_K,
-                         header)
+                         clock.getAvailability())
                 .withColor(Color.ORANGE).displayPointingPath()
                 .displayPeriodPointingPath().build();
 
@@ -183,12 +182,11 @@ public class SSOAttitudeExample {
                                          Vector3D.PLUS_J,
                                          FastMath.toRadians(20), 2);
         final FieldOfObservation fieldOfObservation =
-            FieldOfObservation.builder(satellite, fov, initialFovBody, header)
-                .build();
+            FieldOfObservation.builder(satellite, fov, initialFovBody).build();
 
         // Creation of the file
         final CzmlFile file =
-            CzmlFile.builder().withHeader(header).withSpacecraft(satellite)
+            CzmlFile.builder(header).withSpacecraft(satellite)
                 .withAttitudePointing(pointing)
                 .withFieldOfObservation(fieldOfObservation).build();
 

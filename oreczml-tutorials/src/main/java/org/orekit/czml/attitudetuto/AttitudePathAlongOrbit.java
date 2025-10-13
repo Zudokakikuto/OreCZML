@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -315,25 +315,28 @@ public class AttitudePathAlongOrbit {
             generator.getGeneratedEphemeris();
 
         final Spacecraft satellite =
-            Spacecraft.builder(boundedPropagator, header)
-                .withModelPath(IssModel).withColor(Color.PINK)
-                .withOnlyOnePeriod().withDisplayAttitude().build();
+            Spacecraft.builder(boundedPropagator, clock).withModelPath(IssModel)
+                .withColor(Color.PINK).withOnlyOnePeriod().withDisplayAttitude()
+                .build();
 
         final AttitudePointing attitudePointing =
             AttitudePointing
                 .builder(satellite, TutorialUtils.getEarth(), Vector3D.PLUS_I,
-                         header)
+                         clock.getAvailability())
                 .withColor(Color.cyan).withDisplayOnGround(true)
                 .displayPointingPath().displayPeriodPointingPath().build();
 
         final CzmlGroundStation mexicoGroundStation =
-            new CzmlGroundStation(topocentricMexico, header);
+            new CzmlGroundStation(topocentricMexico, clock.getAvailability());
         final CzmlGroundStation madagascarGroundStation =
-            new CzmlGroundStation(topocentricMadagascar, header);
+            new CzmlGroundStation(topocentricMadagascar,
+                                  clock.getAvailability());
         final CzmlGroundStation portMoresbyGroundStation =
-            new CzmlGroundStation(topocentricPortMoresby, header);
+            new CzmlGroundStation(topocentricPortMoresby,
+                                  clock.getAvailability());
         final CzmlGroundStation maracaiboGroundStation =
-            new CzmlGroundStation(topocentricMaracaibo, header);
+            new CzmlGroundStation(topocentricMaracaibo,
+                                  clock.getAvailability());
         final List<CzmlGroundStation> allGroundStation = new ArrayList<>();
         allGroundStation.add(mexicoGroundStation);
         allGroundStation.add(madagascarGroundStation);
@@ -342,7 +345,7 @@ public class AttitudePathAlongOrbit {
 
         // Creation of the file
         final CzmlFile file =
-            CzmlFile.builder().withHeader(header).withSpacecraft(satellite)
+            CzmlFile.builder(header).withSpacecraft(satellite)
                 .withAttitudePointing(attitudePointing)
                 .withCzmlGroundStation(allGroundStation).build();
 

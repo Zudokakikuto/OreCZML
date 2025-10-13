@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -23,7 +23,6 @@ import cesiumlanguagewriter.EllipsoidRadiiCesiumWriter;
 import cesiumlanguagewriter.JulianDate;
 import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.TimeInterval;
-import org.orekit.czml.object.primary.Header;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -131,11 +130,12 @@ public class CzmlEllipsoid
      * and a position, with default parameters.
      *
      * @param cartesian : The dimensions of the ellipsoid.
-     * @param header : The header considered.
+     * @param availability : The availability considered.
      */
-    public CzmlEllipsoid(final Cartesian cartesian, final Header header) {
+    public CzmlEllipsoid(final Cartesian cartesian,
+                         final TimeInterval availability) {
         this(cartesian, DEFAULT_FILL, DEFAULT_OUTLINE, DEFAULT_SLICE_PARTITION,
-             DEFAULT_STACK_PARTITION, DEFAULT_COLOR, header);
+             DEFAULT_STACK_PARTITION, DEFAULT_COLOR, availability);
     }
 
     /**
@@ -150,14 +150,14 @@ public class CzmlEllipsoid
      * @param stackPartition : The number of stacks of the ellipsoid (number of
      *        parallels lines in the vertical direction)
      * @param color : The color of the ellipsoid.
-     * @param header : The header considered.
+     * @param availability : The availability considered.
      */
     public CzmlEllipsoid(final Cartesian cartesian, final boolean fill,
                          final boolean outline, final int slicePartition,
                          final int stackPartition, final Color color,
-                         final Header header) {
+                         final TimeInterval availability) {
         this.cartesian = cartesian;
-        this.availability = header.getAvailability();
+        this.availability = availability;
         this.fill = fill;
         this.outline = outline;
         this.color = color;
@@ -175,14 +175,14 @@ public class CzmlEllipsoid
      * @param dimensions : These cartesians represent the dimensions of the
      *        ellipsoid (x,y,z), each value is the distance from the center for
      *        each dimension.
-     * @param header : The header considered.
+     * @param availability : The availability considered.
      */
     public CzmlEllipsoid(final List<JulianDate> julianDates,
                          final List<Cartesian> dimensions,
-                         final Header header) {
+                         final TimeInterval availability) {
         this(julianDates, dimensions, DEFAULT_FILL, DEFAULT_OUTLINE,
              DEFAULT_SLICE_PARTITION, DEFAULT_STACK_PARTITION, DEFAULT_COLOR,
-             header);
+             availability);
     }
 
     /**
@@ -200,17 +200,17 @@ public class CzmlEllipsoid
      * @param stackPartition : The number of stacks of the ellipsoid (number of
      *        parallels lines in the vertical direction).
      * @param color : The color of the ellipsoid.
-     * @param header : The header considered.
+     * @param availability : The availability considered.
      */
     public CzmlEllipsoid(final List<JulianDate> julianDates,
                          final List<Cartesian> dimensions, final boolean fill,
                          final boolean outline, final int slicePartition,
                          final int stackPartition, final Color color,
-                         final Header header) {
+                         final TimeInterval availability) {
         this.fill = fill;
         this.outline = outline;
         this.color = color;
-        this.availability = header.getAvailability();
+        this.availability = availability;
         this.slicePartition = slicePartition;
         this.stackPartition = stackPartition;
         this.julianDates = julianDates;
@@ -224,12 +224,12 @@ public class CzmlEllipsoid
      * Builder czml ellipsoid builder.
      *
      * @param cartesian the cartesian
-     * @param header the header
+     * @param availability the availability
      * @return the czml ellipsoid builder
      */
-    public static CzmlEllipsoidBuilder builder(final Cartesian cartesian,
-                                               final Header header) {
-        return new CzmlEllipsoidBuilder(cartesian, header);
+    public static CzmlEllipsoidBuilder
+        builder(final Cartesian cartesian, final TimeInterval availability) {
+        return new CzmlEllipsoidBuilder(cartesian, availability);
     }
 
     /**
@@ -237,13 +237,14 @@ public class CzmlEllipsoid
      *
      * @param julianDates the julian dates
      * @param dimensions the dimensions
-     * @param header the header
+     * @param availability the availability
      * @return the czml ellipsoid builder
      */
     public static CzmlEllipsoidBuilder
         builder(final List<JulianDate> julianDates,
-                final List<Cartesian> dimensions, final Header header) {
-        return new CzmlEllipsoidBuilder(julianDates, dimensions, header);
+                final List<Cartesian> dimensions,
+                final TimeInterval availability) {
+        return new CzmlEllipsoidBuilder(julianDates, dimensions, availability);
     }
 
     // Overrides

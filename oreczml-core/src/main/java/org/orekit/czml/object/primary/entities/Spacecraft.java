@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -17,37 +17,6 @@
 
 package org.orekit.czml.object.primary.entities;
 
-import java.awt.Color;
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import org.hipparchus.geometry.euclidean.threed.Rotation;
-import org.hipparchus.geometry.euclidean.threed.Vector3D;
-import org.orekit.attitudes.Attitude;
-import org.orekit.bodies.CelestialBodyFactory;
-import org.orekit.czml.errors.OreCzmlException;
-import org.orekit.czml.errors.OreCzmlMessages;
-import org.orekit.czml.object.ModelType;
-import org.orekit.czml.object.Path;
-import org.orekit.czml.object.Utils.DateUtils;
-import org.orekit.czml.object.nonvisual.CzmlModel;
-import org.orekit.czml.object.primary.AbstractPrimaryObject;
-import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.systems.SpacecraftReferenceSystem;
-import org.orekit.czml.object.secondary.Orientation;
-import org.orekit.czml.object.secondary.TimePosition;
-import org.orekit.errors.OrekitException;
-import org.orekit.frames.Frame;
-import org.orekit.orbits.Orbit;
-import org.orekit.propagation.BoundedPropagator;
-import org.orekit.propagation.Propagator;
-import org.orekit.propagation.SpacecraftState;
-import org.orekit.time.AbsoluteDate;
-
 import cesiumlanguagewriter.BooleanCesiumWriter;
 import cesiumlanguagewriter.Cartesian;
 import cesiumlanguagewriter.CesiumOutputStream;
@@ -60,6 +29,36 @@ import cesiumlanguagewriter.PolylineMaterialCesiumWriter;
 import cesiumlanguagewriter.PositionCesiumWriter;
 import cesiumlanguagewriter.SolidColorMaterialCesiumWriter;
 import cesiumlanguagewriter.TimeInterval;
+import org.hipparchus.geometry.euclidean.threed.Rotation;
+import org.hipparchus.geometry.euclidean.threed.Vector3D;
+import org.orekit.attitudes.Attitude;
+import org.orekit.bodies.CelestialBodyFactory;
+import org.orekit.czml.errors.OreCzmlException;
+import org.orekit.czml.errors.OreCzmlMessages;
+import org.orekit.czml.object.ModelType;
+import org.orekit.czml.object.Path;
+import org.orekit.czml.object.nonvisual.CzmlModel;
+import org.orekit.czml.object.primary.AbstractPrimaryObject;
+import org.orekit.czml.object.primary.systems.SpacecraftReferenceSystem;
+import org.orekit.czml.object.secondary.Clock;
+import org.orekit.czml.object.secondary.Orientation;
+import org.orekit.czml.object.secondary.TimePosition;
+import org.orekit.czml.object.utils.DateUtils;
+import org.orekit.errors.OrekitException;
+import org.orekit.frames.Frame;
+import org.orekit.orbits.Orbit;
+import org.orekit.propagation.BoundedPropagator;
+import org.orekit.propagation.Propagator;
+import org.orekit.propagation.SpacecraftState;
+import org.orekit.time.AbsoluteDate;
+
+import java.awt.Color;
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Spacecraft class.
@@ -121,6 +120,7 @@ public class Spacecraft
     private boolean oriented = false;
 
     // Optional parameters
+
     /**
      * To display or not only one period. By default, display all the paths.
      */
@@ -138,6 +138,7 @@ public class Spacecraft
     private boolean displayReferenceSystem = false;
 
     // Orekit arguments
+
     /**
      * The list of the attitudes of the Spacecraft.
      */
@@ -159,6 +160,7 @@ public class Spacecraft
     private final Frame frame;
 
     // Writing arguments
+
     /**
      * The period of the orbit.
      */
@@ -189,9 +191,7 @@ public class Spacecraft
      */
     private final CzmlModel model;
 
-    /**
-     * The type of the model.
-     */
+    /** The type of the model. */
     private final ModelType modelType;
 
     /** The start date of the propagation. */
@@ -200,8 +200,8 @@ public class Spacecraft
     /** The final date of the propagation. */
     private final AbsoluteDate finalDate;
 
-    /** The header used for the Spacecraft. */
-    private final Header header;
+    /** The time step size for the propagation. */
+    private final double clockMultiplier;
 
     /** The description of the Spacecraft. */
     private String description;
@@ -214,15 +214,15 @@ public class Spacecraft
      *
      * @param propagator : A bounded propagator resulting from an already done
      *        propagation.
-     * @param header : The header considered.
+     * @param clock : The clock used for the spacecraft
      * @throws URISyntaxException the uri syntax exception
      * @throws IOException the io exception
      */
-    public Spacecraft(final BoundedPropagator propagator, final Header header)
+    public Spacecraft(final BoundedPropagator propagator, final Clock clock)
         throws URISyntaxException,
             IOException {
         this(propagator, propagator.getMinDate(), propagator.getMaxDate(),
-             DEFAULT_MODEL_PATH, DEFAULT_COLOR,
+             clock.getMultiplier(), DEFAULT_MODEL_PATH, DEFAULT_COLOR,
              String.format(DEFAULT_FORMAT,
                            propagator.getInitialState().getPosition().getX(),
                            propagator.getInitialState().getPosition().getY(),
@@ -232,8 +232,7 @@ public class Spacecraft
                            propagator.getInitialState().getPVCoordinates()
                                .getVelocity().getY(),
                            propagator.getInitialState().getPVCoordinates()
-                               .getVelocity().getZ()),
-             header);
+                               .getVelocity().getZ()));
     }
 
     /**
@@ -248,15 +247,15 @@ public class Spacecraft
      * @param modelPath : The path to the model to load.
      * @param color : The color of the orbit.
      * @param customID : The custom ID of the Spacecraft.
-     * @param header : The header considered when several are used.
+     * @param clockMultiplier : The clock multiplier
      * @throws URISyntaxException the uri syntax exception
      * @throws IOException the io exception
      */
     public Spacecraft(final BoundedPropagator propagator,
                       final AbsoluteDate startDateInput,
-                      final AbsoluteDate finalDateInput, final String modelPath,
-                      final Color color, final String customID,
-                      final Header header)
+                      final AbsoluteDate finalDateInput,
+                      final double clockMultiplier, final String modelPath,
+                      final Color color, final String customID)
         throws URISyntaxException,
             IOException {
 
@@ -271,11 +270,12 @@ public class Spacecraft
                            startDateInput + " to " + finalDateInput + "</p>";
         this.frame = propagator.getFrame();
         this.color = color;
-        this.model = new CzmlModel(modelPath, true, header);
+        this.model = new CzmlModel(modelPath, true, this.getAvailability());
         this.modelType = model.getModelType();
         this.startDate = startDateInput;
         this.finalDate = finalDateInput;
-        this.header = header;
+        this.clockMultiplier = clockMultiplier;
+
         // Setup propagator
         multiplexerSetup(propagator);
         // Propagation
@@ -289,12 +289,24 @@ public class Spacecraft
      * Builder Spacecraft builder.
      *
      * @param propagator the propagator
-     * @param header the header
+     * @param clock the clock
      * @return the Spacecraft builder
      */
     public static SpacecraftBuilder builder(final BoundedPropagator propagator,
-                                            final Header header) {
-        return new SpacecraftBuilder(propagator, header);
+                                            final Clock clock) {
+        return new SpacecraftBuilder(propagator, clock);
+    }
+
+    /**
+     * Builder Spacecraft builder.
+     *
+     * @param propagator the propagator
+     * @param clockMultiplierInput the clock multiplier
+     * @return the Spacecraft builder
+     */
+    public static SpacecraftBuilder builder(final BoundedPropagator propagator,
+                                            final double clockMultiplierInput) {
+        return new SpacecraftBuilder(propagator, clockMultiplierInput);
     }
 
     // Overrides
@@ -348,22 +360,22 @@ public class Spacecraft
      */
     public void displaySpacecraftReferenceSystem() {
         this.displayReferenceSystem = true;
-        this.spacecraftReferenceSystem =
-            new SpacecraftReferenceSystem(this, header);
+        this.spacecraftReferenceSystem = new SpacecraftReferenceSystem(this);
     }
 
     /**
      * TODO : The distance between the body and the spacecraft is not matching
      * what is displayed on screen for no reasons. To fix or delete in the
-     * future. Displays the changes of the sphere of influence experienced by
-     * the spacecraft.
+     * future.
      *
-     * @param bodies the bodies
+     * @param bodies The list of bodies that will have their influence sphere
+     *        displayed
      */
     public void displayInfluenceSphereChanges(final List<Body> bodies) {
         // We will take all the position and coordinates in the same frame: the
-        // frame of the sun so that all will be referenced to this system, and
-        // we will be able to measure distances.
+        // frame of the sun
+        // So that all will be referenced to this system, and we will be able to
+        // measure distances.
         final Frame sunFrame =
             CelestialBodyFactory.getSun().getInertiallyOrientedFrame();
 
@@ -443,28 +455,6 @@ public class Spacecraft
                     lastKnownInfluenceSphere = spheres.get(i);
                     datesChanges.add(state.getDate());
                 }
-                // if (currentPosition.distance(currentPositionCurrentBody) >
-                // currentInfluenceSphere.getRadius()) {
-                // for (int j = 0; j < spheresRadius.size(); j++) {
-                // // The radiuses are sorted by size. We will stop on the first
-                // that we find being the closest.
-                // final double currentRadius = spheresRadius.get(j);
-                // final Body sortedCurrentBody = bodiesSorted.get(j);
-                // final Frame inertialFrameSortedBody =
-                // sortedCurrentBody.getCelestialBody()
-                // .getInertiallyOrientedFrame();
-                // final Vector3D currentPositionSortedBody =
-                // sortedCurrentBody.getCelestialBody()
-                // .getPosition(currentDate,
-                // inertialFrameSortedBody);
-                // if (currentPosition.distance(currentPositionSortedBody) <
-                // currentRadius) {
-                // lastKnownInfluenceSphere = spheresSorted.get(j);
-                // datesChanges.add(state.getDate());
-                // break;
-                // }
-                // }
-                // }
             }
         }
         // Add the last date of the simulation.
@@ -686,7 +676,7 @@ public class Spacecraft
      */
     public void setAttitudes(final List<Attitude> attitudes) {
         this.attitudes = new ArrayList<>(attitudes);
-        this.orientation = new Orientation(attitudes, getFrame(), header);
+        this.orientation = new Orientation(attitudes, getFrame());
         oriented = true;
     }
 
@@ -735,14 +725,13 @@ public class Spacecraft
      * @param propagator : The propagator of the Spacecraft.
      */
     private void multiplexerSetup(final Propagator propagator) {
-        propagator.getMultiplexer().add(header.getClock().getMultiplier(),
-                                        currentState -> {
-                                            spaceCraftStates.add(currentState);
-                                            final Attitude currentSpaceCraftAttitude =
-                                                currentState.getAttitude();
-                                            attitudes
-                                                .add(currentSpaceCraftAttitude);
-                                        });
+
+        propagator.getMultiplexer().add(clockMultiplier, currentState -> {
+            spaceCraftStates.add(currentState);
+            final Attitude currentSpaceCraftAttitude =
+                currentState.getAttitude();
+            attitudes.add(currentSpaceCraftAttitude);
+        });
     }
 
     /**
@@ -791,7 +780,7 @@ public class Spacecraft
                 if (!oriented) {
                     this.orientation =
                         new Orientation(attitudes, getFrame(), false,
-                                        optionalRotation, header);
+                                        optionalRotation);
                 }
                 this.orientation.write(packet, output);
             }
@@ -874,7 +863,7 @@ public class Spacecraft
                 getModelType() == ModelType.EMPTY_MODEL) {
                 if (displayAttitude) {
                     this.orientation =
-                        Orientation.builder(getAttitudes(), getFrame(), header)
+                        Orientation.builder(getAttitudes(), getFrame())
                             .withOptionalRotation(optionalRotation)
                             .withInvertToITRF(false).build();
                     oriented = true;
@@ -884,7 +873,7 @@ public class Spacecraft
                     this.orientation = null;
                 } else {
                     this.orientation =
-                        Orientation.builder(getAttitudes(), getFrame(), header)
+                        Orientation.builder(getAttitudes(), getFrame())
                             .withOptionalRotation(optionalRotation)
                             .withInvertToITRF(false).build();
                     oriented = true;

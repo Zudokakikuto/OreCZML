@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -23,11 +23,11 @@ import cesiumlanguagewriter.JulianDate;
 import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.PathCesiumWriter;
 import cesiumlanguagewriter.PositionCesiumWriter;
+import cesiumlanguagewriter.TimeInterval;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.orekit.bodies.BodyShape;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
-import org.orekit.czml.object.primary.Header;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -107,8 +107,7 @@ public class PointOnBody
      */
     private double periodForPath;
 
-    /** The header considered. */
-    private Header header;
+    /** The availability of the point on body. */
 
     // Constructor
 
@@ -120,21 +119,25 @@ public class PointOnBody
      *        list represents the points at the surface of the body in time that
      *        will describe the trajectory of the point.
      * @param body : The body to which the geodetic points are projected to.
-     * @param header : The header considered.
      */
     public PointOnBody(final List<JulianDate> julianDates,
                        final List<GeodeticPoint> geodeticPoints,
-                       final BodyShape body, final Header header) {
+                       final BodyShape body) {
         this.footprintsInTime = new ArrayList<>(geodeticPoints);
-        this.header = header;
         final String stringFootprints =
             Arrays.toString(Arrays.copyOfRange(footprintsInTime.toArray(), 0,
                                                10));
+
         // Taking only the 10 first geodetic points for the id and the name to
         // not surcharge the czml file
         this.setId(DEFAULT_ID + stringFootprints);
         this.setName(DEFAULT_NAME + stringFootprints);
-        this.setAvailability(header.getAvailability());
+
+        // Use the julianDates array to determine the time interval
+        final int sz = julianDates.size();
+        this.setAvailability(new TimeInterval(julianDates.get(0),
+                                              julianDates.get(sz - 1)));
+
         this.julianDates = new ArrayList<>(julianDates);
         for (final GeodeticPoint currentGeodeticPoint : geodeticPoints) {
             if (currentGeodeticPoint == null) {
@@ -166,30 +169,12 @@ public class PointOnBody
 
             writePosition(packet, output);
             if (displayPath) {
-                writePath(packet, output);
+                writePath(packet, output, getAvailability());
             }
         }
     }
 
     // Gets
-
-    /**
-     * Gets footprints in time.
-     *
-     * @return the footprints in time
-     */
-    public List<GeodeticPoint> getFootprintsInTime() {
-        return Collections.unmodifiableList(footprintsInTime);
-    }
-
-    /**
-     * Gets positions list.
-     *
-     * @return the positions list
-     */
-    public List<Vector3D> getPositionsList() {
-        return Collections.unmodifiableList(positionsList);
-    }
 
     /**
      * Gets julian dates.
@@ -288,13 +273,15 @@ public class PointOnBody
      *        written.
      * @param output : The output stream of cesium that will contain the strings
      *        to write into the CzmLFile.
+     * @param availability : The availaibility of the point on body
      */
     private void writePath(final PacketCesiumWriter packet,
-                           final CesiumOutputStream output) {
+                           final CesiumOutputStream output,
+                           final TimeInterval availability) {
         try (PathCesiumWriter pathWriter = packet.getPathWriter()) {
             pathWriter.open(output);
             pathWriter.writeShowProperty(true);
-            pathWriter.writeInterval(header.getAvailability());
+            pathWriter.writeInterval(availability);
             if (displayPeriodPointingPath) {
                 pathWriter.writeTrailTimeProperty(0.0);
                 pathWriter.writeLeadTimeProperty(this.periodForPath);

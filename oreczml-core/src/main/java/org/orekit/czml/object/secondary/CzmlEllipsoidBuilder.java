@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -18,7 +18,7 @@ package org.orekit.czml.object.secondary;
 
 import cesiumlanguagewriter.Cartesian;
 import cesiumlanguagewriter.JulianDate;
-import org.orekit.czml.object.primary.Header;
+import cesiumlanguagewriter.TimeInterval;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -107,8 +107,8 @@ public class CzmlEllipsoidBuilder {
      */
     private final boolean multipleBuilder;
 
-    /** The header considered. */
-    private Header header;
+    /** The availability considered. */
+    private final TimeInterval availability;
 
     // Constructors
 
@@ -116,11 +116,11 @@ public class CzmlEllipsoidBuilder {
      * The constructor of the multiple ellipsoid builder.
      *
      * @param cartesianInput : The dimensions of the ellipsoid.
-     * @param headerInput : The header considered.
+     * @param availability : The availability considered.
      */
     public CzmlEllipsoidBuilder(final Cartesian cartesianInput,
-                                final Header headerInput) {
-        this.header = headerInput;
+                                final TimeInterval availability) {
+        this.availability = availability;
         this.cartesian = cartesianInput;
         this.multipleBuilder = true;
     }
@@ -130,12 +130,12 @@ public class CzmlEllipsoidBuilder {
      *
      * @param julianDates : The dates where the ellipsoid should be displayed.
      * @param dimensions : The dimensions of the ellipsoid.
-     * @param headerInput : The header considered.
+     * @param availability : The availability considered.
      */
     public CzmlEllipsoidBuilder(final List<JulianDate> julianDates,
                                 final List<Cartesian> dimensions,
-                                final Header headerInput) {
-        this.header = headerInput;
+                                final TimeInterval availability) {
+        this.availability = availability;
         this.julianDates = new ArrayList<>(julianDates);
         this.cartesians = new ArrayList<>(dimensions);
         this.multipleBuilder = false;
@@ -198,11 +198,11 @@ public class CzmlEllipsoidBuilder {
     public CzmlEllipsoid build() {
         if (multipleBuilder) {
             return new CzmlEllipsoid(cartesian, fill, outline, slicePartition,
-                                     stackPartition, color, header);
+                                     stackPartition, color, availability);
         } else {
             return new CzmlEllipsoid(julianDates, cartesians, fill, outline,
                                      slicePartition, stackPartition, color,
-                                     header);
+                                     availability);
         }
     }
 }

@@ -1,0 +1,14 @@
+{
+  "label":{
+    "fillColor":{
+      "rgba":[
+        255,0,0,255
+      ]
+    },
+    "font":"11pt Lucida Console",
+    "horizontalOrigin":"LEFT",
+    "verticalOrigin":"CENTER",
+    "text":"A text",
+    "show":true
+  }
+}

@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -95,16 +95,19 @@ public class MultipleGroundStationsExample {
 
         // Creation of all the ground stations
         final List<CzmlGroundStation> groundStation = new ArrayList<>();
-        groundStation.add(new CzmlGroundStation(topocentricToulouse, header));
-        groundStation.add(new CzmlGroundStation(topocentricLasVegas, header));
+        groundStation.add(new CzmlGroundStation(topocentricToulouse,
+                                                header.getAvailability()));
+        groundStation.add(new CzmlGroundStation(topocentricLasVegas,
+                                                header.getAvailability()));
 
         final CzmlGroundStation groundStation1 =
-            CzmlGroundStation.builder(topocentricToulouse, header).build();
+            CzmlGroundStation
+                .builder(topocentricToulouse, header.getAvailability()).build();
 
         // Creation of the file
         final CzmlFile file =
-            CzmlFile.builder().withHeader(header)
-                .withCzmlGroundStation(groundStation).build();
+            CzmlFile.builder(header).withCzmlGroundStation(groundStation)
+                .build();
 
         // Writing in the file
         file.write(output);

@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -21,6 +21,7 @@ import cesiumlanguagewriter.CesiumStreamWriter;
 import cesiumlanguagewriter.JulianDate;
 import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.Reference;
+import cesiumlanguagewriter.TimeInterval;
 import org.hipparchus.geometry.euclidean.threed.Line;
 import org.hipparchus.geometry.euclidean.threed.Rotation;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
@@ -32,7 +33,6 @@ import org.orekit.czml.errors.OreCzmlMessages;
 import org.orekit.czml.object.Polyline;
 import org.orekit.czml.object.nonvisual.PointOnBody;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
-import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.secondary.Orientation;
 import org.orekit.frames.Frame;
@@ -143,12 +143,13 @@ public class AttitudePointing
      * @param satellite : The satellite that will point to the body.
      * @param body : The body to point to.
      * @param direction : The direction to point to.
-     * @param header : The header considered.
+     * @param availability : The availability of the attitude pointing.
      */
     AttitudePointing(final Spacecraft satellite, final OneAxisEllipsoid body,
-                     final Vector3D direction, final Header header) {
+                     final Vector3D direction,
+                     final TimeInterval availability) {
         this(satellite, body, direction, DEFAULT_COLOR, false,
-             DEFAULT_ID + satellite.getId(), header);
+             DEFAULT_ID + satellite.getId(), availability);
     }
 
     /**
@@ -166,17 +167,16 @@ public class AttitudePointing
      *        projection on the pointed object
      *        AttitudeTuto.AttitudePathAlongOrbit
      * @param ID : The ID of the attitude pointing object
-     * @param header : The header to set up if several headers are used, else
-     *        way put null.
+     * @param availability : The availability of the attitude pointing
      */
     AttitudePointing(final Spacecraft satellite, final OneAxisEllipsoid body,
                      final Vector3D direction, final Color color,
                      final boolean alwaysDisplayOnGround, final String ID,
-                     final Header header) {
+                     final TimeInterval availability) {
         this.setId(ID);
         this.satellite = satellite;
         this.setName(DEFAULT_NAME + satellite.getName());
-        this.setAvailability(header.getAvailability());
+        this.setAvailability(availability);
         this.satelliteOrientation = satellite.getOrientation();
         this.satelliteAttitudes = satellite.getAttitudes();
         this.states = satellite.getSpaceCraftStates();
@@ -191,13 +191,13 @@ public class AttitudePointing
                                                 satellite, body);
 
         this.pointOnBody =
-            new PointOnBody(julianDates, projectedGeodeticPoints, body, header);
+            new PointOnBody(julianDates, projectedGeodeticPoints, body);
         final Reference satelliteReference =
             new Reference(satellite.getId() + DEFAULT_H_POSITION);
         final Reference groundReference =
             new Reference(pointOnBody.getId() + DEFAULT_H_POSITION);
         this.attitudePointingPolyline =
-            Polyline.nonVectorBuilder(header)
+            Polyline.nonVectorBuilder(availability)
                 .withFirstReference(satelliteReference)
                 .withSecondReference(groundReference).withColor(color).build();
     }
@@ -210,15 +210,16 @@ public class AttitudePointing
      * @param satelliteInput the satellite input
      * @param bodyInput the body input
      * @param directionInput the direction input
-     * @param header the header
+     * @param availability the time interval for which the attitude pointing
+     *        line is available
      * @return the attitude pointing builder
      */
     public static AttitudePointingBuilder
         builder(final Spacecraft satelliteInput,
                 final OneAxisEllipsoid bodyInput, final Vector3D directionInput,
-                final Header header) {
+                final TimeInterval availability) {
         return new AttitudePointingBuilder(satelliteInput, bodyInput,
-                                           directionInput, header);
+                                           directionInput, availability);
     }
 
     // Overrides
@@ -279,15 +280,6 @@ public class AttitudePointing
     }
 
     /**
-     * Gets satellite orientation.
-     *
-     * @return the satellite orientation
-     */
-    public Orientation getSatelliteOrientation() {
-        return satelliteOrientation;
-    }
-
-    /**
      * Gets julian dates.
      *
      * @return the julian dates
@@ -297,57 +289,12 @@ public class AttitudePointing
     }
 
     /**
-     * Gets point on body.
-     *
-     * @return the point on body
-     */
-    public PointOnBody getPointOnBody() {
-        return pointOnBody;
-    }
-
-    /**
-     * Gets attitude pointing polyline.
-     *
-     * @return the attitude pointing polyline
-     */
-    public Polyline getAttitudePointingPolyline() {
-        return attitudePointingPolyline;
-    }
-
-    /**
      * Gets body.
      *
      * @return the body
      */
     public OneAxisEllipsoid getBody() {
         return body;
-    }
-
-    /**
-     * Gets states.
-     *
-     * @return the states
-     */
-    public List<SpacecraftState> getStates() {
-        return Collections.unmodifiableList(states);
-    }
-
-    /**
-     * Gets satellite attitudes.
-     *
-     * @return the satellite attitudes
-     */
-    public List<Attitude> getSatelliteAttitudes() {
-        return Collections.unmodifiableList(satelliteAttitudes);
-    }
-
-    /**
-     * Is display pointing path boolean.
-     *
-     * @return the boolean
-     */
-    public boolean isDisplayPointingPath() {
-        return displayPointingPath;
     }
 
     /**

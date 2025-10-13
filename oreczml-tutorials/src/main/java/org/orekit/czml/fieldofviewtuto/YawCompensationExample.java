@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -87,6 +87,7 @@ public class YawCompensationExample {
                                          "/Javascript/public");
 
         // Creation of the clock.
+
         final AbsoluteDate startDate =
             new AbsoluteDate(2024, 3, 15, 0, 0, 0.0,
                              TimeScalesFactory.getUTC());
@@ -214,17 +215,17 @@ public class YawCompensationExample {
         // Build of satellites
         final List<Spacecraft> satellites = new ArrayList<>();
         final Spacecraft satellite1 =
-            new SpacecraftBuilder(boundedPropagator1, header)
+            new SpacecraftBuilder(boundedPropagator1, clock)
                 .withColor(Color.PINK).withOnlyOnePeriod().withDisplayAttitude()
                 .withReferenceSystem().build();
 
         final Spacecraft satellite2 =
-            new SpacecraftBuilder(boundedPropagator2, header)
+            new SpacecraftBuilder(boundedPropagator2, clock)
                 .withColor(Color.BLUE).withOnlyOnePeriod().withDisplayAttitude()
                 .withReferenceSystem().build();
 
         final Spacecraft satellite3 =
-            new SpacecraftBuilder(boundedPropagator3, header)
+            new SpacecraftBuilder(boundedPropagator3, clock)
                 .withColor(Color.WHITE).withOnlyOnePeriod()
                 .withDisplayAttitude().withReferenceSystem().build();
         satellites.add(satellite1);
@@ -251,8 +252,7 @@ public class YawCompensationExample {
                                          Vector3D.PLUS_J, FastMath.toRadians(5),
                                          2);
         final FieldOfObservation fieldOfObservation1 =
-            FieldOfObservation
-                .builder(satellite1, fov1, initialFovBody1, header)
+            FieldOfObservation.builder(satellite1, fov1, initialFovBody1)
                 .withColor(Color.GREEN).build();
 
         final Transform initialInertToBody2 =
@@ -271,8 +271,7 @@ public class YawCompensationExample {
                                          Vector3D.PLUS_J, FastMath.toRadians(5),
                                          2);
         final FieldOfObservation fieldOfObservation2 =
-            FieldOfObservation
-                .builder(satellite2, fov2, initialFovBody2, header)
+            FieldOfObservation.builder(satellite2, fov2, initialFovBody2)
                 .withColor(Color.GREEN).build();
 
         final Transform initialInertToBody3 =
@@ -291,8 +290,7 @@ public class YawCompensationExample {
                                          Vector3D.PLUS_J, FastMath.toRadians(5),
                                          2);
         final FieldOfObservation fieldOfObservation3 =
-            FieldOfObservation
-                .builder(satellite3, fov3, initialFovBody3, header)
+            FieldOfObservation.builder(satellite3, fov3, initialFovBody3)
                 .withColor(Color.GREEN).build();
 
         fobs.add(fieldOfObservation1);
@@ -301,7 +299,7 @@ public class YawCompensationExample {
 
         // Creation of the file
         final CzmlFile file =
-            CzmlFile.builder().withHeader(header).withSpacecraft(satellites)
+            CzmlFile.builder(header).withSpacecraft(satellites)
                 .withFieldOfObservation(fobs).build();
 
         // Writing the file

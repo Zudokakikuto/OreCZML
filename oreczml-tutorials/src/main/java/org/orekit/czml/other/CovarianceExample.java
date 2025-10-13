@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -18,13 +18,13 @@ package org.orekit.czml.other;
 
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.hipparchus.linear.BlockRealMatrix;
-import org.orekit.czml.TutorialUtils;
 import org.hipparchus.linear.RealMatrix;
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
+import org.orekit.czml.TutorialUtils;
 import org.orekit.czml.file.CzmlFile;
-import org.orekit.czml.object.primary.covariance.Covariance;
 import org.orekit.czml.object.primary.Header;
+import org.orekit.czml.object.primary.covariance.Covariance;
 import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.forces.ForceModel;
@@ -153,14 +153,11 @@ public class CovarianceExample {
             generator.getGeneratedEphemeris();
 
         final Spacecraft satellite =
-            Spacecraft.builder(boundedPropagator, header)
-                .withModelPath(IssModel).withColor(Color.MAGENTA)
-                .withOnlyOnePeriod().build();
+            Spacecraft.builder(boundedPropagator, clock).withModelPath(IssModel)
+                .withColor(Color.MAGENTA).withOnlyOnePeriod().build();
 
         // Build of the covariance
-        // final RealMatrix realMatrix = MatrixUtils.createRealDiagonalMatrix(
-        // new double[] {100, 1000, 100, 1e-6, 1e-6, (36 * 4.848e-6) * (36 *
-        // 4.848e-6)});
+        // @formatter:off
         final RealMatrix realMatrix =
             new BlockRealMatrix(new double[][] {
                 {
@@ -180,20 +177,21 @@ public class CovarianceExample {
                     0, 0, 0, 0, 0, 0
                 }
             });
+        // @formatter:on
         final StateCovariance stateCovariance =
             new StateCovariance(realMatrix, startDate,
-                                FramesFactory.getEME2000(), OrbitType.CARTESIAN,
-                                PositionAngleType.MEAN);
+                                FramesFactory.getEME2000(),
+                                OrbitType.EQUINOCTIAL, PositionAngleType.MEAN);
         final List<StateCovariance> covariances =
             covariancePropagation(satellite, propagator, stateCovariance,
-                                  header);
+                                  clock);
         final Covariance covariance =
-            Covariance.builder(satellite, covariances, LOFType.QSW, header)
+            Covariance.builder(satellite, covariances, LOFType.TNW)
                 .withColor(Color.MAGENTA).build();
 
         // Creation of the file
         final CzmlFile file =
-            CzmlFile.builder().withHeader(header).withSpacecraft(satellite)
+            CzmlFile.builder(header).withSpacecraft(satellite)
                 .withCovariance(covariance).build();
 
         // Writing in the file
@@ -206,14 +204,14 @@ public class CovarianceExample {
      * @param satellite the satellite
      * @param propagator the propagator
      * @param initCovariance the init covariance
-     * @param header the header
+     * @param clock the clock
      * @return the list
      */
     public static List<StateCovariance>
         covariancePropagation(final Spacecraft satellite,
                               final Propagator propagator,
                               final StateCovariance initCovariance,
-                              final Header header) {
+                              final Clock clock) {
 
         final List<StateCovariance> covarianceListTemp = new ArrayList<>();
 
@@ -230,7 +228,7 @@ public class CovarianceExample {
 
         propagator.addAdditionalStateProvider(provider);
 
-        propagator.getMultiplexer().add(header.getClock().getMultiplier(),
+        propagator.getMultiplexer().add(clock.getMultiplier(),
                                         spacecraftState -> {
                                             final StateCovariance covariance =
                                                 provider

@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -17,7 +17,7 @@
 package org.orekit.czml.object.primary.entities;
 
 import org.hipparchus.geometry.euclidean.threed.Rotation;
-import org.orekit.czml.object.primary.Header;
+import org.orekit.czml.object.secondary.Clock;
 import org.orekit.czml.object.secondary.Orientation;
 import org.orekit.propagation.BoundedPropagator;
 import org.orekit.time.AbsoluteDate;
@@ -56,20 +56,24 @@ public class SpacecraftBuilder {
         "SPACECRAFT/" + "{P(%1.8e, %2.8e, %3.8e), V(%4.8e, %5.8e, %6.8e)}";
 
     // Optional parameters
+
     /**
      * The bounded propagator used for propagation.
      */
     private final BoundedPropagator propagator;
 
     /**
+     * The start date of the propagation.
+     */
+    private AbsoluteDate startDate;
+
+    /**
      * The final date of the propagation.
      */
     private AbsoluteDate finalDate;
 
-    /**
-     * The start date of the propagation.
-     */
-    private AbsoluteDate startDate;
+    /** The timestep multiplier. */
+    private double clockMultiplier;
 
     /**
      * The model of the Spacecraft.
@@ -87,6 +91,7 @@ public class SpacecraftBuilder {
     private boolean displayOnlyOnePeriod = false;
 
     // Intrinsic parameters
+
     /**
      * To display the attitude of the Spacecraft or not.
      */
@@ -105,9 +110,6 @@ public class SpacecraftBuilder {
     /** The custom ID of the Spacecraft. */
     private String customID;
 
-    /** The header to consider when several are used. */
-    private Header header;
-
     /** An optional rotation for the orientation. */
     private Rotation rotation;
 
@@ -123,13 +125,14 @@ public class SpacecraftBuilder {
      * The constructor of the builder.
      *
      * @param propagator : The propagator used to build the Spacecraft.
-     * @param header : The header considered.
+     * @param clock : The clock considered.
      */
     public SpacecraftBuilder(final BoundedPropagator propagator,
-                             final Header header) {
+                             final Clock clock) {
         this.propagator = propagator;
-        this.finalDate = propagator.getMaxDate();
         this.startDate = propagator.getMinDate();
+        this.finalDate = propagator.getMaxDate();
+        this.clockMultiplier = clock.getMultiplier();
         this.customID =
             String.format(DEFAULT_FORMAT,
                           propagator.getInitialState().getPosition().getX(),
@@ -141,8 +144,31 @@ public class SpacecraftBuilder {
                               .getVelocity().getY(),
                           propagator.getInitialState().getPVCoordinates()
                               .getVelocity().getZ());
+    }
 
-        this.header = header;
+    /**
+     * The constructor of the builder.
+     *
+     * @param propagator : The propagator used to build the Spacecraft.
+     * @param clockMultiplier : The clock multiplier considered.
+     */
+    public SpacecraftBuilder(final BoundedPropagator propagator,
+                             final double clockMultiplier) {
+        this.propagator = propagator;
+        this.startDate = propagator.getMinDate();
+        this.finalDate = propagator.getMaxDate();
+        this.clockMultiplier = clockMultiplier;
+        this.customID =
+            String.format(DEFAULT_FORMAT,
+                          propagator.getInitialState().getPosition().getX(),
+                          propagator.getInitialState().getPosition().getY(),
+                          propagator.getInitialState().getPosition().getZ(),
+                          propagator.getInitialState().getPVCoordinates()
+                              .getVelocity().getX(),
+                          propagator.getInitialState().getPVCoordinates()
+                              .getVelocity().getY(),
+                          propagator.getInitialState().getPVCoordinates()
+                              .getVelocity().getZ());
     }
 
     /**
@@ -190,6 +216,18 @@ public class SpacecraftBuilder {
      */
     public SpacecraftBuilder withFinalDate(final AbsoluteDate stopDateInput) {
         this.finalDate = stopDateInput;
+        return this;
+    }
+
+    /**
+     * Function to enter a timestep multiplier value.
+     *
+     * @param clockMultiplierInput : the timestep value
+     * @return A spacecraft builder with a custom clock multiplier
+     */
+    public SpacecraftBuilder
+        withClockMultiplier(final double clockMultiplierInput) {
+        this.clockMultiplier = clockMultiplierInput;
         return this;
     }
 
@@ -261,17 +299,6 @@ public class SpacecraftBuilder {
         return this;
     }
 
-    /**
-     * Function to set up a header.
-     *
-     * @param headerInput : The header to set up.
-     * @return : The Spacecraft object with a header.
-     */
-    public SpacecraftBuilder withHeader(final Header headerInput) {
-        this.header = headerInput;
-        return this;
-    }
-
     public SpacecraftBuilder
         displayInfluenceSphereChanges(final List<Body> bodiesInput) {
         this.displayInfluenceSphere = true;
@@ -290,8 +317,8 @@ public class SpacecraftBuilder {
         throws URISyntaxException,
             IOException {
         final Spacecraft tempSpacecraft =
-            new Spacecraft(propagator, startDate, finalDate, modelPath, color,
-                           customID, header);
+            new Spacecraft(propagator, startDate, finalDate, clockMultiplier,
+                           modelPath, color, customID);
         tempSpacecraft.getSpacecraftBoundedPropagator().clearStepHandlers();
         tempSpacecraft.getSpacecraftBoundedPropagator().clearEventsDetectors();
         return this.checkAttributes(tempSpacecraft);

@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -21,7 +21,7 @@ import cesiumlanguagewriter.ClockStep;
 import cesiumlanguagewriter.TimeInterval;
 import org.junit.jupiter.api.Test;
 import org.orekit.czml.file.AbstractTest;
-import org.orekit.czml.object.Utils.DateUtils;
+import org.orekit.czml.object.utils.DateUtils;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.data.DataSource;
 import org.orekit.files.ccsds.ndm.ParserBuilder;
@@ -74,11 +74,11 @@ public class ClockTest
         final Clock oemClock = new Clock(oem);
 
         final String pathFile =
-            loadResources("templateFile/secondary/ClockTemplate.txt");
+            loadResources("templateFile/object/secondary/ClockTemplate.txt");
         final String coveragePathFile =
-            loadResources("templateFile/secondary/ClockCoverageTemplate.txt");
+            loadResources("templateFile/object/secondary/ClockCoverageTemplate.txt");
         final String oemClockPathFile =
-            loadResources("templateFile/secondary/OemClockTemplate.txt");
+            loadResources("templateFile/object/secondary/OemClockTemplate.txt");
 
         verifyFileOutput(pathFile, clock.toString(), 1e-8);
         verifyFileOutput(coveragePathFile, clockCoverage.toString(), 1e-8);

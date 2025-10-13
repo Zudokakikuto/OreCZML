@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -18,8 +18,8 @@
 package org.orekit.czml.object.primary.visu;
 
 import org.orekit.czml.object.primary.entities.Constellation;
-import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.primary.entities.Spacecraft;
+import org.orekit.czml.object.secondary.Clock;
 import org.orekit.propagation.BoundedPropagator;
 import org.orekit.time.AbsoluteDate;
 
@@ -55,8 +55,8 @@ public class InterSatVisuBuilder {
     /** The custom ID of the inter sat visu. */
     private String customId;
 
-    /** The header to consider when several are used. */
-    private Header header;
+    /** The clock to consider when several are used. */
+    private Clock clock;
 
     /**
      * Instantiates a new Inter sat visu builder.
@@ -64,19 +64,19 @@ public class InterSatVisuBuilder {
      * @param satellite1Input the satellite 1 input
      * @param satellite2Input the satellite 2 input
      * @param finalDateInput the final date input
-     * @param headerInput the header input
+     * @param clock the clock input
      */
     public InterSatVisuBuilder(final Spacecraft satellite1Input,
                                final Spacecraft satellite2Input,
                                final AbsoluteDate finalDateInput,
-                               final Header headerInput) {
+                               final Clock clock) {
         this.satellite1 = satellite1Input;
         this.satellite2 = satellite2Input;
         this.finalDate = finalDateInput;
         this.customId =
             DEFAULT_ID +
                         satellite1Input.getId() + "/" + satellite2Input.getId();
-        this.header = headerInput;
+        this.clock = clock;
     }
 
     /**
@@ -84,18 +84,17 @@ public class InterSatVisuBuilder {
      *
      * @param propagatorsInput the propagators input
      * @param finalDateInput the final date input
-     * @param headerInput the header input
+     * @param clock the clock input
      * @throws URISyntaxException the uri syntax exception
      * @throws IOException the io exception
      */
     public InterSatVisuBuilder(final List<BoundedPropagator> propagatorsInput,
                                final AbsoluteDate finalDateInput,
-                               final Header headerInput)
+                               final Clock clock)
         throws URISyntaxException,
             IOException {
-        this(Constellation
-            .builder(propagatorsInput, finalDateInput, headerInput).build(),
-             finalDateInput, headerInput);
+        this(Constellation.builder(propagatorsInput, finalDateInput, clock)
+            .build(), finalDateInput, clock);
     }
 
     /**
@@ -103,15 +102,15 @@ public class InterSatVisuBuilder {
      *
      * @param constellationInput the constellation input
      * @param finalDateInput the final date input
-     * @param headerInput the header input
+     * @param clock the clock input
      */
     public InterSatVisuBuilder(final Constellation constellationInput,
                                final AbsoluteDate finalDateInput,
-                               final Header headerInput) {
+                               final Clock clock) {
         this.constellation = constellationInput;
         this.finalDate = finalDateInput;
         this.customId = DEFAULT_ID + constellationInput.getId();
-        this.header = headerInput;
+        this.clock = clock;
     }
 
     /**
@@ -126,13 +125,13 @@ public class InterSatVisuBuilder {
     }
 
     /**
-     * Function to set up a header.
+     * Function to set up a clock.
      *
-     * @param headerInput : The header to set up.
-     * @return : An inter sat visu builder with the given header.
+     * @param clockInput : The clock to set up.
+     * @return : An inter sat visu builder with the given clock.
      */
-    public InterSatVisuBuilder withHeader(final Header headerInput) {
-        this.header = headerInput;
+    public InterSatVisuBuilder withClock(final Clock clockInput) {
+        this.clock = clockInput;
         return this;
     }
 
@@ -143,10 +142,11 @@ public class InterSatVisuBuilder {
      */
     public InterSatVisu build() {
         if (constellation != null) {
-            return new InterSatVisu(constellation, finalDate, customId, header);
+            return new InterSatVisu(constellation, finalDate, customId,
+                                    clock.getAvailability());
         } else {
-            return new InterSatVisu(satellite1, satellite2, finalDate, customId,
-                                    header);
+            return new InterSatVisu(satellite1, satellite2, finalDate,
+                                    customId);
         }
     }
 }

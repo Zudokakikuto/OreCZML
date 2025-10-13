@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -179,14 +179,14 @@ public class JupiterFlyByExample {
             generator.getGeneratedEphemeris();
 
         final Spacecraft satellite =
-            Spacecraft.builder(boundedPropagator, header)
+            Spacecraft.builder(boundedPropagator, clock)
                 .withModelPath(juiceModel).withColor(Color.MAGENTA)
                 .withOnlyOnePeriod().build();
 
-        final Body jupiterDisplay = BodyFactory.getJupiter(header);
+        final Body jupiterDisplay = BodyFactory.getJupiter(clock);
 
         final CzmlFile file =
-            CzmlFile.builder().withHeader(header).withSpacecraft(satellite)
+            CzmlFile.builder(header).withSpacecraft(satellite)
                 .withBody(jupiterDisplay).build();
 
         // Writing the file

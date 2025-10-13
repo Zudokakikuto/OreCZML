@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -146,9 +146,9 @@ public class FieldOfObservationExample {
 
         // Creation of the satellite
         final Spacecraft satellite =
-            Spacecraft.builder(boundedPropagator, header)
-                .withModelPath(IssModel).withColor(Color.RED)
-                .withOnlyOnePeriod().withDisplayAttitude().build();
+            Spacecraft.builder(boundedPropagator, clock).withModelPath(IssModel)
+                .withColor(Color.RED).withOnlyOnePeriod().withDisplayAttitude()
+                .build();
 
         // Creation of the field of observation of the satellite, it describes
         // the area the satellite sees
@@ -170,12 +170,11 @@ public class FieldOfObservationExample {
                                          Vector3D.PLUS_K,
                                          FastMath.toRadians(20), 2);
         final FieldOfObservation fieldOfObservation =
-            FieldOfObservation.builder(satellite, fov, initialFovBody, header)
-                .build();
+            FieldOfObservation.builder(satellite, fov, initialFovBody).build();
 
         // Creation of the file
         final CzmlFile file =
-            CzmlFile.builder().withHeader(header).withSpacecraft(satellite)
+            CzmlFile.builder(header).withSpacecraft(satellite)
                 .withFieldOfObservation(fieldOfObservation).build();
 
         // Writing in the file

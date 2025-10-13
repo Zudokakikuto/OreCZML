@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -162,22 +162,22 @@ public class InterVisuSatExample {
 
         // Creation of the satellites
         final Spacecraft firstSatellite =
-            Spacecraft.builder(firstBoundedPropagator, header)
+            Spacecraft.builder(firstBoundedPropagator, clock)
                 .withColor(Color.MAGENTA).withOnlyOnePeriod().build();
 
         final Spacecraft secondSatellite =
-            Spacecraft.builder(secondBoundedPropagator, header)
+            Spacecraft.builder(secondBoundedPropagator, clock)
                 .withColor(Color.GREEN).withOnlyOnePeriod().build();
 
         // Creation of the inter-sat visualisation
         final InterSatVisu interSatVisu =
             InterSatVisu
-                .builder(firstSatellite, secondSatellite, finalDate, header)
+                .builder(firstSatellite, secondSatellite, finalDate, clock)
                 .build();
 
         // Creation of the file
         final CzmlFile file =
-            CzmlFile.builder().withHeader(header).withSpacecraft(firstSatellite)
+            CzmlFile.builder(header).withSpacecraft(firstSatellite)
                 .withSpacecraft(secondSatellite).withInterSatVisu(interSatVisu)
                 .build();
         // Writing in the file

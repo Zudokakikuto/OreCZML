@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -18,7 +18,6 @@ package org.orekit.czml.object.secondary;
 
 import org.hipparchus.geometry.euclidean.threed.Rotation;
 import org.orekit.attitudes.Attitude;
-import org.orekit.czml.object.primary.Header;
 import org.orekit.frames.Frame;
 
 import java.util.ArrayList;
@@ -65,9 +64,6 @@ public class OrientationBuilder {
      */
     private Rotation optionalRotation = Rotation.IDENTITY;
 
-    /** The header considered. */
-    private Header header;
-
     // Constructors
 
     /**
@@ -75,14 +71,12 @@ public class OrientationBuilder {
      *
      * @param attitude : The attitude of the object to consider.
      * @param objectFrame : The frame of the object.
-     * @param headerInput : The header considered.
      */
-    public OrientationBuilder(final Attitude attitude, final Frame objectFrame,
-                              final Header headerInput) {
+    public OrientationBuilder(final Attitude attitude,
+                              final Frame objectFrame) {
         this.singleAttitude = attitude;
         this.objectFrame = objectFrame;
         this.singleAttitudeBuilt = true;
-        this.header = headerInput;
     }
 
     /**
@@ -90,15 +84,12 @@ public class OrientationBuilder {
      *
      * @param attitudes : The attitudes of the object to consider.
      * @param objectFrame : The frame of the object.
-     * @param headerInput : The header considered.
      */
     public OrientationBuilder(final List<Attitude> attitudes,
-                              final Frame objectFrame,
-                              final Header headerInput) {
+                              final Frame objectFrame) {
         this.attitudes = new ArrayList<>(attitudes);
         this.objectFrame = objectFrame;
         this.singleAttitudeBuilt = false;
-        this.header = headerInput;
     }
 
     /**
@@ -132,11 +123,10 @@ public class OrientationBuilder {
      */
     public Orientation build() {
         if (singleAttitudeBuilt) {
-            return new Orientation(singleAttitude, objectFrame, invertToITRF,
-                                   header);
+            return new Orientation(singleAttitude, objectFrame, invertToITRF);
         } else {
             return new Orientation(attitudes, objectFrame, invertToITRF,
-                                   optionalRotation, header);
+                                   optionalRotation);
         }
     }
 }

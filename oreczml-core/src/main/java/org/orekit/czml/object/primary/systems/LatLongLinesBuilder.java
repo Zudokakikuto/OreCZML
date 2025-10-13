@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -17,7 +17,7 @@
 
 package org.orekit.czml.object.primary.systems;
 
-import org.orekit.czml.object.primary.Header;
+import cesiumlanguagewriter.TimeInterval;
 
 /**
  * Lat Long Lines Builder class
@@ -41,17 +41,17 @@ public class LatLongLinesBuilder {
     /** The custom ID of the lat long lines display object. */
     private String customID;
 
-    /** The header considered when several are used. */
-    private Header header;
+    /** The availability considered when several are used. */
+    private TimeInterval availability;
 
     /**
      * The builder of the lat long line display builder object.
      *
-     * @param headerInput : The header considered.
+     * @param availability : The availability considered.
      */
-    public LatLongLinesBuilder(final Header headerInput) {
+    public LatLongLinesBuilder(final TimeInterval availability) {
         this.customID = "LAT_LONG";
-        this.header = headerInput;
+        this.availability = availability;
     }
 
     /**
@@ -67,13 +67,15 @@ public class LatLongLinesBuilder {
     }
 
     /**
-     * The function to set up a header.
+     * The function to set up a availability.
      *
-     * @param headerInput : The header to set up
-     * @return : The lat long lines display builder object with a given header.
+     * @param availabilityInput : The availability to set up
+     * @return : The lat long lines display builder object with a given
+     *         availability.
      */
-    public LatLongLinesBuilder withHeader(final Header headerInput) {
-        this.header = headerInput;
+    public LatLongLinesBuilder
+        withAvailability(final TimeInterval availabilityInput) {
+        this.availability = availabilityInput;
         return this;
     }
 
@@ -126,7 +128,7 @@ public class LatLongLinesBuilder {
      */
     public LatLongLines build() {
         return new LatLongLines(latitudeAngularStep, longitudeAngularStep,
-                                displayLabels, customID, header);
+                                displayLabels, customID, availability);
     }
 
 }

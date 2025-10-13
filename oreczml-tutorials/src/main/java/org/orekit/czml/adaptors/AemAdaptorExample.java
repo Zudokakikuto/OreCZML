@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -17,15 +17,15 @@
 
 package org.orekit.czml.adaptors;
 
-import org.orekit.czml.TutorialUtils;
 import org.orekit.bodies.GeodeticPoint;
+import org.orekit.czml.TutorialUtils;
 import org.orekit.czml.archi.adaptor.AemAdaptor;
 import org.orekit.czml.archi.adaptor.OemAdaptor;
-import org.orekit.czml.object.primary.entities.SpacecraftBuilder;
 import org.orekit.czml.file.CzmlFile;
-import org.orekit.czml.object.primary.entities.CzmlGroundStation;
 import org.orekit.czml.object.primary.Header;
+import org.orekit.czml.object.primary.entities.CzmlGroundStation;
 import org.orekit.czml.object.primary.entities.Spacecraft;
+import org.orekit.czml.object.primary.entities.SpacecraftBuilder;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.czml.object.secondary.Orientation;
 import org.orekit.data.DataSource;
@@ -39,7 +39,6 @@ import org.orekit.propagation.BoundedPropagator;
 import org.orekit.propagation.EphemerisGenerator;
 import org.orekit.propagation.Propagator;
 import org.orekit.time.AbsoluteDate;
-import org.orekit.time.TimeScalesFactory;
 
 /**
  * This tutorial provides an example of how an Aem object ban be used to build
@@ -115,11 +114,11 @@ public class AemAdaptorExample {
         // propagator does not have a reference for the timescale.
         final AemAdaptor aemAdaptor = new AemAdaptor(aem);
         final Orientation orientation =
-            aemAdaptor.buildOrientation(oemBoundedPropagator, header);
+            aemAdaptor.buildOrientation(oemBoundedPropagator, clock);
 
         // Creation of the satellite
         final Spacecraft satellite =
-            new SpacecraftBuilder(oemBoundedPropagator, header)
+            new SpacecraftBuilder(oemBoundedPropagator, clock)
                 .withModelPath(IssModel).withOrientation(orientation).build();
 
         final CzmlGroundStation groundStation =
@@ -127,10 +126,10 @@ public class AemAdaptorExample {
                                                        new GeodeticPoint(0, 0,
                                                                          0),
                                                        "Station"),
-                                  "", header);
+                                  "", clock.getAvailability());
 
         final CzmlFile file =
-            CzmlFile.builder().withHeader(header).withSpacecraft(satellite)
+            CzmlFile.builder(header).withSpacecraft(satellite)
                 .withCzmlGroundStation(groundStation).build();
 
         // Writing the file

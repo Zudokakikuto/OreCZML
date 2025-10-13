@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -47,19 +47,19 @@ public class LabelTest
 
         final Label label = new Label("header");
 
-        final Label coverageLabel = new Label("text 1", Color.RED);
+        final Label coverageLabel = new Label("A text", Color.RED);
 
         final Label completeLabel =
-            new Label("text 2", Color.RED, CesiumHorizontalOrigin.CENTER,
+            new Label("A text", Color.RED, CesiumHorizontalOrigin.CENTER,
                       CesiumVerticalOrigin.BASELINE, CesiumLabelStyle.FILL,
                       true);
 
         final String pathFile =
-            loadResources("templateFile/secondary/LabelTemplate.txt");
+            loadResources("templateFile/object/secondary/LabelTemplate.txt");
         final String coveragePathFile =
-            loadResources("templateFile/secondary/LabelCoverageTemplate.txt");
+            loadResources("templateFile/object/secondary/LabelCoverageTemplate.txt");
         final String completePathFile =
-            loadResources("templateFile/secondary/LabelCompleteTemplate.txt");
+            loadResources("templateFile/object/secondary/LabelCompleteTemplate.txt");
 
         verifyFileOutput(pathFile, label.toString(), 1e-8);
         verifyFileOutput(coveragePathFile, coverageLabel.toString(), 1e-8);

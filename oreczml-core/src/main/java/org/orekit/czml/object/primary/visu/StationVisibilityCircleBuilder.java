@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -16,7 +16,7 @@
  */
 package org.orekit.czml.object.primary.visu;
 
-import org.orekit.czml.object.primary.Header;
+import cesiumlanguagewriter.TimeInterval;
 import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.frames.TopocentricFrame;
 
@@ -34,8 +34,8 @@ public class StationVisibilityCircleBuilder {
     /** The angle of aperture of the station. */
     private double angleOfAperture = DEFAULT_ANGLE_OF_APERTURE;
 
-    /** The header considered. */
-    private Header header;
+    /** The availability considered. */
+    private TimeInterval availability;
 
     /**
      * The default constructor for the station visibility circle builder.
@@ -43,14 +43,14 @@ public class StationVisibilityCircleBuilder {
      * @param topocentricFrameInput : The topocentric frame representing the
      *        ground station.
      * @param satelliteInput : The satellite observed.
-     * @param headerInput : The header considered.
+     * @param availability : The availability considered.
      */
     public StationVisibilityCircleBuilder(final TopocentricFrame topocentricFrameInput,
                                           final Spacecraft satelliteInput,
-                                          final Header headerInput) {
+                                          final TimeInterval availability) {
         this.topocentricFrame = topocentricFrameInput;
         this.satellite = satelliteInput;
-        this.header = headerInput;
+        this.availability = availability;
     }
 
     /**
@@ -69,11 +69,11 @@ public class StationVisibilityCircleBuilder {
     /**
      * This function builds the visibility circle.
      *
-     * @return : The station visibility circle built.
+     * @return A station visibility circle with the given input to the builder
      */
     public StationVisibilityCircle build() {
         return new StationVisibilityCircle(topocentricFrame, satellite,
-                                           angleOfAperture, header);
+                                           angleOfAperture, availability);
     }
 
 }
