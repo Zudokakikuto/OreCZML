@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -24,7 +24,6 @@ import cesiumlanguagewriter.PolygonCesiumWriter;
 import cesiumlanguagewriter.PositionListCesiumWriter;
 import cesiumlanguagewriter.SolidColorMaterialCesiumWriter;
 import cesiumlanguagewriter.TimeInterval;
-import org.orekit.czml.object.primary.Header;
 
 import java.awt.Color;
 import java.util.Collections;
@@ -80,20 +79,6 @@ public class Polygon
      * The default constructor for the polygon object with default parameters.
      *
      * @param cartesiansInput : The list of the positions of the polygon.
-     * @param header : The header considered.
-     */
-    public Polygon(final List<Cartesian> cartesiansInput, final Header header) {
-        this.cartesians = cartesiansInput;
-        this.availability = header.getAvailability();
-        this.color = DEFAULT_COLOR;
-        this.outline = false;
-        this.fill = true;
-    }
-
-    /**
-     * The default constructor for the polygon object with default parameters.
-     *
-     * @param cartesiansInput : The list of the positions of the polygon.
      * @param availability : The availability of the polygon
      */
     public Polygon(final List<Cartesian> cartesiansInput,
@@ -103,26 +88,6 @@ public class Polygon
         this.color = DEFAULT_COLOR;
         this.outline = false;
         this.fill = true;
-    }
-
-    /**
-     * The constructor of the polygon object with no default parameters.
-     *
-     * @param cartesiansInput : The list of the positions of the polygon.
-     * @param colorInput : The color of the polygon.
-     * @param outline : The outline of the polygon.
-     * @param fill : To fill or not with color the polygon. (might cause some
-     *        lags if put to true)
-     * @param header : The header considered.
-     */
-    public Polygon(final List<Cartesian> cartesiansInput,
-                   final Color colorInput, final boolean outline,
-                   final boolean fill, final Header header) {
-        this.cartesians = cartesiansInput;
-        this.availability = header.getAvailability();
-        this.color = colorInput;
-        this.outline = outline;
-        this.fill = fill;
     }
 
     /**
@@ -175,19 +140,6 @@ public class Polygon
     }
 
     // Overrides
-
-    /**
-     * Builder polygon builder.
-     *
-     * @param cartesiansInput the cartesians input
-     * @param headerInput the header
-     * @return the polygon builder
-     */
-    public PolygonBuilder builder(final List<Cartesian> cartesiansInput,
-                                  final Header headerInput) {
-        return new PolygonBuilder(cartesiansInput,
-                                  headerInput.getAvailability());
-    }
 
     /**
      * Builder polygon builder.

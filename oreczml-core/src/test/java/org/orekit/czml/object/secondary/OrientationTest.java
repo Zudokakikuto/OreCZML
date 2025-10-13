@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.attitudes.Attitude;
 import org.orekit.czml.file.AbstractTest;
-import org.orekit.czml.object.Utils.DateUtils;
+import org.orekit.czml.object.utils.DateUtils;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.frames.FramesFactory;
@@ -59,31 +59,30 @@ public class OrientationTest
 
         final BoundedPropagator propagator =
             dummyPropagator(startDate, stopDate);
-        final Spacecraft satellite = new Spacecraft(propagator, header);
+        final Spacecraft satellite =
+            new Spacecraft(propagator, header.getClock());
 
         final List<Attitude> attitudes = satellite.getAttitudes();
 
         final String pathFile =
-            loadResources("templateFile/secondary/OrientationTemplate.txt");
+            loadResources("templateFile/object/secondary/OrientationTemplate.txt");
         final String invertPathFile =
-            loadResources("templateFile/secondary/OrientationInvertTemplate.txt");
+            loadResources("templateFile/object/secondary/OrientationInvertTemplate.txt");
         final String withBuilderPathFile =
-            loadResources("templateFile/secondary/OrientationWithBuilderTemplate.txt");
+            loadResources("templateFile/object/secondary/OrientationWithBuilderTemplate.txt");
         final String falseInvertPathFile =
-            loadResources("templateFile/secondary/OrientationFalseInvertTemplate.txt");
+            loadResources("templateFile/object/secondary/OrientationFalseInvertTemplate.txt");
 
         final Orientation orientation =
-            new Orientation(attitudes, FramesFactory.getEME2000(), header);
+            new Orientation(attitudes, FramesFactory.getEME2000());
         final Orientation orientationWithBuilder =
-            Orientation
-                .builder(attitudes.get(0), FramesFactory.getEME2000(), header)
+            Orientation.builder(attitudes.get(0), FramesFactory.getEME2000())
                 .build();
         final Orientation orientationInvert =
-            new Orientation(attitudes, FramesFactory.getEME2000(), true, null,
-                            header);
+            new Orientation(attitudes, FramesFactory.getEME2000(), true, null);
         final Orientation orientationFalseInvert =
             new Orientation(attitudes, FramesFactory.getEME2000(), false,
-                            new Rotation(1.0, 0.0, 0.0, 1.0, false), header);
+                            new Rotation(1.0, 0.0, 0.0, 1.0, false));
 
         verifyFileOutput(pathFile, orientation.toString(), 1e-8);
         verifyFileOutput(invertPathFile, orientationInvert.toString(), 1e-8);

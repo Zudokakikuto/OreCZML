@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.czml.file.AbstractTest;
-import org.orekit.czml.object.Utils.DateUtils;
+import org.orekit.czml.object.utils.DateUtils;
 import org.orekit.czml.object.primary.Header;
 
 import java.io.IOException;
@@ -71,7 +71,7 @@ public class PointOnBodyTest
         final List<GeodeticPoint> points = getPoints();
 
         final PointOnBody pointOnBodyTest =
-            new PointOnBody(julianDates, points, getEarth(), header);
+            new PointOnBody(julianDates, points, getEarth());
 
         pointOnBodyTest.setDisplayPath(true);
         pointOnBodyTest.setDisplayPeriodPointingPath(true, 20.0);

@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -16,14 +16,14 @@
  */
 package org.orekit.czml.object;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.Header;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
 
 /**
  * The type Position test.
@@ -46,16 +46,17 @@ public class PositionTest
 
         final Header header = dummyHeader();
 
-        final String expectedFrame = "INERTIAL";
-
         final Position positionCartesian =
-            new Position(1, 45, 20, PositionType.CARTESIAN_POSITION, header);
+            new Position(1, 45, 20, PositionType.CARTESIAN_POSITION,
+                         header.getAvailability());
 
         final Position positionDegrees =
-            new Position(1, 45, 20, PositionType.CARTOGRAPHIC_DEGREES, header);
+            new Position(1, 45, 20, PositionType.CARTOGRAPHIC_DEGREES,
+                         header.getAvailability());
 
         final Position positionRadians =
-            new Position(1, 45, 20, PositionType.CARTOGRAPHIC_RADIANS, header);
+            new Position(1, 45, 20, PositionType.CARTOGRAPHIC_RADIANS,
+                         header.getAvailability());
 
         final String cartesianPathFile =
             loadResources("templateFile/PositionCartesianTemplate.txt");
@@ -70,7 +71,7 @@ public class PositionTest
         verifyFileOutput(degreesPathFile, positionDegrees.toString(), 1e-8);
         verifyFileOutput(radiansPathFile, positionRadians.toString(), 1e-8);
         verifyFileOutput(referenceFramePathFile,
-                         positionCartesian.toString(expectedFrame), 1e-8);
+                         positionCartesian.toString("INERTIAL"), 1e-8);
 
         // Method coverage
         Assertions.assertEquals(new Vector3D(1, 45, 20),
@@ -92,7 +93,7 @@ public class PositionTest
         Assertions.assertEquals(45, positionCartesian.getY());
         Assertions.assertEquals(20, positionCartesian.getZ());
 
-        Assertions.assertEquals(expectedFrame,
+        Assertions.assertEquals("INERTIAL",
                                 positionCartesian.getReferenceFrame());
         Assertions.assertEquals(PositionType.CARTESIAN_POSITION,
                                 positionCartesian.getPositionType());

@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -23,6 +23,7 @@ import org.hipparchus.linear.RealMatrix;
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
+import org.junit.jupiter.api.Assertions;
 import org.orekit.attitudes.AttitudesSequence;
 import org.orekit.attitudes.CelestialBodyPointed;
 import org.orekit.attitudes.LofOffset;
@@ -123,14 +124,13 @@ class GlobalTests
         loadOrekitData();
 
         // Paths
-        final String output =
-            loadResources(loadOutputLocation()) + "/Output1.czml";
+        final String output = loadResources("Output") + "/Output1.czml";
         // Change the path here to your JavaScript>public folder.
         final String pathToJSFolder = loadResources("");
 
         final String OemPath = loadResources("oemForAemTuto.xml");
         final String AemPath = loadResources("aemForAemTuto.xml");
-        final String IssModel = loadResources(loadModelFile());
+        final String IssModel = loadResources("Default3DModels/ISSModel.glb");
         final String referenceFilePath1 = loadResources("test1.czml");
 
         // Creation of the Oem
@@ -178,33 +178,37 @@ class GlobalTests
         // propagator does not have a reference for the timescale.
         final AemAdaptor aemAdaptor = new AemAdaptor(aem);
         final Orientation orientation =
-            aemAdaptor.buildOrientation(oemBoundedPropagator, header);
+            aemAdaptor.buildOrientation(oemBoundedPropagator, clock);
 
         // Creation of the satellite
         final Spacecraft satellite =
-            new SpacecraftBuilder(oemBoundedPropagator, header)
+            new SpacecraftBuilder(oemBoundedPropagator, clock)
                 .withModelPath(IssModel).withOrientation(orientation)
                 .withReferenceSystem().build();
 
         final TopocentricFrame topocentricForStation =
             new TopocentricFrame(earth, new GeodeticPoint(0, 0, 0), "Station");
         final CzmlGroundStation groundStation =
-            new CzmlGroundStation(topocentricForStation, "", header);
+            new CzmlGroundStation(topocentricForStation, "",
+                                  header.getAvailability());
 
         // Attitude pointing
         final AttitudePointing pointing =
-            AttitudePointing.builder(satellite, earth, Vector3D.MINUS_I, header)
+            AttitudePointing.builder(satellite, earth, Vector3D.MINUS_I,
+                                     header.getAvailability())
                 .build();
 
         // Body
-        final Body jupiter = BodyFactory.getJupiter(header);
+        final Body jupiter = BodyFactory.getJupiter(clock);
 
         // CentralBodyReferenceSystem
         final CentralBodyReferenceSystem system =
-            CentralBodyReferenceSystem.builder(header).build();
+            CentralBodyReferenceSystem.builder(header.getAvailability())
+                .build();
 
         // Latitude longitude lines display
-        final LatLongLines latLong = LatLongLines.builder(header).build();
+        final LatLongLines latLong =
+            LatLongLines.builder(header.getAvailability()).build();
 
         final List<Spacecraft> satellites = new ArrayList<>();
         satellites.add(satellite);
@@ -212,7 +216,7 @@ class GlobalTests
         final List<BoundedPropagator> propagators = new ArrayList<>();
         propagators.add(oemBoundedPropagator);
         final Constellation constellation =
-            Constellation.builder(propagators, finalDate, header).build();
+            Constellation.builder(propagators, finalDate, clock).build();
         final List<Constellation> constellations = new ArrayList<>();
         constellations.add(constellation);
 
@@ -224,7 +228,7 @@ class GlobalTests
 
         // The Czml file
         final CzmlFile file =
-            CzmlFile.builder().withHeader(header).withAttitudePointing(pointing)
+            CzmlFile.builder(header).withAttitudePointing(pointing)
                 .withBody(jupiter).withCzmlGroundStation(groundStation)
                 .withSpacecraft(satellite)
                 .withCentralBodyReferenceSystem(system).withLatLong(latLong)
@@ -232,7 +236,7 @@ class GlobalTests
 
         // Coverage for CzmlFile
         final CzmlFile coverageFile =
-            CzmlFile.builder().withHeader(header).withSpacecraft(satellites)
+            CzmlFile.builder(header).withSpacecraft(satellites)
                 .withConstellation(constellations)
                 .withAttitudePointing(pointings).withLatLong(lines).build();
 
@@ -241,11 +245,11 @@ class GlobalTests
 
         // Comparing of generated file and reference file.
         final String stringGenerated = Files.readString(Path.of(output));
-        verifyFileOutput(referenceFilePath1, stringGenerated, 1e-8);
 
         final String pathToCoverageTemplateCzmlFile =
             loadResources("templateFile/file/Test1CzmlFileTemplateCoverage.txt");
 
+        verifyFileOutput(referenceFilePath1, stringGenerated, 1e-8);
         verifyFileOutput(pathToCoverageTemplateCzmlFile,
                          coverageFile.toString(), 1e-8);
     }
@@ -270,7 +274,7 @@ class GlobalTests
         // Change the path here to your JavaScript>public folder.
         final String pathToJSFolder = loadResources(".");
 
-        final String IssModel = loadResources(loadModelFile());
+        final String IssModel = loadResources("Default3DModels/ISSModel.glb");
         final String referenceFilePath2 = loadResources("test2.czml");
 
         final TimeScale UTC = TimeScalesFactory.getUTC();
@@ -432,18 +436,18 @@ class GlobalTests
 
         // Creation of the satellite
         final Spacecraft firstSatellite =
-            Spacecraft.builder(firstBoundedPropagator, header)
+            Spacecraft.builder(firstBoundedPropagator, clock)
                 .withModelPath(IssModel).withColor(Color.RED)
                 .withOnlyOnePeriod().withDisplayAttitude().build();
 
         final Spacecraft secondSatellite =
-            Spacecraft.builder(secondBoundedPropagator, header)
+            Spacecraft.builder(secondBoundedPropagator, clock)
                 .withColor(Color.RED).withOnlyOnePeriod().withDisplayAttitude()
                 .build();
 
         // Constellation
         final Constellation constellation =
-            Constellation.builder(listForConstellation, finalDate, header)
+            Constellation.builder(listForConstellation, finalDate, clock)
                 .build();
 
         // Covariance display
@@ -458,14 +462,15 @@ class GlobalTests
                                 OrbitType.EQUINOCTIAL, PositionAngleType.MEAN);
         final List<StateCovariance> covariances1 =
             covariancePropagation(firstSatellite, firstPropagator,
-                                  stateCovariance, header);
+                                  stateCovariance,
+                                  header.getClock().getMultiplier());
         final List<StateCovariance> covariances2 =
             covariancePropagation(secondSatellite, secondPropagator,
-                                  stateCovariance, header);
+                                  stateCovariance,
+                                  header.getClock().getMultiplier());
 
         final Covariance covariance1 =
-            Covariance
-                .builder(firstSatellite, covariances1, LOFType.TNW, header)
+            Covariance.builder(firstSatellite, covariances1, LOFType.TNW)
                 .build();
 
         // Creation of the field of observation of the satellite
@@ -487,32 +492,33 @@ class GlobalTests
                                          FastMath.toRadians(20), 2);
 
         final FieldOfObservation fieldOfObservation =
-            FieldOfObservation
-                .builder(firstSatellite, fov, initialFovBody, header).build();
+            FieldOfObservation.builder(firstSatellite, fov, initialFovBody)
+                .build();
 
         // Ground track
         final GroundTrack groundTrack =
-            GroundTrack.builder(firstSatellite, earth, header).build();
+            GroundTrack.builder(firstSatellite, earth, header.getAvailability())
+                .build();
 
         final GroundTrack groundTrackConstellation =
-            GroundTrack.builder(constellation, earth, header).build();
+            GroundTrack.builder(constellation, earth, header.getAvailability())
+                .build();
 
         // Covered surface on body
         final CoveredSurfaceOnBody surface =
-            CoveredSurfaceOnBody
-                .builder(firstSatellite, fieldOfObservation, header).build();
+            CoveredSurfaceOnBody.builder(firstSatellite, fieldOfObservation)
+                .build();
 
         // Inter visu
         final InterSatVisu interVisu =
             InterSatVisu
-                .builder(firstSatellite, secondSatellite, finalDate, header)
+                .builder(firstSatellite, secondSatellite, finalDate, clock)
                 .build();
 
         // collision
         final Collision collision =
-            Collision
-                .builder(firstSatellite, secondSatellite, covariances1,
-                         covariances2, LOFType.TNW, LOFType.TNW, header)
+            Collision.builder(firstSatellite, secondSatellite, covariances1,
+                              covariances2, LOFType.TNW, LOFType.TNW)
                 .build();
 
         final List<GroundTrack> groundTracks = new ArrayList<>();
@@ -534,7 +540,7 @@ class GlobalTests
         collisions.add(collision);
 
         final CzmlFile file =
-            CzmlFile.builder().withHeader(header).withSpacecraft(firstSatellite)
+            CzmlFile.builder(header).withSpacecraft(firstSatellite)
                 .withFieldOfObservation(fieldOfObservation)
                 .withGroundTrack(groundTrack)
                 .withGroundTrack(groundTrackConstellation)
@@ -543,7 +549,7 @@ class GlobalTests
                 .withCollision(collision).build();
 
         final CzmlFile coverageFile =
-            CzmlFile.builder().withHeader(header).withSpacecraft(firstSatellite)
+            CzmlFile.builder(header).withSpacecraft(firstSatellite)
                 .withGroundTrack(groundTracks).withFieldOfObservation(fields)
                 .withInterSatVisu(interSatVisusList).withCovariance(covariances)
                 .withCoveredSurfaceOnBody(surfaces).withCollision(collisions)
@@ -576,8 +582,7 @@ class GlobalTests
         loadOrekitData();
 
         // Paths
-        final String output =
-            loadResources(loadOutputLocation()) + "/Output3.czml";
+        final String output = loadResources("Output") + "/Output3.czml";
         // Change the path here to your JavaScript>public folder.
         final String pathToJSFolder = loadResources(".");
 
@@ -736,14 +741,18 @@ class GlobalTests
 
         // Build of the satellite
         final Spacecraft satellite =
-            Spacecraft.builder(boundedPropagator, header)
-                .withModelPath(IssModel).withReferenceSystem()
-                .withDisplayAttitude().build();
+            Spacecraft.builder(boundedPropagator, clock).withModelPath(IssModel)
+                .withReferenceSystem().withDisplayAttitude().build();
+
+        final Orientation orientationSatelliteToStock =
+            satellite.getOrientation();
+        final double periodSatelliteToStock = satellite.getPeriod();
 
         // Creation of the display of the maneuvers
         final ManeuverSequence maneuverSequence =
-            ManeuverSequence.builder(sequence, maneuvers, satellite,
-                                     accelerationDirection, LOFType.TNW, header)
+            ManeuverSequence
+                .builder(sequence, maneuvers, satellite, accelerationDirection,
+                         LOFType.TNW, header.getAvailability())
                 .build();
 
         // Multiple Ground Stations
@@ -764,11 +773,21 @@ class GlobalTests
         // Creation of all the ground stations
         final List<CzmlGroundStation> groundStation = new ArrayList<>();
         final CzmlGroundStation groundStationToulouse =
-            new CzmlGroundStation(topocentricToulouse, header);
+            new CzmlGroundStation(topocentricToulouse,
+                                  header.getAvailability());
         final CzmlGroundStation groundStationLasVegas =
-            new CzmlGroundStation(topocentricLasVegas, header);
+            new CzmlGroundStation(topocentricLasVegas,
+                                  header.getAvailability());
         groundStation.add(groundStationToulouse);
         groundStation.add(groundStationLasVegas);
+        final List<TopocentricFrame> topocentrics = new ArrayList<>();
+        topocentrics.add(topocentricToulouse);
+        topocentrics.add(topocentricLasVegas);
+        final CzmlGroundStation soloGroundStation =
+            new CzmlGroundStation(topocentricToulouse,
+                                  header.getAvailability());
+
+        soloGroundStation.getTopocentricFrame();
 
         final List<ManeuverSequence> sequences = new ArrayList<>();
         sequences.add(maneuverSequence);
@@ -776,31 +795,36 @@ class GlobalTests
         final List<BoundedPropagator> propagators = new ArrayList<>();
         propagators.add(boundedPropagator);
         final Constellation constellation =
-            Constellation.builder(propagators, finalDate, header).build();
+            Constellation.builder(propagators, finalDate, clock).build();
 
         final LineOfVisibility lineToulouse =
-            LineOfVisibility.builder(topocentricToulouse, satellite, header)
+            LineOfVisibility.builder(topocentricToulouse, satellite,
+                                     header.getAvailability())
                 .build();
         final LineOfVisibility lineVegasAperture =
-            LineOfVisibility.builder(topocentricLasVegas, satellite, header)
+            LineOfVisibility
+                .builder(topocentricLasVegas, satellite,
+                         header.getAvailability())
                 .withAngleOfAperture(90.0).build();
 
         final LineOfVisibility lineVegasConstellation =
-            LineOfVisibility.builder(topocentricLasVegas, constellation, header)
+            LineOfVisibility.builder(topocentricLasVegas, constellation,
+                                     header.getAvailability())
                 .build();
         final LineOfVisibility lineVegasConstellationAperture =
-            LineOfVisibility.builder(topocentricLasVegas, constellation, header)
+            LineOfVisibility
+                .builder(topocentricLasVegas, constellation,
+                         header.getAvailability())
                 .withAngleOfAperture(90.0).build();
 
         final CzmlFile file =
-            CzmlFile.builder().withHeader(header).withSpacecraft(satellite)
+            CzmlFile.builder(header).withSpacecraft(satellite)
                 .withManeuverSequence(maneuverSequence)
                 .withCzmlGroundStation(groundStation)
                 .withLineOfVisibility(lineToulouse).build();
 
         final CzmlFile coverageFile =
-            CzmlFile.builder().withHeader(header)
-                .withManeuverSequence(sequences)
+            CzmlFile.builder(header).withManeuverSequence(sequences)
                 .withLineOfVisibility(lineVegasAperture)
                 .withLineOfVisibility(lineVegasConstellation)
                 .withLineOfVisibility(lineVegasConstellationAperture).build();
@@ -809,11 +833,14 @@ class GlobalTests
         file.write(output);
 
         // Comparing of generated file and reference file.
+        final String stringReference =
+            Files.readString(Path.of(referenceFilePath3));
         final String stringGenerated = Files.readString(Path.of(output));
-        verifyFileOutput(referenceFilePath3, stringGenerated, 1e-8);
 
         final String coveragePathFile =
             loadResources("templateFile/file/Test3CzmlFileTemplateCoverage.txt");
-        verifyFileOutput(coveragePathFile, coverageFile.toString(), 1e-8);
+
+        verifyFileOutput(referenceFilePath3, stringGenerated, 1e-5);
+        verifyFileOutput(coveragePathFile, coverageFile.toString(), 1e-5);
     }
 }

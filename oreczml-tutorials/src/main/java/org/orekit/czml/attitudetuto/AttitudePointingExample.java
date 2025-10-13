@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -145,21 +145,20 @@ public class AttitudePointingExample {
 
         // Creation of the satellite
         final Spacecraft satellite =
-            Spacecraft.builder(boundedPropagator, header)
-                .withModelPath(ISSModel).withColor(Color.RED)
-                .withOnlyOnePeriod().withReferenceSystem().withDisplayAttitude()
-                .build();
+            Spacecraft.builder(boundedPropagator, clock).withModelPath(ISSModel)
+                .withColor(Color.RED).withOnlyOnePeriod().withReferenceSystem()
+                .withDisplayAttitude().build();
 
         final AttitudePointing pointing =
             AttitudePointing
                 .builder(satellite, TutorialUtils.getEarth(), Vector3D.MINUS_J,
-                         header)
+                         clock.getAvailability())
                 .withColor(Color.ORANGE).displayPointingPath()
                 .displayPeriodPointingPath().build();
 
         // Creation of the file
         final CzmlFile file =
-            CzmlFile.builder().withHeader(header).withSpacecraft(satellite)
+            CzmlFile.builder(header).withSpacecraft(satellite)
                 .withAttitudePointing(pointing).build();
 
         // Writing in the file

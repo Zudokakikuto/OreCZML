@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -47,12 +47,14 @@ public class PolylineTest
 
         final Header header = dummyHeader();
 
-        final Polyline polyline = Polyline.nonVectorBuilder(header).build();
+        final Polyline polyline =
+            Polyline.nonVectorBuilder(header.getAvailability()).build();
 
         final Polyline polylineNonVector =
-            Polyline.nonVectorBuilder(header).withColor(Color.ORANGE)
-                .withArcType(CesiumArcType.NONE).withShow(true).withWidth(10.0)
-                .withFarDistance(10.0).withNearDistance(1.0)
+            Polyline.nonVectorBuilder(header.getAvailability())
+                .withColor(Color.ORANGE).withArcType(CesiumArcType.NONE)
+                .withShow(true).withWidth(10.0).withFarDistance(10.0)
+                .withNearDistance(1.0)
                 .withFirstReference(new Reference("sat#position"))
                 .withSecondReference(new Reference("groundstation#position"))
                 .build();

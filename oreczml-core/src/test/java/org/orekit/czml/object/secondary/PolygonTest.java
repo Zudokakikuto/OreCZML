@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -49,10 +49,11 @@ public class PolygonTest
 
         final List<Cartesian> cartesians = randomCartesian();
 
-        final Polygon polygon = new Polygon(cartesians, header);
+        final Polygon polygon =
+            new Polygon(cartesians, header.getAvailability());
 
         final String pathFile =
-            loadResources("templateFile/secondary/PolygonTemplate.txt");
+            loadResources("templateFile/object/secondary/PolygonTemplate.txt");
 
         verifyFileOutput(pathFile, polygon.toString(), 1e-8);
     }

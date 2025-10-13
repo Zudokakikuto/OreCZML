@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -16,15 +16,15 @@
  */
 package org.orekit.czml.other;
 
-import org.orekit.czml.TutorialUtils;
 import org.hipparchus.linear.MatrixUtils;
 import org.hipparchus.linear.RealMatrix;
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
+import org.orekit.czml.TutorialUtils;
 import org.orekit.czml.file.CzmlFile;
-import org.orekit.czml.object.primary.covariance.Collision;
 import org.orekit.czml.object.primary.Header;
+import org.orekit.czml.object.primary.covariance.Collision;
 import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.forces.ForceModel;
@@ -170,12 +170,12 @@ public class CollisionExample {
             generator2.getGeneratedEphemeris();
 
         final Spacecraft satellite1 =
-            Spacecraft.builder(boundedPropagator1, header)
+            Spacecraft.builder(boundedPropagator1, clock)
                 .withModelPath(IssModel).withColor(Color.MAGENTA)
                 .withOnlyOnePeriod().build();
 
         final Spacecraft satellite2 =
-            Spacecraft.builder(boundedPropagator2, header)
+            Spacecraft.builder(boundedPropagator2, clock)
                 .withModelPath(IssModel).withColor(Color.MAGENTA)
                 .withOnlyOnePeriod().build();
 
@@ -192,19 +192,19 @@ public class CollisionExample {
                                 OrbitType.EQUINOCTIAL, PositionAngleType.MEAN);
         final List<StateCovariance> covariances1 =
             covariancePropagation(satellite1, propagator1, stateCovariance,
-                                  header);
+                                  clock);
         final List<StateCovariance> covariances2 =
             covariancePropagation(satellite2, propagator2, stateCovariance,
-                                  header);
+                                  clock);
 
         final Collision collision =
             Collision.builder(satellite1, satellite2, covariances1,
-                              covariances2, LOFType.TNW, LOFType.TNW, header)
+                              covariances2, LOFType.TNW, LOFType.TNW)
                 .build();
 
         // Creation of the file
         final CzmlFile file =
-            CzmlFile.builder().withHeader(header).withSpacecraft(satellite1)
+            CzmlFile.builder(header).withSpacecraft(satellite1)
                 .withSpacecraft(satellite2).withCollision(collision).build();
 
         // Writing in the file
@@ -217,14 +217,14 @@ public class CollisionExample {
      * @param satellite the satellite
      * @param propagator the propagator
      * @param initCovariance the init covariance
-     * @param header the header
+     * @param clock the clock
      * @return the list
      */
     public static List<StateCovariance>
         covariancePropagation(final Spacecraft satellite,
                               final Propagator propagator,
                               final StateCovariance initCovariance,
-                              final Header header) {
+                              final Clock clock) {
 
         final List<StateCovariance> covarianceListTemp = new ArrayList<>();
         satellite.setAttitudes(new ArrayList<>());
@@ -242,7 +242,7 @@ public class CollisionExample {
 
         propagator.addAdditionalStateProvider(provider);
 
-        propagator.getMultiplexer().add(header.getClock().getMultiplier(),
+        propagator.getMultiplexer().add(clock.getMultiplier(),
                                         spacecraftState -> {
                                             final StateCovariance covariance =
                                                 provider

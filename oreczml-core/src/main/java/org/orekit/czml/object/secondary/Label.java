@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -17,14 +17,14 @@
 
 package org.orekit.czml.object.secondary;
 
-import java.awt.Color;
-
 import cesiumlanguagewriter.CesiumHorizontalOrigin;
 import cesiumlanguagewriter.CesiumLabelStyle;
 import cesiumlanguagewriter.CesiumOutputStream;
 import cesiumlanguagewriter.CesiumVerticalOrigin;
 import cesiumlanguagewriter.LabelCesiumWriter;
 import cesiumlanguagewriter.PacketCesiumWriter;
+
+import java.awt.Color;
 
 /**
  * Label class
@@ -187,15 +187,6 @@ public class Label
     }
 
     /**
-     * Gets label style.
-     *
-     * @return the label style
-     */
-    public CesiumLabelStyle getLabelStyle() {
-        return labelStyle;
-    }
-
-    /**
      * Gets show.
      *
      * @return the show
@@ -203,4 +194,5 @@ public class Label
     public boolean getShow() {
         return show;
     }
+
 }

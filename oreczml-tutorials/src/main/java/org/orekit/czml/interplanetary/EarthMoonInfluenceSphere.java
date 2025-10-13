@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -96,9 +96,9 @@ public class EarthMoonInfluenceSphere {
                        clock, pathToJSFolder);
 
         // Influence sphere
-        final Body earth = BodyFactory.getEarth(header);
+        final Body earth = BodyFactory.getEarth(clock);
         earth.displayInfluenceSphere();
-        final Body moon = BodyFactory.getMoon(header);
+        final Body moon = BodyFactory.getMoon(clock);
         moon.displayInfluenceSphere(earth);
         moon.displayOnlyOnePeriod(24 * 3600);
         final List<Body> bodies = new ArrayList<>();
@@ -164,13 +164,13 @@ public class EarthMoonInfluenceSphere {
 
         // Satellite
         final Spacecraft spacecraft =
-            Spacecraft.builder(boundedPropagator, header).withReferenceSystem()
+            Spacecraft.builder(boundedPropagator, clock).withReferenceSystem()
                 .withColor(Color.BLUE).displayInfluenceSphereChanges(bodies)
                 .build();
         // Czml file
         final CzmlFile file =
-            CzmlFile.builder().withSpacecraft(spacecraft).withBody(earth)
-                .withBody(moon).withHeader(header).build();
+            CzmlFile.builder(header).withSpacecraft(spacecraft).withBody(earth)
+                .withBody(moon).build();
 
         // file writing
         file.write(output);

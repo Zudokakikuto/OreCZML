@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -52,11 +52,11 @@ public class HeaderTest
             new Header(headerValue, headerVersionNumber, header.getClock(), "");
 
         final String pathFile =
-            loadResources("templateFile/primary/HeaderTemplate.txt");
+            loadResources("templateFile/object/primary/HeaderTemplate.txt");
         final String coveragePathFile =
-            loadResources("templateFile/primary/HeaderCoverageTemplate.txt");
+            loadResources("templateFile/object/primary/HeaderCoverageTemplate.txt");
         final String versionPathFile =
-            loadResources("templateFile/primary/HeaderVersionTemplate.txt");
+            loadResources("templateFile/object/primary/HeaderVersionTemplate.txt");
 
         verifyFileOutput(pathFile, header.toString(), 1e-8);
         verifyFileOutput(coveragePathFile, headerCoverage.toString(), 1e-8);

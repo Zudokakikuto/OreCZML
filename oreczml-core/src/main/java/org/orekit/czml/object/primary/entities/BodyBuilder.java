@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -18,7 +18,7 @@
 package org.orekit.czml.object.primary.entities;
 
 import org.orekit.bodies.CelestialBody;
-import org.orekit.czml.object.primary.Header;
+import org.orekit.czml.object.secondary.Clock;
 import org.orekit.czml.object.secondary.Orientation;
 import org.orekit.frames.Frame;
 
@@ -41,8 +41,8 @@ public class BodyBuilder {
     /** . */
     private String customId;
 
-    /** The header to use if several are used. */
-    private Header header;
+    /** The clock to use. */
+    private Clock clock;
 
     /** To know if the orbit must be displayed or not. */
     private boolean noOrbitDisplay;
@@ -79,24 +79,23 @@ public class BodyBuilder {
      *
      * @param bodyInput : The body to consider
      * @param pathToModelInput : The model to load
-     * @param frameToExpressInput : The frame in which the body must be computed
-     * @param headerInput : The header considered.
+     * @param frameToExpressInput : The model to load
+     * @param clock : The clock considered.
      */
     public BodyBuilder(final CelestialBody bodyInput,
                        final String pathToModelInput,
-                       final Frame frameToExpressInput,
-                       final Header headerInput) {
+                       final Frame frameToExpressInput, final Clock clock) {
         this.body = bodyInput;
         this.pathToModel = pathToModelInput;
         this.customId = "BODY/" + bodyInput.getName();
-        this.header = headerInput;
+        this.clock = clock;
         this.frameToExpress = frameToExpressInput;
     }
 
     /**
      * Function to display the influence sphere.
      *
-     * @return : The builder with the influence sphere set to be displayed.
+     * @return The body builder object with an influence sphere to display
      */
     public BodyBuilder displayInfluenceSphere() {
         this.displayInfluenceSphere = true;
@@ -111,17 +110,6 @@ public class BodyBuilder {
      */
     public BodyBuilder withCustomID(final String customIDInput) {
         this.customId = customIDInput;
-        return this;
-    }
-
-    /**
-     * Function to set up a header when several are used.
-     *
-     * @param headerInput : The header to set up.
-     * @return : The builder with a header set up.
-     */
-    public BodyBuilder withHeader(final Header headerInput) {
-        this.header = headerInput;
         return this;
     }
 
@@ -225,7 +213,7 @@ public class BodyBuilder {
      */
     public Body build() {
         final Body tempBody =
-            new Body(body, pathToModel, frameToExpress, customId, header);
+            new Body(body, pathToModel, frameToExpress, customId, clock);
         return checkAttributes(tempBody);
     }
 

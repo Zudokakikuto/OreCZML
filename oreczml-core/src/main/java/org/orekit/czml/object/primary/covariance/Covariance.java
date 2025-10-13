@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -25,9 +25,8 @@ import cesiumlanguagewriter.Reference;
 import org.hipparchus.util.FastMath;
 import org.orekit.attitudes.Attitude;
 import org.orekit.attitudes.LofOffset;
-import org.orekit.czml.object.Utils.DateUtils;
+import org.orekit.czml.object.utils.DateUtils;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
-import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.secondary.CzmlEllipsoid;
 import org.orekit.czml.object.secondary.Orientation;
@@ -78,12 +77,6 @@ public class Covariance
     // Parameters
 
     /**
-     * The orientation used as a reference to keep the ellipsoid in the good
-     * orientation.
-     */
-    private final Reference orientationReference = null;
-
-    /**
      * A list of all the State Covariance object
      * {@link org.orekit.propagation.StateCovariance}.
      */
@@ -130,9 +123,6 @@ public class Covariance
      */
     private CzmlEllipsoid uniqueEllipsoid;
 
-    /** The header considered. */
-    private final Header header;
-
     // Constructors
 
     // The following constructors build several ellipsoids to follow the
@@ -142,35 +132,31 @@ public class Covariance
      * This builder classically uses the satellite and an initial covariance to
      * build a covariance.
      *
-     * @param spacecraft : The satellite used to build the covariance around.
+     * @param spacecraft : The spacecraft used to build the covariance around.
      * @param covariances : The list of all the covariances computed.
      * @param lof : The lof of the satellite
-     * @param header : The header to consider when several are used.
      */
     Covariance(final Spacecraft spacecraft,
-               final List<StateCovariance> covariances, final LOF lof,
-               final Header header) {
+               final List<StateCovariance> covariances, final LOF lof) {
 
         this(spacecraft, covariances, lof, DEFAULT_COLOR,
-             DEFAULT_ID + spacecraft.getId(), header);
+             DEFAULT_ID + spacecraft.getId());
     }
 
     /**
      * The classic builder with a given color for the ellipsoid.
      *
-     * @param spacecraft : The satellite used to build the covariance around.
+     * @param spacecraft : The spacecraft used to build the covariance around.
      * @param covariances : The initial covariance.
      * @param lof : The lof of the satellite
      * @param color : The color of the ellipsoid.
      * @param customID : The custom ID of the covariance object
-     * @param header : The header to consider when several are used.
      */
     Covariance(final Spacecraft spacecraft,
                final List<StateCovariance> covariances, final LOF lof,
-               final Color color, final String customID, final Header header) {
+               final Color color, final String customID) {
 
         this.spacecraft = spacecraft;
-        this.header = header;
         this.spaceCraftStates = spacecraft.getSpaceCraftStates();
         this.setId(customID);
         this.setName(DEFAULT_NAME + spacecraft.getName());
@@ -192,15 +178,14 @@ public class Covariance
      * @param satelliteInput the satellite input
      * @param covariancesInput the covariances input
      * @param lofInput the lof input
-     * @param header the header
      * @return the covariance builder
      */
     public static CovarianceBuilder
         builder(final Spacecraft satelliteInput,
                 final List<StateCovariance> covariancesInput,
-                final LOF lofInput, final Header header) {
-        return new CovarianceBuilder(satelliteInput, covariancesInput, lofInput,
-                                     header);
+                final LOF lofInput) {
+        return new CovarianceBuilder(satelliteInput, covariancesInput,
+                                     lofInput);
     }
 
     // Overrides
@@ -218,7 +203,7 @@ public class Covariance
             packet.writeAvailability(getAvailability());
 
             final Orientation orientation =
-                Orientation.builder(attitudes, spacecraft.getFrame(), header)
+                Orientation.builder(attitudes, spacecraft.getFrame())
                     .withInvertToITRF(false).build();
             orientation.write(packet, output);
 
@@ -249,25 +234,6 @@ public class Covariance
     }
 
     /**
-     * This getter returns the reference used for the orientation of the
-     * ellipsoid.
-     *
-     * @return : The reference for the orientation used.
-     */
-    public Reference getOrientationReference() {
-        return orientationReference;
-    }
-
-    /**
-     * This getter returns the list of state covariance of the satellite.
-     *
-     * @return : The list of state covariance used.
-     */
-    public List<StateCovariance> getCovarianceList() {
-        return Collections.unmodifiableList(covarianceList);
-    }
-
-    /**
      * This getter returns the attitudes of the satellite.
      *
      * @return : The attitudes of the satellite.
@@ -277,48 +243,12 @@ public class Covariance
     }
 
     /**
-     * This getter returns the reference used for the position of the ellipsoid.
-     *
-     * @return : The reference used for the position.
-     */
-    public Reference getPositionReference() {
-        return positionReference;
-    }
-
-    /**
      * This getter returns the list of julian date at each step of time.
      *
      * @return : The list of julian date used.
      */
     public List<JulianDate> getJulianDates() {
         return Collections.unmodifiableList(julianDates);
-    }
-
-    /**
-     * Gets space craft states.
-     *
-     * @return the space craft states
-     */
-    public List<SpacecraftState> getSpaceCraftStates() {
-        return Collections.unmodifiableList(spaceCraftStates);
-    }
-
-    /**
-     * Gets dimensions of ellipsoids.
-     *
-     * @return the dimensions of ellipsoids
-     */
-    public List<Cartesian> getDimensionsOfEllipsoids() {
-        return Collections.unmodifiableList(dimensionsOfEllipsoids);
-    }
-
-    /**
-     * Gets unique ellipsoid.
-     *
-     * @return the unique ellipsoid
-     */
-    public CzmlEllipsoid getUniqueEllipsoid() {
-        return uniqueEllipsoid;
     }
 
     // Private functions
@@ -362,7 +292,8 @@ public class Covariance
         }
 
         this.uniqueEllipsoid =
-            CzmlEllipsoid.builder(julianDates, dimensionsOfEllipsoids, header)
+            CzmlEllipsoid
+                .builder(julianDates, dimensionsOfEllipsoids, getAvailability())
                 .withColor(color).build();
     }
 }

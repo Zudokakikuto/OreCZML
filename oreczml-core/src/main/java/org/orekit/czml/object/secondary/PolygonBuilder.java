@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -16,14 +16,12 @@
  */
 package org.orekit.czml.object.secondary;
 
+import cesiumlanguagewriter.Cartesian;
+import cesiumlanguagewriter.TimeInterval;
+
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.orekit.czml.object.primary.Header;
-
-import cesiumlanguagewriter.Cartesian;
-import cesiumlanguagewriter.TimeInterval;
 
 /**
  * Polygon Builder class
@@ -64,22 +62,6 @@ public class PolygonBuilder {
      * To fill or not the polygon.
      */
     private boolean fill = true;
-
-    // Constructors
-
-    /**
-     * The constructor of the polygon builder.
-     *
-     * @param cartesiansInput : The list of cartesians that will build the
-     *        polygon.
-     * @param headerInput : The header considered.
-     */
-    public PolygonBuilder(final List<Cartesian> cartesiansInput,
-                          final Header headerInput) {
-        this.availability = headerInput.getAvailability(); // Time frame will be
-                                                           // entire simulation
-        this.cartesians = new ArrayList<>(cartesiansInput);
-    }
 
     /**
      * The constructor of the polygon builder.
@@ -128,17 +110,6 @@ public class PolygonBuilder {
     }
 
     /**
-     * Function to set up the header of the polygon.
-     *
-     * @param headerInput : The header considered to set up.
-     * @return : The polygon builder with a header considered.
-     */
-    public PolygonBuilder withAvailability(final Header headerInput) {
-        this.availability = headerInput.getAvailability();
-        return this;
-    }
-
-    /**
      * Function to set up the valid time interval of the polygon.
      *
      * @param availabilityInput : The availability of the polygon
@@ -146,7 +117,7 @@ public class PolygonBuilder {
      */
     public PolygonBuilder
         withAvailability(final TimeInterval availabilityInput) {
-        availability = availabilityInput;
+        this.availability = availabilityInput;
         return this;
     }
 

@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -70,12 +70,11 @@ public class SphereInfluenceExample {
             new Header("Setup of influence sphere", clock, pathToJSFolder);
 
         // Solar system
-        final Body venusDisplay = BodyFactory.getVenus(header);
+        final Body venusDisplay = BodyFactory.getVenus(clock);
         venusDisplay.displayInfluenceSphere();
 
         final CzmlFile file =
-            CzmlFile.builder().withHeader(header).withBody(venusDisplay)
-                .build();
+            CzmlFile.builder(header).withBody(venusDisplay).build();
         // Writing in the file
         file.write(output);
     }

@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -91,6 +91,7 @@ public class Demonstrator {
             TutorialUtils.loadResources("Default3DModels/ISSModel.glb");
 
         // Creation of the clock.
+
         final AbsoluteDate startDate =
             new AbsoluteDate(2024, 3, 15, 0, 0, 0.0,
                              TimeScalesFactory.getUTC());
@@ -190,14 +191,15 @@ public class Demonstrator {
 
         // Creation of the satellite
         final Spacecraft satellite =
-            Spacecraft.builder(boundedPropagator, header)
-                .withModelPath(IssModel).withColor(Color.RED)
-                .withOnlyOnePeriod().withDisplayAttitude().build();
+            Spacecraft.builder(boundedPropagator, clock).withModelPath(IssModel)
+                .withColor(Color.RED).withOnlyOnePeriod().withDisplayAttitude()
+                .build();
 
         // Build of the ground stations
         final List<CzmlGroundStation> groundStations = new ArrayList<>();
         for (TopocentricFrame station : stations) {
-            groundStations.add(new CzmlGroundStation(station, header));
+            groundStations
+                .add(new CzmlGroundStation(station, clock.getAvailability()));
         }
 
         // Creation of the field of observation of the satellite, it describes
@@ -221,25 +223,29 @@ public class Demonstrator {
                                          Vector3D.PLUS_K, FastMath.toRadians(5),
                                          2);
         final FieldOfObservation fieldOfObservation =
-            FieldOfObservation.builder(satellite, fov, initialFovBody, header)
+            FieldOfObservation.builder(satellite, fov, initialFovBody)
                 .withColor(Color.PINK).build();
 
         final LineOfVisibility lineOfVisibilityToulouse =
-            LineOfVisibility.builder(topocentricToulouse, satellite, header)
+            LineOfVisibility.builder(topocentricToulouse, satellite,
+                                     clock.getAvailability())
                 .build();
         final LineOfVisibility lineOfVisibilityLasVegas =
-            LineOfVisibility.builder(topocentricLasVegas, satellite, header)
+            LineOfVisibility.builder(topocentricLasVegas, satellite,
+                                     clock.getAvailability())
                 .build();
         final LineOfVisibility lineOfVisibilityKiruna =
-            LineOfVisibility.builder(topocentricKiruna, satellite, header)
+            LineOfVisibility
+                .builder(topocentricKiruna, satellite, clock.getAvailability())
                 .build();
         final LineOfVisibility lineOfVisibilityTroll =
-            LineOfVisibility.builder(topocentricTroll, satellite, header)
+            LineOfVisibility
+                .builder(topocentricTroll, satellite, clock.getAvailability())
                 .build();
 
         // Creation of the file
         final CzmlFile file =
-            CzmlFile.builder().withHeader(header).withSpacecraft(satellite)
+            CzmlFile.builder(header).withSpacecraft(satellite)
                 .withCzmlGroundStation(groundStations)
                 .withFieldOfObservation(fieldOfObservation)
                 .withLineOfVisibility(lineOfVisibilityToulouse)

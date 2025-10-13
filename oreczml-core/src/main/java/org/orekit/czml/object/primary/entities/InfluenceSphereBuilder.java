@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -17,13 +17,9 @@
 package org.orekit.czml.object.primary.entities;
 
 import org.orekit.czml.archi.factory.BodyFactory;
-import org.orekit.czml.object.primary.Header;
-import org.orekit.frames.Frame;
+import org.orekit.czml.object.secondary.Clock;
 
 public class InfluenceSphereBuilder {
-
-    /** The gravitational constant. */
-    public static final double GRAVITATIONAL_CONSTANT = 6.67430 * 10e-11;
 
     /** The default ID. */
     public static final String DEFAULT_ID = "INFLUENCE_SPHERE/";
@@ -32,45 +28,53 @@ public class InfluenceSphereBuilder {
     public static final String DEFAULT_NAME = "Sphere of influence of :";
 
     /** The body considered for the sphere of influence. */
-    private Body body;
+    private final Body body;
 
-    /** The header considered. */
-    private Header header;
+    /** The clock considered. */
+    private Clock clock;
 
     /** The customID that can be set up. */
     private String customID;
 
-    /** The path to the 3D model. */
-    private String pathTo3DModel;
-
-    /** The inertial frame of the body. */
-    private Frame inertialFrame;
-
-    /** The frame oriented of the body. */
-    private Frame bodyOrientedFrame;
-
-    /** The name of the body. */
-    private String bodyName = "Nameless body";
-
-    /** The mu of the body. */
-    private double bodyMu;
-
     /** The mass of the central body. */
     private Body centralBody;
 
-    public InfluenceSphereBuilder(final Body bodyInput,
-                                  final Header headerInput) {
+    /** The name of the body. */
+    private String bodyName;
+
+    /** Orbiting around the sun. */
+    private boolean orbitingAroundTheSun;
+
+    /** Gravitationnal constant * mass of the body. */
+    private double mu;
+
+    /**
+     * Classic constructor for the builder of the influence sphere.
+     *
+     * @param clock The clock used for the influence sphere
+     * @param bodyInput The body used for the influence sphere
+     */
+    public InfluenceSphereBuilder(final Body bodyInput, final Clock clock) {
         this.body = bodyInput;
-        this.header = headerInput;
+        this.clock = clock;
         this.customID = DEFAULT_ID + bodyInput.getName();
-        this.centralBody = BodyFactory.getSun(headerInput);
+        this.centralBody = BodyFactory.getSun(clock);
     }
 
+    /**
+     * A constructor for the builder of the influence sphere with a central
+     * body.
+     *
+     * @param centralBodyInput The central body of the body of the influence
+     *        sphere
+     * @param clock The clock used for the influence sphere
+     * @param bodyInput The body used for the influence sphere
+     */
     public InfluenceSphereBuilder(final Body bodyInput,
                                   final Body centralBodyInput,
-                                  final Header headerInput) {
+                                  final Clock clock) {
         this.body = bodyInput;
-        this.header = headerInput;
+        this.clock = clock;
         this.centralBody = centralBodyInput;
         this.customID = DEFAULT_ID + bodyInput.getName();
     }
@@ -100,26 +104,13 @@ public class InfluenceSphereBuilder {
     }
 
     /**
-     * This function set up an inertial frame for the sphere of influence.
+     * This function set up the influence sphere of a body orbiting around the
+     * sun.
      *
-     * @param inertialFrameInput : The inertial frame to set up
-     * @return : The influence sphere builder with a custom inertial frame.
+     * @return : The influence sphere builder of a body orbiting around the sun
      */
-    public InfluenceSphereBuilder
-        withInertialFrame(final Frame inertialFrameInput) {
-        this.inertialFrame = inertialFrameInput;
-        return this;
-    }
-
-    /**
-     * This function set up a body oriented frame for the sphere of influence.
-     *
-     * @param bodyOrientedFrameInput : The body oriented frame to set up
-     * @return : The influence sphere builder with a custom body oriented frame.
-     */
-    public InfluenceSphereBuilder
-        withBodyOrientedFrame(final Frame bodyOrientedFrameInput) {
-        this.bodyOrientedFrame = bodyOrientedFrameInput;
+    public InfluenceSphereBuilder withOrbitAroundTheSun() {
+        this.orbitingAroundTheSun = true;
         return this;
     }
 
@@ -130,18 +121,18 @@ public class InfluenceSphereBuilder {
      * @return : The influence sphere builder with a custom mu.
      */
     public InfluenceSphereBuilder withCustomMu(final double muInput) {
-        this.bodyMu = muInput;
+        this.mu = muInput;
         return this;
     }
 
     /**
-     * This function set up a custom header for the sphere of influence.
+     * This function set up a custom clock for the sphere of influence.
      *
-     * @param headerInput : The header to set up.
-     * @return : The influence sphere builder with a custom header.
+     * @param clockInput : The clock to set up.
+     * @return : The influence sphere builder with a custom clock.
      */
-    public InfluenceSphereBuilder withHeader(final Header headerInput) {
-        this.header = headerInput;
+    public InfluenceSphereBuilder withClock(final Clock clockInput) {
+        this.clock = clockInput;
         return this;
     }
 
@@ -163,9 +154,26 @@ public class InfluenceSphereBuilder {
      * This function builds the sphere of influence with all the parameters
      * given.
      *
-     * @return : The influence sphere object with the given parameters.
+     * @return An influence sphere with all the inputs given to the builder
      */
     public InfluenceSphere build() {
-        return new InfluenceSphere(body, centralBody, header);
+        final InfluenceSphere influenceSphere =
+            new InfluenceSphere(body, centralBody, clock);
+        if (customID != null) {
+            influenceSphere.setId(customID);
+        }
+        if (bodyName != null) {
+            influenceSphere.getBody().setName(bodyName);
+        }
+        if (clock != null) {
+            influenceSphere.setClock(clock);
+        }
+        if (orbitingAroundTheSun) {
+            influenceSphere.setOrbitingAroundTheSun(true);
+        }
+        if (mu != 0) {
+            influenceSphere.setMu(mu);
+        }
+        return influenceSphere;
     }
 }

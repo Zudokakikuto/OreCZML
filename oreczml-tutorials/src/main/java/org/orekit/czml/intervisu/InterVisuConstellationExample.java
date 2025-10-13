@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -243,18 +243,17 @@ public class InterVisuConstellationExample {
         propagators.add(fifthBoundedPropagator);
 
         final Constellation constellation =
-            Constellation.builder(propagators, finalDate, header).build();
+            Constellation.builder(propagators, finalDate, clock).build();
         constellation.displayOnlyOnePeriod();
 
         // Creation of the inter-sat visualization
         final InterSatVisu interSatVisu =
-            InterSatVisu.builder(constellation, finalDate, header).build();
+            InterSatVisu.builder(constellation, finalDate, clock).build();
 
         // Creation of the file
         final CzmlFile file =
-            CzmlFile.builder().withHeader(header)
-                .withConstellation(constellation).withInterSatVisu(interSatVisu)
-                .build();
+            CzmlFile.builder(header).withConstellation(constellation)
+                .withInterSatVisu(interSatVisu).build();
 
         // Writing in the file
         file.write(output);

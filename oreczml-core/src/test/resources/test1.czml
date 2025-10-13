@@ -145,7 +145,7 @@
     "id":"GROUND_STATION/Station",
     "name":"Ground station : Station",
     "availability":"2020-12-01T00:00:00Z/2020-12-01T00:30:00Z",
-    "description":"<!--HTML-->\r\n<p>Id : GROUND_STATION/Station</p\r\n<p>Longitude : 0.0</p>\r\n<p>Latitude : 0.0</p>\r\n<p>Simulated from : 2459184:43237 TAI (12/1/2020 12:00:00 AM) to 2459184:45037 TAI (12/1/2020 12:30:00 AM)</p>",
+    "description":"<!--HTML-->\r\n<p>Id : GROUND_STATION/Station</p\r\n<p>Longitude : 0.0</p>\r\n<p>Latitude : 0.0</p>\r\n<p>Simulated from : 2459184:43200 UTC (12/1/2020 12:00:00 AM) to 2459184:45000 UTC (12/1/2020 12:30:00 AM)</p>",
     "billboard":{
       "horizontalOrigin":"CENTER",
       "color":{

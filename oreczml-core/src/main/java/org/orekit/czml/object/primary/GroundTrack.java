@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -26,6 +26,7 @@ import cesiumlanguagewriter.PolylineMaterialCesiumWriter;
 import cesiumlanguagewriter.PositionCesiumWriter;
 import cesiumlanguagewriter.Reference;
 import cesiumlanguagewriter.SolidColorMaterialCesiumWriter;
+import cesiumlanguagewriter.TimeInterval;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.orekit.bodies.BodyShape;
 import org.orekit.czml.object.CzmlShow;
@@ -117,9 +118,6 @@ public class GroundTrack
      */
     private Boolean displayLinkSatellite = false;
 
-    /** The header considered. */
-    private Header header;
-
     // Constructors
 
     /**
@@ -129,12 +127,12 @@ public class GroundTrack
      * @param satellite : The satellite object that the ground track will
      *        represent.
      * @param body : The body in which the ground track must be projected to.
-     * @param header : The header considered.
+     * @param availability : The availability considered.
      */
     GroundTrack(final Spacecraft satellite, final BodyShape body,
-                final Header header) {
+                final TimeInterval availability) {
         this(satellite, body, DEFAULT_COLOR, DEFAULT_ID + satellite.getId(),
-             header);
+             availability);
     }
 
     /**
@@ -145,16 +143,16 @@ public class GroundTrack
      * @param body : The body in which the ground track must be projected to.
      * @param color : The color of the ground track.
      * @param customID : The custom ID for the ground track
-     * @param header : The header to consider when several headers are used.
+     * @param availability : The availability considered.
      */
     GroundTrack(final Spacecraft satellite, final BodyShape body,
-                final Color color, final String customID, final Header header) {
+                final Color color, final String customID,
+                final TimeInterval availability) {
 
         this.satellite = satellite;
-        this.header = header;
         this.setId(customID);
         this.setName(DEFAULT_NAME + satellite.getName());
-        this.setAvailability(header.getAvailability());
+        this.setAvailability(availability);
         this.color = color;
         final List<AbsoluteDate> satelliteDates =
             satellite.getAbsoluteDateList();
@@ -181,12 +179,12 @@ public class GroundTrack
      * @param constellation : The constellation object that the ground track
      *        will represent.
      * @param body : The body in which the ground track must be projected to.
-     * @param header : The header considered.
+     * @param availability : The availability considered.
      */
     GroundTrack(final Constellation constellation, final BodyShape body,
-                final Header header) {
+                final TimeInterval availability) {
         this(constellation, body, DEFAULT_COLOR,
-             DEFAULT_ID + constellation.getId(), header);
+             DEFAULT_ID + constellation.getId(), availability);
     }
 
     /**
@@ -198,24 +196,24 @@ public class GroundTrack
      * @param body : The body in which the ground track must be projected to.
      * @param color : The color of the ground track.
      * @param customID : The custom ID for the ground track
-     * @param header : The header considered when several header are used.
+     * @param availability : The availability considered.
      */
     GroundTrack(final Constellation constellation, final BodyShape body,
-                final Color color, final String customID, final Header header) {
+                final Color color, final String customID,
+                final TimeInterval availability) {
 
         final List<Spacecraft> satellites = constellation.getSatellites();
         this.color = color;
         this.groundTracks = new ArrayList<>();
-        this.header = header;
         this.setId(customID);
         this.setName(DEFAULT_NAME +
                      constellation.getTotalOfSatellite() +
                      DEFAULT_CONSTELLATION_NUMBER_OF_SAT);
-        this.setAvailability(header.getAvailability());
+        this.setAvailability(availability);
         for (final Spacecraft currentSat : satellites) {
             final GroundTrack currentGroundTrack =
                 new GroundTrack(currentSat, body, currentSat.getColor(),
-                                customID + currentSat.getId(), header);
+                                customID + currentSat.getId(), availability);
             groundTracks.add(currentGroundTrack);
         }
     }
@@ -225,29 +223,30 @@ public class GroundTrack
     /**
      * Builder ground track builder.
      *
-     * @param satellite the satellite
-     * @param body the body
-     * @param header the header
+     * @param satellite : The satellite
+     * @param body : The body
+     * @param availability : The availability
      * @return the ground track builder
      */
     public static GroundTrackBuilder builder(final Spacecraft satellite,
                                              final BodyShape body,
-                                             final Header header) {
-        return new GroundTrackBuilder(satellite, body, header);
+                                             final TimeInterval availability) {
+        return new GroundTrackBuilder(satellite, body, availability);
     }
 
     /**
      * Builder ground track builder.
      *
-     * @param constellation the constellation
-     * @param body the body
-     * @param header the header
+     * @param constellation : The constellation
+     * @param body : The body
+     * @param availability : The availability
      * @return the ground track builder
      */
     public static GroundTrackBuilder builder(final Constellation constellation,
                                              final BodyShape body,
-                                             final Header header) {
-        return new GroundTrackBuilder(constellation, body, header);
+                                             final TimeInterval availability) {
+
+        return new GroundTrackBuilder(constellation, body, availability);
     }
 
     // Overrides
@@ -277,12 +276,11 @@ public class GroundTrack
                             .toArray(new Reference[0]);
                     final Iterable<Reference> referenceIterable =
                         convertToIterable(referenceList);
-                    final CzmlShow show =
-                        new CzmlShow(true, header.getAvailability());
+                    final CzmlShow show = new CzmlShow(true, getAvailability());
                     final List<CzmlShow> shows = new ArrayList<>();
                     shows.add(show);
                     final Polyline polylineInput =
-                        Polyline.nonVectorBuilder(header).build();
+                        Polyline.nonVectorBuilder(getAvailability()).build();
                     polylineInput.writePolylineOfVisibility(packet, output,
                                                             referenceIterable,
                                                             shows);
@@ -319,11 +317,11 @@ public class GroundTrack
                         final Iterable<Reference> referenceIterable =
                             convertToIterable(referenceList);
                         final CzmlShow show =
-                            new CzmlShow(true, header.getAvailability());
+                            new CzmlShow(true, getAvailability());
                         final List<CzmlShow> shows = new ArrayList<>();
                         shows.add(show);
                         final Polyline polylineInput =
-                            Polyline.nonVectorBuilder(header)
+                            Polyline.nonVectorBuilder(getAvailability())
                                 .withColor(currentGroundTrack.getColor())
                                 .build();
                         polylineInput
@@ -348,15 +346,6 @@ public class GroundTrack
     }
 
     /**
-     * Gets clamped position on body.
-     *
-     * @return the clamped position on body
-     */
-    public TimePosition getClampedPositionOnBody() {
-        return clampedPositionOnBody;
-    }
-
-    /**
      * Gets color.
      *
      * @return the color
@@ -364,16 +353,6 @@ public class GroundTrack
     public Color getColor() {
         return color;
     }
-
-    /**
-     * Gets display link satellite.
-     *
-     * @return the display link satellite
-     */
-    public Boolean getDisplayLinkSatellite() {
-        return displayLinkSatellite;
-    }
-
     // Setters
 
     /**

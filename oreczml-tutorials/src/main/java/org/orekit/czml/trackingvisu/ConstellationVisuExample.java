@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -141,7 +141,7 @@ public class ConstellationVisuExample {
 
         // Build of the constellation
         final Constellation constellation =
-            Constellation.builder(propagators, finalDate, header).build();
+            Constellation.builder(propagators, finalDate, clock).build();
 
         //// Creation of the ground station
 
@@ -169,19 +169,23 @@ public class ConstellationVisuExample {
         // Build of the ground stations
         final List<CzmlGroundStation> groundStation = new ArrayList<>();
         for (TopocentricFrame station : stations) {
-            groundStation.add(new CzmlGroundStation(station, header));
+            groundStation
+                .add(new CzmlGroundStation(station, header.getAvailability()));
         }
 
         final LineOfVisibility lineOfVisibilityToulouse =
-            LineOfVisibility.builder(topocentricToulouse, constellation, header)
+            LineOfVisibility
+                .builder(topocentricToulouse, constellation,
+                         header.getAvailability())
                 .withVisibilityTriangle().build();
         final LineOfVisibility lineOfVisibilityLasVegas =
-            LineOfVisibility.builder(topocentricLasVegas, constellation, header)
+            LineOfVisibility
+                .builder(topocentricLasVegas, constellation,
+                         header.getAvailability())
                 .withVisibilityTriangle().build();
 
         final CzmlFile file =
-            CzmlFile.builder().withHeader(header)
-                .withConstellation(constellation)
+            CzmlFile.builder(header).withConstellation(constellation)
                 .withCzmlGroundStation(groundStation)
                 .withLineOfVisibility(lineOfVisibilityToulouse)
                 .withLineOfVisibility(lineOfVisibilityLasVegas).build();

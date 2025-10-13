@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -138,7 +138,7 @@ public class SatTrackingExample {
 
         // Build of the satellite
         final Spacecraft satellite =
-            Spacecraft.builder(boundedPropagator, header).withOnlyOnePeriod()
+            Spacecraft.builder(boundedPropagator, clock).withOnlyOnePeriod()
                 .build();
 
         //// Creation of several ground stations
@@ -189,31 +189,39 @@ public class SatTrackingExample {
         final List<CzmlGroundStation> groundStations = new ArrayList<>();
         for (TopocentricFrame station : stations) {
             final CzmlGroundStation currentCzmlStation =
-                CzmlGroundStation.builder(station, header)
+                CzmlGroundStation.builder(station, header.getAvailability())
                     .displayCircle(satellite, 70.0).build();
             groundStations.add(currentCzmlStation);
         }
 
         final LineOfVisibility lineOfVisibilityToulouse =
-            LineOfVisibility.builder(topocentricToulouse, satellite, header)
+            LineOfVisibility
+                .builder(topocentricToulouse, satellite,
+                         header.getAvailability())
                 .withAngleOfAperture(70.0).build();
         final LineOfVisibility lineOfVisibilityGibraltar =
-            LineOfVisibility.builder(topocentricGibraltar, satellite, header)
+            LineOfVisibility
+                .builder(topocentricGibraltar, satellite,
+                         header.getAvailability())
                 .withAngleOfAperture(70.0).build();
         final LineOfVisibility lineOfVisibilityQuito =
-            LineOfVisibility.builder(topocentricQuito, satellite, header)
+            LineOfVisibility
+                .builder(topocentricQuito, satellite, header.getAvailability())
                 .withAngleOfAperture(70.0).build();
         final LineOfVisibility lineOfVisibilityLasVegas =
-            LineOfVisibility.builder(topocentricLasVegas, satellite, header)
+            LineOfVisibility
+                .builder(topocentricLasVegas, satellite,
+                         header.getAvailability())
                 .withAngleOfAperture(70.0).build();
         final LineOfVisibility lineOfVisibilitySydney =
-            LineOfVisibility.builder(topocentricSydney, satellite, header)
+            LineOfVisibility
+                .builder(topocentricSydney, satellite, header.getAvailability())
                 .withAngleOfAperture(70.0).build();
 
         //// Creation of a line of visu between the satellite and all the ground
         //// stations
         final CzmlFile file =
-            CzmlFile.builder().withHeader(header).withSpacecraft(satellite)
+            CzmlFile.builder(header).withSpacecraft(satellite)
                 .withCzmlGroundStation(groundStations)
                 .withLineOfVisibility(lineOfVisibilityToulouse)
                 .withLineOfVisibility(lineOfVisibilitySydney)

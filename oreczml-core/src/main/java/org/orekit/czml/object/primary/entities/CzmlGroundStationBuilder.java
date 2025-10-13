@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -16,13 +16,13 @@
  */
 package org.orekit.czml.object.primary.entities;
 
+import cesiumlanguagewriter.TimeInterval;
+import org.orekit.frames.TopocentricFrame;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.orekit.czml.object.primary.Header;
-import org.orekit.frames.TopocentricFrame;
 
 /**
  * Ground station builder class
@@ -37,7 +37,7 @@ public class CzmlGroundStationBuilder {
     /**
      * The topocentric frame of the ground station.
      */
-    private final TopocentricFrame topocentricFrame;
+    private TopocentricFrame topocentricFrame;
 
     /**
      * The list of topocentric frame when several ground stations are used.
@@ -59,9 +59,6 @@ public class CzmlGroundStationBuilder {
     /** The custom ID for the czml ground station. */
     private String customID = CzmlGroundStation.DEFAULT_ID;
 
-    /** The header to consider when several are used. */
-    private Header header;
-
     /**
      * A boolean to display or not the circle of visibility of the ground
      * station.
@@ -74,6 +71,9 @@ public class CzmlGroundStationBuilder {
     /** The angle of aperture of the ground station. */
     private double angleOfAperture;
 
+    /** The time frame for which this feature is visible. */
+    private TimeInterval availability;
+
     // Constructor
 
     /**
@@ -81,20 +81,20 @@ public class CzmlGroundStationBuilder {
      *
      * @param topocentricFrameInput : The topocentric frame where the station
      *        must be.
-     * @param headerInput : The header considered.
+     * @param availability : The availability of the ground station
      */
     public CzmlGroundStationBuilder(final TopocentricFrame topocentricFrameInput,
-                                    final Header headerInput) {
+                                    final TimeInterval availability) {
         this.topocentricFrame = topocentricFrameInput;
-        this.header = headerInput;
+        this.availability = availability;
     }
 
     public CzmlGroundStationBuilder
-        displayCircle(final Spacecraft spacecraftInput,
+        displayCircle(final Spacecraft satellite,
                       final double angleOfApertureInput) {
         displayCircle = true;
-        spacecraft = spacecraftInput;
-        angleOfAperture = angleOfApertureInput;
+        this.spacecraft = satellite;
+        this.angleOfAperture = angleOfApertureInput;
         return this;
     }
 
@@ -121,13 +121,15 @@ public class CzmlGroundStationBuilder {
     }
 
     /**
-     * Function to set up a header.
+     * Function to set up an availability.
      *
-     * @param headerInput : The header to set up.
-     * @return : The ground station object with a header.
+     * @param availabilityInput : The time frame for which this feature is
+     *        visible.
+     * @return : The ground station object with a custom availability.
      */
-    public CzmlGroundStationBuilder withHeader(final Header headerInput) {
-        this.header = headerInput;
+    public CzmlGroundStationBuilder
+        withAvailability(final TimeInterval availabilityInput) {
+        this.availability = availabilityInput;
         return this;
     }
 
@@ -143,7 +145,8 @@ public class CzmlGroundStationBuilder {
         throws URISyntaxException,
             IOException {
         final CzmlGroundStation toReturn;
-        toReturn = new CzmlGroundStation(topocentricFrame, modelPath, header);
+        toReturn =
+            new CzmlGroundStation(topocentricFrame, modelPath, availability);
         if (displayCircle) {
             toReturn.displayCircle(spacecraft, angleOfAperture);
         }

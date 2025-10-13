@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -17,7 +17,7 @@
 package org.orekit.czml.archi.adaptor;
 
 import org.hipparchus.geometry.euclidean.threed.Rotation;
-import org.orekit.czml.object.primary.Header;
+import org.orekit.czml.object.secondary.Clock;
 import org.orekit.czml.object.secondary.Orientation;
 import org.orekit.files.ccsds.ndm.adm.aem.Aem;
 import org.orekit.propagation.BoundedPropagator;
@@ -54,17 +54,17 @@ public class AemAdaptor {
      * Build orientation orientation.
      *
      * @param propagator the propagator
-     * @param header the header
+     * @param clock the clock
      * @return the orientation
      * @throws URISyntaxException the uri syntax exception
      * @throws IOException the io exception
      */
     public Orientation buildOrientation(final BoundedPropagator propagator,
-                                        final Header header)
+                                        final Clock clock)
         throws URISyntaxException,
             IOException {
         return new Orientation(aem.getSegments().get(0).getAttitudeProvider(),
-                               propagator, Rotation.IDENTITY, false, header);
+                               propagator, clock, Rotation.IDENTITY, false);
     }
 
     /**

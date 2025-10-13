@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -22,7 +22,6 @@ import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.Reference;
 import org.orekit.czml.object.nonvisual.CzmlModel;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
-import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.primary.entities.Spacecraft;
 
 import java.io.IOException;
@@ -101,12 +100,9 @@ public class SpacecraftReferenceSystem
      *
      * @param spacecraft : The Spacecraft around which the reference system must
      *        be.
-     * @param header : The header considered.
      */
-    public SpacecraftReferenceSystem(final Spacecraft spacecraft,
-                                     final Header header) {
-        this(spacecraft, 0.02, 200000, 250, DEFAULT_ID + spacecraft.getId(),
-             header);
+    public SpacecraftReferenceSystem(final Spacecraft spacecraft) {
+        this(spacecraft, 0.02, 200000, 250, DEFAULT_ID + spacecraft.getId());
     }
 
     /**
@@ -120,14 +116,12 @@ public class SpacecraftReferenceSystem
      * @param maximumScale : The maximum scale that the mode can take.
      * @param minimumPixelSize : The minimum pixel sie of the model.
      * @param customID : The custom ID of the Spacecraft reference system.
-     * @param header : The header considered.
      */
     public SpacecraftReferenceSystem(final Spacecraft spacecraft,
                                      final double scale,
                                      final double maximumScale,
                                      final double minimumPixelSize,
-                                     final String customID,
-                                     final Header header) {
+                                     final String customID) {
         this.spacecraft = spacecraft;
         this.setId(customID);
         this.setName(DEFAULT_NAME + spacecraft.getName());
@@ -138,7 +132,8 @@ public class SpacecraftReferenceSystem
             new Reference(spacecraft.getId() + DEFAULT_H_ORIENTATION);
         this.referenceSystemModel =
             new CzmlModel(PATH_TO_REFERENCE_SYSTEM, maximumScale,
-                          minimumPixelSize, scale, false, header);
+                          minimumPixelSize, scale, false,
+                          spacecraft.getAvailability());
     }
 
     // Overrides
@@ -168,24 +163,6 @@ public class SpacecraftReferenceSystem
      */
     public Spacecraft getSpacecraft() {
         return spacecraft;
-    }
-
-    /**
-     * Gets reference orientation.
-     *
-     * @return the reference orientation
-     */
-    public Reference getReferenceOrientation() {
-        return referenceOrientation;
-    }
-
-    /**
-     * Gets reference position.
-     *
-     * @return the reference position
-     */
-    public Reference getReferencePosition() {
-        return referencePosition;
     }
 
     /**

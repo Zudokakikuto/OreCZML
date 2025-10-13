@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -17,7 +17,6 @@
 
 package org.orekit.czml.object.primary.covariance;
 
-import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.frames.LOF;
 import org.orekit.propagation.StateCovariance;
@@ -55,9 +54,6 @@ public class CollisionBuilder {
     /** The custom ID of the collision object. */
     private String customId;
 
-    /** The header to use when several headers are used. */
-    private Header header;
-
     /**
      * The constructor for the collision builder object.
      *
@@ -71,14 +67,12 @@ public class CollisionBuilder {
      *        of the second satellite.
      * @param firstLofInput : The local orbital frame of the first satellite.
      * @param secondLofInput : The local orbital frame of the second satellite.
-     * @param header : The header considered.
      */
     public CollisionBuilder(final Spacecraft firstSatelliteInput,
                             final Spacecraft secondSatelliteInput,
                             final List<StateCovariance> firstCovarianceListInput,
                             final List<StateCovariance> secondCovarianceListInput,
-                            final LOF firstLofInput, final LOF secondLofInput,
-                            final Header header) {
+                            final LOF firstLofInput, final LOF secondLofInput) {
         this.firstSatellite = firstSatelliteInput;
         this.secondSatellite = secondSatelliteInput;
         this.firstCovarianceList = firstCovarianceListInput;
@@ -89,7 +83,6 @@ public class CollisionBuilder {
             "COLLISION/" +
                         firstSatelliteInput.getId() + "/" +
                         secondSatelliteInput.getId();
-        this.header = header;
     }
 
     /**
@@ -104,17 +97,6 @@ public class CollisionBuilder {
     }
 
     /**
-     * Function to set up a header when several are used.
-     *
-     * @param headerInput : The header to set up
-     * @return : The collision builder object with a header set up.
-     */
-    public CollisionBuilder withHeader(final Header headerInput) {
-        this.header = headerInput;
-        return this;
-    }
-
-    /**
      * Build collision.
      *
      * @return the collision
@@ -122,6 +104,6 @@ public class CollisionBuilder {
     public Collision build() {
         return new Collision(firstSatellite, secondSatellite,
                              firstCovarianceList, secondCovarianceList,
-                             firstLof, secondLof, customId, header);
+                             firstLof, secondLof, customId);
     }
 }

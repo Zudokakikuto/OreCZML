@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -55,11 +55,6 @@ public class CzmlFile {
      * The complete list of all the primary object to write.
      */
     private List<CzmlPrimaryObject> objects;
-
-    /**
-     * The directory of the file.
-     */
-    private String pathDirectory;
 
     // Constructor
 
@@ -193,10 +188,11 @@ public class CzmlFile {
     /**
      * Builder czml file builder.
      *
+     * @param headerInput : The header considered.
      * @return the czml file builder
      */
-    public static CzmlFileBuilder builder() {
-        return new CzmlFileBuilder();
+    public static CzmlFileBuilder builder(final Header headerInput) {
+        return new CzmlFileBuilder(headerInput);
     }
 
     // Getters
@@ -209,15 +205,6 @@ public class CzmlFile {
      */
     public void addObject(final AbstractPrimaryObject object) {
         objects.add(object);
-    }
-
-    /**
-     * Gets path directory.
-     *
-     * @return the path directory
-     */
-    public String getPathDirectory() {
-        return pathDirectory;
     }
 
     /**
@@ -250,7 +237,6 @@ public class CzmlFile {
      * to write two czml file after another.
      */
     public void clear() {
-        this.pathDirectory = "";
         this.objects = new ArrayList<>();
     }
 }

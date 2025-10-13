@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -16,26 +16,24 @@
  */
 package org.orekit.czml.object.primary.entities;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.List;
-
-import org.hipparchus.util.FastMath;
-import org.orekit.czml.archi.factory.BodyFactory;
-import org.orekit.czml.object.Utils.DateUtils;
-import org.orekit.czml.object.primary.AbstractPrimaryObject;
-import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.secondary.CzmlEllipsoid;
-import org.orekit.frames.Frame;
-import org.orekit.orbits.KeplerianOrbit;
-import org.orekit.time.AbsoluteDate;
-import org.orekit.utils.PVCoordinates;
-
 import cesiumlanguagewriter.Cartesian;
 import cesiumlanguagewriter.CesiumOutputStream;
 import cesiumlanguagewriter.CesiumStreamWriter;
 import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.Reference;
+import org.hipparchus.util.FastMath;
+import org.orekit.czml.archi.factory.BodyFactory;
+import org.orekit.czml.object.primary.AbstractPrimaryObject;
+import org.orekit.czml.object.secondary.Clock;
+import org.orekit.czml.object.secondary.CzmlEllipsoid;
+import org.orekit.czml.object.utils.DateUtils;
+import org.orekit.frames.Frame;
+import org.orekit.orbits.KeplerianOrbit;
+import org.orekit.time.AbsoluteDate;
+import org.orekit.utils.PVCoordinates;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
 
 public class InfluenceSphere
     extends
@@ -54,31 +52,25 @@ public class InfluenceSphere
     public static final String DEFAULT_NAME = "Sphere of influence of :";
 
     /** The "ellipsoid" that will be created as a sphere. */
-    private CzmlEllipsoid ellipsoid;
+    private final CzmlEllipsoid ellipsoid;
 
     /** The body considered. */
-    private Body body;
+    private final Body body;
 
-    /** The header considered. */
-    private Header header;
+    /** The clock considered. */
+    private Clock clock;
 
     /** The radisu of the sphere of influence. */
-    private double radius;
-
-    /** The mass of the body. */
-    private double bodyMass;
-
-    /** The mass of the central body. */
-    private double centralBodyMass;
+    private final double radius;
 
     /** Is the body orbiting around the sun. */
     private boolean orbitingAroundTheSun = true;
 
-    /** The position of the sphere of visibility. */
-    private List<Cartesian> cartesianPosition;
-
     /** The reference position of the sphere of influence. */
-    private Reference positionReference;
+    private final Reference positionReference;
+
+    /** The gravitational constant of the body. */
+    private double mu;
 
     /**
      * The default constructor of the influence sphere assuming the body is
@@ -86,10 +78,10 @@ public class InfluenceSphere
      * for the sphere of influence to work.
      *
      * @param bodyInput : The body considered for the sphere of influence.
-     * @param headerInput : The header considered.
+     * @param clock : The clock considered.
      */
-    InfluenceSphere(final Body bodyInput, final Header headerInput) {
-        this(bodyInput, BodyFactory.getSun(headerInput), headerInput);
+    InfluenceSphere(final Body bodyInput, final Clock clock) {
+        this(bodyInput, BodyFactory.getSun(clock), clock);
     }
 
     /**
@@ -98,29 +90,34 @@ public class InfluenceSphere
      * @param bodyInput : The body considered for the sphere of influence.
      * @param centralBody : The central body around which the body is orbiting
      *        around.
-     * @param headerInput : The header considered.
+     * @param clock : The clock considered.
      */
     InfluenceSphere(final Body bodyInput, final Body centralBody,
-                    final Header headerInput) {
+                    final Clock clock) {
         final AbsoluteDate startDate =
-            DateUtils.toAbsoluteDate(headerInput.getAvailability().getStart());
+            DateUtils.toAbsoluteDate(clock.getAvailability().getStart());
 
-        this.centralBodyMass =
+        final double centralBodyMass =
             centralBody.getCelestialBody().getGM() / GRAVITATIONAL_CONSTANT;
+
         final Frame centralFrame =
             centralBody.getCelestialBody().getInertiallyOrientedFrame();
 
-        this.header = headerInput;
+        this.clock = clock;
         this.body = bodyInput;
-        this.bodyMass =
+        this.mu = bodyInput.getCelestialBody().getGM();
+        /** The mass of the central body. */
+        /** The mass of the body. */
+        final double bodyMass =
             bodyInput.getCelestialBody().getGM() / GRAVITATIONAL_CONSTANT;
 
         this.setId(DEFAULT_ID + bodyInput.getName());
         this.setName(DEFAULT_NAME + body.getName());
-        this.setAvailability(header.getAvailability());
+        this.setAvailability(clock.getAvailability());
 
         final PVCoordinates initialPVCBody =
             body.getCelestialBody().getPVCoordinates(startDate, centralFrame);
+
         final KeplerianOrbit orbit =
             new KeplerianOrbit(initialPVCBody, centralFrame, startDate,
                                centralBodyMass * GRAVITATIONAL_CONSTANT);
@@ -131,11 +128,14 @@ public class InfluenceSphere
         final Cartesian cartesianForSphericalEllipsoid =
             new Cartesian(radius, radius, radius);
 
-        this.cartesianPosition = bodyInput.getCartesianPositionList();
+        /** The position of the sphere of visibility. */
         this.ellipsoid =
-            CzmlEllipsoid.builder(cartesianForSphericalEllipsoid, header)
+            CzmlEllipsoid
+                .builder(cartesianForSphericalEllipsoid,
+                         clock.getAvailability())
                 .withFill(false).withSliceStackPartition(10, 10)
                 .withOutline(true).build();
+
         this.positionReference =
             new Reference(bodyInput.getId() + DEFAULT_H_POSITION);
     }
@@ -143,29 +143,27 @@ public class InfluenceSphere
     /**
      * This builder assumes the body is orbiting around the sun.
      *
-     * @param bodyInput : The body considered for the sphere of influence.
-     * @param headerInput : The header considered.
-     * @return : The influence sphere builder.
+     * @param clock : The clock of the influence sphere
+     * @param bodyInput : The body considered
+     * @return An influence sphere builder with the given inputs
      */
     public static InfluenceSphereBuilder builder(final Body bodyInput,
-                                                 final Header headerInput) {
-        return new InfluenceSphereBuilder(bodyInput, headerInput);
+                                                 final Clock clock) {
+        return new InfluenceSphereBuilder(bodyInput, clock);
     }
 
     /**
      * This builder does not assume that the body is orbiting around the sun.
      *
-     * @param bodyInput : The body considered for the sphere of influence.
-     * @param centralBodyInput : The central body around which the body is
-     *        orbiting around.
-     * @param headerInput : The header considered.
-     * @return : The influence sphere builder.
+     * @param clock : The clock of the influence sphere
+     * @param bodyInput : The body considered
+     * @param centralBodyInput : The central body of the body
+     * @return An influence sphere builder with the given inputs
      */
     public static InfluenceSphereBuilder builder(final Body bodyInput,
                                                  final Body centralBodyInput,
-                                                 final Header headerInput) {
-        return new InfluenceSphereBuilder(bodyInput, centralBodyInput,
-                                          headerInput);
+                                                 final Clock clock) {
+        return new InfluenceSphereBuilder(bodyInput, centralBodyInput, clock);
     }
 
     @Override
@@ -184,83 +182,66 @@ public class InfluenceSphere
     }
 
     /**
-     * Gets the ellipsoid.
+     * Gets the ellipsoid of the influence sphere.
      *
-     * @return the ellipsoid
+     * @return The ellipsoid.
      */
     public CzmlEllipsoid getEllipsoid() {
         return ellipsoid;
     }
 
     /**
-     * Gets the body.
+     * Gets the body of the influence sphere.
      *
-     * @return the body
+     * @return The body
      */
     public Body getBody() {
         return body;
     }
 
     /**
-     * Gets the header.
+     * Gets the clock of the influence sphere.
      *
-     * @return the header
+     * @return The clock
      */
-    public Header getHeader() {
-        return header;
+    public Clock getClock() {
+        return clock;
     }
 
     /**
      * Gets the radius of the influence sphere.
      *
-     * @return the radius of the influence sphere in metres
+     * @return The radius
      */
     public double getRadius() {
         return radius;
     }
 
     /**
-     * Gets the mass of the body.
+     * Set the clock.
      *
-     * @return the mass of the body in kilograms
+     * @param clockInput The clock to set
      */
-    public double getBodyMass() {
-        return bodyMass;
+    public void setClock(final Clock clockInput) {
+        this.clock = clockInput;
     }
 
     /**
-     * Gets the mass of the central body.
+     * Sets the mu.
      *
-     * @return the mass of the central body in kilograms
+     * @param muInput The mu to set
      */
-    public double getCentralBodyMass() {
-        return centralBodyMass;
+    public void setMu(final double muInput) {
+        this.mu = muInput;
     }
 
     /**
-     * Gets the orbiting around the sun flag.
+     * Sets if the body if orbiting around the sun or not.
      *
-     * @return true if the body is orbiting the Sun, false otherwise
+     * @param orbitingAroundTheSun A boolean, true if orbiting around the sun,
+     *        false if not
      */
-    public boolean isOrbitingAroundTheSun() {
-        return orbitingAroundTheSun;
-    }
-
-    /**
-     * Gets the list of Cartesian positions.
-     *
-     * @return the list of Cartesian positions
-     */
-    public List<Cartesian> getCartesianPosition() {
-        return cartesianPosition;
-    }
-
-    /**
-     * Gets the position reference.
-     *
-     * @return the position reference
-     */
-    public Reference getPositionReference() {
-        return positionReference;
+    public void setOrbitingAroundTheSun(final boolean orbitingAroundTheSun) {
+        this.orbitingAroundTheSun = orbitingAroundTheSun;
     }
 }

@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -80,6 +80,7 @@ public class LineOfVisuSatStationExample {
             TutorialUtils.loadResources("Default3DModels/ground_Station.glb");
 
         // Creation of the clock.
+
         final AbsoluteDate startDate =
             new AbsoluteDate(2024, 3, 15, 0, 0, 0.0,
                              TimeScalesFactory.getUTC());
@@ -142,20 +143,21 @@ public class LineOfVisuSatStationExample {
         // Creation of a ground Station at Toulouse
         final CzmlGroundStation toulouseStation =
             new CzmlGroundStation(topocentricToulouse, groundStationModel,
-                                  header);
+                                  header.getAvailability());
 
         // Creation of the satellite
         final Spacecraft satellite =
-            Spacecraft.builder(boundedPropagator, header).withOnlyOnePeriod()
+            Spacecraft.builder(boundedPropagator, clock).withOnlyOnePeriod()
                 .build();
 
         final LineOfVisibility lineOfVisibility =
-            LineOfVisibility.builder(topocentricToulouse, satellite, header)
+            LineOfVisibility
+                .builder(topocentricToulouse, satellite,
+                         header.getAvailability())
                 .withVisibilityTriangle().build();
 
         final CzmlFile file =
-            CzmlFile.builder().withHeader(header)
-                .withCzmlGroundStation(toulouseStation)
+            CzmlFile.builder(header).withCzmlGroundStation(toulouseStation)
                 .withSpacecraft(satellite)
                 .withLineOfVisibility(lineOfVisibility).build();
 

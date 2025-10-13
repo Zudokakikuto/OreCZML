@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -17,7 +17,7 @@
 package org.orekit.czml.object;
 
 import cesiumlanguagewriter.Cartesian;
-import org.orekit.czml.object.primary.Header;
+import cesiumlanguagewriter.TimeInterval;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -69,8 +69,8 @@ public class VectorPolylineBuilder {
      */
     private final List<Cartesian> cartesianList;
 
-    /** The header considered. */
-    private Header header;
+    /** The availability considered. */
+    private TimeInterval availability;
 
     // Constructors
 
@@ -79,12 +79,12 @@ public class VectorPolylineBuilder {
      *
      * @param cartesiansInput : The list of cartesian that represents the
      *        extremities of the polyline.
-     * @param header : The header considered.s
+     * @param availability : The availability considered.s
      */
     public VectorPolylineBuilder(final List<Cartesian> cartesiansInput,
-                                 final Header header) {
+                                 final TimeInterval availability) {
         this.cartesianList = new ArrayList<>(cartesiansInput);
-        this.header = header;
+        this.availability = availability;
     }
 
     /**
@@ -95,6 +95,18 @@ public class VectorPolylineBuilder {
      */
     public VectorPolylineBuilder withColor(final Color colorInput) {
         this.color = colorInput;
+        return this;
+    }
+
+    /**
+     * Function to set up an availability.
+     *
+     * @param availabilityInput : The availability to set up.
+     * @return : The vector polyline builder with the given availability.
+     */
+    public VectorPolylineBuilder
+        withAvailability(final TimeInterval availabilityInput) {
+        this.availability = availabilityInput;
         return this;
     }
 
@@ -129,7 +141,7 @@ public class VectorPolylineBuilder {
      */
     public Polyline build() {
         return new Polyline(cartesianList, color, nearDistance, farDistance,
-                            header);
+                            availability);
     }
 
 }

@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -26,17 +26,16 @@ import cesiumlanguagewriter.PolylineCesiumWriter;
 import cesiumlanguagewriter.PolylineMaterialCesiumWriter;
 import cesiumlanguagewriter.PositionCesiumWriter;
 import cesiumlanguagewriter.SolidColorMaterialCesiumWriter;
+import cesiumlanguagewriter.TimeInterval;
 import org.orekit.czml.errors.OreCzmlException;
 import org.orekit.czml.errors.OreCzmlMessages;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
-import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.secondary.Label;
 
 import java.awt.Color;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -104,11 +103,11 @@ public class LatLongLines
      * The default constructor using the default angular step while not
      * displaying the labels.
      *
-     * @param header : The header considered.
+     * @param availability : The availability considered.
      */
-    LatLongLines(final Header header) {
+    LatLongLines(final TimeInterval availability) {
         this(DEFAULT_ANGULAR_STEP, DEFAULT_ANGULAR_STEP, false, DEFAULT_ID,
-             header);
+             availability);
     }
 
     /**
@@ -121,15 +120,15 @@ public class LatLongLines
      * @param displayLabelsInput : To display the labels of the lines or not (°
      *        of the parallels or of the meridians)
      * @param customID : The custom ID of the lat long lines object.
-     * @param header : The header considered when several are used.
+     * @param availability : The availability considered when several are used.
      */
     LatLongLines(final int latitudeAngularStep, final int longitudeAngularStep,
                  final boolean displayLabelsInput, final String customID,
-                 final Header header) {
+                 final TimeInterval availability) {
 
         this.setId(customID);
         this.setName(DEFAULT_NAME);
-        this.setAvailability(header.getAvailability());
+        this.setAvailability(availability);
 
         this.displayLabels = displayLabelsInput;
         final List<Integer> divisorsLatitude = findAllDivisors(360);
@@ -183,11 +182,11 @@ public class LatLongLines
     /**
      * Builder lat long lines builder.
      *
-     * @param header the header
+     * @param availability the availability
      * @return the lat long lines builder
      */
-    public static LatLongLinesBuilder builder(final Header header) {
-        return new LatLongLinesBuilder(header);
+    public static LatLongLinesBuilder builder(final TimeInterval availability) {
+        return new LatLongLinesBuilder(availability);
     }
 
     // Overrides
@@ -203,53 +202,6 @@ public class LatLongLines
         writeLatitudeAndLongitude(cartographicLongitudeByLine,
                                   numberOfLongitudeLines, false, output,
                                   stream);
-    }
-
-    // Getters
-
-    /**
-     * Gets number of latitude lines.
-     *
-     * @return the number of latitude lines
-     */
-    public int getNumberOfLatitudeLines() {
-        return numberOfLatitudeLines;
-    }
-
-    /**
-     * Gets number of longitude lines.
-     *
-     * @return the number of longitude lines
-     */
-    public int getNumberOfLongitudeLines() {
-        return numberOfLongitudeLines;
-    }
-
-    /**
-     * Gets cartographic latitude by line.
-     *
-     * @return the cartographic latitude by line
-     */
-    public List<List<Cartographic>> getCartographicLatitudeByLine() {
-        return Collections.unmodifiableList(cartographicLatitudeByLine);
-    }
-
-    /**
-     * Gets cartographic longitude by line.
-     *
-     * @return the cartographic longitude by line
-     */
-    public List<List<Cartographic>> getCartographicLongitudeByLine() {
-        return Collections.unmodifiableList(cartographicLongitudeByLine);
-    }
-
-    /**
-     * Is display labels boolean.
-     *
-     * @return the boolean
-     */
-    public boolean isDisplayLabels() {
-        return displayLabels;
     }
 
     // Private functions

@@ -1,0 +1,26 @@
+{
+  "id":"An id",
+  "name":"A name",
+  "availability":"2024-01-01T00:00:00Z/2024-01-01T00:01:00Z",
+  "cylinder":{
+    "bottomRadius":10,
+    "topRadius":20,
+    "length":10,
+    "material":{
+      "solidColor":{
+        "color":{
+          "rgba":[
+            255,0,0,255
+          ]
+        }
+      }
+    },
+    "heightReference":"CLAMP_TO_GROUND"
+  },
+  "position":{
+    "interval":"2024-01-01T00:00:00Z/2024-01-01T00:01:00Z",
+    "cartesian":[
+      1,2,1
+    ]
+  }
+}

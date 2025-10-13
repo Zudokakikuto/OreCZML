@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -30,7 +30,6 @@ import org.orekit.propagation.BoundedPropagator;
 import org.orekit.propagation.EphemerisGenerator;
 import org.orekit.propagation.Propagator;
 import org.orekit.time.AbsoluteDate;
-import org.orekit.time.TimeScalesFactory;
 
 /**
  * This tutorial provides an example of how an Oem object ban be used to build a
@@ -96,12 +95,11 @@ public class OemAdaptorExample {
 
         // Creation of the satellite
         final Spacecraft satellite =
-            Spacecraft.builder(oemBoundedPropagator, header)
+            Spacecraft.builder(oemBoundedPropagator, clock)
                 .withModelPath(IssModel).withOnlyOnePeriod().build();
 
         final CzmlFile file =
-            CzmlFile.builder().withHeader(header).withSpacecraft(satellite)
-                .build();
+            CzmlFile.builder(header).withSpacecraft(satellite).build();
 
         file.write(output);
     }

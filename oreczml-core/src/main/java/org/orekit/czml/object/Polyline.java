@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -30,7 +30,6 @@ import cesiumlanguagewriter.SolidColorMaterialCesiumWriter;
 import cesiumlanguagewriter.TimeInterval;
 import org.orekit.czml.errors.OreCzmlException;
 import org.orekit.czml.errors.OreCzmlMessages;
-import org.orekit.czml.object.primary.Header;
 
 import java.awt.Color;
 import java.io.StringWriter;
@@ -165,12 +164,12 @@ public class Polyline {
      * This constructor generates a polyline to be used as a non-vector. It uses
      * default parameters.
      *
-     * @param header : The header considered.
+     * @param availability : The availability considered.
      */
-    Polyline(final Header header) {
+    Polyline(final TimeInterval availability) {
         this(DEFAULT_REFERENCE, DEFAULT_REFERENCE, DEFAULT_COLOR, DEFAULT_WIDTH,
              DEFAULT_SHOW, DEFAULT_ARC_TYPE, DEFAULT_NEAR_DISTANCE,
-             DEFAULT_FAR_DISTANCE, header);
+             DEFAULT_FAR_DISTANCE, availability);
     }
 
     /**
@@ -189,15 +188,16 @@ public class Polyline {
      *        displayed.
      * @param farDistance : The far distance where the polyline must not be
      *        displayed anymore.
-     * @param header : The header considered.
+     * @param availability : The length of time for which the polyline is
+     *        visible/available.
      */
     Polyline(final Reference firstReference, final Reference secondReference,
              final Color color, final double width, final boolean show,
              final CesiumArcType arcType, final double nearDistance,
-             final double farDistance, final Header header) {
+             final double farDistance, final TimeInterval availability) {
         this.firstReference = firstReference;
         this.secondReference = secondReference;
-        this.availability = header.getAvailability();
+        this.availability = availability;
         this.color = color;
         this.width = width;
         this.show = show;
@@ -214,11 +214,13 @@ public class Polyline {
      *
      * @param cartesians : A list of cartesians with size 2, containing the
      *        first and the second position of the polyline
-     * @param header : The header considered.
+     * @param availability : The length of time for which the polyline is
+     *        visible/available.
      */
-    Polyline(final List<Cartesian> cartesians, final Header header) {
+    Polyline(final List<Cartesian> cartesians,
+             final TimeInterval availability) {
         this(cartesians, DEFAULT_COLOR, DEFAULT_NEAR_DISTANCE,
-             DEFAULT_FAR_DISTANCE, header);
+             DEFAULT_FAR_DISTANCE, availability);
     }
 
     /**
@@ -230,11 +232,12 @@ public class Polyline {
      * @param nearDistance : The nearest distance where the polyline is
      *        displayed
      * @param farDistance : The fairest distance where the polyline is displayed
-     * @param header : The header considered
+     * @param availability : The length of time for which the polyline is
+     *        visible/available.
      */
     Polyline(final List<Cartesian> cartesians, final Color color,
              final double nearDistance, final double farDistance,
-             final Header header) {
+             final TimeInterval availability) {
         if (cartesians.size() != 2) {
             throw new OreCzmlException(OreCzmlMessages.MORE_THAN_2_CARTESIAN_POLYLINE);
         } else {
@@ -243,7 +246,7 @@ public class Polyline {
             this.show = true;
             this.arcType = CesiumArcType.NONE;
             this.arrow = true;
-            this.availability = header.getAvailability();
+            this.availability = availability;
             firstPosition = cartesians.get(0);
             secondPosition = cartesians.get(1);
             this.nearDistance = nearDistance;
@@ -256,24 +259,26 @@ public class Polyline {
     /**
      * Non vector builder non vector polyline builder.
      *
-     * @param header the header
+     * @param availability : The length of time for which the polyline is
+     *        visible/available.
      * @return the non vector polyline builder
      */
     public static NonVectorPolylineBuilder
-        nonVectorBuilder(final Header header) {
-        return new NonVectorPolylineBuilder(header);
+        nonVectorBuilder(final TimeInterval availability) {
+        return new NonVectorPolylineBuilder(availability);
     }
 
     /**
      * Vector builder vector polyline builder.
      *
      * @param cartesians the cartesians
-     * @param header the header
+     * @param availability the availability
      * @return the vector polyline builder
      */
     public static VectorPolylineBuilder
-        vectorBuilder(final List<Cartesian> cartesians, final Header header) {
-        return new VectorPolylineBuilder(cartesians, header);
+        vectorBuilder(final List<Cartesian> cartesians,
+                      final TimeInterval availability) {
+        return new VectorPolylineBuilder(cartesians, availability);
     }
 
     @Override
@@ -366,6 +371,8 @@ public class Polyline {
         return arcType;
     }
 
+    // Setters
+
     /**
      * Sets arc type.
      *
@@ -373,17 +380,6 @@ public class Polyline {
      */
     public void setArcType(final CesiumArcType arcType) {
         this.arcType = arcType;
-    }
-
-    // Setters
-
-    /**
-     * Gets arrow.
-     *
-     * @return the arrow
-     */
-    public Boolean getArrow() {
-        return arrow;
     }
 
     // Private functions

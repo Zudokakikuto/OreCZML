@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -29,11 +29,10 @@ import org.orekit.annotation.DefaultDataContext;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.bodies.OneAxisEllipsoid;
 import org.orekit.czml.object.Polyline;
-import org.orekit.czml.object.Utils.DateUtils;
 import org.orekit.czml.object.nonvisual.PointOnBody;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
-import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.primary.entities.Spacecraft;
+import org.orekit.czml.object.utils.DateUtils;
 import org.orekit.data.DataContext;
 import org.orekit.frames.TopocentricFrame;
 import org.orekit.frames.Transform;
@@ -106,11 +105,6 @@ public class FieldOfObservation
     private final OneAxisEllipsoid body;
 
     /**
-     * The angular step.
-     */
-    private final double angularStep;
-
-    /**
      * The color of the polylines.
      */
     private final Color polylineColor;
@@ -127,14 +121,6 @@ public class FieldOfObservation
      * in time.
      */
     private final List<Reference> groundReferences = new ArrayList<>();
-
-    /**
-     * The list of list of geodetic points that represents the point on the body
-     * that will evolve in time. Each list is attributed to a specific point,
-     * then the sublist represents all the points on the body in time for this
-     * given point.
-     */
-    private final List<List<GeodeticPoint>> initialFootprint;
 
     /**
      * The list of the footprints in time.
@@ -159,21 +145,8 @@ public class FieldOfObservation
      */
     private final List<JulianDate> julianDates;
 
-    /**
-     * The list of list of list of position in cartesian of the point on the
-     * body. The first separates the cartesian for each julian date. Then the
-     * sub list separates the cartesian for each point on earth for a given
-     * julian date. Then the sub-sub list defines the points in time for the
-     * given point for the given julian date.
-     */
-    private List<List<List<Cartesian>>> cartesianListFootprint =
-        new ArrayList<>();
-
     /** Number of polylines. */
     private int numberOfPolylines;
-
-    /** The header considered. */
-    private Header header;
 
     // Constructors
 
@@ -185,15 +158,10 @@ public class FieldOfObservation
      * @param fovInput : The field of view of the satellite.
      * @param fovToBodyInput : The transform between the fov and the frame of
      *        the body.
-     * @param header : The header considered.
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException the io exception
      */
     @DefaultDataContext
     FieldOfObservation(final Spacecraft satellite, final FieldOfView fovInput,
-                       final Transform fovToBodyInput, final Header header)
-        throws URISyntaxException,
-            IOException {
+                       final Transform fovToBodyInput) {
         this(satellite, fovInput, fovToBodyInput,
              new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS,
                                   Constants.WGS84_EARTH_FLATTENING,
@@ -210,8 +178,8 @@ public class FieldOfObservation
                                                                            .getFrames()
                                                                            .getITRF(IERSConventions.IERS_2010,
                                                                                     true))
-                                                      .getBodyFrame().getName(),
-             header);
+                                                      .getBodyFrame()
+                                                      .getName());
     }
 
     /**
@@ -228,34 +196,26 @@ public class FieldOfObservation
      * @param color : The color of the lines representing the lines of the field
      *        of observation.
      * @param customID : The custom ID of the field of observation object.
-     * @param header : The header to consider when several are used.
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException the io exception
      */
     FieldOfObservation(final Spacecraft satellite, final FieldOfView fovInput,
                        final Transform transformFovToBody,
                        final OneAxisEllipsoid body,
                        final double angularStepInput, final Color color,
-                       final String customID, final Header header)
-        throws URISyntaxException,
-            IOException {
+                       final String customID) {
 
         this.setId(customID);
         this.setName(DEFAULT_NAME + satellite.getName());
-        this.header = header;
         this.initialTransformFovToBody = transformFovToBody;
         this.fov = fovInput;
-        this.angularStep = angularStepInput;
         this.polylineColor = color;
         referenceSatellite =
             new Reference(satellite.getId() + DEFAULT_H_POSITION);
         this.body = body;
-        initialFootprint =
-            fovInput.getFootprint(transformFovToBody, body, angularStepInput);
         final List<SpacecraftState> satelliteSpaceCraftStates =
             satellite.getSpaceCraftStates();
         this.julianDates =
             DateUtils.toJulianDates(satellite.getAbsoluteDateList());
+
         for (int i = 0; i < julianDates.size(); i++) {
             final SpacecraftState currentState =
                 satelliteSpaceCraftStates.get(i);
@@ -276,13 +236,11 @@ public class FieldOfObservation
             // surface of the geoid.
             noDetection = true;
         } else {
-            this.cartesianListFootprint =
-                extractCartesianFromGeodetic(footprintsInTime);
             this.footprintsInTime = sortingListListList(footprintsInTime);
             for (List<List<GeodeticPoint>> lists : footprintsInTime) {
                 for (List<GeodeticPoint> list : lists) {
                     final PointOnBody currentPointOnEarth =
-                        new PointOnBody(julianDates, list, body, header);
+                        new PointOnBody(julianDates, list, body);
                     points.add(currentPointOnEarth);
                     groundReferences
                         .add(new Reference(currentPointOnEarth.getId() +
@@ -300,14 +258,13 @@ public class FieldOfObservation
      * @param satellite the satellite
      * @param fieldOfView the field of view
      * @param transformFovToBodyInput the transform fov to body input
-     * @param header the header
      * @return the field of observation builder
      */
     public static FieldOfObservationBuilder
         builder(final Spacecraft satellite, final FieldOfView fieldOfView,
-                final Transform transformFovToBodyInput, final Header header) {
+                final Transform transformFovToBodyInput) {
         return new FieldOfObservationBuilder(satellite, fieldOfView,
-                                             transformFovToBodyInput, header);
+                                             transformFovToBodyInput);
     }
 
     // Overrides
@@ -356,66 +313,12 @@ public class FieldOfObservation
     // Getters
 
     /**
-     * Gets reference satellite.
-     *
-     * @return the reference satellite
-     */
-    public Reference getReferenceSatellite() {
-        return referenceSatellite;
-    }
-
-    /**
-     * Gets angular step.
-     *
-     * @return the angular step
-     */
-    public double getAngularStep() {
-        return angularStep;
-    }
-
-    /**
-     * Gets ground references.
-     *
-     * @return the ground references
-     */
-    public List<Reference> getGroundReferences() {
-        return Collections.unmodifiableList(groundReferences);
-    }
-
-    /**
-     * Gets initial footprint.
-     *
-     * @return the initial footprint
-     */
-    public List<List<GeodeticPoint>> getInitialFootprint() {
-        return Collections.unmodifiableList(initialFootprint);
-    }
-
-    /**
-     * Gets footprints in time.
-     *
-     * @return the footprints in time
-     */
-    public List<List<List<GeodeticPoint>>> getFootprintsInTime() {
-        return Collections.unmodifiableList(footprintsInTime);
-    }
-
-    /**
      * Gets points.
      *
      * @return the points
      */
     public List<PointOnBody> getPoints() {
         return Collections.unmodifiableList(points);
-    }
-
-    /**
-     * Gets polyline color.
-     *
-     * @return the polyline color
-     */
-    public Color getPolylineColor() {
-        return polylineColor;
     }
 
     /**
@@ -452,24 +355,6 @@ public class FieldOfObservation
      */
     public List<JulianDate> getJulianDates() {
         return Collections.unmodifiableList(julianDates);
-    }
-
-    /**
-     * Gets cartesian list footprint.
-     *
-     * @return the cartesian list footprint
-     */
-    public List<List<List<Cartesian>>> getCartesianListFootprint() {
-        return Collections.unmodifiableList(cartesianListFootprint);
-    }
-
-    /**
-     * Is no detection boolean.
-     *
-     * @return the boolean
-     */
-    public boolean isNoDetection() {
-        return noDetection;
     }
 
     // Private functions
@@ -543,7 +428,7 @@ public class FieldOfObservation
                                final CesiumOutputStream output) {
         try (PacketCesiumWriter packet = stream.openPacket(output)) {
             final Polyline currentPolyline =
-                Polyline.nonVectorBuilder(header)
+                Polyline.nonVectorBuilder(getAvailability())
                     .withFirstReference(firstPointReference)
                     .withSecondReference(secondPointReference)
                     .withColor(polylineColorInput).build();

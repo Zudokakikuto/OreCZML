@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -17,27 +17,6 @@
 
 package org.orekit.czml.object.primary.entities;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import org.hipparchus.geometry.euclidean.threed.Rotation;
-import org.hipparchus.geometry.euclidean.threed.Vector3D;
-import org.orekit.attitudes.Attitude;
-import org.orekit.bodies.CelestialBody;
-import org.orekit.czml.errors.OreCzmlException;
-import org.orekit.czml.errors.OreCzmlMessages;
-import org.orekit.czml.object.Utils.DateUtils;
-import org.orekit.czml.object.nonvisual.CzmlModel;
-import org.orekit.czml.object.primary.AbstractPrimaryObject;
-import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.secondary.Orientation;
-import org.orekit.frames.Frame;
-import org.orekit.frames.Transform;
-import org.orekit.time.AbsoluteDate;
-
 import cesiumlanguagewriter.Cartesian;
 import cesiumlanguagewriter.CesiumOutputStream;
 import cesiumlanguagewriter.CesiumStreamWriter;
@@ -45,6 +24,26 @@ import cesiumlanguagewriter.JulianDate;
 import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.PathCesiumWriter;
 import cesiumlanguagewriter.PositionCesiumWriter;
+import org.hipparchus.geometry.euclidean.threed.Rotation;
+import org.hipparchus.geometry.euclidean.threed.Vector3D;
+import org.orekit.attitudes.Attitude;
+import org.orekit.bodies.CelestialBody;
+import org.orekit.czml.errors.OreCzmlException;
+import org.orekit.czml.errors.OreCzmlMessages;
+import org.orekit.czml.object.nonvisual.CzmlModel;
+import org.orekit.czml.object.primary.AbstractPrimaryObject;
+import org.orekit.czml.object.secondary.Clock;
+import org.orekit.czml.object.secondary.Orientation;
+import org.orekit.czml.object.utils.DateUtils;
+import org.orekit.frames.Frame;
+import org.orekit.frames.Transform;
+import org.orekit.time.AbsoluteDate;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Body class
@@ -130,9 +129,6 @@ public class Body
      */
     private Orientation orientation;
 
-    /** The header considered. */
-    private Header header;
-
     /** The description of the body selected. */
     private String description;
 
@@ -142,8 +138,8 @@ public class Body
     /** To display the influence sphere or not. */
     private boolean displayInfluenceSphere = false;
 
-    /** The frame in which the position of the body is expressed. */
-    private Frame frameToExpress;
+    /** The clock considered. */
+    private Clock clock;
 
     // Constructors
 
@@ -152,14 +148,13 @@ public class Body
      *
      * @param body : The body to display.
      * @param pathToModel : The path to the model to load.
-     * @param frameToExpress : The frame in which the position of the body is
-     *        expressed.
-     * @param header : The header considered.
+     * @param frameToExpress : The path to the model to load.
+     * @param clock : The clock
      */
     Body(final CelestialBody body, final String pathToModel,
-         final Frame frameToExpress, final Header header) {
+         final Frame frameToExpress, final Clock clock) {
         this(body, pathToModel, frameToExpress, DEFAULT_ID + body.getName(),
-             header);
+             clock);
     }
 
     /**
@@ -167,34 +162,32 @@ public class Body
      *
      * @param body : The body to display.
      * @param pathToModel : The path to the model to load.
-     * @param frameToExpress : The frame in which the position of the body is
-     *        expressed.
+     * @param frameToExpressInput : The path to the model to load.
      * @param customID : The custom ID for the body.
-     * @param header : The header to use if several are used, use null if not.
+     * @param clock : The clock
      */
     Body(final CelestialBody body, final String pathToModel,
-         final Frame frameToExpress, final String customID,
-         final Header header) {
+         final Frame frameToExpressInput, final String customID,
+         final Clock clock) {
 
         this.setId(customID);
         this.setName(DEFAULT_NAME + body.getName());
-        this.setAvailability(header.getAvailability());
+        this.setAvailability(clock.getAvailability());
         this.body = body;
-        this.frameToExpress = frameToExpress;
-        this.header = header;
+        /** The frame in which the position of the body is expressed. */
         this.description =
             "<!--HTML-->\r\n<p>Id : " +
                            customID + "</p>\r\n<p>Name : " + body.getName() +
                            "</p>\r\n<p>Simulated from : " +
-                           header.getAvailability().getStart() + " to " +
-                           header.getAvailability().getStop() + "</p>";
+                           getAvailability().getStart() + " to " +
+                           getAvailability().getStop() + "</p>";
         this.pathToModel = pathToModel;
-        this.model = new CzmlModel(pathToModel, false, header);
-        this.julianDatesSimulation =
-            header.getClock().getJulianDatesSimulation();
+        this.model = new CzmlModel(pathToModel, false, clock.getAvailability());
+        this.julianDatesSimulation = clock.getJulianDatesSimulation();
+        this.clock = clock;
 
         this.cartesianList =
-            fillCartesian(body, julianDatesSimulation, frameToExpress);
+            fillCartesian(body, julianDatesSimulation, frameToExpressInput);
         this.orientation = generateOrientation(body, julianDatesSimulation);
     }
 
@@ -205,15 +198,14 @@ public class Body
      *
      * @param body the body
      * @param pathToModel the path to model
-     * @param frameToExpress the frame in which the position of the body is
-     *        expressed
-     * @param header the header
+     * @param frameToExpressInput the path to model
+     * @param clock the clock
      * @return the body builder
      */
     public static BodyBuilder
         builder(final CelestialBody body, final String pathToModel,
-                final Frame frameToExpress, final Header header) {
-        return new BodyBuilder(body, pathToModel, frameToExpress, header);
+                final Frame frameToExpressInput, final Clock clock) {
+        return new BodyBuilder(body, pathToModel, frameToExpressInput, clock);
     }
 
     // Overrides
@@ -230,10 +222,10 @@ public class Body
             packet.writeAvailability(getAvailability());
 
             writePosition(packet, output);
-            writeModel(header, packet, output);
+            writeModel(packet, output);
 
             if (displayOrbit) {
-                writePath(header, packet, output);
+                writePath(packet, output);
             }
             this.orientation.write(packet, output);
         }
@@ -244,14 +236,20 @@ public class Body
 
     // Users' methods
 
+    /** . */
     public void displayInfluenceSphere() {
-        this.influenceSphere = InfluenceSphere.builder(this, header).build();
+        this.influenceSphere = InfluenceSphere.builder(this, clock).build();
         this.displayInfluenceSphere = true;
     }
 
+    /**
+     * Function to display the influence sphere of the body.
+     *
+     * @param centralBody The central body concerned
+     */
     public void displayInfluenceSphere(final Body centralBody) {
         this.influenceSphere =
-            InfluenceSphere.builder(this, centralBody, header).build();
+            InfluenceSphere.builder(this, centralBody, clock).build();
         this.displayInfluenceSphere = true;
     }
 
@@ -293,43 +291,12 @@ public class Body
     }
 
     /**
-     * Gets the frame in which the position of the body is expressed.
-     *
-     * @return : The frame where the position of the body is expressed.
-     */
-    public Frame getFrameToExpress() {
-        return frameToExpress;
-    }
-
-    /**
-     * Gets path to model.
-     *
-     * @return the path to model
-     */
-    public String getPathToModel() {
-        return pathToModel;
-    }
-
-    /**
-     * Gets julian dates simulation.
-     *
-     * @return the julian dates simulation
-     */
-    public List<JulianDate> getJulianDatesSimulation() {
-        return Collections.unmodifiableList(julianDatesSimulation);
-    }
-
-    /**
      * Is display orbit boolean.
      *
      * @return the boolean
      */
     public boolean isDisplayOrbit() {
         return displayOrbit;
-    }
-
-    public boolean isDisplayInfluenceSphere() {
-        return displayInfluenceSphere;
     }
 
     /**
@@ -339,15 +306,6 @@ public class Body
      */
     public boolean isDisplayOnlyOnePeriod() {
         return displayOnlyOnePeriod;
-    }
-
-    /**
-     * Gets period for path.
-     *
-     * @return the period for path
-     */
-    public double getPeriodForPath() {
-        return periodForPath;
     }
 
     /**
@@ -451,13 +409,11 @@ public class Body
     /**
      * This functions aims at writing the model of the body in a given packet.
      *
-     * @param headerInput : The header considered.
      * @param packet : The packet to write into the czml file.
      * @param output : The output stream of cesium that will contain the strings
      *        to write into the CzmLFile.
      */
-    private void writeModel(final Header headerInput,
-                            final PacketCesiumWriter packet,
+    private void writeModel(final PacketCesiumWriter packet,
                             final CesiumOutputStream output)
         throws URISyntaxException,
             IOException {
@@ -466,7 +422,7 @@ public class Body
             this.model =
                 new CzmlModel(pathToModel, modelMaximumScale,
                               modelMinimumPixelSize, modelScale, false,
-                              headerInput);
+                              getAvailability());
         }
         model.generateCZML(packet, output);
     }
@@ -474,18 +430,16 @@ public class Body
     /**
      * This functions aims at writing the path of the body in a given packet.
      *
-     * @param headerInput : The header considered.
      * @param packet : The packet to write into the czml file.
      * @param output : The output stream of cesium that will contain the strings
      *        to write into the CzmLFile.
      */
-    private void writePath(final Header headerInput,
-                           final PacketCesiumWriter packet,
+    private void writePath(final PacketCesiumWriter packet,
                            final CesiumOutputStream output) {
         try (PathCesiumWriter pathWriter = packet.getPathWriter()) {
             pathWriter.open(output);
             pathWriter.writeShowProperty(true);
-            pathWriter.writeInterval(headerInput.getAvailability());
+            pathWriter.writeInterval(getAvailability());
             if (displayOnlyOnePeriod) {
                 pathWriter.writeTrailTimeProperty(0.0);
                 pathWriter.writeLeadTimeProperty(this.periodForPath);
@@ -500,17 +454,17 @@ public class Body
      * @param bodyInput : The body to which the cartesian are computed.
      * @param julianDates : The julian dates when the cartesian must be
      *        computed.
-     * @param frameToExpressInput : The frame in which to express the output
+     * @param frameToExpress : The frame the body is expressed in.
      * @return : The list of cartesian position of the body.
      */
     private List<Cartesian> fillCartesian(final CelestialBody bodyInput,
                                           final List<JulianDate> julianDates,
-                                          final Frame frameToExpressInput) {
+                                          final Frame frameToExpress) {
         final List<Cartesian> toReturn = new ArrayList<>();
         for (JulianDate julianDate : julianDates) {
             final AbsoluteDate date = DateUtils.toAbsoluteDate(julianDate);
             final Vector3D currentPosition =
-                bodyInput.getPosition(date, frameToExpressInput);
+                bodyInput.getPosition(date, frameToExpress);
             final Cartesian currentCartesian =
                 new Cartesian(currentPosition.getX(), currentPosition.getY(),
                               currentPosition.getZ());
@@ -546,7 +500,7 @@ public class Body
                              Vector3D.ZERO, Vector3D.ZERO);
             attitudes.add(currentAttitudeBody);
         }
-        return Orientation.builder(attitudes, bodyRotatingFrame, header)
+        return Orientation.builder(attitudes, bodyRotatingFrame)
             .withInvertToITRF(false).build();
     }
 }

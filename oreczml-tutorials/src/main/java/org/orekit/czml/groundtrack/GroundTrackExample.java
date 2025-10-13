@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -75,6 +75,7 @@ public class GroundTrackExample {
                                          "/Javascript/public");
 
         // Creation of the clock.
+
         final AbsoluteDate startDate =
             new AbsoluteDate(2024, 3, 15, 0, 0, 0.0,
                              TimeScalesFactory.getUTC());
@@ -128,16 +129,18 @@ public class GroundTrackExample {
 
         // Creation of the satellite
         final Spacecraft satellite =
-            Spacecraft.builder(boundedPropagator, header).build();
+            Spacecraft.builder(boundedPropagator, clock).build();
 
         // Build of the ground track
         final GroundTrack groundTrack =
-            GroundTrack.builder(satellite, TutorialUtils.getEarth(), header)
+            GroundTrack
+                .builder(satellite, TutorialUtils.getEarth(),
+                         clock.getAvailability())
                 .withColor(new Color(255, 10, 20)).build();
 
         // Creation of the file
         final CzmlFile file =
-            CzmlFile.builder().withHeader(header).withSpacecraft(satellite)
+            CzmlFile.builder(header).withSpacecraft(satellite)
                 .withGroundTrack(groundTrack).build();
 
         // Writing in the file

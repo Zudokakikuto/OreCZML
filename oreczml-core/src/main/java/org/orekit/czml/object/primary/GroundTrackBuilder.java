@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -16,11 +16,12 @@
  */
 package org.orekit.czml.object.primary;
 
-import java.awt.Color;
-
+import cesiumlanguagewriter.TimeInterval;
 import org.orekit.bodies.BodyShape;
 import org.orekit.czml.object.primary.entities.Constellation;
 import org.orekit.czml.object.primary.entities.Spacecraft;
+
+import java.awt.Color;
 
 /**
  * Ground Track Builder class
@@ -65,8 +66,8 @@ public class GroundTrackBuilder {
      */
     private String customID;
 
-    /** The header to consider when several are used. */
-    private Header header = null;
+    /** The availability to consider. */
+    private TimeInterval availability = null;
 
     // Constructor
 
@@ -76,14 +77,14 @@ public class GroundTrackBuilder {
      * @param satellite : The satellite that will project the ground track on
      *        the ground.
      * @param body : The body where the ground track will be projected on.
-     * @param headerInput : The header considered.
+     * @param availability : The availability considered.
      */
     public GroundTrackBuilder(final Spacecraft satellite, final BodyShape body,
-                              final Header headerInput) {
+                              final TimeInterval availability) {
         this.satellite = satellite;
         this.body = body;
         this.customID = DEFAULT_ID + satellite.getId();
-        this.header = headerInput;
+        this.availability = availability;
     }
 
     /**
@@ -92,13 +93,14 @@ public class GroundTrackBuilder {
      * @param constellation : The constellation that will project the ground
      *        track on the ground.
      * @param body : The body where the ground track will be projected on.
-     * @param headerInput : The header considered.
+     * @param availability : The availability considered.
      */
     public GroundTrackBuilder(final Constellation constellation,
-                              final BodyShape body, final Header headerInput) {
+                              final BodyShape body,
+                              final TimeInterval availability) {
         this.constellation = constellation;
         this.body = body;
-        this.header = headerInput;
+        this.availability = availability;
         this.customID = DEFAULT_ID + constellation.getId();
     }
 
@@ -125,13 +127,14 @@ public class GroundTrackBuilder {
     }
 
     /**
-     * Function to set up the header.
+     * Function to set up the availability.
      *
-     * @param headerInput : The header to set up.
-     * @return : The ground track builder with a given header.
+     * @param availabilityInput : The availability to set up.
+     * @return : The ground track builder with a given availability.
      */
-    public GroundTrackBuilder withHeader(final Header headerInput) {
-        this.header = headerInput;
+    public GroundTrackBuilder
+        withAvailability(final TimeInterval availabilityInput) {
+        this.availability = availabilityInput;
         return this;
     }
 
@@ -142,10 +145,11 @@ public class GroundTrackBuilder {
      */
     public GroundTrack build() {
         if (satellite != null) {
-            return new GroundTrack(satellite, body, color, customID, header);
+            return new GroundTrack(satellite, body, color, customID,
+                                   availability);
         } else if (constellation != null) {
             return new GroundTrack(constellation, body, color, customID,
-                                   header);
+                                   availability);
         } else {
             return null;
         }

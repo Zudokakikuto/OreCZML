@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -25,9 +25,9 @@ import cesiumlanguagewriter.TimeInterval;
 import org.hipparchus.ode.events.Action;
 import org.orekit.czml.errors.OreCzmlException;
 import org.orekit.czml.errors.OreCzmlMessages;
-import org.orekit.czml.object.Utils.DateUtils;
+import org.orekit.czml.object.utils.DateUtils;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
-import org.orekit.czml.object.primary.Header;
+import org.orekit.czml.object.primary.CzmlPrimaryObject;
 import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.errors.OrekitException;
 import org.orekit.frames.LOF;
@@ -53,14 +53,16 @@ import java.util.List;
  * <p>
  * This class aims at representing the probability of collision between two
  * satellites. In order to do so, the class uses the covariances of each
- * satellite and checks if there is an intersection of the covariance in time.
+ * satellites and checks if there is an intersection of the covariance in time.
  *
  * @author Julien LEBLOND.
  * @since 1.0.0
  */
 public class Collision
     extends
-    AbstractPrimaryObject {
+    AbstractPrimaryObject
+    implements
+    CzmlPrimaryObject {
 
     /**
      * The default id for the collision object.
@@ -71,16 +73,6 @@ public class Collision
      * The default name for the collision object.
      */
     public static final String DEFAULT_NAME = "Collision between : ";
-
-    /**
-     * The first satellite.
-     */
-    private final Spacecraft firstSatellite;
-
-    /**
-     * The second satellite.
-     */
-    private final Spacecraft secondSatellite;
 
     /**
      * The covariance computed of the first satellite.
@@ -107,13 +99,12 @@ public class Collision
      *        the second satellite.
      * @param firstLof : The local orbital frame of the first satellite.
      * @param secondLof : The local orbital frame of the second satellite.
-     * @param header : The header considered.
      */
     Collision(final Spacecraft firstSatelliteInput,
               final Spacecraft secondSatelliteInput,
               final List<StateCovariance> firstCovarianceList,
               final List<StateCovariance> secondCovarianceList,
-              final LOF firstLof, final LOF secondLof, final Header header) {
+              final LOF firstLof, final LOF secondLof) {
         this(firstSatelliteInput, secondSatelliteInput, firstCovarianceList,
              secondCovarianceList, firstLof, secondLof,
              DEFAULT_ID +
@@ -121,8 +112,7 @@ public class Collision
                                                             .getId() +
                                                         "/" +
                                                         secondSatelliteInput
-                                                            .getId(),
-             header);
+                                                            .getId());
     }
 
     /**
@@ -139,27 +129,28 @@ public class Collision
      * @param firstLof : The local orbital frame of the first satellite.
      * @param secondLof : The local orbital frame of the second satellite.
      * @param customID : The custom ID for the collision object.
-     * @param header : The header to set up if several headers are used.
      */
     Collision(final Spacecraft firstSatelliteInput,
               final Spacecraft secondSatelliteInput,
               final List<StateCovariance> firstCovarianceList,
               final List<StateCovariance> secondCovarianceList,
-              final LOF firstLof, final LOF secondLof, final String customID,
-              final Header header) {
+              final LOF firstLof, final LOF secondLof, final String customID) {
 
         this.setId(customID);
         this.setName(DEFAULT_NAME +
                      firstSatelliteInput.getName() + " and " +
                      secondSatelliteInput.getName());
-        this.firstSatellite = firstSatelliteInput;
-        this.secondSatellite = secondSatelliteInput;
+        /**
+         * The first satellite.
+         */
+        /**
+         * The second satellite.
+         */
         this.covarianceFirstSatellite =
-            new Covariance(firstSatelliteInput, firstCovarianceList, firstLof,
-                           header);
+            new Covariance(firstSatelliteInput, firstCovarianceList, firstLof);
         this.covarianceSecondSatellite =
             new Covariance(secondSatelliteInput, secondCovarianceList,
-                           secondLof, header);
+                           secondLof);
         final BoundedPropagator propagatorFirstSat =
             firstSatelliteInput.getSpacecraftBoundedPropagator();
         final BoundedPropagator propagatorSecondSat =
@@ -186,7 +177,6 @@ public class Collision
      * @param secondCovarianceListInput the second covariance list input
      * @param firstLofInput the first lof input
      * @param secondLofInput the second lof input
-     * @param header the header
      * @return the collision builder
      */
     // Builder
@@ -195,12 +185,11 @@ public class Collision
                 final Spacecraft secondSatelliteInput,
                 final List<StateCovariance> firstCovarianceListInput,
                 final List<StateCovariance> secondCovarianceListInput,
-                final LOF firstLofInput, final LOF secondLofInput,
-                final Header header) {
+                final LOF firstLofInput, final LOF secondLofInput) {
         return new CollisionBuilder(firstSatelliteInput, secondSatelliteInput,
                                     firstCovarianceListInput,
                                     secondCovarianceListInput, firstLofInput,
-                                    secondLofInput, header);
+                                    secondLofInput);
     }
 
     // Overrides
@@ -212,44 +201,6 @@ public class Collision
             IOException {
         covarianceFirstSatellite.writeCzmlBlock(stream, output);
         covarianceSecondSatellite.writeCzmlBlock(stream, output);
-    }
-
-    // GETTERS
-
-    /**
-     * Gets first satellite.
-     *
-     * @return the first satellite
-     */
-    public Spacecraft getFirstSatellite() {
-        return firstSatellite;
-    }
-
-    /**
-     * Gets second satellite.
-     *
-     * @return the second satellite
-     */
-    public Spacecraft getSecondSatellite() {
-        return secondSatellite;
-    }
-
-    /**
-     * Gets covariance display first satellite.
-     *
-     * @return the covariance display first satellite
-     */
-    public Covariance getCovarianceDisplayFirstSatellite() {
-        return covarianceFirstSatellite;
-    }
-
-    /**
-     * Gets covariance display second satellite.
-     *
-     * @return the covariance display second satellite
-     */
-    public Covariance getCovarianceDisplaySecondSatellite() {
-        return covarianceSecondSatellite;
     }
 
     // Private functions

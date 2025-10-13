@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -16,7 +16,6 @@
  */
 package org.orekit.czml.object.primary.covariance;
 
-import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.frames.LOF;
 import org.orekit.propagation.StateCovariance;
@@ -64,9 +63,6 @@ public class CovarianceBuilder {
      */
     private Color color = DEFAULT_COLOR;
 
-    /** The header to use when several are used. */
-    private Header header;
-
     // Constructors
 
     /**
@@ -77,16 +73,14 @@ public class CovarianceBuilder {
      * @param covariancesInput : The list of state covariance used to start the
      *        propagation of the covariance.
      * @param lofInput : The local orbital frame of the satellite.
-     * @param headerInput : The header considered.
      */
     public CovarianceBuilder(final Spacecraft satelliteInput,
                              final List<StateCovariance> covariancesInput,
-                             final LOF lofInput, final Header headerInput) {
+                             final LOF lofInput) {
         this.satellite = satelliteInput;
         this.covariances = covariancesInput;
         this.lof = lofInput;
         this.customID = Covariance.DEFAULT_ID + satelliteInput.getId();
-        this.header = headerInput;
     }
 
     /**
@@ -112,17 +106,6 @@ public class CovarianceBuilder {
     }
 
     /**
-     * Function to set up a header.
-     *
-     * @param headerInput : The header to set up.
-     * @return : The covariance display object with a header.
-     */
-    public CovarianceBuilder withHeader(final Header headerInput) {
-        this.header = headerInput;
-        return this;
-    }
-
-    /**
      * The build function that generates the covariance display object.
      *
      * @return : A covariance display object with the given parameters of the
@@ -134,8 +117,7 @@ public class CovarianceBuilder {
         throws URISyntaxException,
             IOException {
         if (this.satellite != null && !this.covariances.isEmpty()) {
-            return new Covariance(satellite, covariances, lof, color, customID,
-                                  header);
+            return new Covariance(satellite, covariances, lof, color, customID);
         }
         return null;
     }

@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -27,7 +27,7 @@ import java.net.URISyntaxException;
  * CZML Primary Object Interface
  * <p>
  * This interface represents the objects that are directly displayed on
- * screen,they depends to no other objects except the header object.
+ * screen,they depend on no other objects.
  *
  * @author Julien LEBLOND
  * @since 1.0.0

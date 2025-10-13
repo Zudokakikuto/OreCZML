@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -16,6 +16,7 @@
  */
 package org.orekit.czml.object.primary;
 
+import cesiumlanguagewriter.TimeInterval;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.orekit.attitudes.AttitudesSequence;
 import org.orekit.czml.object.primary.entities.Spacecraft;
@@ -100,8 +101,8 @@ public class ManeuverSequenceBuilder {
      */
     private boolean showTrust = false;
 
-    /** The header to consider when several are used. */
-    private Header header = null;
+    /** The availability to consider when several are used. */
+    private TimeInterval availability;
 
     // Constructors
 
@@ -115,14 +116,14 @@ public class ManeuverSequenceBuilder {
      * @param directionInput : Direction of the maneuvers. (multiple directions
      *        will soon be added)
      * @param lofInput : The local orbital frame of the satellite.
-     * @param headerInput : The header considered.
+     * @param availability : The availability considered.
      */
     public ManeuverSequenceBuilder(final AttitudesSequence sequenceInput,
                                    final List<Maneuver> maneuversInput,
                                    final Spacecraft satelliteInput,
                                    final Vector3D directionInput,
                                    final LOF lofInput,
-                                   final Header headerInput) {
+                                   final TimeInterval availability) {
         this.sequence = sequenceInput;
         this.satellite = satelliteInput;
         this.maneuvers = new ArrayList<>(maneuversInput);
@@ -131,7 +132,7 @@ public class ManeuverSequenceBuilder {
         this.customID =
             ManeuverSequence.DEFAULT_ID +
                         maneuvers.subList(0, maneuvers.size() - 1);
-        this.header = headerInput;
+        this.availability = availability;
     }
 
     /**
@@ -143,21 +144,21 @@ public class ManeuverSequenceBuilder {
      * @param satelliteInput : The satellite which performs the maneuver.
      * @param directionInput : Direction of the maneuver.
      * @param lofInput : The local orbital frame iof the satellite.
-     * @param headerInput : The header considered.
+     * @param availability : The availability considered.
      */
     public ManeuverSequenceBuilder(final AttitudesSequence sequenceInput,
                                    final Maneuver maneuverInput,
                                    final Spacecraft satelliteInput,
                                    final Vector3D directionInput,
                                    final LOF lofInput,
-                                   final Header headerInput) {
+                                   final TimeInterval availability) {
         this.sequence = sequenceInput;
         this.singleManeuver = maneuverInput;
         this.satellite = satelliteInput;
         this.direction = directionInput;
         this.lof = lofInput;
         this.customID = ManeuverSequence.DEFAULT_ID + singleManeuver.getName();
-        this.header = headerInput;
+        this.availability = availability;
     }
 
     /**
@@ -169,14 +170,14 @@ public class ManeuverSequenceBuilder {
      * @param satelliteInput : The satellite which performs the maneuver.
      * @param directionsInput : The list of directions of the maneuvers.
      * @param lofInput : The local orbital frame iof the satellite.
-     * @param headerInput : The header considered.
+     * @param availability : The availability considered.
      */
     public ManeuverSequenceBuilder(final AttitudesSequence sequenceInput,
                                    final List<Maneuver> maneuversInput,
                                    final Spacecraft satelliteInput,
                                    final List<Vector3D> directionsInput,
                                    final LOF lofInput,
-                                   final Header headerInput) {
+                                   final TimeInterval availability) {
         this.sequence = sequenceInput;
         this.maneuvers = new ArrayList<>(maneuversInput);
         this.satellite = satelliteInput;
@@ -185,7 +186,7 @@ public class ManeuverSequenceBuilder {
         this.customID =
             ManeuverSequence.DEFAULT_ID +
                         maneuvers.subList(0, maneuvers.size() - 1);
-        this.header = headerInput;
+        this.availability = availability;
     }
 
     /**
@@ -223,13 +224,14 @@ public class ManeuverSequenceBuilder {
     }
 
     /**
-     * Function to set up the header.
+     * Function to set up the availability.
      *
-     * @param headerInput : The header to set up.
-     * @return : The maneuver sequence builder with a given header.
+     * @param availabilityInput : The availability to set up.
+     * @return : The maneuver sequence builder with a given availability.
      */
-    public ManeuverSequenceBuilder withHeader(final Header headerInput) {
-        this.header = headerInput;
+    public ManeuverSequenceBuilder
+        withAvailability(final TimeInterval availabilityInput) {
+        this.availability = availabilityInput;
         return this;
     }
 
@@ -248,16 +250,16 @@ public class ManeuverSequenceBuilder {
             if (direction == null) {
                 return new ManeuverSequence(sequence, maneuvers, satellite,
                                             directions, lof, showTrust,
-                                            pathModel, customID, header);
+                                            pathModel, customID, availability);
             } else {
                 return new ManeuverSequence(sequence, maneuvers, satellite,
                                             direction, lof, showTrust,
-                                            pathModel, customID, header);
+                                            pathModel, customID, availability);
             }
         } else {
             return new ManeuverSequence(sequence, singleManeuver, satellite,
                                         direction, lof, showTrust, pathModel,
-                                        customID, header);
+                                        customID, availability);
         }
     }
 }

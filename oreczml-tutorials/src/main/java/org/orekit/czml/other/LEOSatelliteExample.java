@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -129,12 +129,11 @@ public class LEOSatelliteExample {
 
         // Build the LEO Satellite
         final Spacecraft leoSatellite =
-            new Spacecraft(boundedPropagator, header);
+            new Spacecraft(boundedPropagator, clock);
 
         // Creation of the file
         final CzmlFile file =
-            CzmlFile.builder().withHeader(header).withSpacecraft(leoSatellite)
-                .build();
+            CzmlFile.builder(header).withSpacecraft(leoSatellite).build();
 
         // Write inside the CzmlFile the objects
         file.write(output);

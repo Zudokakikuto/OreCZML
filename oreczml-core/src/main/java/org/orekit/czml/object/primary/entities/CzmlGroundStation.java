@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -22,11 +22,12 @@ import cesiumlanguagewriter.CesiumOutputStream;
 import cesiumlanguagewriter.CesiumStreamWriter;
 import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.PositionCesiumWriter;
+import cesiumlanguagewriter.TimeInterval;
+import cesiumlanguagewriter.TimeStandard;
 import cesiumlanguagewriter.UriCesiumWriter;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.orekit.czml.object.nonvisual.CzmlModel;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
-import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.primary.visu.StationVisibilityCircle;
 import org.orekit.czml.object.secondary.Billboard;
 import org.orekit.czml.object.secondary.Label;
@@ -104,9 +105,6 @@ public class CzmlGroundStation
 
     // Intrinsic parameters
 
-    /** The header considered. */
-    private final Header header;
-
     /** The visibility circle of the station. */
     private StationVisibilityCircle visibilityCircle;
 
@@ -121,15 +119,15 @@ public class CzmlGroundStation
      *
      * @param topocentricFrame : The topocentric frame where the ground station
      *        must be located.
-     * @param header : The header considered.
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException the io exception
+     * @param availability : The availability considered.
+     * @throws URISyntaxException : the uri syntax of the ground station
+     * @throws IOException : the io exception
      */
     public CzmlGroundStation(final TopocentricFrame topocentricFrame,
-                             final Header header)
+                             final TimeInterval availability)
         throws URISyntaxException,
             IOException {
-        this(topocentricFrame, DEFAULT_3D_MODEL, header);
+        this(topocentricFrame, DEFAULT_3D_MODEL, availability);
     }
 
     /**
@@ -139,20 +137,21 @@ public class CzmlGroundStation
      * @param topocentricFrame : The topocentric frame where the ground station
      *        must be located.
      * @param modelPath : The path of the model to load.
-     * @param header : The header considered.
+     * @param availability : The availability of the ground station.
      * @throws URISyntaxException the uri syntax exception
      * @throws IOException the io exception
      */
     public CzmlGroundStation(final TopocentricFrame topocentricFrame,
-                             final String modelPath, final Header header)
+                             final String modelPath,
+                             final TimeInterval availability)
         throws URISyntaxException,
             IOException {
 
         this.topocentricFrame = topocentricFrame;
-        this.header = header;
         this.setName(DEFAULT_NAME + topocentricFrame.getName());
         this.setId(DEFAULT_ID + topocentricFrame.getName());
-        this.setAvailability(header.getAvailability());
+        this.setAvailability(availability
+            .toTimeStandard(TimeStandard.COORDINATED_UNIVERSAL_TIME));
         final double latitude = topocentricFrame.getPoint().getLatitude();
         final double longitude = topocentricFrame.getPoint().getLongitude();
         this.description =
@@ -161,15 +160,16 @@ public class CzmlGroundStation
                            "</p\r\n<p>Longitude : " + longitude +
                            "</p>\r\n<p>Latitude : " + latitude +
                            "</p>\r\n<p>Simulated from : " +
-                           header.getAvailability().getStart() + " to " +
-                           header.getAvailability().getStop() + "</p>";
+                           getAvailability().getStart() + " to " +
+                           getAvailability().getStop() + "</p>";
         this.billboard = new Billboard(DEFAULT_IMAGE);
         this.positionsOnEarth.add(topocentricFrame.getCartesianPoint());
 
         if (modelPath.isEmpty()) {
             this.model = null;
         } else {
-            this.model = new CzmlModel(modelPath, 50, 300, 2, false, header);
+            this.model =
+                new CzmlModel(modelPath, 50, 300, 2, false, availability);
         }
     }
 
@@ -179,13 +179,14 @@ public class CzmlGroundStation
      * Builder czml ground station builder.
      *
      * @param topocentricFrameInput the topocentric frame input
-     * @param header the header
+     * @param availability : The availability.
      * @return the czml ground station builder
      */
     public static CzmlGroundStationBuilder
         builder(final TopocentricFrame topocentricFrameInput,
-                final Header header) {
-        return new CzmlGroundStationBuilder(topocentricFrameInput, header);
+                final TimeInterval availability) {
+        return new CzmlGroundStationBuilder(topocentricFrameInput,
+                                            availability);
     }
 
     // Overrides
@@ -217,7 +218,8 @@ public class CzmlGroundStation
     public void displayCircle(final Spacecraft satellite,
                               final double angleOfAperture) {
         visibilityCircle =
-            StationVisibilityCircle.builder(topocentricFrame, satellite, header)
+            StationVisibilityCircle
+                .builder(topocentricFrame, satellite, getAvailability())
                 .withAngleOfAperture(angleOfAperture).build();
         displayCircle = true;
 

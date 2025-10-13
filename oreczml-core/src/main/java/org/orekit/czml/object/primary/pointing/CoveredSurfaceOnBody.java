@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -26,7 +26,6 @@ import cesiumlanguagewriter.TimeInterval;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.czml.object.nonvisual.PointOnBody;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
-import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.primary.visu.FieldOfObservation;
 import org.orekit.czml.object.secondary.Polygon;
@@ -37,7 +36,6 @@ import java.awt.Color;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -110,11 +108,9 @@ public class CoveredSurfaceOnBody
      *        surface.
      * @param fieldOfObservationInput : The field of observation of the
      *        satellite that will define the surface covered.
-     * @param header : The header considered.
      */
     CoveredSurfaceOnBody(final Spacecraft satelliteInput,
-                         final FieldOfObservation fieldOfObservationInput,
-                         final Header header) {
+                         final FieldOfObservation fieldOfObservationInput) {
         this(satelliteInput, fieldOfObservationInput,
              DEFAULT_ID +
                                                       satelliteInput.getId() +
@@ -123,7 +119,7 @@ public class CoveredSurfaceOnBody
                                                           .getBody()
                                                           .getBodyFrame()
                                                           .toString(),
-             false, true, DEFAULT_COLOR, header);
+             false, true, DEFAULT_COLOR);
     }
 
     /**
@@ -137,13 +133,11 @@ public class CoveredSurfaceOnBody
      * @param fill : Custom parameter for the fill property
      * @param outline : Custom parameter for the outline property
      * @param color : Custom parameter for the color of the polygons.
-     * @param header : The header to consider when several headers are used.
      */
     CoveredSurfaceOnBody(final Spacecraft satelliteInput,
                          final FieldOfObservation fieldOfObservationInput,
                          final String customID, final boolean fill,
-                         final boolean outline, final Color color,
-                         final Header header) {
+                         final boolean outline, final Color color) {
 
         this.setId(customID);
         this.setName(DEFAULT_NAME +
@@ -199,15 +193,13 @@ public class CoveredSurfaceOnBody
      *
      * @param satelliteInput the satellite input
      * @param fieldOfObservationInput the field of observation input
-     * @param header the header
      * @return the covered surface on body builder
      */
     public static CoveredSurfaceOnBodyBuilder
         builder(final Spacecraft satelliteInput,
-                final FieldOfObservation fieldOfObservationInput,
-                final Header header) {
+                final FieldOfObservation fieldOfObservationInput) {
         return new CoveredSurfaceOnBodyBuilder(satelliteInput,
-                                               fieldOfObservationInput, header);
+                                               fieldOfObservationInput);
     }
 
     // Overrides
@@ -266,42 +258,6 @@ public class CoveredSurfaceOnBody
      */
     public FieldOfView getFov() {
         return fov;
-    }
-
-    /**
-     * Gets initial fov to body.
-     *
-     * @return the initial fov to body
-     */
-    public Transform getInitialFovToBody() {
-        return initialFovToBody;
-    }
-
-    /**
-     * Gets field of observation.
-     *
-     * @return the field of observation
-     */
-    public FieldOfObservation getFieldOfObservation() {
-        return fieldOfObservation;
-    }
-
-    /**
-     * Gets footprints in time.
-     *
-     * @return the footprints in time
-     */
-    public List<List<List<GeodeticPoint>>> getFootprintsInTime() {
-        return Collections.unmodifiableList(footprintsInTime);
-    }
-
-    /**
-     * Gets points cartesians in time.
-     *
-     * @return the points cartesians in time
-     */
-    public List<List<Cartesian>> getPointsCartesiansInTime() {
-        return Collections.unmodifiableList(pointsCartesiansInTime);
     }
 
     /**

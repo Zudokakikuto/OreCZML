@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -21,18 +21,17 @@ import cesiumlanguagewriter.CesiumOutputStream;
 import cesiumlanguagewriter.CesiumStreamWriter;
 import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.PositionCesiumWriter;
-import org.orekit.bodies.OneAxisEllipsoid;
+import cesiumlanguagewriter.TimeInterval;
 import org.orekit.annotation.DefaultDataContext;
+import org.orekit.bodies.OneAxisEllipsoid;
 import org.orekit.czml.object.Polyline;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
-import org.orekit.czml.object.primary.Header;
 import org.orekit.data.DataContext;
 import org.orekit.utils.Constants;
 import org.orekit.utils.IERSConventions;
 
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -83,17 +82,18 @@ public class CentralBodyReferenceSystem
      * This constructor builds a central body reference system on the earth with
      * basic parameters.
      *
-     * @param header : The header considered.
+     * @param availability : The availability of the central body reference
+     *        system.
      */
     @DefaultDataContext
-    CentralBodyReferenceSystem(final Header header) {
+    CentralBodyReferenceSystem(final TimeInterval availability) {
         this(new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS,
                                   Constants.WGS84_EARTH_FLATTENING,
                                   DataContext.getDefault().getFrames()
                                       .getITRF(IERSConventions.IERS_2010,
                                                true)),
              DEFAULT_ID, DEFAULT_NAME, DEFAULT_RED, DEFAULT_GREEN, DEFAULT_BLUE,
-             header);
+             availability);
     }
 
     /**
@@ -106,16 +106,17 @@ public class CentralBodyReferenceSystem
      * @param color1 : The color of the x-axis.
      * @param color2 : The color of the y-axis.
      * @param color3 : The color of the z-axis.
-     * @param header : The header to use is several headers are used.
+     * @param availability : The availability of the central body reference
+     *        system.
      */
     CentralBodyReferenceSystem(final OneAxisEllipsoid body, final String id,
                                final String name, final Color color1,
                                final Color color2, final Color color3,
-                               final Header header) {
+                               final TimeInterval availability) {
 
         this.setId(id);
         this.setName(name);
-        this.setAvailability(header.getAvailability());
+        this.setAvailability(availability);
 
         final Cartesian centralCartesian = new Cartesian(0.1, 0.1, 0.1);
         final double depth = body.getEquatorialRadius() * 3;
@@ -138,15 +139,15 @@ public class CentralBodyReferenceSystem
         vectorToZ.add(plusZCartesian);
 
         final Polyline XPolyline =
-            Polyline.vectorBuilder(vectorToX, header).withColor(color1)
+            Polyline.vectorBuilder(vectorToX, availability).withColor(color1)
                 .withNearDistance(1).withFarDistance(1e9).build();
 
         final Polyline YPolyline =
-            Polyline.vectorBuilder(vectorToY, header).withColor(color2)
+            Polyline.vectorBuilder(vectorToY, availability).withColor(color2)
                 .withNearDistance(1).withFarDistance(1e9).build();
 
         final Polyline ZPolyline =
-            Polyline.vectorBuilder(vectorToZ, header).withColor(color3)
+            Polyline.vectorBuilder(vectorToZ, availability).withColor(color3)
                 .withNearDistance(1).withFarDistance(1e9).build();
 
         this.polylines.add(XPolyline);
@@ -157,13 +158,13 @@ public class CentralBodyReferenceSystem
     /**
      * Builder central body reference system builder.
      *
-     * @param headerInput the header input
+     * @param availability the availability input
      * @return the central body reference system builder
      */
     // builder
     public static CentralBodyReferenceSystemBuilder
-        builder(final Header headerInput) {
-        return new CentralBodyReferenceSystemBuilder(headerInput);
+        builder(final TimeInterval availability) {
+        return new CentralBodyReferenceSystemBuilder(availability);
     }
     // Overrides
 
@@ -198,14 +199,4 @@ public class CentralBodyReferenceSystem
         polylines = new ArrayList<>();
     }
 
-    // Getters
-
-    /**
-     * Gets polylines.
-     *
-     * @return the polylines
-     */
-    public List<Polyline> getPolylines() {
-        return Collections.unmodifiableList(polylines);
-    }
 }

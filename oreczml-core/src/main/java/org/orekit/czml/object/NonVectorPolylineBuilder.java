@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -18,7 +18,7 @@ package org.orekit.czml.object;
 
 import cesiumlanguagewriter.CesiumArcType;
 import cesiumlanguagewriter.Reference;
-import org.orekit.czml.object.primary.Header;
+import cesiumlanguagewriter.TimeInterval;
 
 import java.awt.Color;
 
@@ -111,18 +111,18 @@ public class NonVectorPolylineBuilder {
      */
     private double farDistance = DEFAULT_FAR_DISTANCE;
 
-    /** The header considered. */
-    private Header header;
+    /** The time interval considered. */
+    private TimeInterval availability;
 
     // Constructor
 
     /**
      * Empty constructor.
      *
-     * @param header : The header considered.
+     * @param availability : The availability considered.
      */
-    public NonVectorPolylineBuilder(final Header header) {
-        this.header = header;
+    public NonVectorPolylineBuilder(final TimeInterval availability) {
+        this.availability = availability;
     }
 
     /**
@@ -133,6 +133,18 @@ public class NonVectorPolylineBuilder {
      */
     public NonVectorPolylineBuilder withColor(final Color colorInput) {
         this.color = colorInput;
+        return this;
+    }
+
+    /**
+     * Function to set up a availability.
+     *
+     * @param availabilityInput : The availability to set up.
+     * @return : The vector polyline builder with the given availability.
+     */
+    public NonVectorPolylineBuilder
+        withAvailability(final TimeInterval availabilityInput) {
+        this.availability = availabilityInput;
         return this;
     }
 
@@ -230,6 +242,6 @@ public class NonVectorPolylineBuilder {
      */
     public Polyline build() {
         return new Polyline(firstReference, secondReference, color, width, show,
-                            arcType, nearDistance, farDistance, header);
+                            arcType, nearDistance, farDistance, availability);
     }
 }

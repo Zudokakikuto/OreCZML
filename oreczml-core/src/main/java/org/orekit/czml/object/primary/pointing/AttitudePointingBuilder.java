@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -16,9 +16,9 @@
  */
 package org.orekit.czml.object.primary.pointing;
 
+import cesiumlanguagewriter.TimeInterval;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.orekit.bodies.OneAxisEllipsoid;
-import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.primary.entities.Spacecraft;
 
 import java.awt.Color;
@@ -54,7 +54,7 @@ public class AttitudePointingBuilder {
     private String customID;
 
     /** . */
-    private Header header;
+    private TimeInterval availability;
 
     /**
      * The direction of the pointing.
@@ -95,17 +95,17 @@ public class AttitudePointingBuilder {
      * @param satelliteInput : The satellite that has a pointing.
      * @param bodyInput : The body that is pointed at.
      * @param directionInput : The direction of the pointing.
-     * @param headerInput : The header considered.
+     * @param availability : The availability of the pointing
      */
     public AttitudePointingBuilder(final Spacecraft satelliteInput,
                                    final OneAxisEllipsoid bodyInput,
                                    final Vector3D directionInput,
-                                   final Header headerInput) {
+                                   final TimeInterval availability) {
         this.satellite = satelliteInput;
         this.body = bodyInput;
         this.direction = directionInput;
         this.customID = "ATTITUDE_POINTING/" + satelliteInput.getId();
-        this.header = headerInput;
+        this.availability = availability;
     }
 
     /**
@@ -143,13 +143,14 @@ public class AttitudePointingBuilder {
     }
 
     /**
-     * Function to set up a header when several are used.
+     * Function to set up a availability when several are used.
      *
-     * @param headerInput : The header to set up.
-     * @return : The builder with a header set up.
+     * @param availabilityInput : The availability to set up.
+     * @return : The builder with an availability set up.
      */
-    public AttitudePointingBuilder withHeader(final Header headerInput) {
-        this.header = headerInput;
+    public AttitudePointingBuilder
+        withAvailability(final TimeInterval availabilityInput) {
+        this.availability = availabilityInput;
         return this;
     }
 
@@ -184,7 +185,7 @@ public class AttitudePointingBuilder {
     public AttitudePointing build() {
         final AttitudePointing toReturn =
             new AttitudePointing(satellite, body, direction, color,
-                                 displayOnGround, customID, header);
+                                 displayOnGround, customID, availability);
         return this.checkAttributes(toReturn);
     }
 

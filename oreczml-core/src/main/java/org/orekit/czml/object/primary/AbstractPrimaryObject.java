@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -122,16 +121,6 @@ public abstract class AbstractPrimaryObject
     }
 
     //// Public functions
-
-    /**
-     * Gets availabilities.
-     *
-     * @return the availabilities
-     */
-    // Getters
-    public List<TimeInterval> getAvailabilities() {
-        return Collections.unmodifiableList(availabilities);
-    }
 
     // Protected methods
 
