@@ -70,22 +70,6 @@ public class CzmlShow {
     }
 
     /**
-     * The basic czml show constructor. It has no objects related to it.
-     *
-     * @param toShow : The boolean that represent if the object is displayed or
-     *        not.
-     * @param availability : The time interval when the object is displayed or
-     *        not.
-     * @param object1Input : The first object related to the show.
-     */
-    public CzmlShow(final boolean toShow, final TimeInterval availability,
-                    final Object object1Input) {
-        this.toShow = toShow;
-        this.availability = availability;
-        this.object1 = object1Input;
-    }
-
-    /**
      * The czml show constructor with two objects related to it.
      *
      * @param toShow : The boolean that represent if the object is displayed or

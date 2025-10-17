@@ -23,8 +23,8 @@ import org.orekit.czml.archi.factory.BodyFactory;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.file.CzmlFile;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.utils.DateUtils;
 import org.orekit.czml.object.secondary.Clock;
+import org.orekit.czml.object.utils.DateUtils;
 import org.orekit.frames.Frame;
 import org.orekit.time.AbsoluteDate;
 
@@ -51,9 +51,6 @@ public class BodyTest
 
         loadOrekitData();
 
-        final Frame sunFrame =
-            CelestialBodyFactory.getSun().getBodyOrientedFrame();
-
         final Header header = dummyHeader();
 
         final String pathToModel = loadResources("Bodies/mars.glb");
@@ -64,16 +61,19 @@ public class BodyTest
             DateUtils.toAbsoluteDate(header.getAvailability().getStop());
         final Clock clock = new Clock(startDate, stopDate, 10.0);
 
+        final Body sun = BodyFactory.getSun(clock);
+        final Frame sunFrame = sun.getCelestialBody().getBodyOrientedFrame();
+
         final Body body =
             Body.builder(CelestialBodyFactory.getMars(), pathToModel, sunFrame,
-                         clock)
+                         clock, sun)
                 .build();
 
         final double marsOrbitalPeriod = 686.96 * 24 * 3600; // in sec
 
         final Body bodyBuilder =
             Body.builder(CelestialBodyFactory.getMars(), pathToModel, sunFrame,
-                         clock)
+                         clock, sun)
                 .withCustomID("CustomID")
                 .displayOnlyOnePeriod(marsOrbitalPeriod).build();
 
@@ -85,7 +85,6 @@ public class BodyTest
         final Body uranus = BodyFactory.getUranus(clock);
         final Body neptune = BodyFactory.getNeptune(clock);
         final Body pluto = BodyFactory.getPluto(clock);
-        final Body sun = BodyFactory.getSun(clock);
 
         sun.noOrbitDisplay();
 

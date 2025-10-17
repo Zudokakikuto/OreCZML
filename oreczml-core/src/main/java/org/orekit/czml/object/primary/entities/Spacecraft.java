@@ -32,7 +32,6 @@ import cesiumlanguagewriter.TimeInterval;
 import org.hipparchus.geometry.euclidean.threed.Rotation;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.orekit.attitudes.Attitude;
-import org.orekit.bodies.CelestialBodyFactory;
 import org.orekit.czml.errors.OreCzmlException;
 import org.orekit.czml.errors.OreCzmlMessages;
 import org.orekit.czml.object.ModelType;
@@ -44,6 +43,7 @@ import org.orekit.czml.object.secondary.Clock;
 import org.orekit.czml.object.secondary.Orientation;
 import org.orekit.czml.object.secondary.TimePosition;
 import org.orekit.czml.object.utils.DateUtils;
+import org.orekit.czml.object.utils.InfluenceSphereUtils;
 import org.orekit.errors.OrekitException;
 import org.orekit.frames.Frame;
 import org.orekit.orbits.Orbit;
@@ -102,6 +102,19 @@ public class Spacecraft
      */
     public static final String DEFAULT_NAME = "Spacecraft";
 
+    /** The default id when a path if created when influence sphere are used. */
+    public static final String DEFAULT_ID_PATH_INFLUENCE_SPHERE =
+        "PATH INSIDE INFLUENCE SPHERE:";
+
+    /**
+     * The default name when a path if created when influence sphere are used.
+     */
+    public static final String DEFAULT_NAME_PATH_INFLUENCE_SPHERE =
+        "Path inside the sphere of influence of :";
+
+    /** The default reference position tool. */
+    public static final String H_REFERENCE_POSITION = "#position";
+
     /** The default format for the formatted ID. */
     public static final String DEFAULT_FORMAT =
         DEFAULT_ID + "{P(%1.8e, %2.8e, %3.8e), V(%4.8e, %5.8e, %6.8e)}";
@@ -136,6 +149,24 @@ public class Spacecraft
      * To display or not the Spacecraft reference system.
      */
     private boolean displayReferenceSystem = false;
+
+    /** To display or not the influence sphere changes. */
+    private boolean displayInfluenceSphereChanges = false;
+
+    /** The dates of changes in the sphere of influence. */
+    private List<TimeInterval> intervalInfluenceSpheres;
+
+    /**
+     * The list containing the list of position of the satellite splitted for
+     * each influence sphere.
+     */
+    private List<List<Cartesian>> positionInsideInfluenceSphere;
+
+    /**
+     * The list containing the list of time of the satellite splitted for each
+     * influence sphere.
+     */
+    private List<List<JulianDate>> timeInsideInfluenceSphere;
 
     // Orekit arguments
 
@@ -318,23 +349,55 @@ public class Spacecraft
             IOException {
 
         output.setPrettyFormatting(true);
-        try (PacketCesiumWriter packet = stream.openPacket(output)) {
-            packet.writeId(this.getId());
-            packet.writeName(getName());
-            packet.writeAvailability(getAvailability());
-            packet.writeDescriptionProperty(description);
+        // If the influence sphere are to be displayed, the path must be written
+        // in several objects
+        if (!displayInfluenceSphereChanges) {
+            try (PacketCesiumWriter packet = stream.openPacket(output)) {
+                packet.writeId(this.getId());
+                packet.writeName(getName());
+                packet.writeAvailability(getAvailability());
+                packet.writeDescriptionProperty(description);
 
-            czmlDisplay(packet, stream, output);
+                czmlDisplay(packet, stream, output);
 
-            czmlPath(packet, output);
+                czmlPath(packet, output, getColor());
 
-            czmlPosition(packet, output);
+                czmlPosition(packet, output, getCartesianArraylist(),
+                             getJulianDates());
 
-        } catch (URISyntaxException | IOException e) {
-            throw new RuntimeException(e);
-        }
-        if (getDisplayReferenceSystem()) {
-            getSpacecraftReferenceSystem().writeCzmlBlock(stream, output);
+            } catch (URISyntaxException | IOException e) {
+                throw new RuntimeException(e);
+            }
+            if (getDisplayReferenceSystem()) {
+                getSpacecraftReferenceSystem().writeCzmlBlock(stream, output);
+            }
+        } else {
+            final List<Color> colors =
+                this.colorWheel(intervalInfluenceSpheres.size());
+            for (int i = 0; i < intervalInfluenceSpheres.size(); i++) {
+                final List<Cartesian> cartesians =
+                    positionInsideInfluenceSphere.get(i);
+                final List<JulianDate> julianDates =
+                    timeInsideInfluenceSphere.get(i);
+                try (PacketCesiumWriter packet = stream.openPacket(output)) {
+                    packet.writeId(this.getId() +
+                                   " " + DEFAULT_ID_PATH_INFLUENCE_SPHERE +
+                                   " " + i);
+                    packet.writeName(DEFAULT_NAME_PATH_INFLUENCE_SPHERE +
+                                     " " + i);
+                    packet.writeAvailability(getAvailability());
+                    packet
+                        .writeDescriptionProperty("Path representing the " +
+                                                  i +
+                                                  "the path of the spacecraft " +
+                                                  getId() +
+                                                  " going through influence spheres");
+
+                    czmlPath(packet, output, colors.get(i));
+                    czmlDisplay(packet, stream, output);
+                    czmlPosition(packet, output, cartesians, julianDates);
+                }
+            }
         }
     }
 
@@ -364,102 +427,46 @@ public class Spacecraft
     }
 
     /**
-     * TODO : The distance between the body and the spacecraft is not matching
-     * what is displayed on screen for no reasons. To fix or delete in the
-     * future.
+     * Detects and prints all dates when the spacecraft changes the sphere of
+     * influence.
      *
-     * @param bodies The list of bodies that will have their influence sphere
-     *        displayed
+     * @param bodies list of celestial bodies with defined influence spheres
+     * @param centralBody the main reference body (e.g., the Sun)
      */
-    public void displayInfluenceSphereChanges(final List<Body> bodies) {
-        // We will take all the position and coordinates in the same frame: the
-        // frame of the sun
-        // So that all will be referenced to this system, and we will be able to
-        // measure distances.
-        final Frame sunFrame =
-            CelestialBodyFactory.getSun().getInertiallyOrientedFrame();
+    public void displayInfluenceSphereChanges(final List<Body> bodies,
+                                              final Body centralBody) {
 
-        final List<InfluenceSphere> spheres = new ArrayList<>();
-        final List<Double> spheresRadius = new ArrayList<>();
-        final List<Color> colorList = colorWheel(bodies.size());
-        final List<AbsoluteDate> datesChanges = new ArrayList<>();
+        final Frame centralFrame =
+            centralBody.getCelestialBody().getInertiallyOrientedFrame();
 
-        // Build the influence spheres
-        buildInfluenceSphere(bodies, spheres, spheresRadius);
+        final List<AbsoluteDate> datesChanges =
+            InfluenceSphereUtils
+                .findCrossingSphereDates(bodies, centralFrame,
+                                         this.getSpaceCraftStates(), this.frame,
+                                         this.finalDate);
 
-        // Sort the radiuses of the bodies considered.
-        Collections.sort(spheresRadius);
-        // Sorting the influence sphere and the bodies in accordance to the
-        // radiuses.
-        final List<Body> bodiesSorted = sortedBodies(spheresRadius, bodies);
-        final List<InfluenceSphere> spheresSorted =
-            sortedSpheres(spheresRadius, spheres);
-
-        // Determine the influence sphere in which the spacecraft is
-        // Get the position of the spacecraft
-        final Vector3D initialPosition =
-            this.getSpaceCraftStates().get(0).getPVCoordinates(sunFrame)
-                .getPosition();
-
-        // Compute the initial influence sphere where the spacecraft is
-        InfluenceSphere lastKnownInfluenceSphere =
-            computeInitialInfluenceSphere(spheresSorted, spheresRadius,
-                                          bodiesSorted, initialPosition,
-                                          sunFrame);
-
-        // If the initial influence sphere is not referenced in the inputs,
-        // throw this error.
-        if (lastKnownInfluenceSphere == null) {
-            throw new OreCzmlException(OreCzmlMessages.NOT_INSIDE_AN_INFLUENCE_SPHERE);
+        if (datesChanges.size() > 2) {
+            displayInfluenceSphereChanges = true;
+            final List<JulianDate> datesChangesJulian =
+                DateUtils.toJulianDates(datesChanges);
+            this.intervalInfluenceSpheres =
+                DateUtils.createTimeIntervals(datesChangesJulian);
+            // We remove the first interval because it starts at the 01/01/1900
+            // to the first date of the simulation, which is useless here.
+            this.intervalInfluenceSpheres.remove(0);
+            this.positionInsideInfluenceSphere =
+                InfluenceSphereUtils
+                    .findPositionInsideInfluenceSpheres(getCartesianArraylist(),
+                                                        getJulianDates(),
+                                                        intervalInfluenceSpheres);
+            this.timeInsideInfluenceSphere =
+                InfluenceSphereUtils
+                    .findTimeInsideInfluenceSpheres(getJulianDates(),
+                                                    intervalInfluenceSpheres);
         }
-
-        // Add the beginning date of the simulation to this list. We will add
-        // the end date of the simulation too.
-        datesChanges.add(this.startDate);
-
-        // Let's iterate on the states then in the body.
-        // We will check if the spacecraft at each state in inside a new
-        // influence sphere or not.
-        for (int i = 0; i < this.getSpaceCraftStates().size(); i++) {
-            final SpacecraftState state = this.getSpaceCraftStates().get(i);
-            for (final Body currentBody : bodies) {
-                final InfluenceSphere currentInfluenceSphere =
-                    currentBody.getInfluenceSphere();
-                final AbsoluteDate currentDate = state.getDate();
-
-                // Compute the position of the spacecraft in the frame of the
-                // sun.
-                final Vector3D currentPosition =
-                    state.getPVCoordinates(currentBody.getCelestialBody()
-                        .getBodyOrientedFrame()).getPosition();
-
-                // Compute the position of the body in the frame of the sun.
-                final Vector3D currentPositionCurrentBody =
-                    currentBody.getCelestialBody()
-                        .getPosition(currentDate, currentBody.getCelestialBody()
-                            .getBodyOrientedFrame());
-
-                // Compute the distance between those two entities.
-                final double distance =
-                    currentPosition.distance(currentPositionCurrentBody);
-
-                // If the distance in less than the radius of the given body.
-                // And if the body is not the last one registered as the main
-                // one.
-                // Then save the date as a date when the main influence sphere
-                // attracting the spacecraft changed.
-                if (distance <= currentInfluenceSphere.getRadius() &&
-                    !lastKnownInfluenceSphere.getBody().getName()
-                        .equals(currentInfluenceSphere.getBody().getName())) {
-
-                    lastKnownInfluenceSphere = spheres.get(i);
-                    datesChanges.add(state.getDate());
-                }
-            }
-        }
-        // Add the last date of the simulation.
-        datesChanges.add(this.finalDate);
     }
+
+    // Sphere of influence
 
     // Getters
 
@@ -773,7 +780,8 @@ public class Spacecraft
                     packet.getOrientationWriter()) {
                     orientationWriter.open(output);
                     orientationWriter
-                        .writeVelocityReference(this.getId() + "#position");
+                        .writeVelocityReference(this.getId() +
+                                                H_REFERENCE_POSITION);
                     this.orientation = null;
                 }
             } else {
@@ -794,10 +802,17 @@ public class Spacecraft
      * @param packet : The packet that will write in the czml file.
      * @param output : The output stream of cesium that will contain the strings
      *        to write into the CzmLFile.
+     * @param colorInput : The color of the path
      */
     private void czmlPath(final PacketCesiumWriter packet,
-                          final CesiumOutputStream output) {
+                          final CesiumOutputStream output,
+                          final Color colorInput) {
         try (PathCesiumWriter pathProperty = packet.openPathProperty()) {
+            // If only one period of the orbit is displayed (and that the period
+            // is less long than the time of simulation, elseway this will not
+            // do anything visible)
+            // Then the path must have an availability only of the duration of
+            // the period
             if (!getDisplayOnlyOnePeriod()) {
                 final Path path = new Path(getAvailability());
                 try (BooleanCesiumWriter showPath =
@@ -806,8 +821,13 @@ public class Spacecraft
                                            getAvailability().getStop());
                     showPath.writeBoolean(path.getShow());
                 }
-            } else {
+            }
+            // If not, then we display all the path of the orbit during the
+            // entire simulation
+            else {
                 final Path path = new Path(getAvailability());
+                // If the keplerian period is incredibly big, we fix the display
+                // of the path to 1 h
                 if ((this.getOrbits().get(0).getKeplerianPeriod() + "")
                     .equals("Infinity")) {
                     pathProperty.writeLeadTimeProperty(3600);
@@ -823,6 +843,7 @@ public class Spacecraft
                     showPath.writeBoolean(path.getShow());
                 }
             }
+            // Writing of the color of the path
             try (PolylineMaterialCesiumWriter materialWriter =
                 pathProperty.getMaterialWriter()) {
                 materialWriter.open(output);
@@ -830,7 +851,7 @@ public class Spacecraft
                 try (SolidColorMaterialCesiumWriter solidColorWriter =
                     materialWriter.getSolidColorWriter()) {
                     solidColorWriter.open(output);
-                    solidColorWriter.writeColorProperty(getColor());
+                    solidColorWriter.writeColorProperty(colorInput);
                 }
                 output.writeEndObject();
             }
@@ -843,12 +864,17 @@ public class Spacecraft
      * @param packet : The packet that will write in the czml file.
      * @param output : The output stream of cesium that will contain the strings
      *        to write into the CzmLFile.
+     * @param cartesians : The cartesians coordinates to be written
+     * @param julianDates : The JulianDate corresponding the cartesian
+     *        coordinates
      */
     private void czmlPosition(final PacketCesiumWriter packet,
-                              final CesiumOutputStream output) {
+                              final CesiumOutputStream output,
+                              final List<Cartesian> cartesians,
+                              final List<JulianDate> julianDates) {
 
         final TimePosition timePosition =
-            new TimePosition(getCartesianArraylist(), getJulianDates());
+            new TimePosition(cartesians, julianDates);
         timePosition.write(packet, output);
     }
 
@@ -882,18 +908,28 @@ public class Spacecraft
         }
     }
 
+    /**
+     * Function to compute the first influence sphere in which the satellite is.
+     *
+     * @param bodies The bodies considered for the influence spheres
+     * @param spheres The influence sphere considered
+     * @param spheresRadius The radius of the spheres
+     * @param centralBodyFrame The inertial frame of the sun
+     * @param initialPosition The initial position of the spacecraft
+     * @return The initial influence sphere where the satellite is
+     */
     private InfluenceSphere
         computeInitialInfluenceSphere(final List<InfluenceSphere> spheres,
                                       final List<Double> spheresRadius,
                                       final List<Body> bodies,
                                       final Vector3D initialPosition,
-                                      final Frame sunFrame) {
+                                      final Frame centralBodyFrame) {
         for (int i = 0; i < bodies.size(); i++) {
             final Body currentBody = bodies.get(i);
             final Vector3D positionOfBodyAtInitialState =
                 currentBody.getCelestialBody()
                     .getPosition(this.spaceCraftStates.get(0).getDate(),
-                                 sunFrame);
+                                 centralBodyFrame);
             if (initialPosition
                 .distance(positionOfBodyAtInitialState) < spheresRadius
                     .get(i)) {

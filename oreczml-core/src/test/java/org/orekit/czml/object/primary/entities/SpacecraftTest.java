@@ -17,12 +17,11 @@
 package org.orekit.czml.object.primary.entities;
 
 import org.junit.jupiter.api.Test;
-import org.orekit.bodies.CelestialBodyFactory;
+import org.orekit.czml.archi.factory.BodyFactory;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.czml.object.utils.DateUtils;
-import org.orekit.frames.Frame;
 import org.orekit.propagation.BoundedPropagator;
 import org.orekit.time.AbsoluteDate;
 
@@ -127,25 +126,13 @@ public class SpacecraftTest
                 .withDisplayAttitude().build();
 
         // Build of two bodies : Earth and Moon
-        final Frame sunFrame =
-            CelestialBodyFactory.getSun().getBodyOrientedFrame();
-
-        final String pathToEarthModel = loadResources("Bodies/earth.glb");
-        final String pathToMoonModel = loadResources("Bodies/moon.glb");
-
-        final Body earth =
-            Body.builder(CelestialBodyFactory.getEarth(), pathToEarthModel,
-                         sunFrame, clock)
-                .displayInfluenceSphere().build();
-        final Body moon =
-            Body.builder(CelestialBodyFactory.getMoon(), pathToMoonModel,
-                         sunFrame, clock)
-                .displayInfluenceSphere().build();
+        final Body earth = BodyFactory.getEarth(clock);
+        final Body moon = BodyFactory.getMoon(clock);
         final List<Body> bodyList = new ArrayList<>();
         bodyList.add(earth);
         bodyList.add(moon);
 
-        spacecraft.displayInfluenceSphereChanges(bodyList);
+        spacecraft.displayInfluenceSphereChanges(bodyList, earth);
 
         final String spacecraftWithInfluenceSphereTemplate =
             loadResources("templateFile/object/primary/entities/SpacecraftInfluenceSphereTemplate.txt");

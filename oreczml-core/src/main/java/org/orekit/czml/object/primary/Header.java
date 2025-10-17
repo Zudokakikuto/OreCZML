@@ -66,11 +66,6 @@ public class Header
      */
     private static String pathToExternalResourceFolder;
 
-    /**
-     * The minimum step in time between each instant.
-     */
-    private double stepSimulation;
-
     /** The private clock of the header. */
     private Clock clock;
 
@@ -90,7 +85,6 @@ public class Header
     public Header(final String name, final Clock masterClock) {
         this.setId(DEFAULT_ID);
         this.setName(name);
-        this.stepSimulation = masterClock.getStep().getValue();
         pathToExternalResourceFolder = "";
         this.clock = masterClock;
         this.version = DEFAULT_VERSION;
@@ -108,7 +102,6 @@ public class Header
                   final String pathToExternalResourceFolder) {
         this.setId(DEFAULT_ID);
         this.setName(name);
-        this.stepSimulation = masterClock.getStep().getValue();
         Header.pathToExternalResourceFolder = pathToExternalResourceFolder;
         this.clock = masterClock;
         this.version = DEFAULT_VERSION;
@@ -127,7 +120,6 @@ public class Header
         this.setName(name);
         this.version = version;
         this.clock = clock;
-        this.stepSimulation = clock.getStep().getValue();
     }
 
     /**
@@ -147,7 +139,6 @@ public class Header
         this.version = version;
         this.clock = clock;
         Header.pathToExternalResourceFolder = pathToExternalResourceFolder;
-        this.stepSimulation = clock.getStep().getValue();
     }
 
     // Overrides
@@ -163,7 +154,7 @@ public class Header
             packet.writeVersion(DEFAULT_VERSION);
             packet.writeName(this.getName());
             packet.writeVersion(version);
-            try (ClockCesiumWriter clockWriter = packet.getClockWriter()) {
+            try (ClockCesiumWriter ignored = packet.getClockWriter()) {
                 clock.write(packet, output);
             }
         }
@@ -183,15 +174,6 @@ public class Header
     @Override
     public TimeInterval getAvailability() {
         return getClock().getAvailability();
-    }
-
-    /**
-     * Clean object.
-     */
-    public void cleanObject() {
-        this.setId("");
-        this.setName("");
-        this.stepSimulation = 0.0;
     }
 
     // Getters

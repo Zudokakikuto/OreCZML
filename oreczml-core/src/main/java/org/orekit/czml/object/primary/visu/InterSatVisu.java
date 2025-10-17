@@ -54,6 +54,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -72,6 +73,7 @@ public class InterSatVisu
     AbstractPrimaryObject {
 
     // Static
+
     /**
      * The default ID for the inter-sat visu object.
      */
@@ -96,6 +98,7 @@ public class InterSatVisu
         "Visualisation inter-constellation of : ";
 
     // Arguments
+
     /**
      * The first satellite for the visu.
      */
@@ -164,6 +167,7 @@ public class InterSatVisu
     private List<CzmlShow> showList = new ArrayList<>();
 
     // Constellation parameters
+
     /**
      * All the satellites of the constellation.
      */
@@ -766,11 +770,15 @@ public class InterSatVisu
         // Retrieve
         booleansList = new ArrayList<>();
         timeIntervalsOfVisu = new ArrayList<>();
-        for (String key : handlers.keySet()) {
+        for (Map.Entry<String, InterSatViewHandler> entry : handlers
+            .entrySet()) {
+            final InterSatViewHandler handler = entry.getValue();
+
             final List<Boolean> tempBooleansList = new ArrayList<>();
             final List<TimeInterval> tempTimeIntervals = new ArrayList<>();
+
             for (TimeSpanMap.Span<Boolean> span =
-                handlers.get(key).viewMap.getFirstSpan(); span != null;
+                handler.viewMap.getFirstSpan(); span != null;
                  span = span.next()) {
                 availabilitiesAndShowFilling(span, tempBooleansList,
                                              tempTimeIntervals, availability);

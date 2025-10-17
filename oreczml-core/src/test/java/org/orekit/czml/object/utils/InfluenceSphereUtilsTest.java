@@ -1,28 +1,13 @@
-/* Copyright 2002-2025 CS GROUP
- * Licensed to CS GROUP (CS) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * CS licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-package org.orekit.czml.interplanetary;
+package org.orekit.czml.object.utils;
 
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.orekit.bodies.CelestialBodyFactory;
-import org.orekit.czml.TutorialUtils;
 import org.orekit.czml.archi.factory.BodyFactory;
+import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.file.CzmlFile;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.primary.entities.Body;
@@ -49,38 +34,47 @@ import org.orekit.utils.Constants;
 import org.orekit.utils.IERSConventions;
 
 import java.awt.Color;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EarthMoonInfluenceSphere {
+public class InfluenceSphereUtilsTest
+    extends
+    AbstractTest {
 
-    private EarthMoonInfluenceSphere() {
-    }
+    @Test
+    void findCrossingSphereDatesTest()
+        throws URISyntaxException,
+            IOException {
 
-    /**
-     * Main.
-     *
-     * @param args the args
-     * @throws Exception the exception
-     */
-    public static void main(final String[] args)
-        throws Exception {
-        // Load orekit data
-        TutorialUtils.loadOrekitData();
+        loadOrekitData();
 
-        // Paths
-        final String output = TutorialUtils.generateOutput();
-        // !!! Here you need to change the path inside 'generateJsPath' to the
-        // path you are using for images or Model.
-        // This folder can also be the public folder of your cesium javascript
-        // interface.
-        final String pathToJSFolder =
-            TutorialUtils.generateJSPath(System.getProperty("user.dir") +
-                                         "/Javascript/public");
+        String ROOT = System.getProperty("user.dir");
+        ROOT = ROOT.replace("\\oreczml-core", "");
+
+        String output;
+
+        final String osName = System.getProperty("os.name");
+        final String outputName = "Output.czml";
+        final String outputFolder = "/Output";
+        if (osName.contains("Windows")) {
+            ROOT = ROOT.replace("\\", "/");
+            final String outputPath = ROOT + outputFolder;
+            output = outputPath + "/" + outputName;
+        } else if (osName.contains("Linux")) {
+            final String outputPath =
+                ROOT + "\\..\\oreczml-js-interface\\public";
+            output = outputPath + outputName;
+        } else {
+            ROOT = ROOT.replace("\\", "/");
+            final String outputPath = ROOT + outputFolder;
+            output = outputPath + "/" + outputName;
+        }
 
         // Creation of the clock.
 
-        final double durationOfSimulation = 3 * 24 * 3600; // in seconds;
+        final double durationOfSimulation = 4 * 24 * 3600; // in seconds;
         final Frame eme2000 = FramesFactory.getEME2000();
         final Frame itrf =
             FramesFactory.getITRF(IERSConventions.IERS_2010, true);
@@ -89,13 +83,11 @@ public class EarthMoonInfluenceSphere {
                              TimeScalesFactory.getUTC());
         final AbsoluteDate finalDate =
             startDate.shiftedBy(durationOfSimulation);
-        final Clock clock =
-            new Clock(startDate, finalDate,
-                      TutorialUtils.STEP_BETWEEN_EACH_INSTANT);
+        final Clock clock = new Clock(startDate, finalDate, 60.0);
 
         final Header header =
             new Header("Example of usage of the influence sphere on the moon and the earth",
-                       clock, pathToJSFolder);
+                       clock);
 
         // Influence sphere
         final Body earth = BodyFactory.getEarth(clock);
@@ -121,12 +113,11 @@ public class EarthMoonInfluenceSphere {
         final SpacecraftState initialState =
             new SpacecraftState(absolutePVCoordinates);
         final double[][] tolerances =
-            NumericalPropagator.tolerances(TutorialUtils.POSITION_TOLERANCE,
-                                           initialOrbit, OrbitType.CARTESIAN);
+            NumericalPropagator.tolerances(10.0, initialOrbit,
+                                           OrbitType.CARTESIAN);
         final AdaptiveStepsizeIntegrator integrator =
-            new DormandPrince853Integrator(TutorialUtils.MIN_STEP,
-                                           TutorialUtils.MAX_STEP,
-                                           tolerances[0], tolerances[1]);
+            new DormandPrince853Integrator(0.001, 1000.0, tolerances[0],
+                                           tolerances[1]);
         final NumericalPropagator propagator =
             new NumericalPropagator(integrator);
 
@@ -166,5 +157,25 @@ public class EarthMoonInfluenceSphere {
 
         // file writing
         file.write(output);
+
+        final Frame centralFrame = itrf;
+        final List<SpacecraftState> states = spacecraft.getSpaceCraftStates();
+        final Frame spacecraftFrame = spacecraft.getFrame();
+
+        final List<AbsoluteDate> dateChanges =
+            InfluenceSphereUtils
+                .findCrossingSphereDates(bodies, centralFrame, states,
+                                         spacecraftFrame, finalDate);
+        Assertions.assertEquals(4, dateChanges.size());
+        final List<AbsoluteDate> datesRef = new ArrayList<>();
+        datesRef.add(new AbsoluteDate(2024, 1, 16, 0, 0, 0.0,
+                                      TimeScalesFactory.getUTC()));
+        datesRef.add(new AbsoluteDate(2024, 1, 17, 15, 42, 0.0,
+                                      TimeScalesFactory.getUTC()));
+        datesRef.add(new AbsoluteDate(2024, 1, 19, 7, 21, 0.0,
+                                      TimeScalesFactory.getUTC()));
+        datesRef.add(new AbsoluteDate(2024, 1, 20, 0, 0, 0.0,
+                                      TimeScalesFactory.getUTC()));
+        Assertions.assertEquals(datesRef, dateChanges);
     }
 }

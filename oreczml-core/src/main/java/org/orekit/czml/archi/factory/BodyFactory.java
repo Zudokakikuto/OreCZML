@@ -116,21 +116,20 @@ public class BodyFactory {
     }
 
     /**
-     * Function to get The Moon.
+     * Function to get The Sun.
      *
      * @param clock The clock for the availability
      * @return : A body object with the 3D models and the default parameters of
-     *         The Moon loaded.
+     *         The Sun loaded.
      */
-    public static Body getMoon(final Clock clock) {
-        final CelestialBody moon = CelestialBodyFactory.getMoon();
-        return Body.builder(moon, MOON_MODEL, EARTH_FRAME, clock)
-            .withModelScale(1e120).withModelMinimumPixelSize(400)
-            .withModelMaximumScale(5e6)
-            .withDescription(DESCRIPTION_HEADER +
-                             ID_BODY +
-                             CelestialBodyFactory.getMoon().getName() +
-                             "</p>\r\n<p>Sideral Orbital Period : 27.321661 days </p>\r\n<p>Mean Radius : 1737.4 km </p>\r\nMass : 7.364e22 kg</p>")
+    public static Body getSun(final Clock clock) {
+        final CelestialBody sun = CelestialBodyFactory.getSun();
+        return Body.builder(sun, SUN_MODEL, SUN_FRAME, clock, null)
+            .withModelScale(1).withModelMinimumPixelSize(400)
+            .withModelMaximumScale(1e09)
+            .withDescription(ID_BODY +
+                             CelestialBodyFactory.getJupiter().getName() +
+                             "</p>\r\n<p>Equatorial Radius : 6.957e8 km </p>\r\n<p>Mass : 1.9885e30 kg</p>")
             .build();
     }
 
@@ -143,7 +142,9 @@ public class BodyFactory {
      */
     public static Body getMercury(final Clock clock) {
         final CelestialBody mercury = CelestialBodyFactory.getMercury();
-        return Body.builder(mercury, MERCURY_MODEL, SUN_FRAME, clock)
+        return Body
+            .builder(mercury, MERCURY_MODEL, SUN_FRAME, clock,
+                     BodyFactory.getSun(clock))
             .withModelScale(1).withModelMinimumPixelSize(400)
             .withModelMaximumScale(1e09)
             .withDescription(DESCRIPTION_HEADER +
@@ -162,7 +163,9 @@ public class BodyFactory {
      */
     public static Body getVenus(final Clock clock) {
         final CelestialBody venus = CelestialBodyFactory.getVenus();
-        return Body.builder(venus, VENUS_MODEL, SUN_FRAME, clock)
+        return Body
+            .builder(venus, VENUS_MODEL, SUN_FRAME, clock,
+                     BodyFactory.getSun(clock))
             .withModelScale(1).withModelMinimumPixelSize(400)
             .withModelMaximumScale(1e09)
             .withDescription(DESCRIPTION_HEADER +
@@ -184,13 +187,34 @@ public class BodyFactory {
         return Body
             .builder(earth, EARTH_MODEL,
                      FramesFactory.getITRF(IERSConventions.IERS_2010, true),
-                     clock)
+                     clock, BodyFactory.getSun(clock))
             .withModelScale(1).withModelMinimumPixelSize(1180)
             .withModelMaximumScale(1.02e6)
             .withDescription(DESCRIPTION_HEADER +
                              ID_BODY +
                              CelestialBodyFactory.getEarth().getName() +
                              "</p>\r\n<p>Sideral Orbital Period : 365.256 days </p>\r\n<p>Mean Radius : 6371.0 km </p>\r\n<p>Mass : 5.9722e24 kg</p>")
+            .build();
+    }
+
+    /**
+     * Function to get The Moon.
+     *
+     * @param clock The clock for the availability
+     * @return : A body object with the 3D models and the default parameters of
+     *         The Moon loaded.
+     */
+    public static Body getMoon(final Clock clock) {
+        final CelestialBody moon = CelestialBodyFactory.getMoon();
+        return Body
+            .builder(moon, MOON_MODEL, EARTH_FRAME, clock,
+                     BodyFactory.getSun(clock))
+            .withModelScale(1e120).withModelMinimumPixelSize(400)
+            .withModelMaximumScale(5e6)
+            .withDescription(DESCRIPTION_HEADER +
+                             ID_BODY +
+                             CelestialBodyFactory.getMoon().getName() +
+                             "</p>\r\n<p>Sideral Orbital Period : 27.321661 days </p>\r\n<p>Mean Radius : 1737.4 km </p>\r\nMass : 7.364e22 kg</p>")
             .build();
     }
 
@@ -203,7 +227,9 @@ public class BodyFactory {
      */
     public static Body getMars(final Clock clock) {
         final CelestialBody mars = CelestialBodyFactory.getMars();
-        return Body.builder(mars, MARS_MODEL, SUN_FRAME, clock)
+        return Body
+            .builder(mars, MARS_MODEL, SUN_FRAME, clock,
+                     BodyFactory.getSun(clock))
             .withModelScale(1).withModelMinimumPixelSize(400)
             .withModelMaximumScale(2e09)
             .withDescription(DESCRIPTION_HEADER +
@@ -222,7 +248,9 @@ public class BodyFactory {
      */
     public static Body getJupiter(final Clock clock) {
         final CelestialBody jupiter = CelestialBodyFactory.getJupiter();
-        return Body.builder(jupiter, JUPITER_MODEL, SUN_FRAME, clock)
+        return Body
+            .builder(jupiter, JUPITER_MODEL, SUN_FRAME, clock,
+                     BodyFactory.getSun(clock))
             .withModelScale(1).withModelMinimumPixelSize(400)
             .withModelMaximumScale(5e09)
             .withDescription(DESCRIPTION_HEADER +
@@ -241,7 +269,9 @@ public class BodyFactory {
      */
     public static Body getSaturn(final Clock clock) {
         final CelestialBody saturn = CelestialBodyFactory.getSaturn();
-        return Body.builder(saturn, SATURN_MODEL, SUN_FRAME, clock)
+        return Body
+            .builder(saturn, SATURN_MODEL, SUN_FRAME, clock,
+                     BodyFactory.getSun(clock))
             .withModelScale(1).withModelMinimumPixelSize(400)
             .withModelMaximumScale(1e10)
             .withDescription(DESCRIPTION_HEADER +
@@ -260,7 +290,9 @@ public class BodyFactory {
      */
     public static Body getUranus(final Clock clock) {
         final CelestialBody uranus = CelestialBodyFactory.getUranus();
-        return Body.builder(uranus, URANUS_MODEL, SUN_FRAME, clock)
+        return Body
+            .builder(uranus, URANUS_MODEL, SUN_FRAME, clock,
+                     BodyFactory.getSun(clock))
             .withModelScale(1).withModelMinimumPixelSize(400)
             .withModelMaximumScale(1e10)
             .withDescription(DESCRIPTION_HEADER +
@@ -279,7 +311,9 @@ public class BodyFactory {
      */
     public static Body getNeptune(final Clock clock) {
         final CelestialBody neptune = CelestialBodyFactory.getNeptune();
-        return Body.builder(neptune, NEPTUNE_MODEL, SUN_FRAME, clock)
+        return Body
+            .builder(neptune, NEPTUNE_MODEL, SUN_FRAME, clock,
+                     BodyFactory.getSun(clock))
             .withModelScale(1).withModelMinimumPixelSize(400)
             .withModelMaximumScale(1e10)
             .withDescription(ID_BODY +
@@ -297,29 +331,14 @@ public class BodyFactory {
      */
     public static Body getPluto(final Clock clock) {
         final CelestialBody pluto = CelestialBodyFactory.getPluto();
-        return Body.builder(pluto, PLUTO_MODEL, SUN_FRAME, clock)
+        return Body
+            .builder(pluto, PLUTO_MODEL, SUN_FRAME, clock,
+                     BodyFactory.getSun(clock))
             .withModelScale(1).withModelMinimumPixelSize(400)
             .withModelMaximumScale(1e10)
             .withDescription(ID_BODY +
                              CelestialBodyFactory.getPluto().getName() +
                              "</p>\r\n<p>Sideral Orbital Period : 247.94 years </p>\r\n<p>Mean Radius : 1188.3 km </p>\r\n<p>Mass : 1.3025e22 kg </p>")
-            .build();
-    }
-
-    /**
-     * Function to get The Sun.
-     *
-     * @param clock The clock for the availability
-     * @return : A body object with the 3D models and the default parameters of
-     *         The Sun loaded.
-     */
-    public static Body getSun(final Clock clock) {
-        final CelestialBody sun = CelestialBodyFactory.getSun();
-        return Body.builder(sun, SUN_MODEL, SUN_FRAME, clock).withModelScale(1)
-            .withModelMinimumPixelSize(400).withModelMaximumScale(1e09)
-            .withDescription(ID_BODY +
-                             CelestialBodyFactory.getJupiter().getName() +
-                             "</p>\r\n<p>Equatorial Radius : 6.957e8 km </p>\r\n<p>Mass : 1.9885e30 kg</p>")
             .build();
     }
 }

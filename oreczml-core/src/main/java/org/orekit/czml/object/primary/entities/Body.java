@@ -79,9 +79,10 @@ public class Body
      */
     private CelestialBody body;
 
-    /**
-     * The 3D model loaded to display the body.
-     */
+    /** The central body associated to the body. */
+    private Body centralBody;
+
+    /** The 3D model loaded to display the body. */
     private CzmlModel model;
 
     /**
@@ -150,11 +151,13 @@ public class Body
      * @param pathToModel : The path to the model to load.
      * @param frameToExpress : The path to the model to load.
      * @param clock : The clock
+     * @param centralBody : The central Body associated to the body
      */
     Body(final CelestialBody body, final String pathToModel,
-         final Frame frameToExpress, final Clock clock) {
+         final Frame frameToExpress, final Clock clock,
+         final Body centralBody) {
         this(body, pathToModel, frameToExpress, DEFAULT_ID + body.getName(),
-             clock);
+             clock, centralBody);
     }
 
     /**
@@ -165,10 +168,11 @@ public class Body
      * @param frameToExpressInput : The path to the model to load.
      * @param customID : The custom ID for the body.
      * @param clock : The clock
+     * @param centralBody : The central body associated to the body
      */
     Body(final CelestialBody body, final String pathToModel,
          final Frame frameToExpressInput, final String customID,
-         final Clock clock) {
+         final Clock clock, final Body centralBody) {
 
         this.setId(customID);
         this.setName(DEFAULT_NAME + body.getName());
@@ -185,6 +189,7 @@ public class Body
         this.model = new CzmlModel(pathToModel, false, clock.getAvailability());
         this.julianDatesSimulation = clock.getJulianDatesSimulation();
         this.clock = clock;
+        this.centralBody = centralBody;
 
         this.cartesianList =
             fillCartesian(body, julianDatesSimulation, frameToExpressInput);
@@ -200,12 +205,15 @@ public class Body
      * @param pathToModel the path to model
      * @param frameToExpressInput the path to model
      * @param clock the clock
+     * @param centralBody the central body
      * @return the body builder
      */
     public static BodyBuilder
         builder(final CelestialBody body, final String pathToModel,
-                final Frame frameToExpressInput, final Clock clock) {
-        return new BodyBuilder(body, pathToModel, frameToExpressInput, clock);
+                final Frame frameToExpressInput, final Clock clock,
+                final Body centralBody) {
+        return new BodyBuilder(body, pathToModel, frameToExpressInput, clock,
+                               centralBody);
     }
 
     // Overrides
@@ -236,20 +244,12 @@ public class Body
 
     // Users' methods
 
-    /** . */
-    public void displayInfluenceSphere() {
-        this.influenceSphere = InfluenceSphere.builder(this, clock).build();
-        this.displayInfluenceSphere = true;
-    }
-
     /**
      * Function to display the influence sphere of the body.
-     *
-     * @param centralBody The central body concerned
      */
-    public void displayInfluenceSphere(final Body centralBody) {
+    public void displayInfluenceSphere() {
         this.influenceSphere =
-            InfluenceSphere.builder(this, centralBody, clock).build();
+            InfluenceSphere.builder(this, this.centralBody, this.clock).build();
         this.displayInfluenceSphere = true;
     }
 
@@ -288,6 +288,15 @@ public class Body
      */
     public CzmlModel getModel() {
         return model;
+    }
+
+    /**
+     * Gets the central body.
+     *
+     * @return The central body
+     */
+    public Body getCentralBody() {
+        return centralBody;
     }
 
     /**

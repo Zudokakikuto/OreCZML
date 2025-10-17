@@ -74,6 +74,9 @@ public class BodyBuilder {
     /** The frame in which the body must be computed. */
     private Frame frameToExpress;
 
+    /** The central body associated to the body. */
+    private Body centralBody;
+
     /**
      * The body builder constructor.
      *
@@ -81,15 +84,18 @@ public class BodyBuilder {
      * @param pathToModelInput : The model to load
      * @param frameToExpressInput : The model to load
      * @param clock : The clock considered.
+     * @param centralBodyInput : The central body
      */
     public BodyBuilder(final CelestialBody bodyInput,
                        final String pathToModelInput,
-                       final Frame frameToExpressInput, final Clock clock) {
+                       final Frame frameToExpressInput, final Clock clock,
+                       final Body centralBodyInput) {
         this.body = bodyInput;
         this.pathToModel = pathToModelInput;
         this.customId = "BODY/" + bodyInput.getName();
         this.clock = clock;
         this.frameToExpress = frameToExpressInput;
+        this.centralBody = centralBodyInput;
     }
 
     /**
@@ -207,13 +213,25 @@ public class BodyBuilder {
     }
 
     /**
+     * Function to set up a custom central body.
+     *
+     * @param centralBodyInput The central body to input
+     * @return The builder with a custom central body
+     */
+    public BodyBuilder withCentralBody(final Body centralBodyInput) {
+        this.centralBody = centralBodyInput;
+        return this;
+    }
+
+    /**
      * The build function that generates the body object.
      *
      * @return : A body object with the given parameters of the builder.
      */
     public Body build() {
         final Body tempBody =
-            new Body(body, pathToModel, frameToExpress, customId, clock);
+            new Body(body, pathToModel, frameToExpress, customId, clock,
+                     centralBody);
         return checkAttributes(tempBody);
     }
 
