@@ -116,6 +116,9 @@ public class SpacecraftBuilder {
     /** The list of bodies considered when influence sphere are computed. */
     private List<Body> bodies = new ArrayList<>();
 
+    /** The central body. */
+    private Body centralBody;
+
     /** The boolean to display or not the influence sphere. */
     private boolean displayInfluenceSphere = false;
 
@@ -299,10 +302,18 @@ public class SpacecraftBuilder {
         return this;
     }
 
+    /**
+     * Function to display the influence sphere changes.
+     *
+     * @param bodiesInput The list of bodies considered
+     * @param centralBodyInput The central body of the problem
+     */
     public SpacecraftBuilder
-        displayInfluenceSphereChanges(final List<Body> bodiesInput) {
+        displayInfluenceSphereChanges(final List<Body> bodiesInput,
+                                      final Body centralBodyInput) {
         this.displayInfluenceSphere = true;
         this.bodies = bodiesInput;
+        this.centralBody = centralBodyInput;
         return this;
     }
 
@@ -349,7 +360,7 @@ public class SpacecraftBuilder {
             spacecraft.setOptionalRotation(rotation);
         }
         if (displayInfluenceSphere) {
-            spacecraft.displayInfluenceSphereChanges(bodies);
+            spacecraft.displayInfluenceSphereChanges(bodies, centralBody);
         }
         return spacecraft;
     }

@@ -285,7 +285,17 @@ public enum OreCzmlMessages
                   */
                  NOT_A_MULTIPLE_TRIANGLE_LINE("The line of visibility used has only one station and one spacecraft defined, don't use the .displaySingleTriangle(int) method, instead use the .displayTriangle() method"),
 
+                 // Influence Sphere Utils
+
+                 /**
+                  * Trigger when the list of julian dates and the list of
+                  * cartesian is not the same while trying to build segregated
+                  * time and position for each influence sphere crossing.
+                  */
+                 NOT_SAME_SIZE_TIME_POSITION("The list of julian dates and the list of cartesian is not the same, thus the influence sphere crossing segregation cannot happen"),
+
                  // unit testing
+
                  /**
                   * Trigger when satellites are not close enough to build a
                   * collision object.

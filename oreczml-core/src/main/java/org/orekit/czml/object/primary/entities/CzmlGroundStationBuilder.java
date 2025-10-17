@@ -39,13 +39,8 @@ public class CzmlGroundStationBuilder {
      */
     private TopocentricFrame topocentricFrame;
 
-    /**
-     * The list of topocentric frame when several ground stations are used.
-     */
-    private final List<TopocentricFrame> multipleTopocentricFrame =
-        new ArrayList<>();
-
     // Optional arguments
+
     /**
      * The path of the model (if used) of the ground station.
      */
@@ -55,9 +50,6 @@ public class CzmlGroundStationBuilder {
      * The paths of the models when multiple models are used.
      */
     private final List<String> multipleModels = new ArrayList<>();
-
-    /** The custom ID for the czml ground station. */
-    private String customID = CzmlGroundStation.DEFAULT_ID;
 
     /**
      * A boolean to display or not the circle of visibility of the ground
@@ -106,17 +98,6 @@ public class CzmlGroundStationBuilder {
      */
     public CzmlGroundStationBuilder withModel(final String modelPathInput) {
         this.modelPath = modelPathInput;
-        return this;
-    }
-
-    /**
-     * Function to set up a custom ID.
-     *
-     * @param customIDInput : The custom ID to set up.
-     * @return : The ground station object with a custom ID.
-     */
-    public CzmlGroundStationBuilder withCustomID(final String customIDInput) {
-        this.customID = customIDInput;
         return this;
     }
 

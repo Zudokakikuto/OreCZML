@@ -68,28 +68,20 @@ public class InfluenceSphereTest
 
         final Body sun =
             Body.builder(CelestialBodyFactory.getSun(), pathToSunModel,
-                         sunFrame, clock)
+                         sunFrame, clock, null)
                 .build();
 
         final Body earth =
             Body.builder(CelestialBodyFactory.getEarth(), pathToEarthModel,
-                         sunFrame, clock)
+                         sunFrame, clock, sun)
                 .build();
-
-        final InfluenceSphere influenceSphere =
-            InfluenceSphere.builder(earth, clock).build();
 
         final InfluenceSphere influenceSphereWithCentralBody =
             InfluenceSphere.builder(earth, clock).withCentralBody(sun).build();
 
-        final String influenceSphereTemplate =
-            loadResources("templateFile/object/primary/entities/InfluenceSphereTemplate.txt");
-
         final String influenceSphereWithCentralBodyTemplate =
             loadResources("templateFile/object/primary/entities/InfluenceSphereWithCentralBodyTemplate.txt");
 
-        verifyFileOutput(influenceSphereTemplate, influenceSphere.toString(),
-                         1e-8);
         verifyFileOutput(influenceSphereWithCentralBodyTemplate,
                          influenceSphereWithCentralBody.toString(), 1e-8);
     }

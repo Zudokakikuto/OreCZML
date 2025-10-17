@@ -82,7 +82,7 @@ public class CzmlGroundStationTest
         final CzmlGroundStation stationBuilder =
             CzmlGroundStation
                 .builder(topocentricToulouse, header.getAvailability())
-                .withCustomID("Custom ID").withModel(modelISS).build();
+                .withModel(modelISS).build();
 
         final String pathFile =
             loadResources("templateFile/object/primary/entities/CzmlGroundStationTemplate.txt");

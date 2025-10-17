@@ -22,7 +22,6 @@ import cesiumlanguagewriter.CesiumStreamWriter;
 import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.Reference;
 import org.hipparchus.util.FastMath;
-import org.orekit.czml.archi.factory.BodyFactory;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.czml.object.secondary.CzmlEllipsoid;
@@ -40,7 +39,7 @@ public class InfluenceSphere
     AbstractPrimaryObject {
 
     /** The gravitational constant. */
-    public static final double GRAVITATIONAL_CONSTANT = 6.67430 * 10e-11;
+    public static final double GRAVITATIONAL_CONSTANT = 6.67430 * 1e-11;
 
     /** The default string for position references. */
     public static final String DEFAULT_H_POSITION = "#position";
@@ -63,51 +62,32 @@ public class InfluenceSphere
     /** The radisu of the sphere of influence. */
     private final double radius;
 
-    /** Is the body orbiting around the sun. */
-    private boolean orbitingAroundTheSun = true;
-
     /** The reference position of the sphere of influence. */
     private final Reference positionReference;
 
-    /** The gravitational constant of the body. */
-    private double mu;
-
     /**
-     * The default constructor of the influence sphere assuming the body is
-     * orbiting around the sun. The body object MUST BE WRITTEN in the Czml file
-     * for the sphere of influence to work.
+     * The default constructor of the influence sphere. The body object MUST BE
+     * WRITTEN in the Czml file for the sphere of influence to work.
      *
-     * @param bodyInput : The body considered for the sphere of influence.
-     * @param clock : The clock considered.
-     */
-    InfluenceSphere(final Body bodyInput, final Clock clock) {
-        this(bodyInput, BodyFactory.getSun(clock), clock);
-    }
-
-    /**
-     * This constructor does not assume the body is orbiting around the sun.
-     *
-     * @param bodyInput : The body considered for the sphere of influence.
-     * @param centralBody : The central body around which the body is orbiting
+     * @param bodyInput : The body considered for the sphere of influence.*
      *        around.
      * @param clock : The clock considered.
      */
-    InfluenceSphere(final Body bodyInput, final Body centralBody,
-                    final Clock clock) {
+    InfluenceSphere(final Body bodyInput, final Clock clock) {
         final AbsoluteDate startDate =
             DateUtils.toAbsoluteDate(clock.getAvailability().getStart());
 
+        this.body = bodyInput;
+        final Body centralBody = body.getCentralBody();
         final double centralBodyMass =
             centralBody.getCelestialBody().getGM() / GRAVITATIONAL_CONSTANT;
 
-        final Frame centralFrame =
+        final Frame centralFrame;
+        centralFrame =
             centralBody.getCelestialBody().getInertiallyOrientedFrame();
 
         this.clock = clock;
-        this.body = bodyInput;
-        this.mu = bodyInput.getCelestialBody().getGM();
-        /** The mass of the central body. */
-        /** The mass of the body. */
+        // The mass of the central body
         final double bodyMass =
             bodyInput.getCelestialBody().getGM() / GRAVITATIONAL_CONSTANT;
 
@@ -119,8 +99,8 @@ public class InfluenceSphere
             body.getCelestialBody().getPVCoordinates(startDate, centralFrame);
 
         final KeplerianOrbit orbit =
-            new KeplerianOrbit(initialPVCBody, centralFrame, startDate,
-                               centralBodyMass * GRAVITATIONAL_CONSTANT);
+            new KeplerianOrbit(initialPVCBody, centralFrame, startDate, body
+                .getCentralBody().getCelestialBody().getGM());
 
         final double semiMajorAxis = orbit.getA();
         this.radius =
@@ -128,7 +108,7 @@ public class InfluenceSphere
         final Cartesian cartesianForSphericalEllipsoid =
             new Cartesian(radius, radius, radius);
 
-        /** The position of the sphere of visibility. */
+        // The position of the sphere of visibility.
         this.ellipsoid =
             CzmlEllipsoid
                 .builder(cartesianForSphericalEllipsoid,
@@ -224,24 +204,5 @@ public class InfluenceSphere
      */
     public void setClock(final Clock clockInput) {
         this.clock = clockInput;
-    }
-
-    /**
-     * Sets the mu.
-     *
-     * @param muInput The mu to set
-     */
-    public void setMu(final double muInput) {
-        this.mu = muInput;
-    }
-
-    /**
-     * Sets if the body if orbiting around the sun or not.
-     *
-     * @param orbitingAroundTheSun A boolean, true if orbiting around the sun,
-     *        false if not
-     */
-    public void setOrbitingAroundTheSun(final boolean orbitingAroundTheSun) {
-        this.orbitingAroundTheSun = orbitingAroundTheSun;
     }
 }

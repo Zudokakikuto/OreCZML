@@ -158,7 +158,7 @@ public class InfluenceSphereBuilder {
      */
     public InfluenceSphere build() {
         final InfluenceSphere influenceSphere =
-            new InfluenceSphere(body, centralBody, clock);
+            new InfluenceSphere(body, clock);
         if (customID != null) {
             influenceSphere.setId(customID);
         }
@@ -167,12 +167,6 @@ public class InfluenceSphereBuilder {
         }
         if (clock != null) {
             influenceSphere.setClock(clock);
-        }
-        if (orbitingAroundTheSun) {
-            influenceSphere.setOrbitingAroundTheSun(true);
-        }
-        if (mu != 0) {
-            influenceSphere.setMu(mu);
         }
         return influenceSphere;
     }
