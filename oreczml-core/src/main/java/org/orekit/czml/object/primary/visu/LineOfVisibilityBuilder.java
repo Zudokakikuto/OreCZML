@@ -47,7 +47,7 @@ public class LineOfVisibilityBuilder {
     /**
      * The satellite observed.
      */
-    private Spacecraft satellite;
+    private Spacecraft spacecraft;
 
     // Optional parameters
 
@@ -84,12 +84,12 @@ public class LineOfVisibilityBuilder {
     public LineOfVisibilityBuilder(final TopocentricFrame topocentricFrameInput,
                                    final Spacecraft spacecraftInput,
                                    final TimeInterval availability) {
-        this.satellite = spacecraftInput;
+        this.spacecraft = spacecraftInput;
         this.topocentricFrame = topocentricFrameInput;
         this.customID =
             LineOfVisibility.DEFAULT_ID +
                         topocentricFrameInput.getName() + "/" +
-                        spacecraftInput.getId();
+                            spacecraftInput.getId();
         this.availability = availability;
     }
 
@@ -141,7 +141,7 @@ public class LineOfVisibilityBuilder {
      * Function to set up a availability.
      *
      * @param availabilityInput : The availability to set up.
-     * @return : The line of visibility object with a availability.
+     * @return : The line of visibility builder with a availability.
      */
     public LineOfVisibilityBuilder
         withAvailability(final TimeInterval availabilityInput) {
@@ -149,6 +149,12 @@ public class LineOfVisibilityBuilder {
         return this;
     }
 
+    /**
+     * Function to display the visibility triangle of the line of visibility.
+     *
+     * @return : The line of visibility builder with visibility triangles
+     *         displayed
+     */
     public LineOfVisibilityBuilder withVisibilityTriangle() {
         this.displayTriangle = true;
         return this;
@@ -166,9 +172,9 @@ public class LineOfVisibilityBuilder {
         throws URISyntaxException,
             IOException {
         LineOfVisibility toReturn = null;
-        if (satellite != null) {
+        if (spacecraft != null) {
             toReturn =
-                new LineOfVisibility(topocentricFrame, satellite,
+                new LineOfVisibility(topocentricFrame, spacecraft,
                                      angleOfAperture, customID, availability);
 
         }
@@ -178,7 +184,7 @@ public class LineOfVisibilityBuilder {
                                      angleOfAperture, customID, availability);
         }
         if (displayTriangle) {
-            if (satellite != null) {
+            if (spacecraft != null) {
                 toReturn.displayTriangle();
             } else {
                 if (constellation != null) {
@@ -191,5 +197,4 @@ public class LineOfVisibilityBuilder {
         }
         return toReturn;
     }
-
 }

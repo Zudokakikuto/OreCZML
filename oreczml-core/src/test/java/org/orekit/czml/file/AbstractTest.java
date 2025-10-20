@@ -88,7 +88,7 @@ public class AbstractTest {
 
     /** The classic duration of the simulation */
     public static final double CLASSIC_DURATION_OF_SIMULATION = 10 * 3600; // in
-    // seconds;
+                                                                           // seconds;
 
     /** user home. */
     private static final String USER_HOME = "user.home";
@@ -98,7 +98,7 @@ public class AbstractTest {
 
     /** The root of the project. */
     private static String ROOT =
-                    System.getProperty("user.dir").replace("oreczml-core", "");
+        System.getProperty("user.dir").replace("oreczml-core", "");
 
     /**
      * Load orekit data.
@@ -113,7 +113,7 @@ public class AbstractTest {
             final File orekitDir = new File(homePath, "orekit-data");
             final DataProvider provider = new DirectoryCrawler(orekitDir);
             DataContext.getDefault().getDataProvidersManager()
-                            .addProvider(provider);
+                .addProvider(provider);
         } catch (OrekitException oe) {
             System.err.println(oe.getLocalizedMessage());
         }
@@ -127,7 +127,11 @@ public class AbstractTest {
      */
     public static String loadResources(final String resourcePath) {
         return new File(GlobalTests.class.getClassLoader()
-                                        .getResource(resourcePath).getFile()).toPath().toString();
+            .getResource(resourcePath).getFile()).toPath().toString();
+    }
+
+    public static String loadOutputLocation() {
+        return "Output";
     }
 
     public static String loadModelFile() {
@@ -149,7 +153,7 @@ public class AbstractTest {
             return outputPath + "/" + outputName;
         } else if (osName.contains("Linux")) {
             final String outputPath =
-                            ROOT + "\\..\\oreczml-js-interface\\public";
+                ROOT + "\\..\\oreczml-js-interface\\public";
             return outputPath + outputName;
         } else {
             ROOT = ROOT.replace("\\", "/");
@@ -163,7 +167,6 @@ public class AbstractTest {
      *
      * @return the header
      */
-    @DefaultDataContext
     public static Header dummyHeader() {
         final AbsoluteDate starDate =
                         new AbsoluteDate(2024, 1, 1, 0, 0, 0.0, TimeScalesFactory.getUTC());
@@ -178,7 +181,6 @@ public class AbstractTest {
      * @param startDate the start date
      * @return the orbit
      */
-    @DefaultDataContext
     public static Orbit dummyOrbit(final AbsoluteDate startDate) {
         return new KeplerianOrbit(7878000, 0, FastMath.toRadians(10), 0,
                                   FastMath.toRadians(90), FastMath.toRadians(0),
@@ -203,8 +205,8 @@ public class AbstractTest {
                                                        dummyOrbit(startDate),
                                                        OrbitType.CARTESIAN);
         final AdaptiveStepsizeIntegrator integrator =
-                        new DormandPrince853Integrator(MIN_STEP, MAX_STEP, tolerances[0],
-                                                       tolerances[1]);
+            new DormandPrince853Integrator(MIN_STEP, MAX_STEP, tolerances[0],
+                                           tolerances[1]);
 
         final NumericalPropagator propagator =
                         new NumericalPropagator(integrator);
@@ -525,9 +527,9 @@ public class AbstractTest {
         // point
         if (FastMath.abs(decimalValue1) >= 10) {
             int decVal =
-                            String.valueOf(FastMath.abs(decimalValue1)).indexOf(".");
+                String.valueOf(FastMath.abs(decimalValue1)).indexOf(".");
             double mult =
-                            Double.parseDouble("1e-" + String.valueOf(decVal - 1));
+                Double.parseDouble("1e-" + String.valueOf(decVal - 1));
             decimalValue1 *= mult;
             decimalValue2 *= mult;
         }
@@ -551,28 +553,28 @@ public class AbstractTest {
             int moveUp = Integer.valueOf(str1.substring(str1.length() - 1)) - 1;
             String filler = new String(new char[moveUp]).replace('\0', '0');
             str1 =
-                            "0." +
-                                            filler + str1.substring(0, 1) +
-                                            str1.substring(2, str1.length() - 3);
+                "0." +
+                   filler + str1.substring(0, 1) +
+                   str1.substring(2, str1.length() - 3);
             str2 =
-                            "0." +
-                                            filler + str2.substring(0, 1) +
-                                            str2.substring(2, str2.length() - 3);
+                "0." +
+                   filler + str2.substring(0, 1) +
+                   str2.substring(2, str2.length() - 3);
         }
 
         // Makes sure we do not call a character after the end of the string
         // length value
         double check =
-                        Double.parseDouble(String.valueOf(accuracy)
-                                                           .substring(String.valueOf(accuracy).length() - 1));
+            Double.parseDouble(String.valueOf(accuracy)
+                .substring(String.valueOf(accuracy).length() - 1));
         double strMax =
-                        str1.length() < str2.length() ? str1.length() : str2.length();
+            str1.length() < str2.length() ? str1.length() : str2.length();
         if (check + 2 > strMax) {
             check = strMax - 2;
         }
 
         return str1.substring(2, (int) (2 + check))
-                        .equals(str2.substring(2, (int) (2 + check)));
+            .equals(str2.substring(2, (int) (2 + check)));
     }
 
     /**
@@ -584,10 +586,10 @@ public class AbstractTest {
      * @return Integer
      */
     private static Integer
-    findErrorLineValue(final NavigableSet<Integer> lineStartValues,
-                       final Pair<Integer, Object> templateValue) {
+        findErrorLineValue(final NavigableSet<Integer> lineStartValues,
+                           final Pair<Integer, Object> templateValue) {
         final Integer lineStartCharValue =
-                        lineStartValues.lower(templateValue.first());
+            lineStartValues.lower(templateValue.first());
         return lineStartValues.headSet(lineStartCharValue).size() + 1;
     }
 

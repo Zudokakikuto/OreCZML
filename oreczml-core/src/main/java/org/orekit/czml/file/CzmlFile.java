@@ -24,11 +24,14 @@ import org.orekit.czml.object.primary.AbstractPrimaryObject;
 import org.orekit.czml.object.primary.CzmlPrimaryObject;
 import org.orekit.czml.object.primary.Header;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -150,11 +153,11 @@ public class CzmlFile {
             throw new OreCzmlException(OreCzmlMessages.NO_HEADER);
         } else {
             // String writer used by Cesium
-            final StringWriter writer = new StringWriter();
+            final StringWriter content = new StringWriter();
 
             // The output stream of cesium that will contain the strings to
             // write into the CzmLFile
-            final CesiumOutputStream output = new CesiumOutputStream(writer);
+            final CesiumOutputStream output = new CesiumOutputStream(content);
 
             // The stream that converts all the strings into understandable
             // string for the CzmlFile.

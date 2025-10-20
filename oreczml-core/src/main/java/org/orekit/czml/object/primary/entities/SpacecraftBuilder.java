@@ -17,7 +17,6 @@
 package org.orekit.czml.object.primary.entities;
 
 import org.hipparchus.geometry.euclidean.threed.Rotation;
-import org.orekit.czml.object.primary.AbstractPrimaryObject;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.czml.object.secondary.Orientation;
 import org.orekit.propagation.BoundedPropagator;
@@ -116,7 +115,7 @@ public class SpacecraftBuilder {
     private Rotation rotation;
 
     /** The list of bodies considered when influence sphere are computed. */
-    private List bodies = new ArrayList<>();
+    private List<Body> bodies = new ArrayList<>();
 
     /** The central body. */
     private Body centralBody;
@@ -266,7 +265,7 @@ public class SpacecraftBuilder {
      */
     public SpacecraftBuilder
         withOrientation(final Orientation orientationInput) {
-        this.orientation = orientationInput.cloneObject();
+        this.orientation = orientationInput;
         this.displayAttitude = true;
         return this;
     }
@@ -285,10 +284,22 @@ public class SpacecraftBuilder {
      * Function to set up a custom ID.
      *
      * @param customIDInput : The custom ID to set up.
-     * @return : The Spacecraft Builder with a custom ID.
+     * @return : The Spacecraft object with a custom ID.
      */
     public SpacecraftBuilder withCustomID(final String customIDInput) {
         this.customID = customIDInput;
+        return this;
+    }
+
+    /**
+     * Function to set up a custom ID.
+     *
+     * @param optionalRotationInput : The custom ID to set up.
+     * @return : The Spacecraft object with a custom ID.
+     */
+    public SpacecraftBuilder
+        withOptionalRotation(final Rotation optionalRotationInput) {
+        this.rotation = optionalRotationInput;
         return this;
     }
 
@@ -303,8 +314,8 @@ public class SpacecraftBuilder {
         displayInfluenceSphereChanges(final List<Body> bodiesInput,
                                       final Body centralBodyInput) {
         this.displayInfluenceSphere = true;
-        this.bodies = Body.cloneList(bodiesInput);
-        this.centralBody = centralBodyInput.cloneObject();
+        this.bodies = bodiesInput;
+        this.centralBody = centralBodyInput;
         return this;
     }
 

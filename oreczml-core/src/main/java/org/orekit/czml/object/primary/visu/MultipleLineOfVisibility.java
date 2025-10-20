@@ -21,6 +21,7 @@ import cesiumlanguagewriter.CesiumStreamWriter;
 import org.orekit.czml.errors.OreCzmlException;
 import org.orekit.czml.errors.OreCzmlMessages;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
+import org.orekit.czml.object.primary.CzmlPrimaryObject;
 import org.orekit.czml.object.primary.entities.Constellation;
 import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.frames.TopocentricFrame;
@@ -47,7 +48,7 @@ import java.util.ListIterator;
  */
 public class MultipleLineOfVisibility
     extends
-    AbstractPrimaryObject
+    AbstractPrimaryObject<MultipleLineOfVisibility>
     implements
     List<LineOfVisibility> {
 
@@ -63,7 +64,7 @@ public class MultipleLineOfVisibility
     private final List<LineOfVisibility> lines;
 
     /** The id of the multiple visibility line object. */
-    private final String id;
+    private String id;
 
     // Constructor
 
