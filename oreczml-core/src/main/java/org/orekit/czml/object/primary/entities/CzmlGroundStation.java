@@ -222,8 +222,7 @@ public class CzmlGroundStation
     public CzmlGroundStation cloneObject() {
         try {
             final CzmlGroundStation copy =
-                CzmlGroundStation
-                    .builder(this.topocentricFrame, this.getAvailability())
+                CzmlGroundStation.builder(this.topocentricFrame, this.clock)
                     .withModel(String.valueOf(this.model)).build();
             copy.setId(getId());
             copy.setName(getName());
@@ -238,7 +237,7 @@ public class CzmlGroundStation
                               final double angleOfAperture) {
         visibilityCircle =
             StationVisibilityCircle
-                .builder(topocentricFrame, satellite, getClock())
+                .builder(topocentricFrame, satellite, this.clock)
                 .withAngleOfAperture(angleOfAperture).build();
         displayCircle = true;
 

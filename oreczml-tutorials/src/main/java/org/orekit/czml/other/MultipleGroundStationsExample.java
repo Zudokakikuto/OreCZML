@@ -94,15 +94,19 @@ public class MultipleGroundStationsExample {
                                  "Las Vegas Frame");
 
         // Creation of all the ground stations
-        final List<CzmlGroundStation> groundStations = new ArrayList<>();
-        groundStations.add(new CzmlGroundStation(topocentricToulouse,
-                                                 header.getAvailability()));
-        groundStations.add(new CzmlGroundStation(topocentricLasVegas,
-                                                 header.getAvailability()));
+        final List<CzmlGroundStation> groundStation = new ArrayList<>();
+        groundStation
+            .add(new CzmlGroundStation(topocentricToulouse, header.getClock()));
+        groundStation
+            .add(new CzmlGroundStation(topocentricLasVegas, header.getClock()));
+
+        final CzmlGroundStation groundStation1 =
+            CzmlGroundStation.builder(topocentricToulouse, header.getClock())
+                .build();
 
         // Creation of the file
         final CzmlFile file =
-            CzmlFile.builder(header).withCzmlGroundStation(groundStations)
+            CzmlFile.builder(header).withCzmlGroundStation(groundStation)
                 .build();
 
         // Writing in the file

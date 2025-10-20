@@ -26,10 +26,10 @@ import cesiumlanguagewriter.PolylineCesiumWriter;
 import cesiumlanguagewriter.PolylineMaterialCesiumWriter;
 import cesiumlanguagewriter.PositionCesiumWriter;
 import cesiumlanguagewriter.SolidColorMaterialCesiumWriter;
-import cesiumlanguagewriter.TimeInterval;
 import org.orekit.czml.errors.OreCzmlException;
 import org.orekit.czml.errors.OreCzmlMessages;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
+import org.orekit.czml.object.secondary.Clock;
 import org.orekit.czml.object.secondary.Label;
 
 import java.awt.Color;
@@ -103,17 +103,20 @@ public class LatLongLines
     /** The longitude angular step. */
     private int longitudeAngularStep;
 
+    /** The clock of the lat long lines. */
+    private Clock clock;
+
     // Constructors
 
     /**
      * The default constructor using the default angular step while not
      * displaying the labels.
      *
-     * @param availability : The availability considered.
+     * @param clock : The clock considered.
      */
-    LatLongLines(final TimeInterval availability) {
+    LatLongLines(final Clock clock) {
         this(DEFAULT_ANGULAR_STEP, DEFAULT_ANGULAR_STEP, false, DEFAULT_ID,
-             availability);
+             clock);
     }
 
     /**
@@ -126,36 +129,37 @@ public class LatLongLines
      * @param displayLabelsInput : To display the labels of the lines or not (°
      *        of the parallels or of the meridians)
      * @param customID : The custom ID of the lat long lines object.
-     * @param availability : The availability considered when several are used.
+     * @param clock : The availability considered when several are used.
      */
     LatLongLines(final int latitudeAngularStepInput,
                  final int longitudeAngularStepInput,
                  final boolean displayLabelsInput, final String customID,
-                 final TimeInterval availability) {
+                 final Clock clock) {
 
         this.setId(customID);
         this.setName(DEFAULT_NAME);
-        this.setAvailability(availability);
-        this.latitudeAngularStep = latitudeAngularStepInput;
+        this.setAvailability(clock.getAvailability());
+        this.clock = clock;
         this.longitudeAngularStep = longitudeAngularStepInput;
+        this.latitudeAngularStep = latitudeAngularStepInput;
 
         this.displayLabels = displayLabelsInput;
         final List<Integer> divisorsLatitude = findAllDivisors(360);
         final List<Integer> divisorsLongitude = findAllDivisors(360);
 
-        if (latitudeAngularStep > 180) {
+        if (latitudeAngularStepInput > 180) {
             throw new OreCzmlException(OreCzmlMessages.GREATER_ANGULAR_LATITUDE_STEP);
         }
         if (longitudeAngularStepInput > 360) {
             throw new OreCzmlException(OreCzmlMessages.GREATER_ANGULAR_LONGITUDE_STEP);
         }
 
-        int divisorLatitudeToUse = latitudeAngularStep;
+        int divisorLatitudeToUse = latitudeAngularStepInput;
         int divisorLongitudeToUse = longitudeAngularStepInput;
 
-        if (!(divisorsLatitude.contains(latitudeAngularStep))) {
+        if (!(divisorsLatitude.contains(latitudeAngularStepInput))) {
             divisorLatitudeToUse =
-                findNearestLowerDivisor(360, latitudeAngularStep);
+                findNearestLowerDivisor(360, latitudeAngularStepInput);
         }
         if (!divisorsLongitude.contains(longitudeAngularStepInput)) {
             divisorLongitudeToUse =
@@ -191,11 +195,11 @@ public class LatLongLines
     /**
      * Builder lat long lines builder.
      *
-     * @param availability the availability
+     * @param clock the clock
      * @return the lat long lines builder
      */
-    public static LatLongLinesBuilder builder(final TimeInterval availability) {
-        return new LatLongLinesBuilder(availability);
+    public static LatLongLinesBuilder builder(final Clock clock) {
+        return new LatLongLinesBuilder(clock);
     }
 
     // Overrides
@@ -216,7 +220,7 @@ public class LatLongLines
     @Override
     public LatLongLines cloneObject() {
         final LatLongLines copy =
-            LatLongLines.builder(getAvailability()).withCustomID(getId())
+            LatLongLines.builder(this.clock).withCustomID(getId())
                 .withDisplay(this.displayLabels)
                 .withLatitudeAngularStep(this.latitudeAngularStep)
                 .withLongitudeAngularStep(longitudeAngularStep).build();

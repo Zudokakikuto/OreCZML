@@ -197,8 +197,7 @@ public class MultipleLineOfVisibilityBuilder {
                 final LineOfVisibilityBuilder lineBuilder =
                     LineOfVisibility.builder(topocentricFrame,
                                              constellationInput,
-                                             constellationInput.getSatellites()
-                                                 .get(0).getClock());
+                                             constellationInput.getClock());
                 if (areAvailabilites) {
                     lineBuilder.withClock(clocksInput.get(i));
                 }

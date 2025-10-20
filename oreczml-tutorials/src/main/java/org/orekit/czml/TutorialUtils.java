@@ -49,7 +49,8 @@ public class TutorialUtils {
     public static final double MAX_STEP = 1000.0;
 
     /** The classic duration of the simulation. */
-    public static final double CLASSIC_DURATION_OF_SIMULATION = 10 * 3600; // in seconds;
+    public static final double CLASSIC_DURATION_OF_SIMULATION = 10 * 3600; // in
+                                                                           // seconds;
 
     /** user home. */
     private static final String USER_HOME = "user.home";

@@ -71,26 +71,25 @@ public class CylinderTest
             new Spacecraft(propagator, header.getClock());
 
         final Cylinder cylinder =
-            new Cylinder(topocentricToulouse, 90.0, header.getAvailability(),
-                         spacecraft);
+            new Cylinder(topocentricToulouse, spacecraft, 90.0,
+                         header.getClock());
 
         final Cylinder coverageCylinder =
             new Cylinder(10.0, 20.0, 1.0, Color.BLUE,
                          new Position(1, 45, 20,
                                       PositionType.CARTESIAN_POSITION,
-                                      header.getAvailability()),
+                                      header.getClock()),
                          CesiumHeightReference.CLAMP_TO_GROUND,
-                         header.getAvailability());
+                         header.getClock());
 
         final CzmlGroundStation groundStation =
-            new CzmlGroundStation(topocentricToulouse,
-                                  header.getAvailability());
+            new CzmlGroundStation(topocentricToulouse, header.getClock());
 
         final Cylinder groundStationCylinder =
-            new Cylinder(groundStation, 80.0, header.getAvailability());
+            new Cylinder(groundStation, 80.0, header.getClock());
 
         final Cylinder topocentricCylinder =
-            new Cylinder(topocentricToulouse, 90.0, header.getAvailability());
+            new Cylinder(topocentricToulouse, 90.0, header.getClock());
 
         final String pathFile =
             loadResources("templateFile/object/secondary/CylinderTemplate.txt");

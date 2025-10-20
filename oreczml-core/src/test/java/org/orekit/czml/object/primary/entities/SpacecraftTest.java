@@ -16,6 +16,7 @@
  */
 package org.orekit.czml.object.primary.entities;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.archi.factory.BodyFactory;
@@ -28,6 +29,8 @@ import org.orekit.time.AbsoluteDate;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -98,6 +101,8 @@ public class SpacecraftTest
         final String pathFile =
             loadResources("templateFile/object/primary/entities/SpacecraftAttitudeTemplate.txt");
 
+        Assertions.assertEquals(Files.readString(Path.of(pathFile)),
+                                spacecraft.toString());
         verifyFileOutput(pathFile, spacecraft.toString(), 1e-8);
     }
 
@@ -119,7 +124,7 @@ public class SpacecraftTest
             DateUtils.toAbsoluteDate(header.getAvailability().getStart());
         final AbsoluteDate finalDate = startDate.shiftedBy(60.0);
 
-        final Clock clock = new Clock(startDate, startDate, 1.0);
+        final Clock clock = new Clock(startDate, finalDate, 1.0);
 
         // Build of the spacecraft
         final BoundedPropagator propagator =

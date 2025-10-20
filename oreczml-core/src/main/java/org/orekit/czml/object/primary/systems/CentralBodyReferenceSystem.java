@@ -78,6 +78,9 @@ public class CentralBodyReferenceSystem
      */
     private List<Polyline> polylines = new ArrayList<>();
 
+    /** The clock of the central body system. */
+    private Clock clock;
+
     /**
      * This constructor builds a central body reference system on the earth with
      * basic parameters.
@@ -116,6 +119,7 @@ public class CentralBodyReferenceSystem
         this.setName(name);
         this.setAvailability(clock.getAvailability());
 
+        this.clock = clock;
         final Cartesian centralCartesian = new Cartesian(0.1, 0.1, 0.1);
         final double depth = body.getEquatorialRadius() * 3;
 
@@ -190,7 +194,7 @@ public class CentralBodyReferenceSystem
     @Override
     public CentralBodyReferenceSystem cloneObject() {
         final CentralBodyReferenceSystem copy =
-            CentralBodyReferenceSystem.builder(this.getAvailability()).build();
+            CentralBodyReferenceSystem.builder(this.clock).build();
         copy.setName(this.getName());
         copy.setId(this.getId());
         return copy;

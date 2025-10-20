@@ -18,12 +18,10 @@ package org.orekit.czml.object.primary.entities;
 
 import cesiumlanguagewriter.CesiumOutputStream;
 import cesiumlanguagewriter.CesiumStreamWriter;
-import cesiumlanguagewriter.TimeInterval;
 import org.orekit.czml.errors.OreCzmlException;
 import org.orekit.czml.errors.OreCzmlMessages;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
 import org.orekit.czml.object.secondary.Clock;
-import org.orekit.czml.object.utils.DateUtils;
 import org.orekit.orbits.Orbit;
 import org.orekit.propagation.BoundedPropagator;
 import org.orekit.time.AbsoluteDate;
@@ -140,7 +138,7 @@ public class Constellation
             IOException {
         this(Propagators, finalDate, DEFAULT_STRING_MODEL,
              DEFAULT_ID + Propagators.size() + " " + DEFAULT_NUMBER_OF_SAT,
-             clock.getAvailability(), clock.getMultiplier());
+             clock, clock.getMultiplier());
     }
 
     /**
@@ -151,54 +149,55 @@ public class Constellation
      * @param finalDate : The final date when the propagation must stop.
      * @param modelPath : The path of the model used.
      * @param customID : The custom ID of the constellation.
-     * @param availability : The time frame for which the feature is visible
+     * @param clock : The clock
      * @param clockMultiplier : Interval in seconds between DateTime values
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException the io exception
      */
     Constellation(final List<BoundedPropagator> propagatorsInput,
                   final AbsoluteDate finalDate, final String modelPath,
-                  final String customID, final TimeInterval availability,
+                  final String customID, final Clock clock,
                   final double clockMultiplier)
         throws URISyntaxException,
             IOException {
 
         this(propagatorsInput, finalDate, Collections.singletonList(modelPath),
-             customID, availability, clockMultiplier);
+             customID, clock, clockMultiplier);
     }
 
     /**
-     * The constellation constructor with a list of model loaded for each
+     * The constructor of the constellation with several models for each
      * satellite.
      *
      * @param propagatorsInput : A list of bounded propagator that represents
      *        each a propagator for a given satellite.
      * @param finalDateInput : The final date when the propagation must stop.
-     * @param modelsInput : The list of all the paths of the models used.
      * @param customID : The custom ID of the constellation.
-     * @param availability : The time frame for which the feature is visible
+     * @param modelsInput : List of the models for each satellite
+     * @param clock : The clock
      * @param clockMultiplier : Interval in seconds between DateTime values
+     * @throws URISyntaxException the uri syntax exception
+     * @throws IOException the io exception
      */
     Constellation(final List<BoundedPropagator> propagatorsInput,
                   final AbsoluteDate finalDateInput,
                   final List<String> modelsInput, final String customID,
-                  final TimeInterval availability, final double clockMultiplier)
+                  final Clock clock, final double clockMultiplier)
         throws URISyntaxException,
             IOException {
 
         final List<Color> colorList = colorWheel(propagatorsInput.size());
-        this.multipleModels = modelsInput.size() > 1;
         this.models = modelsInput;
+        if (modelsInput.isEmpty()) {
+            models.add(DEFAULT_STRING_MODEL);
+        }
+        this.multipleModels = modelsInput.size() > 1;
         this.totalOfSatellite = propagatorsInput.size();
         this.setName(DEFAULT_NAME + totalOfSatellite + DEFAULT_NUMBER_OF_SAT);
         this.setId(customID);
-        this.setAvailability(availability);
+        this.setAvailability(clock.getAvailability());
         this.clockMultiplier = clockMultiplier;
         this.propagators = new ArrayList<>(propagatorsInput);
         this.finalDate = finalDateInput;
-        this.clock =
-            new Clock(DateUtils.toAbsoluteDate(availability.getStart()),
-                      finalDate, clockMultiplier);
+        this.clock = clock;
         this.defineMultipleArgument(finalDateInput, colorList, multipleModels,
                                     modelsInput);
     }
@@ -214,8 +213,7 @@ public class Constellation
     public static ConstellationBuilder
         builder(final List<BoundedPropagator> propagatorsInput,
                 final AbsoluteDate finalDateInput, final Clock clock) {
-        return new ConstellationBuilder(propagatorsInput, finalDateInput,
-                                        clock.getAvailability(),
+        return new ConstellationBuilder(propagatorsInput, finalDateInput, clock,
                                         clock.getMultiplier());
     }
 
@@ -238,8 +236,7 @@ public class Constellation
             final Constellation copy =
                 Constellation
                     .builder(this.propagators, this.finalDate, this.clock)
-                    .withModel(models).withTimeInterval(getAvailability())
-                    .withCustomId(getId()).build();
+                    .withModel(models).withCustomId(getId()).build();
             copy.setName(getName());
             return copy;
 
@@ -346,9 +343,8 @@ public class Constellation
                 final String currentModel = modelsInput.get(i);
                 final Spacecraft currentSatellite =
                     Spacecraft.builder(propagator, clockMultiplier)
-                        .withFinalDate(finalDateInput)
-                        .withModelPath(currentModel).withColor(colorList.get(i))
-                        .build();
+                        .withFinalDate(finalDate).withModelPath(currentModel)
+                        .withColor(colorList.get(i)).build();
                 satellites.add(currentSatellite);
                 Ids.add(currentSatellite.getId());
                 InitialOrbits.add(currentSatellite.getOrbits().get(0));

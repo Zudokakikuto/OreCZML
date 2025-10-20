@@ -169,7 +169,7 @@ public class AbstractTest {
      */
     public static Header dummyHeader() {
         final AbsoluteDate starDate =
-                        new AbsoluteDate(2024, 1, 1, 0, 0, 0.0, TimeScalesFactory.getUTC());
+            new AbsoluteDate(2024, 1, 1, 0, 0, 0.0, TimeScalesFactory.getUTC());
         final AbsoluteDate stopDate = starDate.shiftedBy(60.0);
         final Clock clockForHeader = new Clock(starDate, stopDate, 10.0);
         return new Header("Dummy_Header", clockForHeader);
@@ -198,29 +198,29 @@ public class AbstractTest {
      */
     @DefaultDataContext
     public static BoundedPropagator
-    dummyPropagator(final AbsoluteDate startDate,
-                    final AbsoluteDate finalDate) {
+        dummyPropagator(final AbsoluteDate startDate,
+                        final AbsoluteDate finalDate) {
         final double[][] tolerances =
-                        NumericalPropagator.tolerances(POSITION_TOLERANCE,
-                                                       dummyOrbit(startDate),
-                                                       OrbitType.CARTESIAN);
+            NumericalPropagator.tolerances(POSITION_TOLERANCE,
+                                           dummyOrbit(startDate),
+                                           OrbitType.CARTESIAN);
         final AdaptiveStepsizeIntegrator integrator =
             new DormandPrince853Integrator(MIN_STEP, MAX_STEP, tolerances[0],
                                            tolerances[1]);
 
         final NumericalPropagator propagator =
-                        new NumericalPropagator(integrator);
+            new NumericalPropagator(integrator);
 
         final NormalizedSphericalHarmonicsProvider provider =
-                        GravityFieldFactory.getNormalizedProvider(10, 10);
+            GravityFieldFactory.getNormalizedProvider(10, 10);
         final ForceModel holmesFeatherstone =
-                        new HolmesFeatherstoneAttractionModel(FramesFactory.getEME2000(),
-                                                              provider);
+            new HolmesFeatherstoneAttractionModel(FramesFactory.getEME2000(),
+                                                  provider);
 
         final EphemerisGenerator generator = propagator.getEphemerisGenerator();
 
         final SpacecraftState initialState =
-                        new SpacecraftState(dummyOrbit(startDate));
+            new SpacecraftState(dummyOrbit(startDate));
 
         propagator.setOrbitType(OrbitType.CARTESIAN);
         propagator.addForceModel(holmesFeatherstone);
@@ -252,7 +252,7 @@ public class AbstractTest {
     @DefaultDataContext
     public static OneAxisEllipsoid getEarth() {
         final Frame ITRF =
-                        FramesFactory.getITRF(IERSConventions.IERS_2010, true);
+            FramesFactory.getITRF(IERSConventions.IERS_2010, true);
         return new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS,
                                     Constants.WGS84_EARTH_FLATTENING, ITRF);
     }
@@ -268,10 +268,10 @@ public class AbstractTest {
      */
     @DefaultDataContext
     public static List<StateCovariance>
-    covariancePropagation(final Spacecraft satellite,
-                          final Propagator propagator,
-                          final StateCovariance initCovariance,
-                          final double clockMultiplier) {
+        covariancePropagation(final Spacecraft satellite,
+                              final Propagator propagator,
+                              final StateCovariance initCovariance,
+                              final double clockMultiplier) {
 
         final List<StateCovariance> covarianceListTemp = new ArrayList<>();
 
@@ -280,17 +280,17 @@ public class AbstractTest {
         final String stm = "stm";
 
         final MatricesHarvester harvester =
-                        propagator.setupMatricesComputation(stm, null, null);
+            propagator.setupMatricesComputation(stm, null, null);
 
         final StateCovarianceMatrixProvider provider =
-                        new StateCovarianceMatrixProvider("covariance", stm, harvester,
-                                                          initCovariance);
+            new StateCovarianceMatrixProvider("covariance", stm, harvester,
+                                              initCovariance);
 
         propagator.addAdditionalStateProvider(provider);
 
         propagator.getMultiplexer().add(clockMultiplier, spacecraftState -> {
             final StateCovariance covariance =
-                            provider.getStateCovariance(spacecraftState);
+                provider.getStateCovariance(spacecraftState);
             covarianceListTemp.add(covariance);
         });
 
@@ -309,34 +309,34 @@ public class AbstractTest {
     public static void verifyFileOutput(final String templateFileName,
                                         final String testString,
                                         final double accuracy)
-                    throws URISyntaxException,
-                    IOException {
+        throws URISyntaxException,
+            IOException {
 
         // Get template file string data
         final String templateFile = Files.readString(Path.of(templateFileName));
 
         // Stores files as list of string and double values in sequential order
         final List<Pair<Integer, Object>> templateValues =
-                        readValues(templateFile);
+            readValues(templateFile);
         final List<Pair<Integer, Object>> testValues = readValues(testString);
 
         // Determines locations of newline characters to aid in finding output
         // error location
         final NavigableSet<Integer> lineStartValues =
-                        new TreeSet<>(findNewlineChars(templateFile));
+            new TreeSet<>(findNewlineChars(templateFile));
 
         // Compares unit test output to template value
         final Pair<Integer, String> testOutput =
-                        compareValues(templateValues, testValues, lineStartValues,
-                                      accuracy);
+            compareValues(templateValues, testValues, lineStartValues,
+                          accuracy);
 
         if (testOutput.first() == -1) {
             Assertions.assertEquals(-1, testOutput.first());
         } else {
             final String message =
-                            testOutput.second() +
-                                            " found at line " + testOutput.first() +
-                                            " of " + templateFileName;
+                testOutput.second() +
+                                   " found at line " + testOutput.first() +
+                                   " of " + templateFileName;
             throw new AssertionError(message);
         }
     }
@@ -356,7 +356,7 @@ public class AbstractTest {
         // REGEX to recognize all integer, float, and scientific notation
         // numbers
         final Pattern pattern =
-                        Pattern.compile("-?\\d+(\\.\\d+)?([Ee][+-]?\\d+)?");
+            Pattern.compile("-?\\d+(\\.\\d+)?([Ee][+-]?\\d+)?");
         final Matcher matcher = pattern.matcher(text);
 
         // Used to ensure that in case of multiple same numbers being present in
@@ -379,7 +379,7 @@ public class AbstractTest {
                 // Add text preceding current number and following after last
                 // number
                 valueList.add(new Pair<Integer, Object>(prevStart, text
-                                .substring(prevStart, startText)));
+                    .substring(prevStart, startText)));
 
                 // Add number
                 valueList.add(new Pair<Integer, Object>(startText, decimal));
@@ -396,7 +396,7 @@ public class AbstractTest {
 
         // Adds final text string to Object list
         valueList
-                        .add(new Pair<Integer, Object>(stopText, text.substring(stopText)));
+            .add(new Pair<Integer, Object>(stopText, text.substring(stopText)));
 
         // Return list of text/number objects in file along with start character
         // index values
@@ -414,10 +414,10 @@ public class AbstractTest {
      * @return boolean
      */
     private static Pair<Integer, String>
-    compareValues(final List<Pair<Integer, Object>> templateValues,
-                  final List<Pair<Integer, Object>> testValues,
-                  final NavigableSet<Integer> lineStartValues,
-                  final double accuracy) {
+        compareValues(final List<Pair<Integer, Object>> templateValues,
+                      final List<Pair<Integer, Object>> testValues,
+                      final NavigableSet<Integer> lineStartValues,
+                      final double accuracy) {
 
         int max_val = templateValues.size();
         if (templateValues.size() > testValues.size()) {
@@ -432,30 +432,30 @@ public class AbstractTest {
 
             // Compare two doubles
             if (templateValue instanceof Double &&
-                            testValue instanceof Double) {
+                testValue instanceof Double) {
                 boolean accurate =
-                                compareDoubles(templateValue, testValue, accuracy);
+                    compareDoubles(templateValue, testValue, accuracy);
                 if (!accurate) {
                     final Integer lineValue =
-                                    findErrorLineValue(lineStartValues,
-                                                       templateValues.get(i));
+                        findErrorLineValue(lineStartValues,
+                                           templateValues.get(i));
                     return new Pair<>(lineValue, "Numeric error");
                 }
                 // Compare two strings of text
             } else if (templateValue instanceof String &&
-                            testValue instanceof String) {
+                       testValue instanceof String) {
 
                 // Replace return line chars to avoid end-of-file return
                 final String replaceValue = "([\\r\\n])";
                 final String str1 =
-                                ((String) templateValue).replaceAll(replaceValue, "");
+                    ((String) templateValue).replaceAll(replaceValue, "");
                 final String str2 =
-                                ((String) testValue).replaceAll(replaceValue, "");
+                    ((String) testValue).replaceAll(replaceValue, "");
 
                 if (str1.compareTo(str2) != 0) {
                     final Integer lineValue =
-                                    findErrorLineValue(lineStartValues,
-                                                       templateValues.get(i));
+                        findErrorLineValue(lineStartValues,
+                                           templateValues.get(i));
                     return new Pair<>(lineValue, "Text error");
                 }
             }
@@ -463,7 +463,7 @@ public class AbstractTest {
             // files.
             else {
                 final Integer lineValue =
-                                findErrorLineValue(lineStartValues, templateValues.get(i));
+                    findErrorLineValue(lineStartValues, templateValues.get(i));
                 return new Pair<>(lineValue, "Type mismatch error");
             }
         }

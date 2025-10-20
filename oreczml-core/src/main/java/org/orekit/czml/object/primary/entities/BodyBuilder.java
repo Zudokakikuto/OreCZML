@@ -80,20 +80,22 @@ public class BodyBuilder {
     /**
      * The body builder constructor.
      *
-     * @param bodyInput           : The body to consider
-     * @param pathToModelInput    : The model to load
+     * @param bodyInput : The body to consider
+     * @param pathToModelInput : The model to load
      * @param frameToExpressInput : The model to load
-     * @param clock               : The clock considered.
-     * @param centralBody         : The central body considered
+     * @param clock : The clock considered.
+     * @param centralBody : The central body considered
      */
-    public BodyBuilder(final CelestialBody bodyInput, final String pathToModelInput, final Frame frameToExpressInput, final Clock clock,
+    public BodyBuilder(final CelestialBody bodyInput,
+                       final String pathToModelInput,
+                       final Frame frameToExpressInput, final Clock clock,
                        final Body centralBody) {
-        this.body           = bodyInput;
-        this.pathToModel    = pathToModelInput;
-        this.customId       = "BODY/" + bodyInput.getName();
-        this.clock          = clock.cloneObject();
+        this.body = bodyInput;
+        this.pathToModel = pathToModelInput;
+        this.customId = "BODY/" + bodyInput.getName();
+        this.clock = clock.cloneObject();
         this.frameToExpress = frameToExpressInput;
-        this.centralBody    = centralBody;
+        this.centralBody = centralBody;
     }
 
     /**
@@ -125,7 +127,7 @@ public class BodyBuilder {
      */
     public BodyBuilder displayOnlyOnePeriod(final double periodInput) {
         displayOnlyOnePeriod = true;
-        this.period          = periodInput;
+        this.period = periodInput;
         return this;
     }
 
@@ -135,7 +137,8 @@ public class BodyBuilder {
      * @param modelMaximumScaleInput the model maximum scale input
      * @return the body
      */
-    public BodyBuilder withModelMaximumScale(final double modelMaximumScaleInput) {
+    public BodyBuilder
+        withModelMaximumScale(final double modelMaximumScaleInput) {
         this.modelMaximumScale = modelMaximumScaleInput;
         return this;
     }
@@ -146,7 +149,8 @@ public class BodyBuilder {
      * @param modelMinimumPixelSizeInput the model minimum pixel size input
      * @return the body
      */
-    public BodyBuilder withModelMinimumPixelSize(final double modelMinimumPixelSizeInput) {
+    public BodyBuilder
+        withModelMinimumPixelSize(final double modelMinimumPixelSizeInput) {
         this.modelMinimumPixelSize = modelMinimumPixelSizeInput;
         return this;
     }
@@ -176,10 +180,13 @@ public class BodyBuilder {
     /**
      * With custom expressed frame.
      *
-     * @param frameToExpressInput : The frame to define the position of the body.
-     * @return : The body builder object with a custom frame to express the position of the body.
+     * @param frameToExpressInput : The frame to define the position of the
+     *        body.
+     * @return : The body builder object with a custom frame to express the
+     *         position of the body.
      */
-    public BodyBuilder withCustomExpressedFrame(final Frame frameToExpressInput) {
+    public BodyBuilder
+        withCustomExpressedFrame(final Frame frameToExpressInput) {
         this.frameToExpress = frameToExpressInput;
         return this;
     }
@@ -222,7 +229,9 @@ public class BodyBuilder {
      * @return : A body object with the given parameters of the builder.
      */
     public Body build() {
-        final Body tempBody = new Body(body, pathToModel, frameToExpress, customId, clock, centralBody);
+        final Body tempBody =
+            new Body(body, pathToModel, frameToExpress, customId, clock,
+                     centralBody);
         return checkAttributes(tempBody);
     }
 

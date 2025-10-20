@@ -123,7 +123,7 @@ public class SpacecraftReferenceSystem
                                      final double maximumScale,
                                      final double minimumPixelSize,
                                      final String customID) {
-        this.spacecraft = spacecraft.cloneObject();
+        this.spacecraft = spacecraft;
         this.setId(customID);
         this.setName(DEFAULT_NAME + spacecraft.getName());
         this.setAvailability(spacecraft.getAvailability());
@@ -134,7 +134,7 @@ public class SpacecraftReferenceSystem
         this.referenceSystemModel =
             new CzmlModel(PATH_TO_REFERENCE_SYSTEM, maximumScale,
                           minimumPixelSize, scale, false,
-                          spacecraft.getAvailability());
+                          spacecraft.getClock());
     }
 
     // Overrides
@@ -173,7 +173,7 @@ public class SpacecraftReferenceSystem
      * @return the Spacecraft
      */
     public Spacecraft getSpacecraft() {
-        return spacecraft.cloneObject();
+        return spacecraft;
     }
 
     /**

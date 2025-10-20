@@ -141,8 +141,11 @@ public class AttitudePointing
     /** The color for the arrow. */
     private Color color;
 
-    /** TO display on the ground or not. */
+    /** To display on the ground or not. */
     private boolean displayOnGround;
+
+    /** The clock of the attitude pointing. */
+    private Clock clock;
 
     // Constructors
 
@@ -183,14 +186,15 @@ public class AttitudePointing
                      final Clock clock) {
         this.setId(ID);
         this.satellite = satellite;
+        this.clock = clock;
         this.setName(DEFAULT_NAME + satellite.getName());
         this.setAvailability(clock.getAvailability());
         this.satelliteOrientation = satellite.getOrientation();
-        this.directionPointing = direction;
         this.satelliteAttitudes = satellite.getAttitudes();
         this.states = satellite.getSpaceCraftStates();
         this.julianDates = satelliteOrientation.getJulianDates();
         this.body = body;
+        this.directionPointing = direction;
         this.color = colorInput;
         this.displayOnGround = alwaysDisplayOnGround;
         final Frame frame = satellite.getFrame();
@@ -210,8 +214,7 @@ public class AttitudePointing
         this.attitudePointingPolyline =
             Polyline.nonVectorBuilder(clock)
                 .withFirstReference(satelliteReference)
-                .withSecondReference(groundReference).withColor(colorInput)
-                .build();
+                .withSecondReference(groundReference).withColor(color).build();
     }
 
     // Builder
@@ -265,7 +268,7 @@ public class AttitudePointing
         final AttitudePointing copy =
             AttitudePointing
                 .builder(this.satellite, this.body, this.directionPointing,
-                         getAvailability())
+                         this.clock)
                 .withColor(this.color).withCustomID(getId())
                 .withDisplayOnGround(this.displayOnGround).build();
         copy.setName(getName());

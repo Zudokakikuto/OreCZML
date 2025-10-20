@@ -184,9 +184,10 @@ public class CoveredSurfaceOnBody
                 pointsCartesiansInTime.get(i);
 
             // Add polygon to list
-            this.polygon.add(Polygon.builder(currentCartesianList, tInterval)
-                .withColor(colorInput).withOutline(outlineInput)
-                .withFill(fillInput).build());
+            this.polygon
+                .add(Polygon.builder(currentCartesianList, satellite.getClock())
+                    .withColor(colorInput).withOutline(outlineInput)
+                    .withFill(fillInput).build());
         }
 
     }
@@ -235,7 +236,7 @@ public class CoveredSurfaceOnBody
                                                .getBodyFrame().getName() +
                                            NUMBER + i;
                 packet.writeName(currentName);
-                packet.writeAvailability(poly.getAvailability());
+                packet.writeAvailability(poly.getClock().getAvailability());
 
                 poly.write(packet, output);
             }

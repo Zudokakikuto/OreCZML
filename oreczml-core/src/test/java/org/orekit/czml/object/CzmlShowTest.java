@@ -46,7 +46,7 @@ public class CzmlShowTest
 
         final Header header = dummyHeader();
 
-        final CzmlShow show = new CzmlShow(true, header.getAvailability());
+        final CzmlShow show = new CzmlShow(true, header.getClock());
 
         final String pathFile =
             loadResources("templateFile/CzmlShowTemplate.txt");

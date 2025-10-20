@@ -22,7 +22,6 @@ import cesiumlanguagewriter.TimeInterval;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.List;
 
 /**
  * CZML Primary Object Interface

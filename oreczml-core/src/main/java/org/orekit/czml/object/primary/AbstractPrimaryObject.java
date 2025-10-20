@@ -21,6 +21,8 @@ import cesiumlanguagewriter.CesiumStreamWriter;
 import cesiumlanguagewriter.TimeInterval;
 import org.orekit.czml.errors.OreCzmlException;
 import org.orekit.czml.errors.OreCzmlMessages;
+import org.orekit.czml.object.secondary.Clock;
+import org.orekit.czml.object.utils.DateUtils;
 
 import java.awt.Color;
 import java.io.IOException;
@@ -41,6 +43,9 @@ import java.util.List;
 public abstract class AbstractPrimaryObject<T extends CzmlPrimaryObject<T>>
     implements
     CzmlPrimaryObject<T> {
+
+    /** The default interval between steps for the clock. */
+    public static final Double DEFAULT_INTERVAL_BETWEEN_STEPS = 60.0;
 
     /**
      * THe id of the object.
@@ -91,6 +96,12 @@ public abstract class AbstractPrimaryObject<T extends CzmlPrimaryObject<T>>
     @Override
     public TimeInterval getAvailability() {
         return availability;
+    }
+
+    public Clock getClock() {
+        return new Clock(DateUtils.toAbsoluteDate(getAvailability().getStart()),
+                         DateUtils.toAbsoluteDate(getAvailability().getStop()),
+                         DEFAULT_INTERVAL_BETWEEN_STEPS);
     }
 
     // Setters

@@ -138,11 +138,6 @@ public class InterSatVisu
     private AbsoluteDate startDate;
 
     /**
-     * The stop date of the propagation.
-     */
-    private final AbsoluteDate stopDate;
-
-    /**
      * The line to draw.
      */
     private Polyline polyline;
@@ -299,12 +294,11 @@ public class InterSatVisu
             this.buildIntervals(datesWhenVisu, datesWhenNotVisu,
                                 getAvailability());
         this.polyline =
-            Polyline.nonVectorBuilder(getAvailability())
+            Polyline.nonVectorBuilder(this.clock)
                 .withFirstReference(referenceFirstSatellite)
                 .withSecondReference(referenceSecondSatellite).build();
         this.showList =
             this.buildShowList(singleTimeIntervalsOfVisu, booleanList);
-        this.stopDate = DateUtils.toAbsoluteDate(getAvailability().getStop());
     }
 
     /**
@@ -323,7 +317,7 @@ public class InterSatVisu
         throws URISyntaxException,
             IOException {
         this(Constellation.builder(propagators, finalDateInput, clockInput)
-            .build(), finalDateInput, clockInput.getAvailability());
+            .build(), finalDateInput, clockInput);
     }
 
     /**
@@ -344,7 +338,7 @@ public class InterSatVisu
         throws URISyntaxException,
             IOException {
         this(Constellation.builder(propagators, finalDateInput, clockInput)
-            .build(), finalDateInput, customID, clockInput.getAvailability());
+            .build(), finalDateInput, customID, clockInput);
     }
 
     /**
@@ -352,16 +346,15 @@ public class InterSatVisu
      * between each satellite with all the other.
      *
      * @param constellationPropagators : The constellation object
-     * @param finalDateInput : The final date for the propagation
-     * @param availability : The availability considered.
+     * @param finalDate : The final date for the propagation
+     * @param clock : The clock considered.
      */
     InterSatVisu(final Constellation constellationPropagators,
-                 final AbsoluteDate finalDateInput,
-                 final TimeInterval availability)
+                 final AbsoluteDate finalDate, final Clock clock)
         throws URISyntaxException,
             IOException {
-        this(constellationPropagators, finalDateInput,
-             DEFAULT_ID + constellationPropagators.getId(), availability);
+        this(constellationPropagators, finalDate,
+             DEFAULT_ID + constellationPropagators.getId(), clock);
     }
 
     /**
@@ -371,31 +364,34 @@ public class InterSatVisu
      * @param constellationPropagators : The constellation object
      * @param finalDateInput : The final date for the propagation
      * @param customID : The custom ID of the inter sat visu.
-     * @param availability : The availability considered.
+     * @param clock : The clock considered.
      */
     @DefaultDataContext
     InterSatVisu(final Constellation constellationPropagators,
                  final AbsoluteDate finalDateInput, final String customID,
-                 final TimeInterval availability)
+                 final Clock clock)
         throws URISyntaxException,
             IOException {
 
-        this.setAvailability(availability);
+        this.setAvailability(clock.getAvailability());
         this.orbits = constellationPropagators.getInitialOrbits();
         this.setId(customID);
         this.setName(DEFAULT_NAME +
                      constellationPropagators.getTotalOfSatellite() +
                      " satellites");
-        this.finalDate = finalDateInput;
+        this.setAvailability(getAvailability());
 
         this.constellationSatellites = constellationPropagators.getSatellites();
 
-        this.clock = findMinimumClock(constellationSatellites, availability);
+        this.clock =
+            findMinimumClock(constellationSatellites, clock.getAvailability());
 
         this.idsSatellites = constellationPropagators.getIds();
+        this.startDate = DateUtils.toAbsoluteDate(getAvailability().getStart());
 
-        this.startDate = DateUtils.toAbsoluteDate(availability.getStart());
-        this.stopDate = finalDateInput;
+        this.startDate =
+            DateUtils.toAbsoluteDate(clock.getAvailability().getStart());
+        this.finalDate = finalDateInput;
 
         final Frame ITRF =
             DataContext.getDefault().getFrames()
@@ -407,7 +403,8 @@ public class InterSatVisu
         this.propagators = constellationPropagators.getPropagators();
         this.constellation =
             Constellation.builder(propagators, finalDateInput, clock).build();
-        this.propagationInterConstellation(finalDateInput, availability);
+        this.propagationInterConstellation(finalDateInput,
+                                           clock.getAvailability());
 
         for (int i = 0; i < constellationSatellites.size(); i++) {
             final Spacecraft firstSatellite = constellationSatellites.get(i);
@@ -430,7 +427,7 @@ public class InterSatVisu
                                 secondReferenceSatellite)
                         .toArray(new Reference[0]);
                 referencesList.add(convertToIterable(referenceList));
-                polylines.add(Polyline.nonVectorBuilder(availability)
+                polylines.add(Polyline.nonVectorBuilder(this.clock)
                     .withFirstReference(firstReferenceSatellite)
                     .withSecondReference(secondReferenceSatellite).build());
                 currentPairOfSatellites.add(firstSatellite);
@@ -638,21 +635,16 @@ public class InterSatVisu
     }
 
     /**
-     * Gets stop date.
-     *
-     * @return the stop date
-     */
-    public AbsoluteDate getStopDate() {
-        return stopDate;
-    }
-
-    /**
      * Gets propagators.
      *
      * @return the propagators
      */
     public List<BoundedPropagator> getPropagators() {
         return Collections.unmodifiableList(propagators);
+    }
+
+    public AbsoluteDate getFinalDate() {
+        return finalDate;
     }
 
     /**
@@ -971,6 +963,7 @@ public class InterSatVisu
 
             return toReturn;
         }
+
         return new ArrayList<>();
     }
 
@@ -1069,8 +1062,14 @@ public class InterSatVisu
             for (int i = 0; i < timeIntervalsInput.size(); i++) {
                 final TimeInterval currentTimeInterval =
                     timeIntervalsInput.get(i);
-                toReturn.add(new CzmlShow(booleanListInput.get(i),
-                                          currentTimeInterval));
+                final Clock currentClock =
+                    new Clock(DateUtils
+                        .toAbsoluteDate(currentTimeInterval.getStart()),
+                              DateUtils.toAbsoluteDate(currentTimeInterval
+                                  .getStop()),
+                              DEFAULT_INTERVAL_BETWEEN_STEPS);
+                toReturn
+                    .add(new CzmlShow(booleanListInput.get(i), currentClock));
             }
         }
         return toReturn;

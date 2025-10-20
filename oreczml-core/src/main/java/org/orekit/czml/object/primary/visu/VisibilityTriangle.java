@@ -178,7 +178,7 @@ public class VisibilityTriangle
             // The second object of the czml show built by a line of visibility
             // is a topocentric frame
             final TopocentricFrame topocentricShow =
-                (TopocentricFrame) currentShow.getObject2();
+                (TopocentricFrame) currentShow.getObject();
             final Vector3D positionTopocentricShow =
                 topocentricShow.getCartesianPoint();
 
@@ -194,7 +194,7 @@ public class VisibilityTriangle
 
                 // Get the interval and the boundaries of the interval.
                 final TimeInterval currentTimeInterval =
-                    currentShow.getAvailability();
+                    currentShow.getClock().getAvailability();
                 final AbsoluteDate startInterval =
                     DateUtils.toAbsoluteDate(currentTimeInterval.getStart());
                 final AbsoluteDate stopInterval =
@@ -233,7 +233,7 @@ public class VisibilityTriangle
         final List<TimeInterval> toReturn = new ArrayList<>();
         for (CzmlShow czmlShow : showsInput) {
             if (czmlShow.getShow()) {
-                toReturn.add(czmlShow.getAvailability());
+                toReturn.add(czmlShow.getClock().getAvailability());
             }
         }
         return toReturn;

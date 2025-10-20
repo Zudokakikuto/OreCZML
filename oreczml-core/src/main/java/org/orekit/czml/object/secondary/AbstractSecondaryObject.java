@@ -19,7 +19,6 @@ package org.orekit.czml.object.secondary;
 import cesiumlanguagewriter.CesiumOutputStream;
 import cesiumlanguagewriter.CesiumStreamWriter;
 import cesiumlanguagewriter.PacketCesiumWriter;
-import org.orekit.czml.object.primary.CzmlPrimaryObject;
 
 import java.io.StringWriter;
 import java.util.ArrayList;

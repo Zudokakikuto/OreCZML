@@ -24,13 +24,13 @@ import cesiumlanguagewriter.MaterialCesiumWriter;
 import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.PolygonCesiumWriter;
 import cesiumlanguagewriter.SolidColorMaterialCesiumWriter;
-import cesiumlanguagewriter.TimeInterval;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.hipparchus.util.FastMath;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.bodies.OneAxisEllipsoid;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
 import org.orekit.czml.object.primary.entities.Spacecraft;
+import org.orekit.czml.object.secondary.Clock;
 import org.orekit.frames.Frame;
 import org.orekit.frames.FramesFactory;
 import org.orekit.frames.TopocentricFrame;
@@ -77,31 +77,35 @@ public class StationVisibilityCircle
     /** The angle of aperture. */
     private final double angleOfAperture;
 
+    /** The clock of the station visibility circle. */
+    private Clock clock;
+
     /**
      * Default constructor of the station visibility circle.
      *
      * @param topocentricFrameInput : The topocentric frame representing a
      *        ground station.
-     * @param spacecraft : The satellite observed.
+     * @param spacecraft : The spacecraft observed.
      * @param angleOfApertureInput : The angle of aperture of the visibility of
      *        the station.
-     * @param availability : The availability considered.
+     * @param clock : The clock considered.
      */
     StationVisibilityCircle(final TopocentricFrame topocentricFrameInput,
                             final Spacecraft spacecraft,
                             final double angleOfApertureInput,
-                            final TimeInterval availability) {
+                            final Clock clock) {
         this.setId(DEFAULT_ID +
                    topocentricFrameInput.getName() + "/" + spacecraft.getId());
         this.setName(DEFAULT_NAME + topocentricFrameInput.getName());
-        this.setAvailability(availability);
-        this.spacecraft = spacecraft.cloneObject();
+        this.setAvailability(clock.getAvailability());
+        this.spacecraft = spacecraft;
         this.topocentricFrame = topocentricFrameInput;
+        this.clock = clock;
         this.angleOfAperture = angleOfApertureInput;
         // Visibility cone need to be built, even if not used.
         final VisibilityCone cone =
             new VisibilityCone(topocentricFrameInput, spacecraft,
-                               angleOfApertureInput, availability);
+                               angleOfApertureInput, clock);
         this.circleGeodetic =
             computePointPositions(topocentricFrameInput, spacecraft,
                                   angleOfApertureInput);
@@ -110,12 +114,20 @@ public class StationVisibilityCircle
 
     // Builder
 
+    /**
+     * The builder of the station visibility circle.
+     *
+     * @param topocentricFrameInput : The topocentric frame representing a
+     *        ground station.
+     * @param spacecraftInput : The satellite observed.
+     * @param clockInput : The clock considered.
+     * @return The station visibility builder
+     */
     public static StationVisibilityCircleBuilder
         builder(final TopocentricFrame topocentricFrameInput,
-                final Spacecraft satelliteInput,
-                final TimeInterval availability) {
+                final Spacecraft spacecraftInput, final Clock clockInput) {
         return new StationVisibilityCircleBuilder(topocentricFrameInput,
-                                                  satelliteInput, availability);
+                                                  spacecraftInput, clockInput);
     }
 
     @Override
@@ -155,8 +167,7 @@ public class StationVisibilityCircle
     public StationVisibilityCircle cloneObject() {
         final StationVisibilityCircle copy =
             StationVisibilityCircle
-                .builder(this.topocentricFrame, this.spacecraft,
-                         getAvailability())
+                .builder(this.topocentricFrame, this.spacecraft, this.clock)
                 .withAngleOfAperture(this.angleOfAperture).build();
         copy.setId(getId());
         copy.setName(getName());

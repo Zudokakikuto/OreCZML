@@ -21,7 +21,6 @@ import cesiumlanguagewriter.CesiumStreamWriter;
 import org.orekit.czml.errors.OreCzmlException;
 import org.orekit.czml.errors.OreCzmlMessages;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
-import org.orekit.czml.object.primary.CzmlPrimaryObject;
 import org.orekit.czml.object.primary.entities.Constellation;
 import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.frames.TopocentricFrame;
@@ -66,6 +65,12 @@ public class MultipleLineOfVisibility
     /** The id of the multiple visibility line object. */
     private String id;
 
+    /** The spacecraft if one is used. */
+    private Spacecraft spacecraft;
+
+    /** The constellation if one is used. */
+    private Constellation constellation;
+
     // Constructor
 
     /**
@@ -83,6 +88,7 @@ public class MultipleLineOfVisibility
         this.id =
             DEFAULT_ID +
                   " " + topocentricFrames.size() + " " + spacecraft.getId();
+        this.spacecraft = spacecraft;
     }
 
     /**
@@ -100,6 +106,7 @@ public class MultipleLineOfVisibility
         this.id =
             DEFAULT_ID +
                   " " + topocentricFrames.size() + " " + constellation.getId();
+        this.constellation = constellation;
     }
 
     // Builders
@@ -138,6 +145,27 @@ public class MultipleLineOfVisibility
         return id;
     }
 
+    @Override
+    public MultipleLineOfVisibility cloneObject() {
+        final MultipleLineOfVisibility toReturn;
+        try {
+            if (this.spacecraft != null) {
+                toReturn =
+                    new MultipleLineOfVisibility(this.topocentricFrames,
+                                                 this.spacecraft);
+            } else if (this.constellation != null) {
+                toReturn =
+                    new MultipleLineOfVisibility(this.topocentricFrames,
+                                                 this.constellation);
+            } else {
+                throw new OreCzmlException(OreCzmlMessages.NOT_VALID_PRIMARY_OBJECT_FOR_CLONE);
+            }
+        } catch (URISyntaxException | IOException e) {
+            throw new OreCzmlException(OreCzmlMessages.NOT_VALID_PRIMARY_OBJECT_FOR_CLONE);
+        }
+        return toReturn;
+    }
+
     /**
      * The function build the list of the line of visibility.
      *
@@ -166,8 +194,7 @@ public class MultipleLineOfVisibility
                 final LineOfVisibility currentTopocentricLine =
                     LineOfVisibility
                         .builder(topocentricFrame, constellationInput,
-                                 constellationInput.getSatellites().get(0)
-                                     .getClock())
+                                 constellationInput.getClock())
                         .build();
                 linesBuilt.add(currentTopocentricLine);
             }

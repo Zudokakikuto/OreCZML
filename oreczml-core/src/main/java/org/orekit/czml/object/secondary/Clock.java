@@ -77,11 +77,6 @@ public class Clock
      */
     private final ClockStep step;
 
-    /**
-     * The list of all the julian dates of the simulation.
-     */
-    private List<JulianDate> JulianDateSimulation = new ArrayList<>();
-
     /** The oem if one is used. */
     private Oem oem;
 
@@ -115,7 +110,6 @@ public class Clock
         this.currentTime = DateUtils.toJulianDate(startDate);
         this.startDate = startDate;
         this.stopDate = stopDate;
-        this.JulianDateSimulation = computeJulianDates();
     }
 
     /**
@@ -137,7 +131,6 @@ public class Clock
         this.multiplier = multiplier;
         this.range = range;
         this.step = step;
-        this.JulianDateSimulation = computeJulianDates();
     }
 
     /**
@@ -171,7 +164,6 @@ public class Clock
         this.range = ClockRange.LOOP_STOP;
         this.multiplier = multiplier;
         this.currentTime = startJulianDate;
-        this.JulianDateSimulation = computeJulianDates();
     }
 
     // Overrides
@@ -263,7 +255,12 @@ public class Clock
      * @return the julian dates simulation
      */
     public List<JulianDate> getJulianDatesSimulation() {
-        return Collections.unmodifiableList(JulianDateSimulation);
+        final List<JulianDate> julianDateSimulation = computeJulianDates();
+        return Collections.unmodifiableList(julianDateSimulation);
+    }
+
+    public void setMultiplier(final double multiplier) {
+        this.multiplier = multiplier;
     }
 
     // Private functions
@@ -278,12 +275,23 @@ public class Clock
 
         // Initializes JulianDate array and starting point
         final List<JulianDate> toReturn = new ArrayList<>();
-        JulianDate startDate = availability.getStart();
+        AbsoluteDate start = DateUtils.toAbsoluteDate(availability.getStart());
+        final AbsoluteDate stop =
+            DateUtils.toAbsoluteDate(availability.getStop());
+
+        if (stop.isBefore(start) ||
+            start.isAfter(stop) || start.compareTo(stop) > 0) {
+            throw new OreCzmlException(OreCzmlMessages.START_DATE_AFTER_OR_STOP_DATE_BEFORE);
+        }
+        if (start.isBefore(AbsoluteDate.J2000_EPOCH)) {
+            start = AbsoluteDate.J2000_EPOCH;
+        }
 
         // Iterates through time interval until startDate > stopDate
-        while (startDate.compareTo(availability.getStop()) < 1) {
-            toReturn.add(startDate);
-            startDate = startDate.addSeconds(multiplier);
+        while (start
+            .compareTo(DateUtils.toAbsoluteDate(availability.getStop())) < 1) {
+            toReturn.add(DateUtils.toJulianDate(start));
+            start = start.shiftedBy(multiplier);
         }
         return toReturn;
     }

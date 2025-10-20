@@ -139,7 +139,7 @@ public class Polygon
 
     @Override
     public Polygon cloneObject() {
-        return Polygon.builder(this.cartesians, this.availability)
+        return Polygon.builder(this.cartesians, this.clock)
             .withColor(this.color).withFill(this.fill).withOutline(this.outline)
             .build();
     }

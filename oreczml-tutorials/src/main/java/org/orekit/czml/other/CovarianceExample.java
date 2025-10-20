@@ -90,7 +90,7 @@ public class CovarianceExample {
 
         // Creation of the clock.
 
-        final double durationOfSimulation = 5 * 3600; // in seconds;
+        final double durationOfSimulation = 5 * 3600.0; // in seconds;
         final AbsoluteDate startDate =
             new AbsoluteDate(2024, 3, 15, 0, 0, 0.0,
                              TimeScalesFactory.getUTC());

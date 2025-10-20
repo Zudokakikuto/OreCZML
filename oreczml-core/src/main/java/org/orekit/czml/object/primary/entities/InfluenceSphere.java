@@ -110,9 +110,7 @@ public class InfluenceSphere
 
         // The position of the sphere of visibility.
         this.ellipsoid =
-            CzmlEllipsoid
-                .builder(cartesianForSphericalEllipsoid,
-                         clock.getAvailability())
+            CzmlEllipsoid.builder(cartesianForSphericalEllipsoid, clock)
                 .withFill(false).withSliceStackPartition(10, 10)
                 .withOutline(true).build();
 

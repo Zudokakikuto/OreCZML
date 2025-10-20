@@ -28,6 +28,7 @@ import org.orekit.czml.file.CzmlFile;
 import org.orekit.czml.object.secondary.Clock;
 
 import java.io.StringWriter;
+import java.util.Objects;
 
 /**
  * Header class
@@ -158,7 +159,6 @@ public class Header
 
         try (PacketCesiumWriter packet = stream.openPacket(output)) {
             packet.writeId(this.getId());
-            packet.writeVersion(DEFAULT_VERSION);
             packet.writeName(this.getName());
             packet.writeVersion(version);
             try (ClockCesiumWriter ignored = packet.getClockWriter()) {
@@ -183,7 +183,8 @@ public class Header
         final Header toReturn;
         if (this.getName() != null && this.getAvailability() != null) {
             if (this.version != null) {
-                if (this.pathToExternalResources != DEFAULT_RESOURCES) {
+                if (!Objects.equals(this.pathToExternalResources,
+                                    DEFAULT_RESOURCES)) {
                     final Header copy =
                         new Header(this.getName(), this.version, this.clock,
                                    this.pathToExternalResources);
@@ -197,7 +198,8 @@ public class Header
                     copy.setAvailability(getAvailability());
                     toReturn = copy;
                 }
-            } else if (this.pathToExternalResources != DEFAULT_RESOURCES) {
+            } else if (!Objects.equals(this.pathToExternalResources,
+                                       DEFAULT_RESOURCES)) {
                 final Header copy =
                     new Header(this.getName(), this.clock,
                                this.pathToExternalResources);

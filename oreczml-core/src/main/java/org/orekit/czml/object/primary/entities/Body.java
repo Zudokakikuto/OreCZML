@@ -189,7 +189,7 @@ public class Body
                            getAvailability().getStart() + " to " +
                            getAvailability().getStop() + "</p>";
         this.pathToModel = pathToModel;
-        this.model = new CzmlModel(pathToModel, false, clock.getAvailability());
+        this.model = new CzmlModel(pathToModel, false, clock);
         this.julianDatesSimulation = clock.getJulianDatesSimulation();
         this.clock = clock;
         this.centralBody = centralBody;
@@ -449,8 +449,7 @@ public class Body
             modelMaximumScale != 0.0 && modelMinimumPixelSize != 0.0) {
             this.model =
                 new CzmlModel(pathToModel, modelMaximumScale,
-                              modelMinimumPixelSize, modelScale, false,
-                              getAvailability());
+                              modelMinimumPixelSize, modelScale, false, clock);
         }
         model.generateCZML(packet, output);
     }

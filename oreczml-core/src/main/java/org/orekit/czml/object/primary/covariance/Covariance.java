@@ -29,6 +29,7 @@ import org.orekit.czml.errors.OreCzmlException;
 import org.orekit.czml.errors.OreCzmlMessages;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
 import org.orekit.czml.object.primary.entities.Spacecraft;
+import org.orekit.czml.object.secondary.Clock;
 import org.orekit.czml.object.secondary.CzmlEllipsoid;
 import org.orekit.czml.object.secondary.Orientation;
 import org.orekit.czml.object.utils.DateUtils;
@@ -116,6 +117,9 @@ public class Covariance
     /** The color to use. */
     private Color color;
 
+    /** The clock of the covariance. */
+    private Clock clock;
+
     // Constructors
 
     // The following constructors build several ellipsoids to follow the
@@ -153,6 +157,7 @@ public class Covariance
         this.spaceCraftStates = spacecraft.getSpaceCraftStates();
         this.lof = lofInput;
         this.color = colorInput;
+        this.clock = spacecraft.getClock();
         this.setId(customID);
         this.setName(DEFAULT_NAME + spacecraft.getName());
         this.setAvailability(spacecraft.getAvailability());
@@ -232,7 +237,7 @@ public class Covariance
      * @return : The satellite used.
      */
     public Spacecraft getSpacecraft() {
-        return spacecraft.cloneObject();
+        return spacecraft;
     }
 
     /**
@@ -304,7 +309,7 @@ public class Covariance
 
         this.uniqueEllipsoid =
             CzmlEllipsoid
-                .builder(julianDates, dimensionsOfEllipsoids, getAvailability())
+                .builder(julianDates, dimensionsOfEllipsoids, this.clock)
                 .withColor(colorInput).build();
     }
 }

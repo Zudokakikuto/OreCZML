@@ -34,6 +34,7 @@ import org.orekit.czml.object.Polyline;
 import org.orekit.czml.object.nonvisual.PointOnBody;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
 import org.orekit.czml.object.primary.entities.Spacecraft;
+import org.orekit.czml.object.secondary.Clock;
 import org.orekit.czml.object.utils.DateUtils;
 import org.orekit.data.DataContext;
 import org.orekit.frames.TopocentricFrame;
@@ -156,6 +157,9 @@ public class FieldOfObservation
     /** The angular step. */
     private double angularStep;
 
+    /** The clock of the field of observation. */
+    private Clock clock;
+
     // Constructors
 
     /**
@@ -216,6 +220,7 @@ public class FieldOfObservation
         this.setName(DEFAULT_NAME + spacecraft.getName());
         this.initialTransformFovToBody = transformFovToBody;
         this.fov = fovInput;
+        this.clock = spacecraft.getClock();
         this.polylineColor = color;
         this.angularStep = angularStepInput;
         referenceSatellite =
@@ -455,7 +460,7 @@ public class FieldOfObservation
                                final CesiumOutputStream output) {
         try (PacketCesiumWriter packet = stream.openPacket(output)) {
             final Polyline currentPolyline =
-                Polyline.nonVectorBuilder(getAvailability())
+                Polyline.nonVectorBuilder(this.clock)
                     .withFirstReference(firstPointReference)
                     .withSecondReference(secondPointReference)
                     .withColor(polylineColorInput).build();

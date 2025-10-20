@@ -16,7 +16,6 @@
  */
 package org.orekit.czml.object.utils;
 
-import cesiumlanguagewriter.GregorianDate;
 import cesiumlanguagewriter.JulianDate;
 import cesiumlanguagewriter.TimeInterval;
 import cesiumlanguagewriter.TimeStandard;
@@ -190,9 +189,10 @@ public class DateUtils {
         createTimeIntervals(final List<JulianDate> julianDates) {
 
         final List<TimeInterval> toReturn = new ArrayList<>();
-        //
+        // The first julian date considered is one minute before the first of
+        // the list
         final JulianDate firstJulianDate =
-            new JulianDate(new GregorianDate(1900, 1, 1, 0, 0, 0.0));
+            julianDates.get(0).subtractSeconds(60);
         toReturn.add(new TimeInterval(firstJulianDate, julianDates.get(0)));
 
         for (int i = 0; i < julianDates.size() - 1; i++) {
