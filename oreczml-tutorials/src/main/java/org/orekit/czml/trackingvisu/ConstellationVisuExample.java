@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -16,15 +16,16 @@
  */
 package org.orekit.czml.trackingvisu;
 
-import org.orekit.czml.TutorialUtils;
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
 import org.orekit.bodies.GeodeticPoint;
+import org.orekit.czml.TutorialUtils;
 import org.orekit.czml.file.CzmlFile;
-import org.orekit.czml.object.primary.Constellation;
-import org.orekit.czml.object.primary.CzmlGroundStation;
 import org.orekit.czml.object.primary.Header;
+import org.orekit.czml.object.primary.entities.Constellation;
+import org.orekit.czml.object.primary.entities.CzmlGroundStation;
+import org.orekit.czml.object.primary.visu.LineOfVisibility;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.forces.ForceModel;
 import org.orekit.forces.gravity.HolmesFeatherstoneAttractionModel;
@@ -43,96 +44,122 @@ import org.orekit.propagation.numerical.NumericalPropagator;
 import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.Constants;
+import org.orekit.utils.IERSConventions;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The type Constellation visu example.
+ * This tutorial provides an example of how lines of visibility between ground
+ * stations and satellites of a constellation can be set up.
  */
 public class ConstellationVisuExample {
 
-    private ConstellationVisuExample () {
+    private ConstellationVisuExample() {
         // empty
     }
 
     /**
-     * Main.
+     * Main of the constellation visu tutorial.
      *
      * @param args the args
      * @throws Exception the exception
      */
-    public static void main (final String[] args) throws Exception {
+    public static void main(final String[] args)
+        throws Exception {
         // Load orekit data
         TutorialUtils.loadOrekitData();
 
         // Paths
         final String output = TutorialUtils.generateOutput();
-        // !!! Here you need to change the path inside 'generateJsPath' to the path you are using for images or Model.
-        // This folder can also be the public folder of your cesium javascript interface.
-        final String pathToJSFolder = TutorialUtils.generateJSPath(
-                System.getProperty("user.dir") + "/Javascript/public");
+        // !!! Here you need to change the path inside 'generateJsPath' to the
+        // path you are using for images or Model.
+        // This folder can also be the public folder of your cesium javascript
+        // interface.
+        final String pathToJSFolder =
+            TutorialUtils.generateJSPath(System.getProperty("user.dir") +
+                                         "/Javascript/public");
 
         // Creation of the clock
 
-        final double       durationOfSimulation = 8 * 3600; // in seconds;
-        final AbsoluteDate startDate            = new AbsoluteDate(2024, 3, 15, 0, 0, 0.0, TimeScalesFactory.getUTC());
-        final AbsoluteDate finalDate            = startDate.shiftedBy(durationOfSimulation);
-        final Clock clock = new Clock(startDate, finalDate, TimeScalesFactory.getUTC(),
-                TutorialUtils.STEP_BETWEEN_EACH_INSTANT);
+        final double durationOfSimulation = 8 * 3600; // in seconds;
+        final AbsoluteDate startDate =
+            new AbsoluteDate(2024, 3, 15, 0, 0, 0.0,
+                             TimeScalesFactory.getUTC());
+        final AbsoluteDate finalDate =
+            startDate.shiftedBy(durationOfSimulation);
+        final Clock clock =
+            new Clock(startDate, finalDate,
+                      TutorialUtils.STEP_BETWEEN_EACH_INSTANT);
 
         // Creation of the header
-        final Header header = new Header("Visualisation of a constellation by multiple ground station", clock,
-                pathToJSFolder);
+        final Header header =
+            new Header("Visualisation of a constellation by multiple ground station",
+                       clock, pathToJSFolder);
 
         //// Creation of the constellation
         // Build of propagators
 
-
-        final NormalizedSphericalHarmonicsProvider provider = GravityFieldFactory.getNormalizedProvider(10,
-                10);
-        final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(FramesFactory.getEME2000(),
-                provider);
+        final NormalizedSphericalHarmonicsProvider provider =
+            GravityFieldFactory.getNormalizedProvider(10, 10);
+        final ForceModel holmesFeatherstone =
+            new HolmesFeatherstoneAttractionModel(FramesFactory
+                .getITRF(IERSConventions.IERS_2010, true), provider);
 
         final List<BoundedPropagator> propagators = new ArrayList<>();
 
         for (int i = 0; i < 4; i++) {
-            final Orbit currentOrbit = new KeplerianOrbit(10878000, 0,
-                    FastMath.toRadians(i * 10), 0, FastMath.toRadians(90 * FastMath.pow(-1, i)), FastMath.toRadians(0),
-                    PositionAngleType.MEAN, FramesFactory.getEME2000(), startDate, Constants.WGS84_EARTH_MU);
+            final Orbit currentOrbit =
+                new KeplerianOrbit(10878000, 0, FastMath.toRadians(i * 10), 0,
+                                   FastMath.toRadians(90 * FastMath.pow(-1, i)),
+                                   FastMath.toRadians(0),
+                                   PositionAngleType.MEAN,
+                                   FramesFactory.getEME2000(), startDate,
+                                   Constants.WGS84_EARTH_MU);
             final SpacecraftState state = new SpacecraftState(currentOrbit);
-            final double[][] currentTolerance = NumericalPropagator.tolerances(TutorialUtils.POSITION_TOLERANCE,
-                    currentOrbit, OrbitType.CARTESIAN);
-            final AdaptiveStepsizeIntegrator currentIntegrator = new DormandPrince853Integrator(TutorialUtils.MIN_STEP,
-                    TutorialUtils.MAX_STEP,
-                    currentTolerance[0], currentTolerance[1]);
-            final NumericalPropagator propagator = new NumericalPropagator(currentIntegrator);
+            final double[][] currentTolerance =
+                NumericalPropagator.tolerances(TutorialUtils.POSITION_TOLERANCE,
+                                               currentOrbit,
+                                               OrbitType.CARTESIAN);
+            final AdaptiveStepsizeIntegrator currentIntegrator =
+                new DormandPrince853Integrator(TutorialUtils.MIN_STEP,
+                                               TutorialUtils.MAX_STEP,
+                                               currentTolerance[0],
+                                               currentTolerance[1]);
+            final NumericalPropagator propagator =
+                new NumericalPropagator(currentIntegrator);
             propagator.setOrbitType(OrbitType.CARTESIAN);
             propagator.addForceModel(holmesFeatherstone);
             propagator.setInitialState(state);
-            final EphemerisGenerator generator = propagator.getEphemerisGenerator();
+            final EphemerisGenerator generator =
+                propagator.getEphemerisGenerator();
             propagator.propagate(startDate, finalDate);
-            final BoundedPropagator boundedPropagator = generator.getGeneratedEphemeris();
+            final BoundedPropagator boundedPropagator =
+                generator.getGeneratedEphemeris();
             propagators.add(boundedPropagator);
         }
 
         // Build of the constellation
-        final Constellation constellation = new Constellation(propagators, finalDate, header);
+        final Constellation constellation =
+            Constellation.builder(propagators, finalDate, clock).build();
 
         //// Creation of the ground station
 
-
         // Creation of a topocentric frame around Toulouse.
-        final GeodeticPoint toulouseFrame = new GeodeticPoint(FastMath.toRadians(43.6047),
-                FastMath.toRadians(1.4442), 10);
-        final TopocentricFrame topocentricToulouse = new TopocentricFrame(TutorialUtils.getEarth(), toulouseFrame,
-                "Toulouse Frame");
+        final GeodeticPoint toulouseFrame =
+            new GeodeticPoint(FastMath.toRadians(43.6047),
+                              FastMath.toRadians(1.4442), 10);
+        final TopocentricFrame topocentricToulouse =
+            new TopocentricFrame(TutorialUtils.getEarth(), toulouseFrame,
+                                 "Toulouse Frame");
 
         // Creation of another topocentric frame around Las Vegas.
-        final GeodeticPoint lasVegasFrame = new GeodeticPoint(FastMath.toRadians(36.1716),
-                FastMath.toRadians(-115.1391), 10);
-        final TopocentricFrame topocentricLasVegas = new TopocentricFrame(TutorialUtils.getEarth(), lasVegasFrame,
-                "Las Vegas Frame");
+        final GeodeticPoint lasVegasFrame =
+            new GeodeticPoint(FastMath.toRadians(36.1716),
+                              FastMath.toRadians(-115.1391), 10);
+        final TopocentricFrame topocentricLasVegas =
+            new TopocentricFrame(TutorialUtils.getEarth(), lasVegasFrame,
+                                 "Las Vegas Frame");
 
         // Creation of a list of topocentric frame containing both frames.
         final List<TopocentricFrame> stations = new ArrayList<>();
@@ -142,19 +169,26 @@ public class ConstellationVisuExample {
         // Build of the ground stations
         final List<CzmlGroundStation> groundStation = new ArrayList<>();
         for (TopocentricFrame station : stations) {
-            groundStation.add(new CzmlGroundStation(station, header));
+            groundStation
+                .add(new CzmlGroundStation(station, header.getClock()));
         }
 
-        final CzmlFile file = CzmlFile.builder()
-                                      .withHeader(header)
-                                      .withConstellation(constellation)
-                                      .withCzmlGroundStation(groundStation)
-                                      .withLineOfVisibility(stations, constellation, header)
-                                      .build();
+        final LineOfVisibility lineOfVisibilityToulouse =
+            LineOfVisibility
+                .builder(topocentricToulouse, constellation, header.getClock())
+                .withVisibilityTriangle().build();
+        final LineOfVisibility lineOfVisibilityLasVegas =
+            LineOfVisibility
+                .builder(topocentricLasVegas, constellation, header.getClock())
+                .withVisibilityTriangle().build();
+
+        final CzmlFile file =
+            CzmlFile.builder(header).withConstellation(constellation)
+                .withCzmlGroundStation(groundStation)
+                .withLineOfVisibility(lineOfVisibilityToulouse)
+                .withLineOfVisibility(lineOfVisibilityLasVegas).build();
 
         // Writing in the file
         file.write(output);
     }
 }
-
-

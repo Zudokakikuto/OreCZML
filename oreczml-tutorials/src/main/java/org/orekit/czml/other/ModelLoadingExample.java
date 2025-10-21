@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -22,7 +22,7 @@ import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
 import org.orekit.czml.file.CzmlFile;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.Satellite;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.forces.ForceModel;
 import org.orekit.forces.gravity.HolmesFeatherstoneAttractionModel;
@@ -39,69 +39,85 @@ import org.orekit.propagation.numerical.NumericalPropagator;
 import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.Constants;
+import org.orekit.utils.IERSConventions;
 
 /**
- * The type Model loading example.
+ * This tutorial provides an example of how a 3D model can be loaded on a
+ * satellite.
  */
 public class ModelLoadingExample {
 
-    private ModelLoadingExample () {
+    private ModelLoadingExample() {
         // empty
     }
 
     /**
-     * Main.
+     * Main of the model loading tutorial.
      *
      * @param args the args
      * @throws Exception the exception
      */
-    public static void main (final String[] args) throws Exception {
+    public static void main(final String[] args)
+        throws Exception {
         // Load orekit data
         TutorialUtils.loadOrekitData();
 
         // Paths
         final String output = TutorialUtils.generateOutput();
-        // !!! Here you need to change the path inside 'generateJsPath' to the path you are using for images or Model.
-        // This folder can also be the public folder of your cesium javascript interface.
-        final String pathToJSFolder = TutorialUtils.generateJSPath(
-                System.getProperty("user.dir") + "/Javascript/public");
+        // !!! Here you need to change the path inside 'generateJsPath' to the
+        // path you are using for images or Model.
+        // This folder can also be the public folder of your cesium javascript
+        // interface.
+        final String pathToJSFolder =
+            TutorialUtils.generateJSPath(System.getProperty("user.dir") +
+                                         "/Javascript/public");
 
-        final String IssModel = TutorialUtils.loadResources("Default3DModels/ISSModel.glb");
+        final String IssModel =
+            TutorialUtils.loadResources("Default3DModels/ISSModel.glb");
 
         // Creation of the clock.
 
-
-        final double       stepBetweenEachInstant = 30.0; // in seconds
-        final AbsoluteDate startDate              = new AbsoluteDate(2024, 3, 15, 0, 0, 0.0, TimeScalesFactory.getUTC());
-        final AbsoluteDate finalDate              = startDate.shiftedBy(TutorialUtils.CLASSIC_DURATION_OF_SIMULATION);
-        final Clock clock = new Clock(startDate, finalDate, TimeScalesFactory.getUTC(),
-                stepBetweenEachInstant);
+        final double stepBetweenEachInstant = 30.0; // in seconds
+        final AbsoluteDate startDate =
+            new AbsoluteDate(2024, 3, 15, 0, 0, 0.0,
+                             TimeScalesFactory.getUTC());
+        final AbsoluteDate finalDate =
+            startDate.shiftedBy(TutorialUtils.CLASSIC_DURATION_OF_SIMULATION);
+        final Clock clock =
+            new Clock(startDate, finalDate, stepBetweenEachInstant);
 
         // Build of the header
-        final Header header = new Header("3D Model Loading", clock, pathToJSFolder);
+        final Header header =
+            new Header("3D Model Loading", clock, pathToJSFolder);
 
         //// Creation of the satellite
         // Creation of the orbit
 
-        final KeplerianOrbit initialOrbit = new KeplerianOrbit(7878000, 0, FastMath.toRadians(20), 0,
-                FastMath.toRadians(90), FastMath.toRadians(0), PositionAngleType.MEAN, FramesFactory.getEME2000(), startDate,
-                Constants.WGS84_EARTH_MU);
+        final KeplerianOrbit initialOrbit =
+            new KeplerianOrbit(7878000, 0, FastMath.toRadians(20), 0,
+                               FastMath.toRadians(90), FastMath.toRadians(0),
+                               PositionAngleType.MEAN,
+                               FramesFactory.getEME2000(), startDate,
+                               Constants.WGS84_EARTH_MU);
 
         final SpacecraftState initialState = new SpacecraftState(initialOrbit);
 
+        final NormalizedSphericalHarmonicsProvider provider =
+            GravityFieldFactory.getNormalizedProvider(10, 10);
+        final ForceModel holmesFeatherstone =
+            new HolmesFeatherstoneAttractionModel(FramesFactory
+                .getITRF(IERSConventions.IERS_2010, true), provider);
 
-        final NormalizedSphericalHarmonicsProvider provider = GravityFieldFactory.getNormalizedProvider(10,
-                10);
-        final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(FramesFactory.getEME2000(),
-                provider);
+        final double[][] tolerances =
+            NumericalPropagator.tolerances(TutorialUtils.POSITION_TOLERANCE,
+                                           initialOrbit, OrbitType.CARTESIAN);
+        final AdaptiveStepsizeIntegrator integrator =
+            new DormandPrince853Integrator(TutorialUtils.MIN_STEP,
+                                           TutorialUtils.MAX_STEP,
+                                           tolerances[0], tolerances[1]);
 
-        final double[][] tolerances = NumericalPropagator.tolerances(TutorialUtils.POSITION_TOLERANCE, initialOrbit,
-                OrbitType.CARTESIAN);
-        final AdaptiveStepsizeIntegrator integrator = new DormandPrince853Integrator(TutorialUtils.MIN_STEP,
-                TutorialUtils.MAX_STEP, tolerances[0],
-                tolerances[1]);
-
-        final NumericalPropagator propagator = new NumericalPropagator(integrator);
+        final NumericalPropagator propagator =
+            new NumericalPropagator(integrator);
 
         propagator.setOrbitType(OrbitType.CARTESIAN);
         propagator.addForceModel(holmesFeatherstone);
@@ -110,20 +126,17 @@ public class ModelLoadingExample {
         final EphemerisGenerator generator = propagator.getEphemerisGenerator();
 
         propagator.propagate(startDate, finalDate);
-        final BoundedPropagator boundedPropagator = generator.getGeneratedEphemeris();
+        final BoundedPropagator boundedPropagator =
+            generator.getGeneratedEphemeris();
 
         // Build of the satellite
-        final Satellite satellite = Satellite.builder(boundedPropagator, header)
-                                             .withModelPath(IssModel)
-                                             .withOnlyOnePeriod()
-                                             .withReferenceSystem()
-                                             .build();
+        final Spacecraft satellite =
+            Spacecraft.builder(boundedPropagator, clock).withModelPath(IssModel)
+                .withOnlyOnePeriod().withReferenceSystem().build();
 
         // Creation of the file
-        final CzmlFile file = CzmlFile.builder()
-                                      .withHeader(header)
-                                      .withSatellite(satellite)
-                                      .build();
+        final CzmlFile file =
+            CzmlFile.builder(header).withSpacecraft(satellite).build();
 
         // Write inside the CzmlFile the objects
         file.write(output);

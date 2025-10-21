@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -16,69 +16,84 @@
  */
 package org.orekit.czml.object.primary;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
-import org.orekit.czml.object.Utils.DateUtils;
+import org.orekit.czml.object.utils.DateUtils;
+import org.orekit.czml.object.primary.entities.Constellation;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.propagation.BoundedPropagator;
 import org.orekit.time.AbsoluteDate;
-import org.orekit.time.TimeScalesFactory;
 
 import java.awt.Color;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
  * The type Ground track test.
  */
-public class GroundTrackTest extends AbstractTest {
+@DefaultDataContext
+public class GroundTrackTest
+    extends
+    AbstractTest {
 
     /**
      * Ground track constructor test.
      *
-     * @throws IOException        the io exception
+     * @throws IOException the io exception
      * @throws URISyntaxException the uri syntax exception
      */
     @Test
-    void GroundTrackConstructorTest() throws IOException, URISyntaxException {
+    void GroundTrackConstructorTest()
+        throws IOException,
+            URISyntaxException {
 
         loadOrekitData();
 
         final Header header = dummyHeader();
-        final AbsoluteDate startDate = DateUtils.toAbsoluteDate(header.getAvailability()
-                                                                      .getStart(), TimeScalesFactory.getUTC());
+        final AbsoluteDate startDate =
+            DateUtils.toAbsoluteDate(header.getAvailability().getStart());
         final AbsoluteDate finalDate = startDate.shiftedBy(60.0);
 
-        final BoundedPropagator propagator = dummyPropagator(startDate, finalDate);
+        final BoundedPropagator propagator =
+            dummyPropagator(startDate, finalDate);
 
-        final Satellite satellite = new Satellite(propagator, header);
+        final Spacecraft satellite =
+            new Spacecraft(propagator, header.getClock());
 
-        final List<BoundedPropagator> propagators = new ArrayList<>(List.of(propagator));
+        final List<BoundedPropagator> propagators =
+            new ArrayList<>(List.of(propagator));
 
-        final Constellation constellation = new Constellation(propagators, finalDate, header);
+        final Constellation constellation =
+            Constellation.builder(propagators, finalDate, header.getClock())
+                .build();
 
-        final GroundTrack groundTrack = new GroundTrack(satellite, getEarth(), header);
+        final GroundTrack groundTrack =
+            new GroundTrack(satellite, getEarth(), header.getClock());
+        groundTrack.displayLinkSatellite();
 
-        final GroundTrack groundTrackWithBuilder = GroundTrack.builder(satellite, getEarth(), header)
-                                                              .withColor(Color.ORANGE)
-                                                              .withHeader(header)
-                                                              .withCustomID("CustomID")
-                                                              .build();
+        final GroundTrack groundTrackWithBuilder =
+            GroundTrack.builder(satellite, getEarth(), header.getClock())
+                .withColor(Color.ORANGE).withCustomID("CustomID").build();
 
-        final GroundTrack constellationGroundTrack = GroundTrack.builder(constellation, getEarth(), header)
-                                                                .build();
+        final GroundTrack constellationGroundTrack =
+            GroundTrack.builder(constellation, getEarth(), header.getClock())
+                .build();
+        constellationGroundTrack.displayLinkSatellite();
 
-        final String pathFile              = loadResources("templateFile/primary/GroundTrackTemplate.txt");
-        final String builderPathFile       = loadResources("templateFile/primary/GroundTrackWithBuilderTemplate.txt");
-        final String constellationPathFile = loadResources("templateFile/primary/GroundTrackConstellationTemplate.txt");
+        final String pathFile =
+            loadResources("templateFile/object/primary/GroundTrackTemplate.txt");
+        final String builderPathFile =
+            loadResources("templateFile/object/primary/GroundTrackWithBuilderTemplate.txt");
+        final String constellationPathFile =
+            loadResources("templateFile/object/primary/GroundTrackConstellationTemplate.txt");
 
-        Assertions.assertEquals(Files.readString(Path.of(pathFile)), groundTrack.toString());
-        Assertions.assertEquals(Files.readString(Path.of(builderPathFile)), groundTrackWithBuilder.toString());
-        Assertions.assertEquals(Files.readString(Path.of(constellationPathFile)), constellationGroundTrack.toString());
+        verifyFileOutput(pathFile, groundTrack.toString(), 1e-8);
+        verifyFileOutput(builderPathFile, groundTrackWithBuilder.toString(),
+                         1e-8);
+        verifyFileOutput(constellationPathFile,
+                         constellationGroundTrack.toString(), 1e-8);
     }
 }

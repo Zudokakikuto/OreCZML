@@ -1,0 +1,25 @@
+{
+  "id":"INFLUENCE_SPHERE/Celestial body : Earth",
+  "name":"Sphere of influence of :Celestial body : Earth",
+  "availability":"2024-01-01T00:00:00Z/2024-01-01T00:01:00Z",
+  "position":{
+    "reference":"BODY/Earth#position"
+  },
+  "ellipsoid":{
+    "fill":false,
+    "outline":true,
+    "outlineColor":{
+      "rgba":[
+        255,255,0,255
+      ]
+    },
+    "slicePartitions":10,
+    "stackPartitions":10,
+    "interval":"2024-01-01T00:00:00Z/2024-01-01T00:01:00Z",
+    "radii":{
+      "cartesian":[
+        924192680.682267,924192680.682267,924192680.682267
+      ]
+    }
+  }
+}

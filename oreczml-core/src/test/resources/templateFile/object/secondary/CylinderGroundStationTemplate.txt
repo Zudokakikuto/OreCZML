@@ -1,0 +1,17 @@
+{
+  "cylinder":{
+    "bottomRadius":0,
+    "topRadius":36172212.41113102,
+    "length":6378137,
+    "material":{
+      "solidColor":{
+        "color":{
+          "rgba":[
+            255,255,255,50
+          ]
+        }
+      }
+    },
+    "heightReference":"CLAMP_TO_GROUND"
+  }
+}

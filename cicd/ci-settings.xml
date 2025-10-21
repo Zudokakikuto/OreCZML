@@ -1,4 +1,6 @@
-<settings>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd">
     <servers>
         <!-- required when using GitLab's package registry to deploy -->
         <!-- see: https://docs.gitlab.com/ee/user/packages/maven_repository/index.html#use-the-gitlab-endpoint-for-maven-packages -->
@@ -14,4 +16,20 @@
             </configuration>
         </server>
     </servers>
+    <profiles>
+        <profile>
+            <id>continuous-integration</id>
+            <activation>
+                <property>
+                    <name>env.CI</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <properties>
+                <sonar.projectKey>${env.CI_PROJECT_NAMESPACE}:${env.CI_PROJECT_NAME}</sonar.projectKey>
+                <sonar.projectName>${env.CI_PROJECT_TITLE} (${env.CI_PROJECT_NAMESPACE}:${env.CI_PROJECT_NAME})</sonar.projectName>
+                <sonar.qualitygate.wait>true</sonar.qualitygate.wait>
+            </properties>
+        </profile>
+    </profiles>
 </settings>

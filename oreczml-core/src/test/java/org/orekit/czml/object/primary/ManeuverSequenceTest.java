@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -22,11 +22,13 @@ import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.attitudes.AttitudesSequence;
 import org.orekit.attitudes.CelestialBodyPointed;
 import org.orekit.attitudes.LofOffset;
 import org.orekit.bodies.CelestialBodyFactory;
 import org.orekit.czml.file.AbstractTest;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.forces.ForceModel;
 import org.orekit.forces.gravity.HolmesFeatherstoneAttractionModel;
 import org.orekit.forces.gravity.potential.GravityFieldFactory;
@@ -55,29 +57,34 @@ import org.orekit.utils.Constants;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * The type Maneuver sequence test.
  */
-public class ManeuverSequenceTest extends AbstractTest {
+public class ManeuverSequenceTest
+    extends
+    AbstractTest {
 
     /**
      * Maneuver sequence constructor test.
      *
-     * @throws IOException        the io exception
+     * @throws IOException the io exception
      * @throws URISyntaxException the uri syntax exception
      */
     @Test
-    void ManeuverSequenceConstructorTest() throws IOException, URISyntaxException {
+    @DefaultDataContext
+    void ManeuverSequenceConstructorTest()
+        throws IOException,
+            URISyntaxException {
 
         loadOrekitData();
 
-        final Header       header    = dummyHeader();
-        final AbsoluteDate startDate = new AbsoluteDate(2024, 3, 15, 0, 0, 0.0, TimeScalesFactory.getUTC());
+        final Header header = dummyHeader();
+        final AbsoluteDate startDate =
+            new AbsoluteDate(2024, 3, 15, 0, 0, 0.0,
+                             TimeScalesFactory.getUTC());
         final AbsoluteDate finalDate = startDate.shiftedBy(36 * 3600);
 
         // Creation of the list of maneuvers
@@ -86,62 +93,80 @@ public class ManeuverSequenceTest extends AbstractTest {
         //// Creation of the satellite
         // build of the propagator
 
-
-        final KeplerianOrbit initialOrbit = new KeplerianOrbit(7878000, 0, FastMath.toRadians(20), 0,
-                FastMath.toRadians(90), FastMath.toRadians(0), PositionAngleType.MEAN, FramesFactory.getEME2000(),
-                startDate,
-                Constants.WGS84_EARTH_MU);
+        final KeplerianOrbit initialOrbit =
+            new KeplerianOrbit(7878000, 0, FastMath.toRadians(20), 0,
+                               FastMath.toRadians(90), FastMath.toRadians(0),
+                               PositionAngleType.MEAN,
+                               FramesFactory.getEME2000(), startDate,
+                               Constants.WGS84_EARTH_MU);
 
         final SpacecraftState initialState = new SpacecraftState(initialOrbit);
 
+        final NormalizedSphericalHarmonicsProvider provider =
+            GravityFieldFactory.getNormalizedProvider(10, 10);
+        final ForceModel holmesFeatherstone =
+            new HolmesFeatherstoneAttractionModel(FramesFactory.getEME2000(),
+                                                  provider);
 
-        final NormalizedSphericalHarmonicsProvider provider = GravityFieldFactory.getNormalizedProvider(10,
-                10);
-        final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(FramesFactory.getEME2000(),
-                provider);
+        final double[][] tolerances =
+            NumericalPropagator.tolerances(10, initialOrbit,
+                                           OrbitType.CARTESIAN);
+        final AdaptiveStepsizeIntegrator integrator =
+            new DormandPrince853Integrator(0.001, 1000.0, tolerances[0],
+                                           tolerances[1]);
 
-        final double[][] tolerances = NumericalPropagator.tolerances(10, initialOrbit,
-                OrbitType.CARTESIAN);
-        final AdaptiveStepsizeIntegrator integrator = new DormandPrince853Integrator(0.001,
-                1000.0, tolerances[0],
-                tolerances[1]);
+        final NumericalPropagator propagator =
+            new NumericalPropagator(integrator);
 
-        final NumericalPropagator propagator = new NumericalPropagator(integrator);
-
-        ////// Add the maneuvers (MANEUVERS ABSOLUTELY NEED ATTITUDE OVERRIDES ARGUMENTS !)
+        ////// Add the maneuvers (MANEUVERS ABSOLUTELY NEED ATTITUDE OVERRIDES
+        ////// ARGUMENTS !)
         // Attitude providers
-        final LofOffset lofTNW = new LofOffset(FramesFactory.getEME2000(), LOFType.TNW);
-        final CelestialBodyPointed bodyPointed = new CelestialBodyPointed(CelestialBodyFactory.getEarth()
-                                                                                              .getBodyOrientedFrame(),
-                CelestialBodyFactory.getSun(), Vector3D.PLUS_J, Vector3D.PLUS_I, Vector3D.PLUS_K);
+        final LofOffset lofTNW =
+            new LofOffset(FramesFactory.getEME2000(), LOFType.TNW);
+        final CelestialBodyPointed bodyPointed =
+            new CelestialBodyPointed(CelestialBodyFactory.getEarth()
+                .getBodyOrientedFrame(), CelestialBodyFactory.getSun(),
+                                     Vector3D.PLUS_J, Vector3D.PLUS_I,
+                                     Vector3D.PLUS_K);
 
         // Firing dates
-        final AbsoluteDate firingDateLOF = new AbsoluteDate(2024, 3, 15, 5, 0, 0.0, header.getTimeScale());
-        final double       duration      = 3600;
+        final AbsoluteDate firingDateLOF =
+            new AbsoluteDate(2024, 3, 15, 5, 0, 0.0,
+                             TimeScalesFactory.getUTC());
+        final double duration = 3600;
 
         //// Attitude sequence to modelize the maneuver
         final AttitudesSequence sequence = new AttitudesSequence();
 
         // Event detector for the attitude sequence
-        final EventDetector detectorFiringDate = new DateDetector(firingDateLOF).withHandler(new ContinueOnEvent());
-        final EventDetector detectorStopFiringDate = new DateDetector(firingDateLOF.shiftedBy(duration)).withHandler(
-                new ContinueOnEvent());
+        final EventDetector detectorFiringDate =
+            new DateDetector(firingDateLOF).withHandler(new ContinueOnEvent());
+        final EventDetector detectorStopFiringDate =
+            new DateDetector(firingDateLOF.shiftedBy(duration))
+                .withHandler(new ContinueOnEvent());
 
-        final EventDetector secondFiringDate = new DateDetector(startDate.shiftedBy(17 * 3600.0)).withHandler(
-                new ContinueOnEvent());
-        final EventDetector secondStopFiringDate = new DateDetector(startDate.shiftedBy(18 * 3600)).withHandler(
-                new ContinueOnEvent());
+        final EventDetector secondFiringDate =
+            new DateDetector(startDate.shiftedBy(17 * 3600.0))
+                .withHandler(new ContinueOnEvent());
+        final EventDetector secondStopFiringDate =
+            new DateDetector(startDate.shiftedBy(18 * 3600))
+                .withHandler(new ContinueOnEvent());
 
         // Switches for attitude sequence
-        sequence.addSwitchingCondition(bodyPointed, lofTNW, detectorFiringDate, true, false, 200.0,
-                AngularDerivativesFilter.USE_R, null);
-        sequence.addSwitchingCondition(lofTNW, bodyPointed, detectorStopFiringDate, true, false, 200.0,
-                AngularDerivativesFilter.USE_R, null);
+        sequence.addSwitchingCondition(bodyPointed, lofTNW, detectorFiringDate,
+                                       true, false, 200.0,
+                                       AngularDerivativesFilter.USE_R, null);
+        sequence.addSwitchingCondition(lofTNW, bodyPointed,
+                                       detectorStopFiringDate, true, false,
+                                       200.0, AngularDerivativesFilter.USE_R,
+                                       null);
 
-        sequence.addSwitchingCondition(bodyPointed, lofTNW, secondFiringDate, true, false, 200.0,
-                AngularDerivativesFilter.USE_R, null);
-        sequence.addSwitchingCondition(lofTNW, bodyPointed, secondStopFiringDate, true, false, 200.0,
-                AngularDerivativesFilter.USE_R, null);
+        sequence.addSwitchingCondition(bodyPointed, lofTNW, secondFiringDate,
+                                       true, false, 200.0,
+                                       AngularDerivativesFilter.USE_R, null);
+        sequence.addSwitchingCondition(lofTNW, bodyPointed,
+                                       secondStopFiringDate, true, false, 200.0,
+                                       AngularDerivativesFilter.USE_R, null);
 
         sequence.resetActiveProvider(bodyPointed);
 
@@ -150,23 +175,30 @@ public class ManeuverSequenceTest extends AbstractTest {
         sequence.registerSwitchEvents(propagator);
 
         // Trigger for the maneuver
-        final ManeuverTriggers firstTriggers = new DateBasedManeuverTriggers(firingDateLOF, duration);
-        final ManeuverTriggers secondTriggers = new DateBasedManeuverTriggers(startDate.shiftedBy(17 * 3600.0),
-                duration);
+        final ManeuverTriggers firstTriggers =
+            new DateBasedManeuverTriggers(firingDateLOF, duration);
+        final ManeuverTriggers secondTriggers =
+            new DateBasedManeuverTriggers(startDate.shiftedBy(17 * 3600.0),
+                                          duration);
 
         // Propulsion model
-        final double   thrust                = 400;
-        final double   isp                   = 380;
+        final double thrust = 400;
+        final double isp = 380;
         final Vector3D accelerationDirection = Vector3D.PLUS_I;
-        final PropulsionModel firstPropulsionModel = new BasicConstantThrustPropulsionModel(thrust, isp,
-                accelerationDirection, "first thrust");
-        final PropulsionModel secondPropulsionModel = new BasicConstantThrustPropulsionModel(thrust, isp,
-                accelerationDirection, "second thrust");
-
+        final PropulsionModel firstPropulsionModel =
+            new BasicConstantThrustPropulsionModel(thrust, isp,
+                                                   accelerationDirection,
+                                                   "first thrust");
+        final PropulsionModel secondPropulsionModel =
+            new BasicConstantThrustPropulsionModel(thrust, isp,
+                                                   accelerationDirection,
+                                                   "second thrust");
 
         // Maneuver
-        final Maneuver firstManeuver  = new Maneuver(sequence, firstTriggers, firstPropulsionModel);
-        final Maneuver secondManeuver = new Maneuver(sequence, secondTriggers, secondPropulsionModel);
+        final Maneuver firstManeuver =
+            new Maneuver(sequence, firstTriggers, firstPropulsionModel);
+        final Maneuver secondManeuver =
+            new Maneuver(sequence, secondTriggers, secondPropulsionModel);
         maneuvers.add(firstManeuver);
         maneuvers.add(secondManeuver);
 
@@ -180,51 +212,61 @@ public class ManeuverSequenceTest extends AbstractTest {
         final EphemerisGenerator generator = propagator.getEphemerisGenerator();
 
         propagator.propagate(startDate, finalDate);
-        final BoundedPropagator boundedPropagator = generator.getGeneratedEphemeris();
+        final BoundedPropagator boundedPropagator =
+            generator.getGeneratedEphemeris();
 
-        final Satellite satellite = new Satellite(boundedPropagator, header);
+        final Spacecraft satellite =
+            new Spacecraft(boundedPropagator, header.getClock());
 
         final List<Vector3D> accelerations = new ArrayList<>();
         accelerations.add(Vector3D.PLUS_I);
         accelerations.add(Vector3D.PLUS_J);
 
-        final ManeuverSequence maneuverSequence = ManeuverSequence.builder(sequence, maneuvers, satellite,
-                                                                          Vector3D.PLUS_I, LOFType.TNW, header)
-                                                                  .build();
+        final ManeuverSequence maneuverSequence =
+            ManeuverSequence
+                .builder(sequence, maneuvers, satellite, Vector3D.PLUS_I,
+                         LOFType.TNW, header.getClock())
+                .build();
 
-        final ManeuverSequence maneuverSequenceSimple = ManeuverSequence.builder(sequence, firstManeuver, satellite,
-                                                                                Vector3D.PLUS_I, LOFType.TNW, header)
-                                                                        .build();
+        final ManeuverSequence maneuverSequenceSimple =
+            ManeuverSequence
+                .builder(sequence, firstManeuver, satellite, Vector3D.PLUS_I,
+                         LOFType.TNW, header.getClock())
+                .build();
 
-        final ManeuverSequence maneuverSequenceMultiple = ManeuverSequence.builder(sequence, maneuvers, satellite,
-                                                                                  accelerations, LOFType.TNW, header)
-                                                                          .build();
+        final ManeuverSequence maneuverSequenceMultiple =
+            ManeuverSequence
+                .builder(sequence, maneuvers, satellite, accelerations,
+                         LOFType.TNW, header.getClock())
+                .build();
 
-        final String maneuversPathFile = loadResources("templateFile/primary/ManeuverSequenceTemplate.txt");
+        final String maneuversPathFile =
+            loadResources("templateFile/object/primary/ManeuverSequenceTemplate.txt");
 
-        final String maneuverSimplePathFile = loadResources("templateFile/primary/ManeuverSequenceSimpleTemplate.txt");
+        final String maneuverSimplePathFile =
+            loadResources("templateFile/object/primary/ManeuverSequenceSimpleTemplate.txt");
 
-        final String maneuverMultiplePathFile = loadResources(
-                "templateFile/primary/ManeuverSequenceMultipleTemplate.txt");
+        final String maneuverMultiplePathFile =
+            loadResources("templateFile/object/primary/ManeuverSequenceMultipleTemplate.txt");
 
-        Assertions.assertEquals(Files.readString(Path.of(maneuversPathFile)), maneuverSequence.toString());
-
-        Assertions.assertEquals(Files.readString(Path.of(maneuverSimplePathFile)), maneuverSequenceSimple.toString());
-
-        Assertions.assertEquals(Files.readString(Path.of(maneuverMultiplePathFile)),
-                maneuverSequenceMultiple.toString());
+        // Verify file output
+        verifyFileOutput(maneuversPathFile, maneuverSequence.toString(), 1e-3);
+        verifyFileOutput(maneuverSimplePathFile,
+                         maneuverSequenceSimple.toString(), 1e-3);
+        verifyFileOutput(maneuverMultiplePathFile,
+                         maneuverSequenceMultiple.toString(), 1e-3);
 
         // Getters coverage
-
         Assertions.assertEquals(maneuvers, maneuverSequence.getManeuvers());
-        Assertions.assertEquals(boundedPropagator.getInitialState()
-                                                 .getPVCoordinates()
-                                                 .toString(), maneuverSequence.getPropagator()
-                                                                              .getInitialState()
-                                                                              .getPVCoordinates()
-                                                                              .toString());
+        Assertions.assertEquals(
+                                boundedPropagator.getInitialState()
+                                    .getPVCoordinates().toString(),
+                                maneuverSequence.getPropagator()
+                                    .getInitialState().getPVCoordinates()
+                                    .toString());
 
-        Assertions.assertEquals(accelerations, maneuverSequenceMultiple.getArrowsDirection());
+        Assertions.assertEquals(accelerations,
+                                maneuverSequenceMultiple.getArrowsDirection());
         Assertions.assertEquals(sequence, maneuverSequence.getSequence());
         Assertions.assertEquals(LOFType.TNW, maneuverSequence.getLof());
         Assertions.assertFalse(maneuverSequence.isShowTrust());

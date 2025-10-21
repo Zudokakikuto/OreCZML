@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -16,15 +16,16 @@
  */
 package org.orekit.czml.trackingvisu;
 
-import org.orekit.czml.TutorialUtils;
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
 import org.orekit.bodies.GeodeticPoint;
+import org.orekit.czml.TutorialUtils;
 import org.orekit.czml.file.CzmlFile;
-import org.orekit.czml.object.primary.CzmlGroundStation;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.Satellite;
+import org.orekit.czml.object.primary.entities.CzmlGroundStation;
+import org.orekit.czml.object.primary.entities.Spacecraft;
+import org.orekit.czml.object.primary.visu.LineOfVisibility;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.forces.ForceModel;
 import org.orekit.forces.gravity.HolmesFeatherstoneAttractionModel;
@@ -42,71 +43,88 @@ import org.orekit.propagation.numerical.NumericalPropagator;
 import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.Constants;
+import org.orekit.utils.IERSConventions;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The type Sat tracking example.
+ * This tutorial shows an example of mission where a satellite is tracked by
+ * several stations.
  */
 public class SatTrackingExample {
 
-    private SatTrackingExample () {
+    private SatTrackingExample() {
         // empty
     }
 
     /**
-     * Main.
+     * Main of sat tracking tutorial.
      *
      * @param args the args
      * @throws Exception the exception
      */
-    public static void main (final String[] args) throws Exception {
+    public static void main(final String[] args)
+        throws Exception {
         // Load orekit data
         TutorialUtils.loadOrekitData();
 
         // Paths
         final String output = TutorialUtils.generateOutput();
-        // !!! Here you need to change the path inside 'generateJsPath' to the path you are using for images or Model.
-        // This folder can also be the public folder of your cesium javascript interface.
-        final String pathToJSFolder = TutorialUtils.generateJSPath(
-                System.getProperty("user.dir") + "/Javascript/public");
+        // !!! Here you need to change the path inside 'generateJsPath' to the
+        // path you are using for images or Model.
+        // This folder can also be the public folder of your cesium javascript
+        // interface.
+        final String pathToJSFolder =
+            TutorialUtils.generateJSPath(System.getProperty("user.dir") +
+                                         "/Javascript/public");
 
         // Creation of the clock.
 
-
-        final AbsoluteDate startDate = new AbsoluteDate(2024, 3, 15, 0, 0, 0.0, TimeScalesFactory.getUTC());
-        final AbsoluteDate finalDate = startDate.shiftedBy(TutorialUtils.CLASSIC_DURATION_OF_SIMULATION);
-        final Clock clock = new Clock(startDate, finalDate, TimeScalesFactory.getUTC(),
-                TutorialUtils.STEP_BETWEEN_EACH_INSTANT);
+        final AbsoluteDate startDate =
+            new AbsoluteDate(2024, 3, 15, 0, 0, 0.0,
+                             TimeScalesFactory.getUTC());
+        final AbsoluteDate finalDate =
+            startDate.shiftedBy(TutorialUtils.CLASSIC_DURATION_OF_SIMULATION);
+        final Clock clock =
+            new Clock(startDate, finalDate,
+                      TutorialUtils.STEP_BETWEEN_EACH_INSTANT);
 
         // Creation of the header
-        final Header header = new Header("Tracking of a satellite by several stations", clock, pathToJSFolder);
+        final Header header =
+            new Header("Tracking of a satellite by several stations", clock,
+                       pathToJSFolder);
 
         //// Creation of the satellite
         // Creation of the orbit
 
-        final KeplerianOrbit initialOrbit = new KeplerianOrbit(7878000, 0, FastMath.toRadians(20), 0,
-                FastMath.toRadians(90), FastMath.toRadians(0), PositionAngleType.MEAN, FramesFactory.getEME2000(), startDate,
-                Constants.WGS84_EARTH_MU);
+        final KeplerianOrbit initialOrbit =
+            new KeplerianOrbit(7878000, 0, FastMath.toRadians(20), 0,
+                               FastMath.toRadians(90), FastMath.toRadians(0),
+                               PositionAngleType.MEAN,
+                               FramesFactory.getEME2000(), startDate,
+                               Constants.WGS84_EARTH_MU);
 
         final SpacecraftState initialState = new SpacecraftState(initialOrbit);
 
         // Build of the propagator
 
+        final double[][] tolerances =
+            NumericalPropagator.tolerances(TutorialUtils.POSITION_TOLERANCE,
+                                           initialOrbit, OrbitType.CARTESIAN);
+        final AdaptiveStepsizeIntegrator integrator =
+            new DormandPrince853Integrator(TutorialUtils.MIN_STEP,
+                                           TutorialUtils.MAX_STEP,
+                                           tolerances[0], tolerances[1]);
 
-        final double[][] tolerances = NumericalPropagator.tolerances(TutorialUtils.POSITION_TOLERANCE, initialOrbit,
-                OrbitType.CARTESIAN);
-        final AdaptiveStepsizeIntegrator integrator = new DormandPrince853Integrator(TutorialUtils.MIN_STEP,
-                TutorialUtils.MAX_STEP, tolerances[0],
-                tolerances[1]);
+        final NumericalPropagator propagator =
+            new NumericalPropagator(integrator);
 
-        final NumericalPropagator propagator = new NumericalPropagator(integrator);
-
-        final NormalizedSphericalHarmonicsProvider provider = GravityFieldFactory.getNormalizedProvider(10,
-                10);
-        final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(FramesFactory.getEME2000(),
-                provider);
+        final NormalizedSphericalHarmonicsProvider provider =
+            GravityFieldFactory.getNormalizedProvider(10, 10);
+        final ForceModel holmesFeatherstone =
+            new HolmesFeatherstoneAttractionModel(FramesFactory
+                .getITRF(IERSConventions.IERS_2010, true), provider);
 
         propagator.setOrbitType(OrbitType.CARTESIAN);
         propagator.addForceModel(holmesFeatherstone);
@@ -115,39 +133,50 @@ public class SatTrackingExample {
         final EphemerisGenerator generator = propagator.getEphemerisGenerator();
 
         propagator.propagate(startDate, finalDate);
-        final BoundedPropagator boundedPropagator = generator.getGeneratedEphemeris();
+        final BoundedPropagator boundedPropagator =
+            generator.getGeneratedEphemeris();
 
         // Build of the satellite
-        final Satellite satellite = Satellite.builder(boundedPropagator, header)
-                                             .withOnlyOnePeriod()
-                                             .build();
+        final Spacecraft satellite =
+            Spacecraft.builder(boundedPropagator, clock).withOnlyOnePeriod()
+                .build();
 
         //// Creation of several ground stations
 
-
         // Creation of a topocentric frame around Toulouse.
-        final GeodeticPoint toulouseFrame = new GeodeticPoint(FastMath.toRadians(43.6047),
-                FastMath.toRadians(1.4442), 10);
-        final TopocentricFrame topocentricToulouse = new TopocentricFrame(TutorialUtils.getEarth(), toulouseFrame,
-                "Toulouse");
+        final GeodeticPoint toulouseFrame =
+            new GeodeticPoint(FastMath.toRadians(43.6047),
+                              FastMath.toRadians(1.4442), 10);
+        final TopocentricFrame topocentricToulouse =
+            new TopocentricFrame(TutorialUtils.getEarth(), toulouseFrame,
+                                 "Toulouse");
         // Creation of a topocentric frame around Quito
-        final GeodeticPoint quitoFrame = new GeodeticPoint(FastMath.toRadians(0.1807),
-                FastMath.toRadians(11.5382), 2850);
-        final TopocentricFrame topocentricQuito = new TopocentricFrame(TutorialUtils.getEarth(), quitoFrame, "Quito");
+        final GeodeticPoint quitoFrame =
+            new GeodeticPoint(FastMath.toRadians(0.1807),
+                              FastMath.toRadians(11.5382), 2850);
+        final TopocentricFrame topocentricQuito =
+            new TopocentricFrame(TutorialUtils.getEarth(), quitoFrame, "Quito");
         // Creation of a topocentric frame around Sydney
-        final GeodeticPoint sydneyFrame = new GeodeticPoint(FastMath.toRadians(-33.8688),
-                FastMath.toRadians(-241.2093), 100);
-        final TopocentricFrame topocentricSydney = new TopocentricFrame(TutorialUtils.getEarth(), sydneyFrame, "Sydney");
+        final GeodeticPoint sydneyFrame =
+            new GeodeticPoint(FastMath.toRadians(-33.8688),
+                              FastMath.toRadians(-241.2093), 100);
+        final TopocentricFrame topocentricSydney =
+            new TopocentricFrame(TutorialUtils.getEarth(), sydneyFrame,
+                                 "Sydney");
         // Creation of a topocentric frame around gibraltar
-        final GeodeticPoint gibraltarFrame = new GeodeticPoint(FastMath.toRadians(36.1408),
-                FastMath.toRadians(5.3536), 400);
-        final TopocentricFrame topocentricGibraltar = new TopocentricFrame(TutorialUtils.getEarth(), gibraltarFrame,
-                "Gibraltar");
+        final GeodeticPoint gibraltarFrame =
+            new GeodeticPoint(FastMath.toRadians(36.1408),
+                              FastMath.toRadians(5.3536), 400);
+        final TopocentricFrame topocentricGibraltar =
+            new TopocentricFrame(TutorialUtils.getEarth(), gibraltarFrame,
+                                 "Gibraltar");
         // Creation of another topocentric frame around Las Vegas.
-        final GeodeticPoint lasVegasFrame = new GeodeticPoint(FastMath.toRadians(36.1716),
-                FastMath.toRadians(-115.1391), 10);
-        final TopocentricFrame topocentricLasVegas = new TopocentricFrame(TutorialUtils.getEarth(), lasVegasFrame,
-                "Las Vegas");
+        final GeodeticPoint lasVegasFrame =
+            new GeodeticPoint(FastMath.toRadians(36.1716),
+                              FastMath.toRadians(-115.1391), 10);
+        final TopocentricFrame topocentricLasVegas =
+            new TopocentricFrame(TutorialUtils.getEarth(), lasVegasFrame,
+                                 "Las Vegas");
 
         // Creation of a list of topocentric frame containing both frames.
         final List<TopocentricFrame> stations = new ArrayList<>();
@@ -159,19 +188,45 @@ public class SatTrackingExample {
 
         final List<CzmlGroundStation> groundStations = new ArrayList<>();
         for (TopocentricFrame station : stations) {
-            groundStations.add(new CzmlGroundStation(station, header));
+            final CzmlGroundStation currentCzmlStation =
+                CzmlGroundStation.builder(station, header.getClock())
+                    .displayCircle(satellite, 70.0).build();
+            groundStations.add(currentCzmlStation);
         }
 
-        //// Creation of a line of visu between the satellite and all the ground stations
-        final CzmlFile file = CzmlFile.builder()
-                                      .withHeader(header)
-                                      .withSatellite(satellite)
-                                      .withCzmlGroundStation(groundStations)
-                                      .withLineOfVisibility(stations, satellite, header)
-                                      .build();
+        final LineOfVisibility lineOfVisibilityToulouse =
+            LineOfVisibility
+                .builder(topocentricToulouse, satellite, header.getClock())
+                .withAngleOfAperture(70.0).build();
+        final LineOfVisibility lineOfVisibilityGibraltar =
+            LineOfVisibility
+                .builder(topocentricGibraltar, satellite, header.getClock())
+                .withAngleOfAperture(70.0).build();
+        final LineOfVisibility lineOfVisibilityQuito =
+            LineOfVisibility
+                .builder(topocentricQuito, satellite, header.getClock())
+                .withAngleOfAperture(70.0).build();
+        final LineOfVisibility lineOfVisibilityLasVegas =
+            LineOfVisibility
+                .builder(topocentricLasVegas, satellite, header.getClock())
+                .withAngleOfAperture(70.0).build();
+        final LineOfVisibility lineOfVisibilitySydney =
+            LineOfVisibility
+                .builder(topocentricSydney, satellite, header.getClock())
+                .withAngleOfAperture(70.0).build();
+
+        //// Creation of a line of visu between the satellite and all the ground
+        //// stations
+        final CzmlFile file =
+            CzmlFile.builder(header).withSpacecraft(satellite)
+                .withCzmlGroundStation(groundStations)
+                .withLineOfVisibility(lineOfVisibilityToulouse)
+                .withLineOfVisibility(lineOfVisibilitySydney)
+                .withLineOfVisibility(lineOfVisibilityLasVegas)
+                .withLineOfVisibility(lineOfVisibilityGibraltar)
+                .withLineOfVisibility(lineOfVisibilityQuito).build();
 
         // Write inside the CzmlFile the objects
         file.write(output);
     }
 }
-

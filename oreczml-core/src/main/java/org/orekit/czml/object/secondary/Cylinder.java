@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -27,9 +27,8 @@ import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.hipparchus.util.FastMath;
 import org.orekit.czml.object.Position;
 import org.orekit.czml.object.PositionType;
-import org.orekit.czml.object.primary.CzmlGroundStation;
-import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.Satellite;
+import org.orekit.czml.object.primary.entities.CzmlGroundStation;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.frames.TopocentricFrame;
 import org.orekit.utils.Constants;
 
@@ -37,13 +36,17 @@ import java.awt.Color;
 
 /**
  * Cylinder class
- *
- * <p> This class allows the user to display a cylinder (that can be shaped as a cone) with variables geometries.</p>
+ * <p>
+ * This class allows the user to display a cylinder (that can be shaped as a
+ * cone) with variables geometries.
+ * </p>
  *
  * @author Julien LEBLOND
  * @since 1.0.0
  */
-public class Cylinder extends AbstractSecondaryObject {
+public class Cylinder
+    extends
+    AbstractSecondaryObject {
 
     /**
      * The length of the cylinder.
@@ -76,137 +79,160 @@ public class Cylinder extends AbstractSecondaryObject {
     private Color color;
 
     /**
+     * The clock.
+     */
+    private final Clock clock;
+
+    /**
      * To show or not the cylinder.
      */
     private boolean show = false;
-
     // Constructors
 
     /**
-     * The basic constructor of the cylinder, by defining all the primary characteristics.
+     * The basic constructor of the cylinder, by defining all the primary
+     * characteristics.
      *
-     * @param length          : The length of the cylinder.
-     * @param topRadius       : The radius of the top base.
-     * @param bottomRadius    : The radius of the bottom base.
-     * @param color           : The color of the cylinder.
-     * @param position        : The position of the cylinder.
+     * @param length : The length of the cylinder.
+     * @param topRadius : The radius of the top base.
+     * @param bottomRadius : The radius of the bottom base.
+     * @param color : The color of the cylinder.
+     * @param position : The position of the cylinder.
      * @param heightReference : The height reference of the base.
-     * @param header          : The header considered.
+     * @param clock : The availability of the cylinder.
      */
-    public Cylinder(final double length, final double topRadius, final double bottomRadius, final Color color,
-                    final Position position, final CesiumHeightReference heightReference, final Header header) {
-        this.length          = length;
-        this.topRadius       = topRadius;
-        this.bottomRadius    = bottomRadius;
-        this.color           = color;
-        this.position        = position;
-        this.show            = true;
+    public Cylinder(final double length, final double topRadius,
+                    final double bottomRadius, final Color color,
+                    final Position position,
+                    final CesiumHeightReference heightReference,
+                    final Clock clock) {
+        this.length = length;
+        this.topRadius = topRadius;
+        this.bottomRadius = bottomRadius;
+        this.color = color;
+        this.position = position;
+        this.show = true;
         this.heightReference = heightReference;
+        this.clock = clock;
     }
 
     /**
-     * The cylinder constructor from a czml station and a satellite. This helps define a visibility cone.
+     * The cylinder constructor from a czml station and a satellite. This helps
+     * define a visibility cone.
      *
-     * @param topocentricFrame : The topocentric ram representing the ground station.
-     * @param satellite        : The satellite that will be observed by the station.
-     * @param angleOfAperture  : The angle of aperture of the visibility of the station in degrees.
-     * @param header           : The header considered.
+     * @param topocentricFrame : The topocentric ram representing the ground
+     *        station.
+     * @param satellite : The satellite that will be observed by the station.
+     * @param angleOfAperture : The angle of aperture of the visibility of the
+     *        station in degrees.
+     * @param clock : The clock considered.
      */
-    public Cylinder(final TopocentricFrame topocentricFrame, final Satellite satellite,
-                    final double angleOfAperture, final Header header) {
+    public Cylinder(final TopocentricFrame topocentricFrame,
+                    final Spacecraft satellite, final double angleOfAperture,
+                    final Clock clock) {
         final Color color_temp = new Color(255, 255, 255, 50);
 
-        final Vector3D positionInCartesian = topocentricFrame.getCartesianPoint();
+        final Vector3D positionInCartesian =
+            topocentricFrame.getCartesianPoint();
 
-        final double       x            = positionInCartesian.getX();
-        final double       y            = positionInCartesian.getY();
-        final double       z            = positionInCartesian.getZ();
+        final double x = positionInCartesian.getX();
+        final double y = positionInCartesian.getY();
+        final double z = positionInCartesian.getZ();
         final PositionType positionType = PositionType.CARTESIAN_POSITION;
 
-        this.length = satellite.getOrbits()
-                               .get(0)
-                               .getA() / 2;
+        this.length =
+            satellite.getOrbits().get(0).getA() -
+                      Constants.WGS84_EARTH_EQUATORIAL_RADIUS;
         // Angle of aperture in degrees !
-        this.topRadius       = length * FastMath.tan(angleOfAperture);
-        this.bottomRadius    = 10.0;
-        this.position        = new Position(x, y, z, positionType, header);
-        this.color           = color_temp;
-        this.show            = true;
+        this.topRadius =
+            length * FastMath.tan(FastMath.toRadians(angleOfAperture));
+        this.bottomRadius = 10.0;
+        this.position = new Position(x, y, z, positionType, clock);
+        this.color = color_temp;
+        this.show = true;
         this.heightReference = CesiumHeightReference.CLAMP_TO_GROUND;
+        this.clock = clock;
     }
-
 
     /**
      * The cylinder constructor from a single station and an angle of aperture.
      *
-     * @param InputGroundStation : The czml ground station that will have a visibility cone.
-     * @param angleOfAperture    : The angle of aperture of the visibility of the station
-     * @param header             : The header considered.
+     * @param InputGroundStation : The czml ground station that will have a
+     *        visibility cone.
+     * @param angleOfAperture : The angle of aperture of the visibility of the
+     *        station
+     * @param clock : The clock considered.
      */
-    public Cylinder(final CzmlGroundStation InputGroundStation, final double angleOfAperture, final Header header) {
+    public Cylinder(final CzmlGroundStation InputGroundStation,
+                    final double angleOfAperture, final Clock clock) {
 
         final Color color_temp = new Color(255, 255, 255, 50);
 
-        final double x = InputGroundStation.getPositions()
-                                           .getX();
-        final double y = InputGroundStation.getPositions()
-                                           .getY();
-        final double z = InputGroundStation.getPositions()
-                                           .getZ();
+        final double x = InputGroundStation.getPositions().getX();
+        final double y = InputGroundStation.getPositions().getY();
+        final double z = InputGroundStation.getPositions().getZ();
         final PositionType positionType = PositionType.CARTESIAN_POSITION;
 
-        this.length          = Constants.WGS84_EARTH_EQUATORIAL_RADIUS;
-        this.topRadius       = length * FastMath.tan(angleOfAperture);
-        this.bottomRadius    = 0.0;
-        this.position        = new Position(x, y, z, positionType, header);
-        this.color           = color_temp;
+        this.length = Constants.WGS84_EARTH_EQUATORIAL_RADIUS;
+        this.topRadius =
+            length * FastMath.tan(FastMath.toRadians(angleOfAperture));
+        this.bottomRadius = 0.0;
+        this.position = new Position(x, y, z, positionType, clock);
+        this.color = color_temp;
         this.heightReference = CesiumHeightReference.CLAMP_TO_GROUND;
+        this.clock = clock;
     }
 
     /**
-     * The cylinder constructor with a topocentric frame and an angle of aperture.
+     * The cylinder constructor with a topocentric frame and an angle of
+     * aperture.
      *
-     * @param topocentricFrame : The topocentric frame where the ground station must be.
-     * @param angleOfAperture  : The angle of aperture of the visibility of the station
-     * @param header           : The header considered.
+     * @param topocentricFrame : The topocentric frame where the ground station
+     *        must be.
+     * @param angleOfAperture : The angle of aperture of the visibility of the
+     *        station
+     * @param clock : The clock considered.
      */
-    public Cylinder(final TopocentricFrame topocentricFrame, final double angleOfAperture, final Header header) {
+    public Cylinder(final TopocentricFrame topocentricFrame,
+                    final double angleOfAperture, final Clock clock) {
         final Color color_temp = new Color(255, 255, 255, 50);
 
-        final double x = topocentricFrame.getCartesianPoint()
-                                         .getX();
-        final double y = topocentricFrame.getCartesianPoint()
-                                         .getY();
-        final double z = topocentricFrame.getCartesianPoint()
-                                         .getZ();
+        final double x = topocentricFrame.getCartesianPoint().getX();
+        final double y = topocentricFrame.getCartesianPoint().getY();
+        final double z = topocentricFrame.getCartesianPoint().getZ();
 
         final PositionType positionType = PositionType.CARTESIAN_POSITION;
 
-        this.length          = Constants.WGS84_EARTH_EQUATORIAL_RADIUS;
-        this.topRadius       = length * FastMath.tan(angleOfAperture);
-        this.bottomRadius    = 0.0;
-        this.position        = new Position(x, y, z, positionType, header);
-        this.color           = color_temp;
+        this.length = Constants.WGS84_EARTH_EQUATORIAL_RADIUS;
+        this.topRadius =
+            length * FastMath.tan(FastMath.toRadians(angleOfAperture));
+        this.bottomRadius = 0.0;
+        this.position = new Position(x, y, z, positionType, clock);
+        this.color = color_temp;
         this.heightReference = CesiumHeightReference.CLAMP_TO_GROUND;
+        this.clock = clock;
     }
-
 
     // Overrides
 
     @Override
-    public void write(final PacketCesiumWriter packetWriter, final CesiumOutputStream output) {
+    public void write(final PacketCesiumWriter packetWriter,
+                      final CesiumOutputStream output) {
 
-        try (CylinderCesiumWriter cylinderWriter = packetWriter.getCylinderWriter()) {
+        try (CylinderCesiumWriter cylinderWriter =
+            packetWriter.getCylinderWriter()) {
             cylinderWriter.open(output);
             cylinderWriter.writeBottomRadiusProperty(this.bottomRadius);
             cylinderWriter.writeTopRadiusProperty(this.topRadius);
             cylinderWriter.writeLengthProperty(this.length);
 
-            final MaterialCesiumWriter materialWriter = cylinderWriter.getMaterialWriter();
+            final MaterialCesiumWriter materialWriter =
+                cylinderWriter.getMaterialWriter();
             materialWriter.open(output);
             output.writeStartObject();
 
-            final SolidColorMaterialCesiumWriter solidColorWriter = materialWriter.getSolidColorWriter();
+            final SolidColorMaterialCesiumWriter solidColorWriter =
+                materialWriter.getSolidColorWriter();
             solidColorWriter.open(output);
             solidColorWriter.writeColorProperty(color);
             output.writeEndObject();
@@ -216,7 +242,6 @@ public class Cylinder extends AbstractSecondaryObject {
             cylinderWriter.writeHeightReferenceProperty(heightReference);
         }
     }
-
 
     // Getters
 
@@ -274,9 +299,6 @@ public class Cylinder extends AbstractSecondaryObject {
         return length;
     }
 
-
-    // Setters
-
     /**
      * Gets top radius.
      *
@@ -285,4 +307,14 @@ public class Cylinder extends AbstractSecondaryObject {
     public double getTopRadius() {
         return topRadius;
     }
+
+    /**
+     * Gets time frame for which feature is available.
+     *
+     * @return the time interval value
+     */
+    public Clock getClock() {
+        return clock;
+    }
+
 }

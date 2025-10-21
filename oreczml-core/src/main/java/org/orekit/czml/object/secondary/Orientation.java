@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -27,14 +27,13 @@ import cesiumlanguagewriter.UnitQuaternion;
 import org.hipparchus.geometry.euclidean.threed.Rotation;
 import org.hipparchus.geometry.euclidean.threed.RotationConvention;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.attitudes.Attitude;
 import org.orekit.attitudes.BoundedAttitudeProvider;
-import org.orekit.czml.archi.builder.OrientationBuilder;
 import org.orekit.czml.errors.OreCzmlException;
 import org.orekit.czml.errors.OreCzmlMessages;
-import org.orekit.czml.object.Utils.DateUtils;
-import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.Satellite;
+import org.orekit.czml.object.utils.DateUtils;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.frames.Frame;
 import org.orekit.frames.FramesFactory;
 import org.orekit.propagation.BoundedPropagator;
@@ -47,16 +46,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-
 /**
  * Orientation class.
- *
- * <p> This class ams at representing and writing in the czml file the orientation of an object knowing its Orekit Attitude. </p>
+ * <p>
+ * This class ams at representing and writing in the czml file the orientation
+ * of an object knowing its Orekit Attitude.
+ * </p>
  *
  * @author Julien LEBLOND
  * @since 1.0.0
  */
-public class Orientation extends AbstractSecondaryObject {
+public class Orientation
+    extends
+    AbstractSecondaryObject {
 
     /**
      * If multiple unit quaternions are necessary, this list will be used.
@@ -74,8 +76,9 @@ public class Orientation extends AbstractSecondaryObject {
     private final TimeInterval interval;
 
     /**
-     * The interpolation algorithm between the different points that exists to fit the different instants of the simulation.
-     * The available parameters are: LINEAR, LAGRANGE, HERMITE;
+     * The interpolation algorithm between the different points that exists to
+     * fit the different instants of the simulation. The available parameters
+     * are: LINEAR, LAGRANGE, HERMITE;
      */
     private final CesiumInterpolationAlgorithm interpolationAlgorithm;
 
@@ -94,278 +97,324 @@ public class Orientation extends AbstractSecondaryObject {
     /**
      * The orientation constructor from a bounded attitude provider object.
      *
-     * @param provider         : The bounded attitude provider that will determine the attitudes.
-     * @param propagator       : The propagator considered.
+     * @param provider : The bounded attitude provider that will determine the
+     *        attitudes.
+     * @param propagator : The propagator considered.
+     * @param clock : provides time interval information
      * @param optionalRotation : An optional rotation to add to the orientation
-     * @param invertToItrf     : To put the referential into the ITR frame
-     * @param header           : THe header considered.
+     * @param invertToItrf : To put the referential into the ITR frame
      * @throws URISyntaxException the uri syntax exception
-     * @throws IOException        the io exception
+     * @throws IOException the io exception
      */
-    public Orientation(final BoundedAttitudeProvider provider, final BoundedPropagator propagator,
-                       final Rotation optionalRotation, final boolean invertToItrf,
-                       final Header header) throws URISyntaxException, IOException {
+    @DefaultDataContext
+    public Orientation(final BoundedAttitudeProvider provider,
+                       final BoundedPropagator propagator, final Clock clock,
+                       final Rotation optionalRotation,
+                       final boolean invertToItrf)
+        throws URISyntaxException,
+            IOException {
 
         final List<Attitude> attitudesTemp = new ArrayList<>();
 
-        final List<AbsoluteDate> dateList = new Satellite(propagator, header).getAbsoluteDateList();
+        final List<AbsoluteDate> dateList =
+            new Spacecraft(propagator, clock).getAbsoluteDateList();
 
         final Frame objectFrame = propagator.getFrame();
 
         for (final AbsoluteDate currentDate : dateList) {
-            attitudesTemp.add(provider.getAttitude(propagator, currentDate, objectFrame));
+            attitudesTemp.add(provider.getAttitude(propagator, currentDate,
+                                                   objectFrame));
         }
 
         if (!invertToItrf) {
             this.attitudes = attitudesTemp;
-            final JulianDate startDate = DateUtils.toJulianDate(attitudes.get(0)
-                                                                         .getDate(), header.getTimeScale());
-            final JulianDate finalDate = DateUtils.toJulianDate(attitudes.get(attitudes.size() - 1)
-                                                                         .getDate()
-                                                                         .shiftedBy(header.getClock()
-                                                                                          .getMultiplier()),
-                    header.getTimeScale());
-            final Frame ITRF = FramesFactory.getITRF(IERSConventions.IERS_2010, true);
+            final JulianDate startDate =
+                DateUtils.toJulianDate(attitudes.get(0).getDate());
+            final JulianDate finalDate =
+                DateUtils.toJulianDate(attitudes.get(attitudes.size() - 1)
+                    .getDate());
+            final Frame ITRF =
+                FramesFactory.getITRF(IERSConventions.IERS_2010, true);
             this.interval = new TimeInterval(startDate, finalDate);
 
             for (final Attitude currentAttitude : attitudes) {
-                final JulianDate currentDate = DateUtils.toJulianDate(currentAttitude.getDate(), header.getTimeScale());
+                final JulianDate currentDate =
+                    DateUtils.toJulianDate(currentAttitude.getDate());
                 this.julianDates.add(currentDate);
 
-                final Rotation rotationFromObjectFrameToITRF = ITRF.getTransformTo(objectFrame,
-                                                                           currentAttitude.getDate())
-                                                                   .getRotation();
-                final Rotation rotationITOJ     = new Rotation(Vector3D.PLUS_I, Vector3D.PLUS_J);
+                final Rotation rotationFromObjectFrameToITRF =
+                    ITRF.getTransformTo(objectFrame, currentAttitude.getDate())
+                        .getRotation();
+                final Rotation rotationITOJ =
+                    new Rotation(Vector3D.PLUS_I, Vector3D.PLUS_J);
                 final Rotation attitudeRotation = currentAttitude.getRotation();
                 if (optionalRotation == null) {
-                    final Rotation currentRotation = attitudeRotation.compose(rotationFromObjectFrameToITRF,
-                            RotationConvention.VECTOR_OPERATOR);
-                    final Rotation finalRotation = rotationITOJ.compose(currentRotation,
-                            RotationConvention.VECTOR_OPERATOR);
+                    final Rotation currentRotation =
+                        attitudeRotation
+                            .compose(rotationFromObjectFrameToITRF,
+                                     RotationConvention.VECTOR_OPERATOR);
+                    final Rotation finalRotation =
+                        rotationITOJ
+                            .compose(currentRotation,
+                                     RotationConvention.VECTOR_OPERATOR);
                     final double currentQ0 = finalRotation.getQ0();
                     final double currentQ1 = finalRotation.getQ1();
                     final double currentQ2 = finalRotation.getQ2();
                     final double currentQ3 = finalRotation.getQ3();
-                    final UnitQuaternion currentUnitQuaternion = new UnitQuaternion(currentQ0, currentQ1, currentQ2,
-                            currentQ3);
+                    final UnitQuaternion currentUnitQuaternion =
+                        new UnitQuaternion(currentQ0, currentQ1, currentQ2,
+                                           currentQ3);
                     multipleQuaternions.add(currentUnitQuaternion);
                 } else {
-                    final Rotation tempRotation = attitudeRotation.compose(rotationFromObjectFrameToITRF,
-                            RotationConvention.VECTOR_OPERATOR);
-                    final Rotation currentRotation = tempRotation.compose(optionalRotation,
-                            RotationConvention.VECTOR_OPERATOR);
-                    final Rotation finalRotation = rotationITOJ.compose(currentRotation,
-                            RotationConvention.VECTOR_OPERATOR);
+                    final Rotation tempRotation =
+                        attitudeRotation
+                            .compose(rotationFromObjectFrameToITRF,
+                                     RotationConvention.VECTOR_OPERATOR);
+                    final Rotation currentRotation =
+                        tempRotation
+                            .compose(optionalRotation,
+                                     RotationConvention.VECTOR_OPERATOR);
+                    final Rotation finalRotation =
+                        rotationITOJ
+                            .compose(currentRotation,
+                                     RotationConvention.VECTOR_OPERATOR);
                     final double currentQ0 = finalRotation.getQ0();
                     final double currentQ1 = finalRotation.getQ1();
                     final double currentQ2 = finalRotation.getQ2();
                     final double currentQ3 = finalRotation.getQ3();
-                    final UnitQuaternion currentUnitQuaternion = new UnitQuaternion(currentQ0, currentQ1, currentQ2,
-                            currentQ3);
+                    final UnitQuaternion currentUnitQuaternion =
+                        new UnitQuaternion(currentQ0, currentQ1, currentQ2,
+                                           currentQ3);
                     multipleQuaternions.add(currentUnitQuaternion);
                 }
             }
             this.interpolationAlgorithm = CesiumInterpolationAlgorithm.LAGRANGE;
-            this.interpolationDegree    = 5;
+            this.interpolationDegree = 5;
         } else {
             this.attitudes = attitudesTemp;
-            final JulianDate startDate = DateUtils.toJulianDate(attitudes.get(0)
-                                                                         .getDate(), header.getTimeScale());
-            final JulianDate finalDate = DateUtils.toJulianDate(attitudes.get(attitudes.size() - 1)
-                                                                         .getDate()
-                                                                         .shiftedBy(header.getClock()
-                                                                                          .getMultiplier()),
-                    header.getTimeScale());
+            final JulianDate startDate =
+                DateUtils.toJulianDate(attitudes.get(0).getDate());
+            final JulianDate finalDate =
+                DateUtils.toJulianDate(attitudes.get(attitudes.size() - 1)
+                    .getDate().shiftedBy(clock.getMultiplier()));
             this.interval = new TimeInterval(startDate, finalDate);
 
             for (final Attitude currentAttitude : attitudes) {
-                final JulianDate currentDate = DateUtils.toJulianDate(currentAttitude.getDate(), header.getTimeScale());
+                final JulianDate currentDate =
+                    DateUtils.toJulianDate(currentAttitude.getDate());
                 this.julianDates.add(currentDate);
 
                 final Rotation objectRotation = currentAttitude.getRotation();
-                final double   currentQ0      = objectRotation.getQ0();
-                final double   currentQ1      = objectRotation.getQ1();
-                final double   currentQ2      = objectRotation.getQ2();
-                final double   currentQ3      = objectRotation.getQ3();
-                final UnitQuaternion currentUnitQuaternion = new UnitQuaternion(currentQ0, currentQ1, currentQ2,
-                        currentQ3);
+                final double currentQ0 = objectRotation.getQ0();
+                final double currentQ1 = objectRotation.getQ1();
+                final double currentQ2 = objectRotation.getQ2();
+                final double currentQ3 = objectRotation.getQ3();
+                final UnitQuaternion currentUnitQuaternion =
+                    new UnitQuaternion(currentQ0, currentQ1, currentQ2,
+                                       currentQ3);
                 multipleQuaternions.add(currentUnitQuaternion);
             }
             this.interpolationAlgorithm = CesiumInterpolationAlgorithm.LAGRANGE;
-            this.interpolationDegree    = 5;
+            this.interpolationDegree = 5;
         }
     }
 
     /**
-     * The orientation constructor for a single attitude with default parameters.
+     * The orientation constructor for a single attitude with default
+     * parameters.
      *
-     * @param attitude    : The attitude of the object.
+     * @param attitude : The attitude of the object.
      * @param objectFrame : The frame of the considered object.
-     * @param header      : The header considered.
      */
-    public Orientation(final Attitude attitude, final Frame objectFrame, final Header header) {
-        this(attitude, objectFrame, true, header);
+    public Orientation(final Attitude attitude, final Frame objectFrame) {
+        this(attitude, objectFrame, true);
     }
 
     /**
-     * The orientation constructor for a single attitude with no default parameters.
+     * The orientation constructor for a single attitude with no default
+     * parameters.
      *
-     * @param attitude     : The attitude of the object.
-     * @param objectFrame  : The frame of the considered object.
-     * @param invertToITRF : To convert the object into the ITRF or not, by default it is true.                     (The default is true because cesium only understands the ITRF as a base for the position).
-     * @param header       : The header considered.
-     */
-    public Orientation(final Attitude attitude, final Frame objectFrame, final boolean invertToITRF,
-                       final Header header) {
-        this(Collections.singletonList(attitude), objectFrame, invertToITRF, null, header);
-    }
-
-    /**
-     * The orientation constructor for multiple attitudes with default parameters.
-     *
-     * @param attitudes   : The attitudes of the object.
+     * @param attitude : The attitude of the object.
      * @param objectFrame : The frame of the considered object.
-     * @param header      : The header considered.
+     * @param invertToITRF : To convert the object into the ITRF or not, by
+     *        default it is true. (The default is true because cesium only
+     *        understands the ITRF as a base for the position).
      */
-    public Orientation(final List<Attitude> attitudes, final Frame objectFrame, final Header header) {
-        this(attitudes, objectFrame, true, null, header);
+    public Orientation(final Attitude attitude, final Frame objectFrame,
+                       final boolean invertToITRF) {
+        this(Collections.singletonList(attitude), objectFrame, invertToITRF,
+             null);
     }
 
     /**
-     * The orientation constructor for multiple attitudes with default parameters.
+     * The orientation constructor for multiple attitudes with default
+     * parameters.
      *
-     * @param attitudes        : The attitudes of the object.
-     * @param objectFrame      : The frame of the considered object.
-     * @param invertToITRF     : To convert the object into the ITRF or not, by default it is true.                         (The default is true because cesium only understands the ITRF as a base for the position).
-     * @param optionalRotation : An optional rotation that can be applied to the attitude.
-     * @param header           : The header considered.
+     * @param attitudes : The attitudes of the object.
+     * @param objectFrame : The frame of the considered object
      */
-    public Orientation(final List<Attitude> attitudes, final Frame objectFrame, final boolean invertToITRF,
-                       final Rotation optionalRotation, final Header header) {
-        // The invert to ITRF allows the user to put an object frame in topocentric frame,
-        // usually it is advised to put invertToITRF true for the study of satellites.
+    public Orientation(final List<Attitude> attitudes,
+                       final Frame objectFrame) {
+        this(attitudes, objectFrame, true, null);
+    }
+
+    /**
+     * The orientation constructor for multiple attitudes with default
+     * parameters.
+     *
+     * @param attitudes : The attitudes of the object.
+     * @param objectFrame : The frame of the considered object.
+     * @param invertToITRF : To convert the object into the ITRF or not, by
+     *        default it is true. (The default is true because cesium only
+     *        understands the ITRF as a base for the position).
+     * @param optionalRotation : An optional rotation that can be applied to the
+     *        attitude.
+     */
+    @DefaultDataContext
+    public Orientation(final List<Attitude> attitudes, final Frame objectFrame,
+                       final boolean invertToITRF,
+                       final Rotation optionalRotation) {
+        // The invert to ITRF allows the user to put an object frame in
+        // topocentric frame,
+        // usually it is advised to put invertToITRF true for the study of
+        // satellites.
         // This way the orientation computed is in the local orbital frame.
         if (!invertToITRF) {
             this.attitudes = attitudes;
-            final JulianDate startDate = DateUtils.toJulianDate(attitudes.get(0)
-                                                                         .getDate(), header.getTimeScale());
-            final JulianDate finalDate = DateUtils.toJulianDate(attitudes.get(attitudes.size() - 1)
-                                                                         .getDate()
-                                                                         .shiftedBy(header.getClock()
-                                                                                          .getMultiplier()),
-                    header.getTimeScale());
-            final Frame ITRF = FramesFactory.getITRF(IERSConventions.IERS_2010, true);
+            final JulianDate startDate =
+                DateUtils.toJulianDate(attitudes.get(0).getDate());
+            final JulianDate finalDate =
+                DateUtils.toJulianDate(attitudes.get(attitudes.size() - 1)
+                    .getDate());
+            final Frame ITRF =
+                FramesFactory.getITRF(IERSConventions.IERS_2010, true);
             this.interval = new TimeInterval(startDate, finalDate);
 
             for (final Attitude currentAttitude : attitudes) {
-                final JulianDate currentDate = DateUtils.toJulianDate(currentAttitude.getDate(), header.getTimeScale());
+                final JulianDate currentDate =
+                    DateUtils.toJulianDate(currentAttitude.getDate());
                 this.julianDates.add(currentDate);
 
-                final Rotation rotationFromObjectFrameToITRF = ITRF.getTransformTo(objectFrame,
-                                                                           currentAttitude.getDate())
-                                                                   .getRotation();
-                final Rotation rotationITOJ     = new Rotation(Vector3D.PLUS_I, Vector3D.PLUS_J);
+                final Rotation rotationFromObjectFrameToITRF =
+                    ITRF.getTransformTo(objectFrame, currentAttitude.getDate())
+                        .getRotation();
+                final Rotation rotationITOJ =
+                    new Rotation(Vector3D.PLUS_I, Vector3D.PLUS_J);
                 final Rotation attitudeRotation = currentAttitude.getRotation();
                 if (optionalRotation == null) {
-                    final Rotation currentRotation = attitudeRotation.compose(rotationFromObjectFrameToITRF,
-                            RotationConvention.VECTOR_OPERATOR);
-                    final Rotation finalRotation = rotationITOJ.compose(currentRotation,
-                            RotationConvention.VECTOR_OPERATOR);
+                    final Rotation currentRotation =
+                        attitudeRotation
+                            .compose(rotationFromObjectFrameToITRF,
+                                     RotationConvention.VECTOR_OPERATOR);
+                    final Rotation finalRotation =
+                        rotationITOJ
+                            .compose(currentRotation,
+                                     RotationConvention.VECTOR_OPERATOR);
                     final double currentQ0 = finalRotation.getQ0();
                     final double currentQ1 = finalRotation.getQ1();
                     final double currentQ2 = finalRotation.getQ2();
                     final double currentQ3 = finalRotation.getQ3();
-                    final UnitQuaternion currentUnitQuaternion = new UnitQuaternion(currentQ0, currentQ1, currentQ2,
-                            currentQ3);
+                    final UnitQuaternion currentUnitQuaternion =
+                        new UnitQuaternion(currentQ0, currentQ1, currentQ2,
+                                           currentQ3);
                     multipleQuaternions.add(currentUnitQuaternion);
                 } else {
-                    final Rotation tempRotation = attitudeRotation.compose(rotationFromObjectFrameToITRF,
-                            RotationConvention.VECTOR_OPERATOR);
-                    final Rotation currentRotation = tempRotation.compose(optionalRotation,
-                            RotationConvention.VECTOR_OPERATOR);
-                    final Rotation finalRotation = rotationITOJ.compose(currentRotation,
-                            RotationConvention.VECTOR_OPERATOR);
+                    final Rotation tempRotation =
+                        attitudeRotation
+                            .compose(rotationFromObjectFrameToITRF,
+                                     RotationConvention.VECTOR_OPERATOR);
+                    final Rotation currentRotation =
+                        tempRotation
+                            .compose(optionalRotation,
+                                     RotationConvention.VECTOR_OPERATOR);
+                    final Rotation finalRotation =
+                        rotationITOJ
+                            .compose(currentRotation,
+                                     RotationConvention.VECTOR_OPERATOR);
                     final double currentQ0 = finalRotation.getQ0();
                     final double currentQ1 = finalRotation.getQ1();
                     final double currentQ2 = finalRotation.getQ2();
                     final double currentQ3 = finalRotation.getQ3();
-                    final UnitQuaternion currentUnitQuaternion = new UnitQuaternion(currentQ0, currentQ1, currentQ2,
-                            currentQ3);
+                    final UnitQuaternion currentUnitQuaternion =
+                        new UnitQuaternion(currentQ0, currentQ1, currentQ2,
+                                           currentQ3);
                     multipleQuaternions.add(currentUnitQuaternion);
                 }
             }
             this.interpolationAlgorithm = CesiumInterpolationAlgorithm.LAGRANGE;
-            this.interpolationDegree    = 5;
+            this.interpolationDegree = 5;
         } else {
             this.attitudes = attitudes;
-            final JulianDate startDate = DateUtils.toJulianDate(attitudes.get(0)
-                                                                         .getDate(), header.getTimeScale());
-            final JulianDate finalDate = DateUtils.toJulianDate(attitudes.get(attitudes.size() - 1)
-                                                                         .getDate()
-                                                                         .shiftedBy(header.getClock()
-                                                                                          .getMultiplier()),
-                    header.getTimeScale());
+            final JulianDate startDate =
+                DateUtils.toJulianDate(attitudes.get(0).getDate());
+            final JulianDate finalDate =
+                DateUtils.toJulianDate(attitudes.get(attitudes.size() - 1)
+                    .getDate());
             this.interval = new TimeInterval(startDate, finalDate);
 
             for (final Attitude currentAttitude : attitudes) {
-                final JulianDate currentDate = DateUtils.toJulianDate(currentAttitude.getDate(), header.getTimeScale());
+                final JulianDate currentDate =
+                    DateUtils.toJulianDate(currentAttitude.getDate());
                 this.julianDates.add(currentDate);
 
                 final Rotation objectRotation = currentAttitude.getRotation();
-                final double   currentQ0      = objectRotation.getQ0();
-                final double   currentQ1      = objectRotation.getQ1();
-                final double   currentQ2      = objectRotation.getQ2();
-                final double   currentQ3      = objectRotation.getQ3();
-                final UnitQuaternion currentUnitQuaternion = new UnitQuaternion(currentQ0, currentQ1, currentQ2,
-                        currentQ3);
+                final double currentQ0 = objectRotation.getQ0();
+                final double currentQ1 = objectRotation.getQ1();
+                final double currentQ2 = objectRotation.getQ2();
+                final double currentQ3 = objectRotation.getQ3();
+                final UnitQuaternion currentUnitQuaternion =
+                    new UnitQuaternion(currentQ0, currentQ1, currentQ2,
+                                       currentQ3);
                 multipleQuaternions.add(currentUnitQuaternion);
             }
             this.interpolationAlgorithm = CesiumInterpolationAlgorithm.LAGRANGE;
-            this.interpolationDegree    = 5;
+            this.interpolationDegree = 5;
         }
     }
-
 
     // Builders
 
     /**
      * Builder orientation builder.
      *
-     * @param attitude    the attitude
+     * @param attitude the attitude
      * @param objectFrame the object frame
-     * @param header      the header
      * @return the orientation builder
      */
-    public static OrientationBuilder builder(final Attitude attitude, final Frame objectFrame, final Header header) {
-        return new OrientationBuilder(attitude, objectFrame, header);
+    public static OrientationBuilder builder(final Attitude attitude,
+                                             final Frame objectFrame) {
+        return new OrientationBuilder(attitude, objectFrame);
     }
 
     /**
      * Builder orientation builder.
      *
-     * @param attitudes   the attitudes
+     * @param attitudes the attitudes
      * @param objectFrame the object frame
-     * @param header      the header
      * @return the orientation builder
      */
-    public static OrientationBuilder builder(final List<Attitude> attitudes, final Frame objectFrame, final Header header) {
-        return new OrientationBuilder(attitudes, objectFrame, header);
+    public static OrientationBuilder builder(final List<Attitude> attitudes,
+                                             final Frame objectFrame) {
+        return new OrientationBuilder(attitudes, objectFrame);
     }
-
 
     // Overrides
 
     @Override
-    public void write(final PacketCesiumWriter packetWriter, final CesiumOutputStream output) {
-        try (OrientationCesiumWriter orientationWriter = packetWriter.getOrientationWriter()) {
+    public void write(final PacketCesiumWriter packetWriter,
+                      final CesiumOutputStream output) {
+        try (OrientationCesiumWriter orientationWriter =
+            packetWriter.getOrientationWriter()) {
             orientationWriter.open(output);
             orientationWriter.writeInterval(getInterval());
-            orientationWriter.writeUnitQuaternion(getJulianDates(), getMultipleQuaternions());
-            orientationWriter.writeInterpolationAlgorithm(getInterpolationAlgorithm());
-            orientationWriter.writeInterpolationDegree(getInterpolationDegree());
+            orientationWriter.writeUnitQuaternion(getJulianDates(),
+                                                  getMultipleQuaternions());
+            orientationWriter
+                .writeInterpolationAlgorithm(getInterpolationAlgorithm());
+            orientationWriter
+                .writeInterpolationDegree(getInterpolationDegree());
         }
     }
-
 
     // Getters
 

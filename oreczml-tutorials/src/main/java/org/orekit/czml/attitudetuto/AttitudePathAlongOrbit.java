@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -17,7 +17,6 @@
 
 package org.orekit.czml.attitudetuto;
 
-import org.orekit.czml.TutorialUtils;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
@@ -30,11 +29,12 @@ import org.orekit.attitudes.LofOffset;
 import org.orekit.attitudes.PredefinedTarget;
 import org.orekit.bodies.CelestialBodyFactory;
 import org.orekit.bodies.GeodeticPoint;
+import org.orekit.czml.TutorialUtils;
 import org.orekit.czml.file.CzmlFile;
-import org.orekit.czml.object.primary.AttitudePointing;
-import org.orekit.czml.object.primary.CzmlGroundStation;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.Satellite;
+import org.orekit.czml.object.primary.entities.CzmlGroundStation;
+import org.orekit.czml.object.primary.entities.Spacecraft;
+import org.orekit.czml.object.primary.pointing.AttitudePointing;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.forces.ForceModel;
 import org.orekit.forces.gravity.HolmesFeatherstoneAttractionModel;
@@ -58,13 +58,15 @@ import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.AngularDerivativesFilter;
 import org.orekit.utils.Constants;
 import org.orekit.utils.ExtendedPVCoordinatesProvider;
+import org.orekit.utils.IERSConventions;
 
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The type Attitude path along orbit.
+ * This tutorial provides an example of a satellite targeting points on earth
+ * when visible, then comes back to a default attitude when not visible.
  */
 public class AttitudePathAlongOrbit {
 
@@ -73,162 +75,232 @@ public class AttitudePathAlongOrbit {
     }
 
     /**
-     * Main.
+     * Main of the attitude path along orbit tutorial.
      *
-     * @param args the args
-     * @throws Exception the exception
+     * @param args arguments of the main function
+     * @throws Exception exception to throw
      */
-    public static void main(final String[] args) throws Exception {
+    public static void main(final String[] args)
+        throws Exception {
         // Load orekit data
         TutorialUtils.loadOrekitData();
 
         // Paths
         final String output = TutorialUtils.generateOutput();
-        //!!! Here you need to change the path inside 'generateJsPath' to the path you are using for images or Model.
-        //This folder can also be the public folder of your cesium javascript interface.
-        final String pathToJSFolder = TutorialUtils.generateJSPath(
-                System.getProperty("user.dir") + "/Javascript/public");
+        // !!! Here you need to change the path inside 'generateJsPath' to the
+        // path you are using for images or Model.
+        // This folder can also be the public folder of your cesium javascript
+        // interface.
+        final String pathToJSFolder =
+            TutorialUtils.generateJSPath(System.getProperty("user.dir") +
+                                         "/Javascript/public");
 
-        final String IssModel = TutorialUtils.loadResources("Default3DModels/ISSModel.glb");
+        final String IssModel =
+            TutorialUtils.loadResources("Default3DModels/ISSModel.glb");
 
         // Creation of the clock.
-        final AbsoluteDate startDate = new AbsoluteDate(2024, 3, 15, 0, 0, 0.0, TimeScalesFactory.getUTC());
-        final AbsoluteDate finalDate = startDate.shiftedBy(TutorialUtils.CLASSIC_DURATION_OF_SIMULATION);
-        final Clock clock = new Clock(startDate, finalDate, TimeScalesFactory.getUTC(),
-                TutorialUtils.STEP_BETWEEN_EACH_INSTANT);
+        final AbsoluteDate startDate =
+            new AbsoluteDate(2024, 3, 15, 0, 0, 0.0,
+                             TimeScalesFactory.getUTC());
+        final AbsoluteDate finalDate =
+            startDate.shiftedBy(TutorialUtils.CLASSIC_DURATION_OF_SIMULATION);
+        final Clock clock =
+            new Clock(startDate, finalDate,
+                      TutorialUtils.STEP_BETWEEN_EACH_INSTANT);
 
-        final Header header = new Header("Initialisation of an attitude following a given path", clock, pathToJSFolder);
-
+        final Header header =
+            new Header("Initialisation of an attitude following a given path",
+                       clock, pathToJSFolder);
 
         // Creation of the model of the sun
-        final ExtendedPVCoordinatesProvider sunModel = CelestialBodyFactory.getSun();
+        final ExtendedPVCoordinatesProvider sunModel =
+            CelestialBodyFactory.getSun();
 
         // List of points on earth to look at :
-        final GeodeticPoint mexico = new GeodeticPoint(FastMath.toRadians(23.6345),
-                FastMath.toRadians(-102.5528), 0);
-        final TopocentricFrame topocentricMexico = new TopocentricFrame(TutorialUtils.getEarth(), mexico, "Mexico");
+        final GeodeticPoint mexico =
+            new GeodeticPoint(FastMath.toRadians(23.6345),
+                              FastMath.toRadians(-102.5528), 0);
+        final TopocentricFrame topocentricMexico =
+            new TopocentricFrame(TutorialUtils.getEarth(), mexico, "Mexico");
 
-        final GeodeticPoint madagascar = new GeodeticPoint(FastMath.toRadians(-18.7669),
-                FastMath.toRadians(46.8691), 0);
-        final TopocentricFrame topocentricMadagascar = new TopocentricFrame(TutorialUtils.getEarth(), madagascar,
-                "Madagascar");
+        final GeodeticPoint madagascar =
+            new GeodeticPoint(FastMath.toRadians(-18.7669),
+                              FastMath.toRadians(46.8691), 0);
+        final TopocentricFrame topocentricMadagascar =
+            new TopocentricFrame(TutorialUtils.getEarth(), madagascar,
+                                 "Madagascar");
 
-        final GeodeticPoint portMoresby = new GeodeticPoint(FastMath.toRadians(-9.4790),
-                FastMath.toRadians(147.1494), 0);
-        final TopocentricFrame topocentricPortMoresby = new TopocentricFrame(TutorialUtils.getEarth(), portMoresby,
-                "Port Moresby");
+        final GeodeticPoint portMoresby =
+            new GeodeticPoint(FastMath.toRadians(-9.4790),
+                              FastMath.toRadians(147.1494), 0);
+        final TopocentricFrame topocentricPortMoresby =
+            new TopocentricFrame(TutorialUtils.getEarth(), portMoresby,
+                                 "Port Moresby");
 
-        final GeodeticPoint maracaibo = new GeodeticPoint(FastMath.toRadians(10.6410),
-                FastMath.toRadians(-71.6074), 0);
-        final TopocentricFrame topocentricMaracaibo = new TopocentricFrame(TutorialUtils.getEarth(), maracaibo,
-                "Maracaibo");
+        final GeodeticPoint maracaibo =
+            new GeodeticPoint(FastMath.toRadians(10.6410),
+                              FastMath.toRadians(-71.6074), 0);
+        final TopocentricFrame topocentricMaracaibo =
+            new TopocentricFrame(TutorialUtils.getEarth(), maracaibo,
+                                 "Maracaibo");
 
-        final Vector3D mexicoPositionOnEarth      = topocentricMexico.getCartesianPoint();
-        final Vector3D madagascarPositionOnEarth  = topocentricMadagascar.getCartesianPoint();
-        final Vector3D portMoresbyPositionOnEarth = topocentricPortMoresby.getCartesianPoint();
-        final Vector3D maracaiboPositionOnEarth   = topocentricMaracaibo.getCartesianPoint();
+        final Vector3D mexicoPositionOnEarth =
+            topocentricMexico.getCartesianPoint();
+        final Vector3D madagascarPositionOnEarth =
+            topocentricMadagascar.getCartesianPoint();
+        final Vector3D portMoresbyPositionOnEarth =
+            topocentricPortMoresby.getCartesianPoint();
+        final Vector3D maracaiboPositionOnEarth =
+            topocentricMaracaibo.getCartesianPoint();
 
         //// Build of a satellite with a propagator
         // Build of a LEO orbit
 
-        final KeplerianOrbit initialOrbit = new KeplerianOrbit(7878000, 0, FastMath.toRadians(20), 0,
-                FastMath.toRadians(0), FastMath.toRadians(0), PositionAngleType.MEAN, FramesFactory.getEME2000(),
-                startDate,
-                Constants.WGS84_EARTH_MU);
+        final KeplerianOrbit initialOrbit =
+            new KeplerianOrbit(7878000, 0, FastMath.toRadians(20), 0,
+                               FastMath.toRadians(0), FastMath.toRadians(0),
+                               PositionAngleType.MEAN,
+                               FramesFactory.getEME2000(), startDate,
+                               Constants.WGS84_EARTH_MU);
 
         final SpacecraftState initialState = new SpacecraftState(initialOrbit);
 
+        final double[][] tolerances =
+            NumericalPropagator.tolerances(TutorialUtils.POSITION_TOLERANCE,
+                                           initialOrbit, OrbitType.CARTESIAN);
+        final AdaptiveStepsizeIntegrator integrator =
+            new DormandPrince853Integrator(TutorialUtils.MIN_STEP,
+                                           TutorialUtils.MAX_STEP,
+                                           tolerances[0], tolerances[1]);
 
-        final double[][] tolerances = NumericalPropagator.tolerances(TutorialUtils.POSITION_TOLERANCE, initialOrbit,
-                OrbitType.CARTESIAN);
-        final AdaptiveStepsizeIntegrator integrator = new DormandPrince853Integrator(TutorialUtils.MIN_STEP,
-                TutorialUtils.MAX_STEP, tolerances[0],
-                tolerances[1]);
+        final NumericalPropagator propagator =
+            new NumericalPropagator(integrator);
 
-        final NumericalPropagator propagator = new NumericalPropagator(integrator);
-
-        final NormalizedSphericalHarmonicsProvider provider = GravityFieldFactory.getNormalizedProvider(10,
-                10);
-        final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(FramesFactory.getEME2000(),
-                provider);
+        final NormalizedSphericalHarmonicsProvider provider =
+            GravityFieldFactory.getNormalizedProvider(10, 10);
+        final ForceModel holmesFeatherstone =
+            new HolmesFeatherstoneAttractionModel(FramesFactory
+                .getITRF(IERSConventions.IERS_2010, true), provider);
 
         propagator.setOrbitType(OrbitType.CARTESIAN);
         propagator.addForceModel(holmesFeatherstone);
         propagator.setInitialState(initialState);
 
-        final GroundPointTarget mexicoTarget      = new GroundPointTarget(mexicoPositionOnEarth);
-        final GroundPointTarget madagascarTarget  = new GroundPointTarget(madagascarPositionOnEarth);
-        final GroundPointTarget portMoresbyTarget = new GroundPointTarget(portMoresbyPositionOnEarth);
-        final GroundPointTarget maracaiboTarget   = new GroundPointTarget(maracaiboPositionOnEarth);
+        final GroundPointTarget mexicoTarget =
+            new GroundPointTarget(mexicoPositionOnEarth);
+        final GroundPointTarget madagascarTarget =
+            new GroundPointTarget(madagascarPositionOnEarth);
+        final GroundPointTarget portMoresbyTarget =
+            new GroundPointTarget(portMoresbyPositionOnEarth);
+        final GroundPointTarget maracaiboTarget =
+            new GroundPointTarget(maracaiboPositionOnEarth);
 
-        final AlignedAndConstrained attitudeProviderMexico = new AlignedAndConstrained(Vector3D.PLUS_I,
-                mexicoTarget, Vector3D.PLUS_J, PredefinedTarget.SUN, sunModel, TutorialUtils.getEarth());
-        final AlignedAndConstrained attitudeProviderMadagascar = new AlignedAndConstrained(Vector3D.PLUS_I,
-                madagascarTarget, Vector3D.PLUS_J, PredefinedTarget.SUN, sunModel, TutorialUtils.getEarth());
-        final AlignedAndConstrained attitudeProviderPortMoresby = new AlignedAndConstrained(Vector3D.PLUS_I,
-                portMoresbyTarget, Vector3D.PLUS_J, PredefinedTarget.SUN, sunModel, TutorialUtils.getEarth());
-        final AlignedAndConstrained attitudeProviderMaracaibo = new AlignedAndConstrained(Vector3D.PLUS_I,
-                maracaiboTarget, Vector3D.PLUS_J, PredefinedTarget.SUN, sunModel,
-                TutorialUtils.getEarth());
+        final AlignedAndConstrained attitudeProviderMexico =
+            new AlignedAndConstrained(Vector3D.PLUS_I, mexicoTarget,
+                                      Vector3D.PLUS_J, PredefinedTarget.SUN,
+                                      sunModel, TutorialUtils.getEarth());
+        final AlignedAndConstrained attitudeProviderMadagascar =
+            new AlignedAndConstrained(Vector3D.PLUS_I, madagascarTarget,
+                                      Vector3D.PLUS_J, PredefinedTarget.SUN,
+                                      sunModel, TutorialUtils.getEarth());
+        final AlignedAndConstrained attitudeProviderPortMoresby =
+            new AlignedAndConstrained(Vector3D.PLUS_I, portMoresbyTarget,
+                                      Vector3D.PLUS_J, PredefinedTarget.SUN,
+                                      sunModel, TutorialUtils.getEarth());
+        final AlignedAndConstrained attitudeProviderMaracaibo =
+            new AlignedAndConstrained(Vector3D.PLUS_I, maracaiboTarget,
+                                      Vector3D.PLUS_J, PredefinedTarget.SUN,
+                                      sunModel, TutorialUtils.getEarth());
 
-        final AttitudesSequence attitudesSequence       = new AttitudesSequence();
-        final AttitudeProvider  attitudeProviderToEarth = new LofOffset(FramesFactory.getEME2000(), LOFType.TNW);
+        final AttitudesSequence attitudesSequence = new AttitudesSequence();
+        final AttitudeProvider attitudeProviderToEarth =
+            new LofOffset(FramesFactory.getEME2000(), LOFType.TNW);
 
-        final EventDetector mexicoToEarth = new ElevationDetector(topocentricMexico).withMaxCheck(60.)
-                                                                                    .withHandler(new ContinueOnEvent());
-        final EventDetector earthToMexico = new ElevationDetector(topocentricMexico).withMaxCheck(60.)
-                                                                                    .withHandler(new ContinueOnEvent());
+        final EventDetector mexicoToEarth =
+            new ElevationDetector(topocentricMexico).withMaxCheck(60.)
+                .withHandler(new ContinueOnEvent());
+        final EventDetector earthToMexico =
+            new ElevationDetector(topocentricMexico).withMaxCheck(60.)
+                .withHandler(new ContinueOnEvent());
 
-        final EventDetector madagascarToEarth = new ElevationDetector(topocentricMadagascar).withMaxCheck(60.)
-                                                                                            .withHandler(
-                                                                                                    new ContinueOnEvent());
-        final EventDetector earthToMadagascar = new ElevationDetector(topocentricMadagascar).withMaxCheck(60.)
-                                                                                            .withHandler(
-                                                                                                    new ContinueOnEvent());
+        final EventDetector madagascarToEarth =
+            new ElevationDetector(topocentricMadagascar).withMaxCheck(60.)
+                .withHandler(new ContinueOnEvent());
+        final EventDetector earthToMadagascar =
+            new ElevationDetector(topocentricMadagascar).withMaxCheck(60.)
+                .withHandler(new ContinueOnEvent());
 
-        final EventDetector portMoresbyToEarth = new ElevationDetector(topocentricPortMoresby).withMaxCheck(60.)
-                                                                                              .withHandler(
-                                                                                                      new ContinueOnEvent());
-        final EventDetector earthToPortMoresby = new ElevationDetector(topocentricPortMoresby).withMaxCheck(60.)
-                                                                                              .withHandler(
-                                                                                                      new ContinueOnEvent());
+        final EventDetector portMoresbyToEarth =
+            new ElevationDetector(topocentricPortMoresby).withMaxCheck(60.)
+                .withHandler(new ContinueOnEvent());
+        final EventDetector earthToPortMoresby =
+            new ElevationDetector(topocentricPortMoresby).withMaxCheck(60.)
+                .withHandler(new ContinueOnEvent());
 
-        final EventDetector maracaiboToEarth = new ElevationDetector(topocentricMaracaibo).withMaxCheck(60.)
-                                                                                          .withHandler(
-                                                                                                  new ContinueOnEvent());
-        final EventDetector earthToMaracaibo = new ElevationDetector(topocentricMaracaibo).withMaxCheck(60.)
-                                                                                          .withHandler(
-                                                                                                  new ContinueOnEvent());
+        final EventDetector maracaiboToEarth =
+            new ElevationDetector(topocentricMaracaibo).withMaxCheck(60.)
+                .withHandler(new ContinueOnEvent());
+        final EventDetector earthToMaracaibo =
+            new ElevationDetector(topocentricMaracaibo).withMaxCheck(60.)
+                .withHandler(new ContinueOnEvent());
 
-        final EventDetector mexicoToMaracaibo = new ElevationDetector(topocentricMaracaibo).withMaxCheck(60.)
-                                                                                           .withHandler(
-                                                                                                   new ContinueOnEvent());
+        final EventDetector mexicoToMaracaibo =
+            new ElevationDetector(topocentricMaracaibo).withMaxCheck(60.)
+                .withHandler(new ContinueOnEvent());
 
         //// Add switching condition to attitudes sequence
         // Add classic station to earth and earth to station
-        attitudesSequence.addSwitchingCondition(attitudeProviderToEarth, attitudeProviderMexico, earthToMexico, true,
-                false, 10.0, AngularDerivativesFilter.USE_R, null);
-        attitudesSequence.addSwitchingCondition(attitudeProviderMexico, attitudeProviderToEarth, mexicoToEarth, false,
-                true, 10.0, AngularDerivativesFilter.USE_R, null);
+        attitudesSequence
+            .addSwitchingCondition(attitudeProviderToEarth,
+                                   attitudeProviderMexico, earthToMexico, true,
+                                   false, 10.0, AngularDerivativesFilter.USE_R,
+                                   null);
+        attitudesSequence
+            .addSwitchingCondition(attitudeProviderMexico,
+                                   attitudeProviderToEarth, mexicoToEarth,
+                                   false, true, 10.0,
+                                   AngularDerivativesFilter.USE_R, null);
 
-        attitudesSequence.addSwitchingCondition(attitudeProviderToEarth, attitudeProviderMadagascar, earthToMadagascar,
-                true, false, 10.0, AngularDerivativesFilter.USE_R, null);
-        attitudesSequence.addSwitchingCondition(attitudeProviderMadagascar, attitudeProviderToEarth, madagascarToEarth,
-                false, true, 10.0, AngularDerivativesFilter.USE_R, null);
+        attitudesSequence
+            .addSwitchingCondition(attitudeProviderToEarth,
+                                   attitudeProviderMadagascar,
+                                   earthToMadagascar, true, false, 10.0,
+                                   AngularDerivativesFilter.USE_R, null);
+        attitudesSequence
+            .addSwitchingCondition(attitudeProviderMadagascar,
+                                   attitudeProviderToEarth, madagascarToEarth,
+                                   false, true, 10.0,
+                                   AngularDerivativesFilter.USE_R, null);
 
-        attitudesSequence.addSwitchingCondition(attitudeProviderToEarth, attitudeProviderPortMoresby,
-                earthToPortMoresby, true, false, 10.0, AngularDerivativesFilter.USE_R, null);
-        attitudesSequence.addSwitchingCondition(attitudeProviderPortMoresby, attitudeProviderToEarth,
-                portMoresbyToEarth, false, true, 10.0, AngularDerivativesFilter.USE_R, null);
+        attitudesSequence
+            .addSwitchingCondition(attitudeProviderToEarth,
+                                   attitudeProviderPortMoresby,
+                                   earthToPortMoresby, true, false, 10.0,
+                                   AngularDerivativesFilter.USE_R, null);
+        attitudesSequence
+            .addSwitchingCondition(attitudeProviderPortMoresby,
+                                   attitudeProviderToEarth, portMoresbyToEarth,
+                                   false, true, 10.0,
+                                   AngularDerivativesFilter.USE_R, null);
 
-        attitudesSequence.addSwitchingCondition(attitudeProviderToEarth, attitudeProviderMaracaibo, earthToMaracaibo,
-                true, false, 10.0, AngularDerivativesFilter.USE_R, null);
-        attitudesSequence.addSwitchingCondition(attitudeProviderMaracaibo, attitudeProviderToEarth, maracaiboToEarth,
-                false, true, 10.0, AngularDerivativesFilter.USE_R, null);
+        attitudesSequence
+            .addSwitchingCondition(attitudeProviderToEarth,
+                                   attitudeProviderMaracaibo, earthToMaracaibo,
+                                   true, false, 10.0,
+                                   AngularDerivativesFilter.USE_R, null);
+        attitudesSequence
+            .addSwitchingCondition(attitudeProviderMaracaibo,
+                                   attitudeProviderToEarth, maracaiboToEarth,
+                                   false, true, 10.0,
+                                   AngularDerivativesFilter.USE_R, null);
 
-        // Add a switching condition between mexico and maracaibo, because they are close enough
-        attitudesSequence.addSwitchingCondition(attitudeProviderMexico, attitudeProviderMaracaibo, mexicoToMaracaibo,
-                true, false, 10.0, AngularDerivativesFilter.USE_R, null);
+        // Add a switching condition between mexico and maracaibo, because they
+        // are close enough
+        attitudesSequence
+            .addSwitchingCondition(attitudeProviderMexico,
+                                   attitudeProviderMaracaibo, mexicoToMaracaibo,
+                                   true, false, 10.0,
+                                   AngularDerivativesFilter.USE_R, null);
 
         attitudesSequence.resetActiveProvider(attitudeProviderToEarth);
 
@@ -239,40 +311,40 @@ public class AttitudePathAlongOrbit {
         final EphemerisGenerator generator = propagator.getEphemerisGenerator();
 
         propagator.propagate(startDate, finalDate);
-        final BoundedPropagator boundedPropagator = generator.getGeneratedEphemeris();
+        final BoundedPropagator boundedPropagator =
+            generator.getGeneratedEphemeris();
 
-        final Satellite satellite = Satellite.builder(boundedPropagator, header)
-                                             .withModelPath(IssModel)
-                                             .withColor(Color.PINK)
-                                             .withOnlyOnePeriod()
-                                             .withDisplayAttitude()
-                                             .build();
+        final Spacecraft satellite =
+            Spacecraft.builder(boundedPropagator, clock).withModelPath(IssModel)
+                .withColor(Color.PINK).withOnlyOnePeriod().withDisplayAttitude()
+                .build();
 
-        final AttitudePointing attitudePointing = AttitudePointing.builder(satellite, TutorialUtils.getEarth(),
-                                                                          Vector3D.PLUS_I, header)
-                                                                  .withColor(Color.cyan)
-                                                                  .withDisplayOnGround(true)
-                                                                  .displayPointingPath()
-                                                                  .displayPeriodPointingPath()
-                                                                  .build();
+        final AttitudePointing attitudePointing =
+            AttitudePointing
+                .builder(satellite, TutorialUtils.getEarth(), Vector3D.PLUS_I,
+                         clock)
+                .withColor(Color.cyan).withDisplayOnGround(true)
+                .displayPointingPath().displayPeriodPointingPath().build();
 
-        final CzmlGroundStation       mexicoGroundStation      = new CzmlGroundStation(topocentricMexico, header);
-        final CzmlGroundStation       madagascarGroundStation  = new CzmlGroundStation(topocentricMadagascar, header);
-        final CzmlGroundStation       portMoresbyGroundStation = new CzmlGroundStation(topocentricPortMoresby, header);
-        final CzmlGroundStation       maracaiboGroundStation   = new CzmlGroundStation(topocentricMaracaibo, header);
-        final List<CzmlGroundStation> allGroundStation         = new ArrayList<>();
+        final CzmlGroundStation mexicoGroundStation =
+            new CzmlGroundStation(topocentricMexico, clock);
+        final CzmlGroundStation madagascarGroundStation =
+            new CzmlGroundStation(topocentricMadagascar, clock);
+        final CzmlGroundStation portMoresbyGroundStation =
+            new CzmlGroundStation(topocentricPortMoresby, clock);
+        final CzmlGroundStation maracaiboGroundStation =
+            new CzmlGroundStation(topocentricMaracaibo, clock);
+        final List<CzmlGroundStation> allGroundStation = new ArrayList<>();
         allGroundStation.add(mexicoGroundStation);
         allGroundStation.add(madagascarGroundStation);
         allGroundStation.add(portMoresbyGroundStation);
         allGroundStation.add(maracaiboGroundStation);
 
         // Creation of the file
-        final CzmlFile file = CzmlFile.builder()
-                                      .withHeader(header)
-                                      .withSatellite(satellite)
-                                      .withAttitudePointing(attitudePointing)
-                                      .withCzmlGroundStation(allGroundStation)
-                                      .build();
+        final CzmlFile file =
+            CzmlFile.builder(header).withSpacecraft(satellite)
+                .withAttitudePointing(attitudePointing)
+                .withCzmlGroundStation(allGroundStation).build();
 
         // Writing the file
         file.write(output);

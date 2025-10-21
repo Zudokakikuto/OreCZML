@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -22,9 +22,6 @@ import cesiumlanguagewriter.EllipsoidCesiumWriter;
 import cesiumlanguagewriter.EllipsoidRadiiCesiumWriter;
 import cesiumlanguagewriter.JulianDate;
 import cesiumlanguagewriter.PacketCesiumWriter;
-import cesiumlanguagewriter.TimeInterval;
-import org.orekit.czml.archi.builder.CzmlEllipsoidBuilder;
-import org.orekit.czml.object.primary.Header;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -32,13 +29,16 @@ import java.util.List;
 
 /**
  * Czml Ellipsoid class
- *
- * <p> This class allows the user to display an ellipsoid with various geometries.</p>
+ * <p>
+ * This class allows the user to display an ellipsoid with various geometries.
+ * </p>
  *
  * @author Julien LEBLOND
  * @since 1.0.0
  */
-public class CzmlEllipsoid extends AbstractSecondaryObject {
+public class CzmlEllipsoid
+    extends
+    AbstractSecondaryObject {
 
     /**
      * The default color for the ellipsoid.
@@ -65,11 +65,10 @@ public class CzmlEllipsoid extends AbstractSecondaryObject {
      */
     public static final int DEFAULT_STACK_PARTITION = 36;
 
-
     /**
-     * The availability of the ellipsoid.
+     * The clock of the ellipsoid.
      */
-    private final TimeInterval availability;
+    private final Clock clock;
 
     /**
      * The color of the ellipsoid.
@@ -77,7 +76,8 @@ public class CzmlEllipsoid extends AbstractSecondaryObject {
     private final Color color;
 
     /**
-     * The number of slices (from one point on convergence of lines from the other).
+     * The number of slices (from one point on convergence of lines from the
+     * other).
      */
     private final int slicePartition;
 
@@ -107,51 +107,58 @@ public class CzmlEllipsoid extends AbstractSecondaryObject {
     private List<JulianDate> julianDates = new ArrayList<>();
 
     /**
-     * The list of cartesians representing the positions of the ellipsoid (if several positions are given).
+     * The list of cartesians representing the positions of the ellipsoid (if
+     * several positions are given).
      */
     private List<Cartesian> cartesians = new ArrayList<>();
 
     /**
-     * A parameter to make the ellipsoid a display group of several ellipsoids to animate it in time.
+     * A parameter to make the ellipsoid a display group of several ellipsoids
+     * to animate it in time.
      */
     private boolean multipleEllipsoids = true;
 
-
     // Constructors
 
-    // MULTIPLE ELLIPSOIDS (Those constructors are not optimal because they try to create several ellipsoids in simulate
+    // MULTIPLE ELLIPSOIDS (Those constructors are not optimal because they try
+    // to create several ellipsoids in simulate
     // the motion of the ellipsoid, which make it choppy).
 
     /**
-     * The constructor of the multiple ellipsoid object given an availability and a position, with default parameters.
+     * The constructor of the multiple ellipsoid object given an availability
+     * and a position, with default parameters.
      *
      * @param cartesian : The dimensions of the ellipsoid.
-     * @param header    : The header considered.
+     * @param clock : The clock considered.
      */
-    public CzmlEllipsoid(final Cartesian cartesian, final Header header) {
-        this(cartesian, DEFAULT_FILL, DEFAULT_OUTLINE, DEFAULT_SLICE_PARTITION, DEFAULT_STACK_PARTITION,
-                DEFAULT_COLOR, header);
+    public CzmlEllipsoid(final Cartesian cartesian, final Clock clock) {
+        this(cartesian, DEFAULT_FILL, DEFAULT_OUTLINE, DEFAULT_SLICE_PARTITION,
+             DEFAULT_STACK_PARTITION, DEFAULT_COLOR, clock);
     }
 
     /**
-     * The constructor of the multiple ellipsoid object with no default parameters.
+     * The constructor of the multiple ellipsoid object with no default
+     * parameters.
      *
-     * @param cartesian      : The dimensions of the ellipsoid.
-     * @param fill           : To fill or not the ellipsoid with the color.
-     * @param outline        : To display or not the outline of the ellipsoid.
-     * @param slicePartition : The number of slices of the ellipsoid (number of lines from one point of convergence of the line to the other)
-     * @param stackPartition : The number of stacks of the ellipsoid (number of parallels lines in the vertical direction)
-     * @param color          : The color of the ellipsoid.
-     * @param header         : The header considered.
+     * @param cartesian : The dimensions of the ellipsoid.
+     * @param fill : To fill or not the ellipsoid with the color.
+     * @param outline : To display or not the outline of the ellipsoid.
+     * @param slicePartition : The number of slices of the ellipsoid (number of
+     *        lines from one point of convergence of the line to the other)
+     * @param stackPartition : The number of stacks of the ellipsoid (number of
+     *        parallels lines in the vertical direction)
+     * @param color : The color of the ellipsoid.
+     * @param clock : The clock considered.
      */
     public CzmlEllipsoid(final Cartesian cartesian, final boolean fill,
-                         final boolean outline, final int slicePartition, final int stackPartition,
-                         final Color color, final Header header) {
-        this.cartesian      = cartesian;
-        this.availability   = header.getAvailability();
-        this.fill           = fill;
-        this.outline        = outline;
-        this.color          = color;
+                         final boolean outline, final int slicePartition,
+                         final int stackPartition, final Color color,
+                         final Clock clock) {
+        this.cartesian = cartesian;
+        this.clock = clock;
+        this.fill = fill;
+        this.outline = outline;
+        this.color = color;
         this.slicePartition = slicePartition;
         this.stackPartition = stackPartition;
     }
@@ -159,43 +166,54 @@ public class CzmlEllipsoid extends AbstractSecondaryObject {
     // UNIQUE ELLIPSOIDS
 
     /**
-     * Unique ellipsoid made to follow an object, this ellipsoid will need several cartesians and several dates.
+     * Unique ellipsoid made to follow an object, this ellipsoid will need
+     * several cartesians and several dates.
      *
      * @param julianDates : ALl the dates where the ellipsoid must be computed.
-     * @param dimensions  : These cartesians represent the dimensions of the ellipsoid (x,y,z), each value is the distance from the center for each dimension.
-     * @param header      : The header considered.
+     * @param dimensions : These cartesians represent the dimensions of the
+     *        ellipsoid (x,y,z), each value is the distance from the center for
+     *        each dimension.
+     * @param clock : The clock considered.
      */
-    public CzmlEllipsoid(final List<JulianDate> julianDates, final List<Cartesian> dimensions, final Header header) {
-        this(julianDates, dimensions, DEFAULT_FILL, DEFAULT_OUTLINE, DEFAULT_SLICE_PARTITION, DEFAULT_STACK_PARTITION,
-                DEFAULT_COLOR, header);
+    public CzmlEllipsoid(final List<JulianDate> julianDates,
+                         final List<Cartesian> dimensions, final Clock clock) {
+        this(julianDates, dimensions, DEFAULT_FILL, DEFAULT_OUTLINE,
+             DEFAULT_SLICE_PARTITION, DEFAULT_STACK_PARTITION, DEFAULT_COLOR,
+             clock);
     }
 
     /**
-     * Unique ellipsoid made to follow an object, this ellipsoid will need several cartesians and several dates.
+     * Unique ellipsoid made to follow an object, this ellipsoid will need
+     * several cartesians and several dates.
      *
-     * @param julianDates    : ALl the dates where the ellipsoid must be computed.
-     * @param dimensions     : These cartesians represent the dimensions of the ellipsoid (x,y,z), each value is the distance from the center for each dimension.
-     * @param fill           : To fill the ellipsoid or not.
-     * @param outline        : To display the outline or not.
-     * @param slicePartition : The number of slices of the ellipsoid (number of lines from one point of convergence of the line to the other).
-     * @param stackPartition : The number of stacks of the ellipsoid (number of parallels lines in the vertical direction).
-     * @param color          : The color of the ellipsoid.
-     * @param header         : The header considered.
+     * @param julianDates : ALl the dates where the ellipsoid must be computed.
+     * @param dimensions : These cartesians represent the dimensions of the
+     *        ellipsoid (x,y,z), each value is the distance from the center for
+     *        each dimension.
+     * @param fill : To fill the ellipsoid or not.
+     * @param outline : To display the outline or not.
+     * @param slicePartition : The number of slices of the ellipsoid (number of
+     *        lines from one point of convergence of the line to the other).
+     * @param stackPartition : The number of stacks of the ellipsoid (number of
+     *        parallels lines in the vertical direction).
+     * @param color : The color of the ellipsoid.
+     * @param clock : The availability considered.
      */
-    public CzmlEllipsoid(final List<JulianDate> julianDates, final List<Cartesian> dimensions, final boolean fill,
-                         final boolean outline, final int slicePartition, final int stackPartition,
-                         final Color color, final Header header) {
-        this.fill               = fill;
-        this.outline            = outline;
-        this.color              = color;
-        this.availability       = header.getAvailability();
-        this.slicePartition     = slicePartition;
-        this.stackPartition     = stackPartition;
-        this.julianDates        = julianDates;
-        this.cartesians         = dimensions;
+    public CzmlEllipsoid(final List<JulianDate> julianDates,
+                         final List<Cartesian> dimensions, final boolean fill,
+                         final boolean outline, final int slicePartition,
+                         final int stackPartition, final Color color,
+                         final Clock clock) {
+        this.fill = fill;
+        this.outline = outline;
+        this.color = color;
+        this.clock = clock;
+        this.slicePartition = slicePartition;
+        this.stackPartition = stackPartition;
+        this.julianDates = julianDates;
+        this.cartesians = dimensions;
         this.multipleEllipsoids = false;
     }
-
 
     // Builder
 
@@ -203,54 +221,65 @@ public class CzmlEllipsoid extends AbstractSecondaryObject {
      * Builder czml ellipsoid builder.
      *
      * @param cartesian the cartesian
-     * @param header    the header
+     * @param clockInput the clock
      * @return the czml ellipsoid builder
      */
     public static CzmlEllipsoidBuilder builder(final Cartesian cartesian,
-                                               final Header header) {
-        return new CzmlEllipsoidBuilder(cartesian, header);
+                                               final Clock clockInput) {
+        return new CzmlEllipsoidBuilder(cartesian, clockInput);
     }
 
     /**
      * Builder czml ellipsoid builder.
      *
      * @param julianDates the julian dates
-     * @param dimensions  the dimensions
-     * @param header      the header
+     * @param dimensions the dimensions
+     * @param clock the clock
      * @return the czml ellipsoid builder
      */
-    public static CzmlEllipsoidBuilder builder(final List<JulianDate> julianDates, final List<Cartesian> dimensions,
-                                               final Header header) {
-        return new CzmlEllipsoidBuilder(julianDates, dimensions, header);
+    public static CzmlEllipsoidBuilder
+        builder(final List<JulianDate> julianDates,
+                final List<Cartesian> dimensions, final Clock clock) {
+        return new CzmlEllipsoidBuilder(julianDates, dimensions, clock);
     }
 
     // Overrides
 
     @Override
-    public void write(final PacketCesiumWriter packetWriter, final CesiumOutputStream output) {
-        try (EllipsoidCesiumWriter ellipsoidCesiumWriter = packetWriter.getEllipsoidWriter()) {
+    public void write(final PacketCesiumWriter packetWriter,
+                      final CesiumOutputStream output) {
+        try (EllipsoidCesiumWriter ellipsoidCesiumWriter =
+            packetWriter.getEllipsoidWriter()) {
             ellipsoidCesiumWriter.open(output);
             ellipsoidCesiumWriter.writeFillProperty(this.getFill());
             ellipsoidCesiumWriter.writeOutlineProperty(this.getOutline());
             ellipsoidCesiumWriter.writeOutlineColorProperty(this.getColor());
-            ellipsoidCesiumWriter.writeSlicePartitionsProperty(this.getSlicePartition());
-            ellipsoidCesiumWriter.writeStackPartitionsProperty(this.getStackPartition());
-            ellipsoidCesiumWriter.writeInterval(this.getAvailability());
+            ellipsoidCesiumWriter
+                .writeSlicePartitionsProperty(this.getSlicePartition());
+            ellipsoidCesiumWriter
+                .writeStackPartitionsProperty(this.getStackPartition());
+            ellipsoidCesiumWriter
+                .writeInterval(this.getClock().getAvailability());
 
             if (multipleEllipsoids) {
-                try (EllipsoidRadiiCesiumWriter radiiWriter = ellipsoidCesiumWriter.getRadiiWriter()) {
+                try (EllipsoidRadiiCesiumWriter radiiWriter =
+                    ellipsoidCesiumWriter.getRadiiWriter()) {
                     radiiWriter.open(output);
                     radiiWriter.writeCartesian(this.getCartesian());
                 }
             } else {
-                try (EllipsoidRadiiCesiumWriter radiiWriter = ellipsoidCesiumWriter.getRadiiWriter()) {
+                try (EllipsoidRadiiCesiumWriter radiiWriter =
+                    ellipsoidCesiumWriter.getRadiiWriter()) {
                     radiiWriter.open(output);
-                    radiiWriter.writeCartesian(julianDates, cartesians);
+                    if (julianDates.isEmpty()) {
+                        radiiWriter.writeCartesian(cartesian);
+                    } else {
+                        radiiWriter.writeCartesian(julianDates, cartesians);
+                    }
                 }
             }
         }
     }
-
 
     // Getters
 
@@ -313,7 +342,7 @@ public class CzmlEllipsoid extends AbstractSecondaryObject {
      *
      * @return the availability
      */
-    public TimeInterval getAvailability() {
-        return availability;
+    public Clock getClock() {
+        return clock;
     }
 }

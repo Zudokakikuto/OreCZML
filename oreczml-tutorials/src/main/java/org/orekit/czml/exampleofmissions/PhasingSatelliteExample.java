@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -23,7 +23,7 @@ import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
 import org.orekit.czml.file.CzmlFile;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.Satellite;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.forces.ForceModel;
 import org.orekit.forces.gravity.HolmesFeatherstoneAttractionModel;
@@ -44,7 +44,7 @@ import org.orekit.utils.Constants;
 import java.awt.Color;
 
 /**
- * The type Phasing satellite example.
+ * An example of a mission where two satellites are phasing.
  */
 public class PhasingSatelliteExample {
 
@@ -53,69 +53,90 @@ public class PhasingSatelliteExample {
     }
 
     /**
-     * Main.
+     * Main of the phasing satellite tutorial.
      *
-     * @param args the args
-     * @throws Exception the exception
+     * @param args arguments of the main function
+     * @throws Exception exception to throw
      */
-    public static void main(final String[] args) throws Exception {
+    public static void main(final String[] args)
+        throws Exception {
         // Load orekit data
         TutorialUtils.loadOrekitData();
 
         // Paths
         final String output = TutorialUtils.generateOutput();
-        // !!! Here you need to change the path inside 'generateJsPath' to the path you are using for images or Model.
-        // This folder can also be the public folder of your cesium javascript interface.
-        final String pathToJSFolder = TutorialUtils.generateJSPath(
-                System.getProperty("user.dir") + "/Javascript/public");
+        // !!! Here you need to change the path inside 'generateJsPath' to the
+        // path you are using for images or Model.
+        // This folder can also be the public folder of your cesium javascript
+        // interface.
+        final String pathToJSFolder =
+            TutorialUtils.generateJSPath(System.getProperty("user.dir") +
+                                         "/Javascript/public");
 
         // Creation of the clock
 
-        final double       durationOfSimulation = 22 * 3600 + 37 * 60 + 30; // in seconds;
-        final AbsoluteDate startDate            = new AbsoluteDate(2020, 1, 1, 0, 0, 0.0, TimeScalesFactory.getUTC());
-        final AbsoluteDate finalDate            = startDate.shiftedBy(durationOfSimulation);
-        final Clock clock = new Clock(startDate, finalDate, TimeScalesFactory.getUTC(),
-                TutorialUtils.STEP_BETWEEN_EACH_INSTANT);
+        final double durationOfSimulation = 22 * 3600 + 37 * 60 + 30; // in
+                                                                      // seconds;
+        final AbsoluteDate startDate =
+            new AbsoluteDate(2020, 1, 1, 0, 0, 0.0, TimeScalesFactory.getUTC());
+        final AbsoluteDate finalDate =
+            startDate.shiftedBy(durationOfSimulation);
+        final Clock clock =
+            new Clock(startDate, finalDate,
+                      TutorialUtils.STEP_BETWEEN_EACH_INSTANT);
 
-        final Header header = new Header("Two satellites phasing", clock,
-                pathToJSFolder);
-
+        final Header header =
+            new Header("Two satellites phasing", clock, pathToJSFolder);
 
         // Build of two satellites, one phasing the other.
 
-        final KeplerianOrbit phasedOrbit = new KeplerianOrbit(45000000, 0, FastMath.toRadians(0), FastMath.toRadians(0),
-                FastMath.toRadians(80), FastMath.toRadians(0), PositionAngleType.MEAN, FramesFactory.getEME2000(),
-                startDate,
-                Constants.WGS84_EARTH_MU);
+        final KeplerianOrbit phasedOrbit =
+            new KeplerianOrbit(45000000, 0, FastMath.toRadians(0),
+                               FastMath.toRadians(0), FastMath.toRadians(80),
+                               FastMath.toRadians(0), PositionAngleType.MEAN,
+                               FramesFactory.getEME2000(), startDate,
+                               Constants.WGS84_EARTH_MU);
 
-        final KeplerianOrbit phasingOrbit = new KeplerianOrbit(46000000, 0, FastMath.toRadians(0),
-                FastMath.toRadians(0), FastMath.toRadians(90), FastMath.toRadians(0), PositionAngleType.MEAN,
-                FramesFactory.getEME2000(), startDate, Constants.WGS84_EARTH_MU);
+        final KeplerianOrbit phasingOrbit =
+            new KeplerianOrbit(46000000, 0, FastMath.toRadians(0),
+                               FastMath.toRadians(0), FastMath.toRadians(90),
+                               FastMath.toRadians(0), PositionAngleType.MEAN,
+                               FramesFactory.getEME2000(), startDate,
+                               Constants.WGS84_EARTH_MU);
 
         final SpacecraftState phasedState = new SpacecraftState(phasedOrbit);
         final SpacecraftState phasingtate = new SpacecraftState(phasingOrbit);
 
         // Build of the propagator
 
-        final double[][] tolerancesPhased = NumericalPropagator.tolerances(TutorialUtils.POSITION_TOLERANCE,
-                phasedOrbit,
-                OrbitType.CARTESIAN);
-        final double[][] tolerancesPhasing = NumericalPropagator.tolerances(TutorialUtils.POSITION_TOLERANCE,
-                phasingOrbit,
-                OrbitType.CARTESIAN);
+        final double[][] tolerancesPhased =
+            NumericalPropagator.tolerances(TutorialUtils.POSITION_TOLERANCE,
+                                           phasedOrbit, OrbitType.CARTESIAN);
+        final double[][] tolerancesPhasing =
+            NumericalPropagator.tolerances(TutorialUtils.POSITION_TOLERANCE,
+                                           phasingOrbit, OrbitType.CARTESIAN);
 
-        final AdaptiveStepsizeIntegrator integratorPhased = new DormandPrince853Integrator(TutorialUtils.MIN_STEP,
-                TutorialUtils.MAX_STEP, tolerancesPhased[0], tolerancesPhased[1]);
-        final AdaptiveStepsizeIntegrator integratorPhasing = new DormandPrince853Integrator(TutorialUtils.MIN_STEP,
-                TutorialUtils.MAX_STEP, tolerancesPhasing[0], tolerancesPhasing[1]);
+        final AdaptiveStepsizeIntegrator integratorPhased =
+            new DormandPrince853Integrator(TutorialUtils.MIN_STEP,
+                                           TutorialUtils.MAX_STEP,
+                                           tolerancesPhased[0],
+                                           tolerancesPhased[1]);
+        final AdaptiveStepsizeIntegrator integratorPhasing =
+            new DormandPrince853Integrator(TutorialUtils.MIN_STEP,
+                                           TutorialUtils.MAX_STEP,
+                                           tolerancesPhasing[0],
+                                           tolerancesPhasing[1]);
 
-        final NumericalPropagator propagatorPhased  = new NumericalPropagator(integratorPhased);
-        final NumericalPropagator propagatorPhasing = new NumericalPropagator(integratorPhased);
+        final NumericalPropagator propagatorPhased =
+            new NumericalPropagator(integratorPhased);
+        final NumericalPropagator propagatorPhasing =
+            new NumericalPropagator(integratorPhasing);
 
-        final NormalizedSphericalHarmonicsProvider provider = GravityFieldFactory.getNormalizedProvider(10,
-                10);
-        final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(
-                FramesFactory.getEME2000(), provider);
+        final NormalizedSphericalHarmonicsProvider provider =
+            GravityFieldFactory.getNormalizedProvider(10, 10);
+        final ForceModel holmesFeatherstone =
+            new HolmesFeatherstoneAttractionModel(FramesFactory.getEME2000(),
+                                                  provider);
 
         propagatorPhased.setOrbitType(OrbitType.CARTESIAN);
         propagatorPhased.addForceModel(holmesFeatherstone);
@@ -125,33 +146,33 @@ public class PhasingSatelliteExample {
         propagatorPhasing.addForceModel(holmesFeatherstone);
         propagatorPhasing.setInitialState(phasingtate);
 
-        final EphemerisGenerator generatorPhased  = propagatorPhased.getEphemerisGenerator();
-        final EphemerisGenerator generatorPhasing = propagatorPhasing.getEphemerisGenerator();
+        final EphemerisGenerator generatorPhased =
+            propagatorPhased.getEphemerisGenerator();
+        final EphemerisGenerator generatorPhasing =
+            propagatorPhasing.getEphemerisGenerator();
 
         propagatorPhased.propagate(startDate, finalDate);
         propagatorPhasing.propagate(startDate, finalDate);
 
-        final BoundedPropagator boundedPropagatorPhased  = generatorPhased.getGeneratedEphemeris();
-        final BoundedPropagator boundedPropagatorPhasing = generatorPhasing.getGeneratedEphemeris();
+        final BoundedPropagator boundedPropagatorPhased =
+            generatorPhased.getGeneratedEphemeris();
+        final BoundedPropagator boundedPropagatorPhasing =
+            generatorPhasing.getGeneratedEphemeris();
 
         // Creation of the two satellites
-        final Satellite satellitePhased = Satellite.builder(boundedPropagatorPhased, header)
-                                                   .withColor(Color.RED)
-                                                   .withOnlyOnePeriod()
-                                                   .withDisplayAttitude()
-                                                   .build();
+        final Spacecraft satellitePhased =
+            Spacecraft.builder(boundedPropagatorPhased, clock)
+                .withColor(Color.RED).withOnlyOnePeriod().withDisplayAttitude()
+                .build();
 
-        final Satellite satellitePhasing = Satellite.builder(boundedPropagatorPhasing, header)
-                                                    .withColor(Color.GREEN)
-                                                    .withOnlyOnePeriod()
-                                                    .withDisplayAttitude()
-                                                    .build();
+        final Spacecraft satellitePhasing =
+            Spacecraft.builder(boundedPropagatorPhasing, clock)
+                .withColor(Color.GREEN).withOnlyOnePeriod()
+                .withDisplayAttitude().build();
 
-        final CzmlFile file = CzmlFile.builder()
-                                      .withHeader(header)
-                                      .withSatellite(satellitePhased)
-                                      .withSatellite(satellitePhasing)
-                                      .build();
+        final CzmlFile file =
+            CzmlFile.builder(header).withSpacecraft(satellitePhased)
+                .withSpacecraft(satellitePhasing).build();
 
         file.write(output);
     }

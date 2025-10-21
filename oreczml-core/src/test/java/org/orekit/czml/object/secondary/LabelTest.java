@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -19,19 +19,20 @@ package org.orekit.czml.object.secondary;
 import cesiumlanguagewriter.CesiumHorizontalOrigin;
 import cesiumlanguagewriter.CesiumLabelStyle;
 import cesiumlanguagewriter.CesiumVerticalOrigin;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
 
 import java.awt.Color;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.net.URISyntaxException;
 
 /**
  * The type Label test.
  */
-public class LabelTest extends AbstractTest {
+public class LabelTest
+    extends
+    AbstractTest {
 
     /**
      * Label constructor test.
@@ -39,7 +40,10 @@ public class LabelTest extends AbstractTest {
      * @throws IOException the io exception
      */
     @Test
-    void LabelConstructorTest() throws IOException {
+    @DefaultDataContext
+    void LabelConstructorTest()
+        throws IOException,
+            URISyntaxException {
 
         loadOrekitData();
 
@@ -47,15 +51,20 @@ public class LabelTest extends AbstractTest {
 
         final Label coverageLabel = new Label("A text", Color.RED);
 
-        final Label completeLabel = new Label("A text", Color.RED, CesiumHorizontalOrigin.CENTER,
-                CesiumVerticalOrigin.BASELINE, CesiumLabelStyle.FILL, true);
+        final Label completeLabel =
+            new Label("A text", Color.RED, CesiumHorizontalOrigin.CENTER,
+                      CesiumVerticalOrigin.BASELINE, CesiumLabelStyle.FILL,
+                      true);
 
-        final String pathFile         = loadResources("templateFile/secondary/LabelTemplate.txt");
-        final String coveragePathFile = loadResources("templateFile/secondary/LabelCoverageTemplate.txt");
-        final String completePathFile = loadResources("templateFile/secondary/LabelCompleteTemplate.txt");
+        final String pathFile =
+            loadResources("templateFile/object/secondary/LabelTemplate.txt");
+        final String coveragePathFile =
+            loadResources("templateFile/object/secondary/LabelCoverageTemplate.txt");
+        final String completePathFile =
+            loadResources("templateFile/object/secondary/LabelCompleteTemplate.txt");
 
-        Assertions.assertEquals(Files.readString(Path.of(pathFile)), label.toString());
-        Assertions.assertEquals(Files.readString(Path.of(coveragePathFile)), coverageLabel.toString());
-        Assertions.assertEquals(Files.readString(Path.of(completePathFile)), completeLabel.toString());
+        verifyFileOutput(pathFile, label.toString(), 1e-8);
+        verifyFileOutput(coveragePathFile, coverageLabel.toString(), 1e-8);
+        verifyFileOutput(completePathFile, completeLabel.toString(), 1e-8);
     }
 }
