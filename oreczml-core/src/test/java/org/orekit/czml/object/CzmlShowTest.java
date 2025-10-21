@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -16,19 +16,20 @@
  */
 package org.orekit.czml.object;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.Header;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.net.URISyntaxException;
 
 /**
  * The type Czml show test.
  */
-public class CzmlShowTest extends AbstractTest {
+public class CzmlShowTest
+    extends
+    AbstractTest {
 
     /**
      * Czml show constructor test.
@@ -36,7 +37,10 @@ public class CzmlShowTest extends AbstractTest {
      * @throws IOException the io exception
      */
     @Test
-    void CzmlShowConstructorTest() throws IOException {
+    @DefaultDataContext
+    void CzmlShowConstructorTest()
+        throws IOException,
+            URISyntaxException {
 
         loadOrekitData();
 
@@ -44,8 +48,9 @@ public class CzmlShowTest extends AbstractTest {
 
         final CzmlShow show = new CzmlShow(true, header.getAvailability());
 
-        final String pathFile = loadResources("templateFile/CzmlShowTemplate.txt");
+        final String pathFile =
+            loadResources("templateFile/CzmlShowTemplate.txt");
 
-        Assertions.assertEquals(Files.readString(Path.of(pathFile)), show.toString());
+        verifyFileOutput(pathFile, show.toString(), 1e-8);
     }
 }

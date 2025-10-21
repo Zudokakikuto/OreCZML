@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -25,12 +25,14 @@ import java.io.StringWriter;
 /**
  * The type Abstract secondary object.
  */
-public abstract class AbstractSecondaryObject implements CzmlSecondaryObject {
+public abstract class AbstractSecondaryObject
+    implements
+    CzmlSecondaryObject {
 
     @Override
     public String toString() {
-        final StringWriter       writer       = new StringWriter();
-        final CesiumOutputStream output       = new CesiumOutputStream(writer);
+        final StringWriter writer = new StringWriter();
+        final CesiumOutputStream output = new CesiumOutputStream(writer);
         final CesiumStreamWriter streamWriter = new CesiumStreamWriter();
         output.setPrettyFormatting(true);
         try (PacketCesiumWriter packet = streamWriter.openPacket(output)) {

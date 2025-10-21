@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -28,37 +28,29 @@ import org.orekit.utils.Constants;
 import org.orekit.utils.IERSConventions;
 
 import java.io.File;
-
+import java.util.Objects;
 
 /**
- * The type Tutorial utils.
+ * This class aims at giving the tutorial utilities to ease the understanding of
+ * tutorials.
  */
 public class TutorialUtils {
 
-    /**
-     * .
-     */
+    /** The number of seconde between each step of the propagation. */
     public static final double STEP_BETWEEN_EACH_INSTANT = 60.0; // in seconds
 
-    /**
-     * .
-     */
+    /** The minimum position tolerance for the numerical propagator. */
     public static final double POSITION_TOLERANCE = 10.0;
 
-    /**
-     * .
-     */
+    /** The minimum step for the dormant prince integrator. */
     public static final double MIN_STEP = 0.001;
 
-    /**
-     * .
-     */
+    /** The maximum step for the dormant prince integrator. */
     public static final double MAX_STEP = 1000.0;
 
-    /**
-     * .
-     */
-    public static final double CLASSIC_DURATION_OF_SIMULATION = 10 * 3600; // in seconds;
+    /** The classic duration of the simulation. */
+    public static final double CLASSIC_DURATION_OF_SIMULATION = 10 * 3600; // in
+    // seconds;
 
     /** user home. */
     private static final String USER_HOME = "user.home";
@@ -66,9 +58,7 @@ public class TutorialUtils {
     /** orekit data. */
     private static final String OREKIT_DATA = "orekit-data";
 
-    /**
-     * The root of the project.
-     */
+    /** The root of the project. */
     private static String ROOT = System.getProperty("user.dir");
 
     private TutorialUtils() {
@@ -79,12 +69,11 @@ public class TutorialUtils {
      */
     public static void loadOrekitData() {
         try {
-            final File         home      = new File(System.getProperty(USER_HOME));
-            final File         orekitDir = new File(home, OREKIT_DATA);
-            final DataProvider provider  = new DirectoryCrawler(orekitDir);
-            DataContext.getDefault()
-                       .getDataProvidersManager()
-                       .addProvider(provider);
+            final File home = new File(System.getProperty(USER_HOME));
+            final File orekitDir = new File(home, OREKIT_DATA);
+            final DataProvider provider = new DirectoryCrawler(orekitDir);
+            DataContext.getDefault().getDataProvidersManager()
+                .addProvider(provider);
         } catch (OrekitException oe) {
             System.err.println(oe.getLocalizedMessage());
         }
@@ -96,16 +85,17 @@ public class TutorialUtils {
      * @return the string
      */
     public static String generateOutput() {
-        final String osName       = System.getProperty("os.name");
-        final String outputName   = "Output.czml";
+        final String osName = System.getProperty("os.name");
+        final String outputName = "Output.czml";
         final String outputFolder = "/Output";
         if (osName.contains("Windows")) {
             ROOT = ROOT.replace("\\", "/");
             final String outputPath = ROOT + outputFolder;
             return outputPath + "/" + outputName;
         } else if (osName.contains("Linux")) {
-            final String outputPath = ROOT + outputFolder;
-            return outputPath + "\\" + outputName;
+            final String outputPath =
+                ROOT + "\\..\\oreczml-js-interface\\public";
+            return outputPath + outputName;
         } else {
             ROOT = ROOT.replace("\\", "/");
             final String outputPath = ROOT + outputFolder;
@@ -121,7 +111,7 @@ public class TutorialUtils {
      */
     public static String generateJSPath(final String JsPath) {
         final File javascriptFolder = new File(JsPath);
-        javascriptFolder.mkdir();
+        final boolean out = javascriptFolder.mkdir();
         return JsPath;
     }
 
@@ -132,10 +122,9 @@ public class TutorialUtils {
      * @return the string
      */
     public static String loadResources(final String resourcePath) {
-        return new File(TutorialUtils.class.getClassLoader()
-                                           .getResource(resourcePath)
-                                           .getFile()).toPath()
-                                                      .toString();
+        return new File(Objects.requireNonNull(TutorialUtils.class
+            .getClassLoader().getResource(resourcePath)).getFile()).toPath()
+            .toString();
     }
 
     /**
@@ -144,8 +133,10 @@ public class TutorialUtils {
      * @return the earth
      */
     public static OneAxisEllipsoid getEarth() {
-        final Frame ITRF = FramesFactory.getITRF(IERSConventions.IERS_2010, true);
-        return new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS, Constants.WGS84_EARTH_FLATTENING, ITRF);
+        final Frame ITRF =
+            FramesFactory.getITRF(IERSConventions.IERS_2010, true);
+        return new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS,
+                                    Constants.WGS84_EARTH_FLATTENING, ITRF);
     }
 
 }

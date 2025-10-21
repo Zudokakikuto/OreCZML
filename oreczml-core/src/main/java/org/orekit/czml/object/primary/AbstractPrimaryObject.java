@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -27,19 +27,20 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
  * Abstract Primary Object class
- *
  * <p>
- * This class aims at giving a common abstract base where all primary objects will refer to.
+ * This class aims at giving a common abstract base where all primary objects
+ * will refer to.
  *
  * @author Julien LEBLOND.
  * @since 1.0.0
  */
-public abstract class AbstractPrimaryObject implements CzmlPrimaryObject {
+public abstract class AbstractPrimaryObject
+    implements
+    CzmlPrimaryObject {
 
     /**
      * THe id of the object.
@@ -61,14 +62,12 @@ public abstract class AbstractPrimaryObject implements CzmlPrimaryObject {
      */
     private final List<TimeInterval> availabilities = new ArrayList<>();
 
-
-    //// Overrides
-
+    /// / Overrides
 
     @Override
     public String toString() {
-        final StringWriter       writer       = new StringWriter();
-        final CesiumOutputStream output       = new CesiumOutputStream(writer);
+        final StringWriter writer = new StringWriter();
+        final CesiumOutputStream output = new CesiumOutputStream(writer);
         final CesiumStreamWriter streamWriter = new CesiumStreamWriter();
         try {
             this.writeCzmlBlock(streamWriter, output);
@@ -111,29 +110,19 @@ public abstract class AbstractPrimaryObject implements CzmlPrimaryObject {
         this.availability = a;
     }
 
-    //// Public functions
-
-    /**
-     * Gets availabilities.
-     *
-     * @return the availabilities
-     */
-// Getters
-    public List<TimeInterval> getAvailabilities() {
-        return Collections.unmodifiableList(availabilities);
-    }
-
-    // Protected methods
-
     /**
      * Sets availabilities.
      *
      * @param a the a
      */
-    protected void setAvailabilities(final List<TimeInterval> a) {
+    public void setAvailabilities(final List<TimeInterval> a) {
         this.availabilities.clear();
         this.availabilities.addAll(a);
     }
+
+    //// Public functions
+
+    // Protected methods
 
     /**
      * Pre made color list java . util . list.
@@ -142,18 +131,18 @@ public abstract class AbstractPrimaryObject implements CzmlPrimaryObject {
      */
     protected java.util.List<Color> preMadeColorList() {
         final List<Color> preMadeColorList = new ArrayList<>();
-        final Color       red              = new Color(255, 0, 0);
-        final Color       orange           = new Color(255, 127, 0);
-        final Color       yellow           = new Color(255, 255, 0);
-        final Color       light_green      = new Color(127, 255, 0);
-        final Color       green            = new Color(0, 255, 0);
-        final Color       light_cyan       = new Color(0, 255, 127);
-        final Color       cyan             = new Color(0, 255, 255);
-        final Color       light_blue       = new Color(0, 127, 255);
-        final Color       blue             = new Color(0, 0, 255);
-        final Color       violet           = new Color(127, 0, 255);
-        final Color       magenta          = new Color(255, 0, 255);
-        final Color       pink             = new Color(255, 0, 127);
+        final Color red = new Color(255, 0, 0);
+        final Color orange = new Color(255, 127, 0);
+        final Color yellow = new Color(255, 255, 0);
+        final Color light_green = new Color(127, 255, 0);
+        final Color green = new Color(0, 255, 0);
+        final Color light_cyan = new Color(0, 255, 127);
+        final Color cyan = new Color(0, 255, 255);
+        final Color light_blue = new Color(0, 127, 255);
+        final Color blue = new Color(0, 0, 255);
+        final Color violet = new Color(127, 0, 255);
+        final Color magenta = new Color(255, 0, 255);
+        final Color pink = new Color(255, 0, 127);
         preMadeColorList.add(red);
         preMadeColorList.add(orange);
         preMadeColorList.add(yellow);
@@ -172,16 +161,17 @@ public abstract class AbstractPrimaryObject implements CzmlPrimaryObject {
     /**
      * Color wheel list.
      *
-     * @param totalOfSat the total of sat
+     * @param numberOfEntities the total of sat
      * @return the list
      */
-    protected List<Color> colorWheel(final int totalOfSat) {
-        // Check if the number of sat is bigger than 12 (number of primal colors made with r,g,b) :
+    protected List<Color> colorWheel(final int numberOfEntities) {
+        // Check if the number of entities is bigger than 12 (number of primal
+        // colors made with r,g,b) :
         final List<Color> toReturn = new ArrayList<>();
-        if (totalOfSat / 12.0 > 1) {
-            final int totalOfColorBySection = totalOfSat / 6;
-            final int rest                  = totalOfSat % 6;
-            final int shiftOfColor          = 255 / totalOfColorBySection;
+        if (numberOfEntities / 12.0 > 1) {
+            final int totalOfColorBySection = numberOfEntities / 6;
+            final int rest = numberOfEntities % 6;
+            final int shiftOfColor = 255 / totalOfColorBySection;
             // To yellow
             for (int i = 0; i < totalOfColorBySection; i++) {
                 final Color currentColor = new Color(255, shiftOfColor * i, 0);
@@ -189,7 +179,8 @@ public abstract class AbstractPrimaryObject implements CzmlPrimaryObject {
             }
             // To green
             for (int i = 0; i < totalOfColorBySection; i++) {
-                final Color currentColor = new Color(255 - (shiftOfColor * i), 255, 0);
+                final Color currentColor =
+                    new Color(255 - (shiftOfColor * i), 255, 0);
                 toReturn.add(currentColor);
             }
             // To cyan
@@ -199,7 +190,8 @@ public abstract class AbstractPrimaryObject implements CzmlPrimaryObject {
             }
             // To blue
             for (int i = 0; i < totalOfColorBySection; i++) {
-                final Color currentColor = new Color(0, 255 - (shiftOfColor * i), 255);
+                final Color currentColor =
+                    new Color(0, 255 - (shiftOfColor * i), 255);
                 toReturn.add(currentColor);
             }
             // To magenta
@@ -209,14 +201,17 @@ public abstract class AbstractPrimaryObject implements CzmlPrimaryObject {
             }
             // To red
             for (int i = 0; i < totalOfColorBySection + rest; i++) {
-                final int   totalColorOfLastSection = totalOfColorBySection + rest;
-                final int   shiftOfColorLastSection = 255 / totalColorOfLastSection;
-                final Color currentColor            = new Color(255, 0, 255 - (shiftOfColorLastSection * i));
+                final int totalColorOfLastSection =
+                    totalOfColorBySection + rest;
+                final int shiftOfColorLastSection =
+                    255 / totalColorOfLastSection;
+                final Color currentColor =
+                    new Color(255, 0, 255 - (shiftOfColorLastSection * i));
                 toReturn.add(currentColor);
             }
         } else {
             final List<Color> preMadeColors = preMadeColorList();
-            for (int i = 0; i < totalOfSat; i++) {
+            for (int i = 0; i < numberOfEntities; i++) {
                 toReturn.add(preMadeColors.get(i));
             }
         }

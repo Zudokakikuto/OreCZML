@@ -1,0 +1,199 @@
+/* Copyright 2002-2025 CS GROUP
+ * Licensed to CS GROUP (CS) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * CS licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.orekit.czml.object.primary.systems;
+
+import cesiumlanguagewriter.Cartesian;
+import cesiumlanguagewriter.CesiumOutputStream;
+import cesiumlanguagewriter.CesiumStreamWriter;
+import cesiumlanguagewriter.PacketCesiumWriter;
+import cesiumlanguagewriter.PositionCesiumWriter;
+import org.orekit.annotation.DefaultDataContext;
+import org.orekit.bodies.OneAxisEllipsoid;
+import org.orekit.czml.object.Polyline;
+import org.orekit.czml.object.primary.AbstractPrimaryObject;
+import org.orekit.czml.object.secondary.Clock;
+import org.orekit.data.DataContext;
+import org.orekit.utils.Constants;
+import org.orekit.utils.IERSConventions;
+
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Terrestrial reference system
+ * <p>
+ * The terrestrial reference systems aims at representing the cartesian system
+ * of a body to be displayed as an help for the user during the simulation.
+ *
+ * @author Julien LEBLOND.
+ * @since 1.0.0
+ */
+public class CentralBodyReferenceSystem
+    extends
+    AbstractPrimaryObject {
+
+    /**
+     * The default ID for the central body reference system.
+     */
+    public static final String DEFAULT_ID = "CENTRAL_BODY_REFERENCE_SYSTEM";
+
+    /**
+     * The default name for the central body reference system.
+     */
+    public static final String DEFAULT_NAME =
+        "Reference system of the central body";
+
+    /**
+     * Default color for the X axis.
+     */
+    public static final Color DEFAULT_RED = new Color(255, 10, 10);
+
+    /**
+     * Default color for the Y axis.
+     */
+    public static final Color DEFAULT_GREEN = new Color(10, 255, 10);
+
+    /**
+     * Default color for the Z axis.
+     */
+    public static final Color DEFAULT_BLUE = new Color(10, 10, 255);
+
+    /**
+     * The list of lines that defines the system.
+     */
+    private List<Polyline> polylines = new ArrayList<>();
+
+    /**
+     * This constructor builds a central body reference system on the earth with
+     * basic parameters.
+     *
+     * @param clock : The clock of the central body reference system.
+     */
+    @DefaultDataContext
+    CentralBodyReferenceSystem(final Clock clock) {
+        this(new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS,
+                                  Constants.WGS84_EARTH_FLATTENING,
+                                  DataContext.getDefault().getFrames()
+                                      .getITRF(IERSConventions.IERS_2010,
+                                               true)),
+             DEFAULT_ID, DEFAULT_NAME, DEFAULT_RED, DEFAULT_GREEN, DEFAULT_BLUE,
+             clock);
+    }
+
+    /**
+     * The constructor without any default parameters.
+     *
+     * @param body : The body around which the reference system must be
+     *        computed.
+     * @param id : The id of the reference system.
+     * @param name : The name of the reference system.
+     * @param color1 : The color of the x-axis.
+     * @param color2 : The color of the y-axis.
+     * @param color3 : The color of the z-axis.
+     * @param clock : The clock of the central body reference system.
+     */
+    CentralBodyReferenceSystem(final OneAxisEllipsoid body, final String id,
+                               final String name, final Color color1,
+                               final Color color2, final Color color3,
+                               final Clock clock) {
+
+        this.setId(id);
+        this.setName(name);
+        this.setAvailability(clock.getAvailability());
+
+        final Cartesian centralCartesian = new Cartesian(0.1, 0.1, 0.1);
+        final double depth = body.getEquatorialRadius() * 3;
+
+        final Cartesian plusXCartesian = new Cartesian(depth, 0, 0);
+        final Cartesian plusYCartesian = new Cartesian(0, depth, 0);
+        final Cartesian plusZCartesian = new Cartesian(0, 0, depth);
+
+        final List<Cartesian> vectorToX = new ArrayList<>();
+        final List<Cartesian> vectorToY = new ArrayList<>();
+        final List<Cartesian> vectorToZ = new ArrayList<>();
+
+        vectorToX.add(centralCartesian);
+        vectorToX.add(plusXCartesian);
+
+        vectorToY.add(centralCartesian);
+        vectorToY.add(plusYCartesian);
+
+        vectorToZ.add(centralCartesian);
+        vectorToZ.add(plusZCartesian);
+
+        final Polyline XPolyline =
+            Polyline.vectorBuilder(vectorToX, clock).withColor(color1)
+                .withNearDistance(1).withFarDistance(1e9).build();
+
+        final Polyline YPolyline =
+            Polyline.vectorBuilder(vectorToY, clock).withColor(color2)
+                .withNearDistance(1).withFarDistance(1e9).build();
+
+        final Polyline ZPolyline =
+            Polyline.vectorBuilder(vectorToZ, clock).withColor(color3)
+                .withNearDistance(1).withFarDistance(1e9).build();
+
+        this.polylines.add(XPolyline);
+        this.polylines.add(YPolyline);
+        this.polylines.add(ZPolyline);
+    }
+
+    /**
+     * Builder central body reference system builder.
+     *
+     * @param clock the clock input
+     * @return the central body reference system builder
+     */
+    // builder
+    public static CentralBodyReferenceSystemBuilder builder(final Clock clock) {
+        return new CentralBodyReferenceSystemBuilder(clock);
+    }
+    // Overrides
+
+    @Override
+    public void writeCzmlBlock(final CesiumStreamWriter stream,
+                               final CesiumOutputStream output) {
+        output.setPrettyFormatting(true);
+        for (int i = 0; i < 3; i++) {
+            try (PacketCesiumWriter packet = stream.openPacket(output)) {
+                packet.writeId(getId() + " " + i);
+                packet.writeName(getName());
+                packet.writeAvailability(getAvailability());
+
+                try (PositionCesiumWriter positionWriter =
+                    packet.getPositionWriter()) {
+                    positionWriter.open(output);
+                    positionWriter.writeCartesian(new Cartesian(0, 0, 0));
+                }
+
+                polylines.get(i).writePolylineVectorFixed(packet, output);
+            }
+        }
+        cleanObject();
+    }
+
+    /**
+     * Clean object.
+     */
+    public void cleanObject() {
+        setId("");
+        setName("");
+        polylines = new ArrayList<>();
+    }
+
+}

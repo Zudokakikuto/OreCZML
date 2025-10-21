@@ -1,0 +1,26 @@
+{
+  "id":"VIS/Ground station : Toulouse Frame/Spacecraft",
+  "name":"Visibility of Ground station : Toulouse Frame looking at Spacecraft",
+  "availability":"2024-01-01T00:00:00Z/2024-01-01T00:01:00Z",
+  "cylinder":{
+    "bottomRadius":10,
+    "topRadius":8506145.763817273,
+    "length":1499863,
+    "material":{
+      "solidColor":{
+        "color":{
+          "rgba":[
+            255,255,255,50
+          ]
+        }
+      }
+    },
+    "heightReference":"CLAMP_TO_GROUND"
+  },
+  "position":{
+    "interval":"2024-01-01T00:00:00Z/2024-01-01T00:01:00Z",
+    "cartesian":[
+      4624415.12018318,116587.90809901741,4376399.285187051
+    ]
+  }
+}

@@ -4,15 +4,16 @@
 
     <groupId>org.orekit</groupId>
     <artifactId>oreczml-parent</artifactId>
-    <version>1.0</version>
+    <version>1.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>oreczml-parent</name>
-    <url>https://gitlab.orekit.org/Zudo/oreczml</url>
+    <url>https://gitlab.orekit.org/orekit/oreczml</url>
     <inceptionYear>2024</inceptionYear>
     <description>
-        OreCzml is a library that provides a bridge between libraries Orekit and czml-writer (by AnalyticalGraphicsInc).
-        The final goal is to display orbital 3D vizualisation using Cesium JS (.
+        OreCzml is a bridge library between Orekit and czml-writer (by
+        AnalyticalGraphicsInc) libraries. The goal is to display orbital 3D
+        vizualisation using CesiumJS.
     </description>
 
 
@@ -20,8 +21,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.compiler.source>17</project.compiler.source>
         <project.compiler.target>17</project.compiler.target>
+        <sonar.projectKey>${env.CI_PROJECT_NAMESPACE}:${env.CI_PROJECT_NAME}</sonar.projectKey>
+        <sonar.projectName>${env.CI_PROJECT_TITLE} (${env.CI_PROJECT_NAMESPACE}:${env.CI_PROJECT_NAME})</sonar.projectName>
         <sonar.qualitygate.wait>true</sonar.qualitygate.wait>
-        <sonar.projectKey>Zudo_oreczml_AZKVgjr8GI6o9WSLa4d5</sonar.projectKey>
         <oreczml.orekit.version>12.2</oreczml.orekit.version>
         <oreczml.maven-compiler-plugin.version>3.13.0</oreczml.maven-compiler-plugin.version>
         <oreczml.maven-source-plugin.version>3.3.1</oreczml.maven-source-plugin.version>
@@ -29,6 +31,10 @@
         <oreczml.build-helper-maven-plugin.version>3.4.0</oreczml.build-helper-maven-plugin.version>
         <oreczml.maven-gpg-plugin.version>3.1.0</oreczml.maven-gpg-plugin.version>
         <oreczml.maven-install-plugin.version>3.1.1</oreczml.maven-install-plugin.version>
+        <oreczml.maven-checkstyle-plugin.version>3.6.0</oreczml.maven-checkstyle-plugin.version>
+        <!-- Checkstyle 9.3 seems to be the last version usable with JDK 8 -->
+        <oreczml.checkstyle.version>9.3</oreczml.checkstyle.version>
+        <oreczml.spotless.version>2.44.0</oreczml.spotless.version>
     </properties>
 
     <build>
@@ -40,6 +46,48 @@
                 <configuration>
                     <source>${project.compiler.source}</source>
                     <target>${project.compiler.target}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>${oreczml.maven-checkstyle-plugin.version}</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.puppycrawl.tools</groupId>
+                        <artifactId>checkstyle</artifactId>
+                        <version>${oreczml.checkstyle.version}</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <configLocation>${basedir}/checkstyle.xml</configLocation>
+                    <enableRulesSummary>false</enableRulesSummary>
+                    <headerLocation>${basedir}/license-header.txt</headerLocation>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>${oreczml.spotless.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>apply</goal>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <java>
+                        <eclipse>
+                            <file>${project.basedir}/orekit-eclipse-formatter.xml</file>
+                        </eclipse>
+                        <includes>
+                            <include>oreczml-core/src/main/java/**/*.java</include>
+                            <include>oreczml-core/src/test/java/**/*.java</include>
+                            <include>oreczml-tutorials/src/main/java/**/*.java</include>
+                        </includes>
+                    </java>
                 </configuration>
             </plugin>
         </plugins>
@@ -58,6 +106,11 @@
                 <groupId>org.orekit</groupId>
                 <artifactId>orekit</artifactId>
                 <version>${oreczml.orekit.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>${oreczml.spotless.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

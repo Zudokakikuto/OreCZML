@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -16,18 +16,19 @@
  */
 package org.orekit.czml.object.primary;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.net.URISyntaxException;
 
 /**
  * The type Header test.
  */
-public class HeaderTest extends AbstractTest {
+public class HeaderTest
+    extends
+    AbstractTest {
 
     /**
      * Header constructor test.
@@ -35,14 +36,32 @@ public class HeaderTest extends AbstractTest {
      * @throws IOException the io exception
      */
     @Test
-    void HeaderConstructorTest() throws IOException {
+    @DefaultDataContext
+    void HeaderConstructorTest()
+        throws IOException,
+            URISyntaxException {
 
         loadOrekitData();
 
         final Header header = dummyHeader();
 
-        final String pathFile = loadResources("templateFile/primary/HeaderTemplate.txt");
+        final String headerValue = "A header";
+        final String headerVersionNumber = "1.0";
+        final Header headerCoverage =
+            new Header(headerValue, headerVersionNumber, header.getClock());
 
-        Assertions.assertEquals(Files.readString(Path.of(pathFile)), header.toString());
+        final Header headerVersion =
+            new Header(headerValue, headerVersionNumber, header.getClock(), "");
+
+        final String pathFile =
+            loadResources("templateFile/object/primary/HeaderTemplate.txt");
+        final String coveragePathFile =
+            loadResources("templateFile/object/primary/HeaderCoverageTemplate.txt");
+        final String versionPathFile =
+            loadResources("templateFile/object/primary/HeaderVersionTemplate.txt");
+
+        verifyFileOutput(pathFile, header.toString(), 1e-8);
+        verifyFileOutput(coveragePathFile, headerCoverage.toString(), 1e-8);
+        verifyFileOutput(versionPathFile, headerVersion.toString(), 1e-8);
     }
 }

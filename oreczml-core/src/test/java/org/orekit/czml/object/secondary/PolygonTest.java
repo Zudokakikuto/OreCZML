@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -17,21 +17,22 @@
 package org.orekit.czml.object.secondary;
 
 import cesiumlanguagewriter.Cartesian;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.Header;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * The type Polygon test.
  */
-public class PolygonTest extends AbstractTest {
+public class PolygonTest
+    extends
+    AbstractTest {
 
     /**
      * Polygon constructor test.
@@ -39,7 +40,10 @@ public class PolygonTest extends AbstractTest {
      * @throws IOException the io exception
      */
     @Test
-    void PolygonConstructorTest() throws IOException {
+    @DefaultDataContext
+    void PolygonConstructorTest()
+        throws IOException,
+            URISyntaxException {
 
         loadOrekitData();
 
@@ -47,11 +51,12 @@ public class PolygonTest extends AbstractTest {
 
         final List<Cartesian> cartesians = randomCartesian();
 
-        final Polygon polygon = new Polygon(cartesians, header);
+        final Polygon polygon = new Polygon(cartesians, header.getClock());
 
-        final String pathFile = loadResources("templateFile/secondary/PolygonTemplate.txt");
+        final String pathFile =
+            loadResources("templateFile/object/secondary/PolygonTemplate.txt");
 
-        Assertions.assertEquals(Files.readString(Path.of(pathFile)), polygon.toString());
+        verifyFileOutput(pathFile, polygon.toString(), 1e-8);
     }
 
     private List<Cartesian> randomCartesian() {

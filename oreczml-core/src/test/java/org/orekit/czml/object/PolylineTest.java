@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -18,20 +18,21 @@ package org.orekit.czml.object;
 
 import cesiumlanguagewriter.CesiumArcType;
 import cesiumlanguagewriter.Reference;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.Header;
 
 import java.awt.Color;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.net.URISyntaxException;
 
 /**
  * The type Polyline test.
  */
-public class PolylineTest extends AbstractTest {
+public class PolylineTest
+    extends
+    AbstractTest {
 
     /**
      * Polylinec constructor test.
@@ -39,29 +40,32 @@ public class PolylineTest extends AbstractTest {
      * @throws IOException the io exception
      */
     @Test
-    void PolylinecConstructorTest() throws IOException {
+    @DefaultDataContext
+    void PolylineConstructorTest()
+        throws IOException,
+            URISyntaxException {
 
         loadOrekitData();
 
         final Header header = dummyHeader();
 
-        final Polyline polyline = new Polyline(header);
+        final Polyline polyline =
+            Polyline.nonVectorBuilder(header.getClock()).build();
 
-        final Polyline polylineNonVector = Polyline.nonVectorBuilder(header)
-                                                   .withColor(Color.ORANGE)
-                                                   .withArcType(CesiumArcType.NONE)
-                                                   .withShow(true)
-                                                   .withWidth(10.0)
-                                                   .withFarDistance(10.0)
-                                                   .withNearDistance(1.0)
-                                                   .withFirstReference(new Reference("sat#position"))
-                                                   .withSecondReference(new Reference("groundstation#position"))
-                                                   .build();
+        final Polyline polylineNonVector =
+            Polyline.nonVectorBuilder(header.getClock()).withColor(Color.ORANGE)
+                .withArcType(CesiumArcType.NONE).withShow(true).withWidth(10.0)
+                .withFarDistance(10.0).withNearDistance(1.0)
+                .withFirstReference(new Reference("sat#position"))
+                .withSecondReference(new Reference("groundstation#position"))
+                .build();
 
-        final String pathFile = loadResources("templateFile/PolylineTemplate.txt");
-        final String nonVectorPathFile = loadResources("templateFile/PolylineNonVectorTemplate.txt");
+        final String pathFile =
+            loadResources("templateFile/PolylineTemplate.txt");
+        final String nonVectorPathFile =
+            loadResources("templateFile/PolylineNonVectorTemplate.txt");
 
-        Assertions.assertEquals(Files.readString(Path.of(pathFile)), polyline.toString());
-        Assertions.assertEquals(Files.readString(Path.of(nonVectorPathFile)), polylineNonVector.toString());
+        verifyFileOutput(pathFile, polyline.toString(), 1e-8);
+        verifyFileOutput(nonVectorPathFile, polylineNonVector.toString(), 1e-8);
     }
 }

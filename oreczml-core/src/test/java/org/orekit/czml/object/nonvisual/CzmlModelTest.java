@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -18,6 +18,7 @@ package org.orekit.czml.object.nonvisual;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.Header;
 
@@ -25,11 +26,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-
 /**
  * The type Czml model test.
  */
-public class CzmlModelTest extends AbstractTest {
+public class CzmlModelTest
+    extends
+    AbstractTest {
 
     /**
      * Czml model constructor test.
@@ -37,16 +39,22 @@ public class CzmlModelTest extends AbstractTest {
      * @throws IOException the io exception
      */
     @Test
-    void CzmlModelConstructorTest() throws IOException {
+    @DefaultDataContext
+    void CzmlModelConstructorTest()
+        throws IOException {
 
         loadOrekitData();
 
         final Header header = dummyHeader();
 
-        final CzmlModel modelToTest = new CzmlModel(loadResources("Default3DModels/ISSModel.glb"), header);
+        final CzmlModel modelToTest =
+            new CzmlModel(loadResources("Default3DModels/ISSModel.glb"), false,
+                          header.getClock());
 
-        final String pathFile = loadResources("templateFile/nonvisual/CzmlModelTemplate.txt");
+        final String pathFile =
+            loadResources("templateFile/nonvisual/CzmlModelTemplate.txt");
 
-        Assertions.assertEquals(Files.readString(Path.of(pathFile)), modelToTest.toString());
+        Assertions.assertEquals(Files.readString(Path.of(pathFile)),
+                                modelToTest.toString());
     }
 }

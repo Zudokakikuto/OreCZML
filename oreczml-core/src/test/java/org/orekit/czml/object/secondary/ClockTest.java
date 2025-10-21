@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -19,26 +19,27 @@ package org.orekit.czml.object.secondary;
 import cesiumlanguagewriter.ClockRange;
 import cesiumlanguagewriter.ClockStep;
 import cesiumlanguagewriter.TimeInterval;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
-import org.orekit.czml.object.Utils.DateUtils;
+import org.orekit.czml.object.utils.DateUtils;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.data.DataSource;
 import org.orekit.files.ccsds.ndm.ParserBuilder;
 import org.orekit.files.ccsds.ndm.odm.oem.Oem;
 import org.orekit.files.ccsds.ndm.odm.oem.OemParser;
 import org.orekit.time.AbsoluteDate;
-import org.orekit.time.TimeScalesFactory;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.net.URISyntaxException;
 
 /**
  * The type Clock test.
  */
-public class ClockTest extends AbstractTest {
+@DefaultDataContext
+public class ClockTest
+    extends
+    AbstractTest {
 
     /**
      * Clock constructor test.
@@ -46,35 +47,44 @@ public class ClockTest extends AbstractTest {
      * @throws IOException the io exception
      */
     @Test
-    void ClockConstructorTest() throws IOException {
+    void ClockConstructorTest()
+        throws IOException,
+            URISyntaxException {
 
         loadOrekitData();
 
-        final Header       header    = dummyHeader();
-        final AbsoluteDate startDate = DateUtils.toAbsoluteDate(header.getAvailability()
-                                                                      .getStart(), TimeScalesFactory.getUTC());
+        final Header header = dummyHeader();
+        final AbsoluteDate startDate =
+            DateUtils.toAbsoluteDate(header.getAvailability().getStart());
         final AbsoluteDate finalDate = startDate.shiftedBy(60.0);
-        final TimeInterval interval = new TimeInterval(header.getAvailability().getStart(), header.getAvailability().getStop());
+        final TimeInterval interval =
+            new TimeInterval(header.getAvailability().getStart(),
+                             header.getAvailability().getStop());
 
-        final String        OemPath       = loadResources("oemForOemTuto.xml");
-        final DataSource    dataSource    = new DataSource(OemPath);
+        final String OemPath = loadResources("oemForOemTuto.xml");
+        final DataSource dataSource = new DataSource(OemPath);
         final ParserBuilder parserBuilder = new ParserBuilder();
-        final OemParser     oemParser     = parserBuilder.buildOemParser();
-        final Oem           oem           = oemParser.parse(dataSource);
+        final OemParser oemParser = parserBuilder.buildOemParser();
+        final Oem oem = oemParser.parse(dataSource);
 
-        final Clock clock = new Clock(startDate, finalDate, TimeScalesFactory.getUTC(), 10.0);
+        final Clock clock = new Clock(startDate, finalDate, 10.0);
 
-        final Clock clockCoverage = new Clock(interval, header.getAvailability().getStart(), 60.0, ClockRange.LOOP_STOP, ClockStep.SYSTEM_CLOCK_MULTIPLIER);
+        final Clock clockCoverage =
+            new Clock(interval, header.getAvailability().getStart(), 60.0,
+                      ClockRange.LOOP_STOP, ClockStep.SYSTEM_CLOCK_MULTIPLIER);
 
         final Clock oemClock = new Clock(oem);
 
-        final String pathFile = loadResources("templateFile/secondary/ClockTemplate.txt");
-        final String coveragePathFile = loadResources("templateFile/secondary/ClockCoverageTemplate.txt");
-        final String oemClockPathFile = loadResources("templateFile/secondary/OemClockTemplate.txt");
+        final String pathFile =
+            loadResources("templateFile/object/secondary/ClockTemplate.txt");
+        final String coveragePathFile =
+            loadResources("templateFile/object/secondary/ClockCoverageTemplate.txt");
+        final String oemClockPathFile =
+            loadResources("templateFile/object/secondary/OemClockTemplate.txt");
 
-        Assertions.assertEquals(Files.readString(Path.of(pathFile)), clock.toString());
-        Assertions.assertEquals(Files.readString(Path.of(coveragePathFile)), clockCoverage.toString());
-        Assertions.assertEquals(Files.readString(Path.of(oemClockPathFile)), oemClock.toString());
+        verifyFileOutput(pathFile, clock.toString(), 1e-8);
+        verifyFileOutput(coveragePathFile, clockCoverage.toString(), 1e-8);
+        verifyFileOutput(oemClockPathFile, oemClock.toString(), 1e-8);
 
     }
 }

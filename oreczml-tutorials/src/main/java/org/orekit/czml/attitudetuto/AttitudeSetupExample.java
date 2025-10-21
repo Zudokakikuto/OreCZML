@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -23,7 +23,7 @@ import org.hipparchus.util.FastMath;
 import org.orekit.attitudes.LofOffset;
 import org.orekit.czml.file.CzmlFile;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.Satellite;
+import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.forces.ForceModel;
 import org.orekit.forces.gravity.HolmesFeatherstoneAttractionModel;
@@ -41,71 +41,89 @@ import org.orekit.propagation.numerical.NumericalPropagator;
 import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.Constants;
+import org.orekit.utils.IERSConventions;
 
 import java.awt.Color;
 
-
 /**
- * The type Attitude setup example.
+ * This tutorial provides an example of how-to set up the attitude of a
+ * satellite.
  */
 public class AttitudeSetupExample {
 
-    private AttitudeSetupExample () {
+    private AttitudeSetupExample() {
         // empty
     }
 
     /**
-     * Main.
+     * Main of the attitude setup tutorial.
      *
-     * @param args the args
-     * @throws Exception the exception
+     * @param args arguments of the main function
+     * @throws Exception exception to throw
      */
-    public static void main (final String[] args) throws Exception {
+    public static void main(final String[] args)
+        throws Exception {
 
         // Load orekit data
         TutorialUtils.loadOrekitData();
 
         // Paths
         final String output = TutorialUtils.generateOutput();
-        // !!! Here you need to change the path inside 'generateJsPath' to the path you are using for images or Model.
-        // This folder can also be the public folder of your cesium javascript interface.
-        final String pathToJSFolder = TutorialUtils.generateJSPath(
-                System.getProperty("user.dir") + "/Javascript/public");
+        // !!! Here you need to change the path inside 'generateJsPath' to the
+        // path you are using for images or Model.
+        // This folder can also be the public folder of your cesium javascript
+        // interface.
+        final String pathToJSFolder =
+            TutorialUtils.generateJSPath(System.getProperty("user.dir") +
+                                         "/Javascript/public");
 
-        final String IssModel = TutorialUtils.loadResources("Default3DModels/ISSModel.glb");
+        final String IssModel =
+            TutorialUtils.loadResources("Default3DModels/ISSModel.glb");
 
         // Creation of the clock.
 
-        final AbsoluteDate startDate = new AbsoluteDate(2024, 3, 15, 0, 0, 0.0, TimeScalesFactory.getUTC());
-        final AbsoluteDate finalDate = startDate.shiftedBy(TutorialUtils.CLASSIC_DURATION_OF_SIMULATION);
-        final Clock clock = new Clock(startDate, finalDate, TimeScalesFactory.getUTC(),
-                TutorialUtils.STEP_BETWEEN_EACH_INSTANT);
+        final AbsoluteDate startDate =
+            new AbsoluteDate(2024, 3, 15, 0, 0, 0.0,
+                             TimeScalesFactory.getUTC());
+        final AbsoluteDate finalDate =
+            startDate.shiftedBy(TutorialUtils.CLASSIC_DURATION_OF_SIMULATION);
+        final Clock clock =
+            new Clock(startDate, finalDate,
+                      TutorialUtils.STEP_BETWEEN_EACH_INSTANT);
 
-        final Header header = new Header("Setup of the attitude of a satellite", clock, pathToJSFolder);
+        final Header header =
+            new Header("Setup of the attitude of a satellite", clock,
+                       pathToJSFolder);
 
         //// Build of a satellite with a propagator
         // Build of a LEO orbit
-        final KeplerianOrbit initialOrbit = new KeplerianOrbit(7878000, 0, FastMath.toRadians(20), 0,
-                FastMath.toRadians(0), FastMath.toRadians(0), PositionAngleType.MEAN, FramesFactory.getEME2000(), startDate,
-                Constants.WGS84_EARTH_MU);
+        final KeplerianOrbit initialOrbit =
+            new KeplerianOrbit(7878000, 0, FastMath.toRadians(20), 0,
+                               FastMath.toRadians(0), FastMath.toRadians(0),
+                               PositionAngleType.MEAN,
+                               FramesFactory.getEME2000(), startDate,
+                               Constants.WGS84_EARTH_MU);
 
         final SpacecraftState initialState = new SpacecraftState(initialOrbit);
 
         // Build of the propagator
 
+        final double[][] tolerances =
+            NumericalPropagator.tolerances(TutorialUtils.POSITION_TOLERANCE,
+                                           initialOrbit, OrbitType.CARTESIAN);
+        final AdaptiveStepsizeIntegrator integrator =
+            new DormandPrince853Integrator(TutorialUtils.MIN_STEP,
+                                           TutorialUtils.MAX_STEP,
+                                           tolerances[0], tolerances[1]);
 
-        final double[][] tolerances = NumericalPropagator.tolerances(TutorialUtils.POSITION_TOLERANCE, initialOrbit,
-                OrbitType.CARTESIAN);
-        final AdaptiveStepsizeIntegrator integrator = new DormandPrince853Integrator(TutorialUtils.MIN_STEP,
-                TutorialUtils.MAX_STEP, tolerances[0],
-                tolerances[1]);
+        final NumericalPropagator propagator =
+            new NumericalPropagator(integrator);
 
-        final NumericalPropagator propagator = new NumericalPropagator(integrator);
-
-        final NormalizedSphericalHarmonicsProvider provider = GravityFieldFactory.getNormalizedProvider(10,
-                10);
-        final ForceModel holmesFeatherstone = new HolmesFeatherstoneAttractionModel(FramesFactory.getEME2000(),
-                provider);
+        final NormalizedSphericalHarmonicsProvider provider =
+            GravityFieldFactory.getNormalizedProvider(10, 10);
+        final ForceModel holmesFeatherstone =
+            new HolmesFeatherstoneAttractionModel(FramesFactory
+                .getITRF(IERSConventions.IERS_2010, true), provider);
 
         propagator.setOrbitType(OrbitType.CARTESIAN);
         propagator.addForceModel(holmesFeatherstone);
@@ -113,25 +131,23 @@ public class AttitudeSetupExample {
 
         final EphemerisGenerator generator = propagator.getEphemerisGenerator();
 
-        final LofOffset lofOffset = new LofOffset(FramesFactory.getEME2000(), LOFType.TNW);
+        final LofOffset lofOffset =
+            new LofOffset(FramesFactory.getEME2000(), LOFType.TNW);
         propagator.setAttitudeProvider(lofOffset);
 
         propagator.propagate(startDate, finalDate);
-        final BoundedPropagator boundedPropagator = generator.getGeneratedEphemeris();
+        final BoundedPropagator boundedPropagator =
+            generator.getGeneratedEphemeris();
 
         // Creation of the satellite
-        final Satellite satellite = Satellite.builder(boundedPropagator, header)
-                                             .withModelPath(IssModel)
-                                             .withColor(Color.RED)
-                                             .withOnlyOnePeriod()
-                                             .withDisplayAttitude()
-                                             .build();
+        final Spacecraft satellite =
+            Spacecraft.builder(boundedPropagator, clock).withModelPath(IssModel)
+                .withColor(Color.RED).withOnlyOnePeriod().withDisplayAttitude()
+                .build();
 
         // Creation of the file
-        final CzmlFile file = CzmlFile.builder()
-                                      .withHeader(header)
-                                      .withSatellite(satellite)
-                                      .build();
+        final CzmlFile file =
+            CzmlFile.builder(header).withSpacecraft(satellite).build();
 
         // Writing in the file
         file.write(output);

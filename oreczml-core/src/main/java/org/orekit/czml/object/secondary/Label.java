@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -28,14 +28,17 @@ import java.awt.Color;
 
 /**
  * Label class
- *
- * <p> This class allows the user to display a specific text of an object during the simulation.</p>
+ * <p>
+ * This class allows the user to display a specific text of an object during the
+ * simulation.
+ * </p>
  *
  * @author Julien LEBLOND
  * @since 1.0.0
  */
-public class Label extends AbstractSecondaryObject {
-
+public class Label
+    extends
+    AbstractSecondaryObject {
 
     /**
      * The default police for the labels.
@@ -48,17 +51,20 @@ public class Label extends AbstractSecondaryObject {
     private final Color color;
 
     /**
-     * The horizontal origin of the label. Available parameters are: LEFT, CENTER, RIGHT
+     * The horizontal origin of the label. Available parameters are: LEFT,
+     * CENTER, RIGHT
      */
     private final CesiumHorizontalOrigin horizontalOrigin;
 
     /**
-     * The vertical origin of the label. Available parameters are: LEFT, CENTER, RIGHT
+     * The vertical origin of the label. Available parameters are: LEFT, CENTER,
+     * RIGHT
      */
     private final CesiumVerticalOrigin verticalOrigin;
 
     /**
-     * The style of the label, three are available: FILL, OUTLINE, FILL_AND_OUTLINE.
+     * The style of the label, three are available: FILL, OUTLINE,
+     * FILL_AND_OUTLINE.
      */
     private final CesiumLabelStyle labelStyle;
 
@@ -72,11 +78,11 @@ public class Label extends AbstractSecondaryObject {
      */
     private final boolean show;
 
-
     // Constructors
 
     /**
-     * The constructor of the label of an object, the text will be the name of the object. This constructor uses default parameters.
+     * The constructor of the label of an object, the text will be the name of
+     * the object. This constructor uses default parameters.
      *
      * @param object : The object that will be references with the label.
      */
@@ -92,7 +98,7 @@ public class Label extends AbstractSecondaryObject {
     /**
      * The constructor of the label of a given text with a given color.
      *
-     * @param text  : The text to enter into the label.
+     * @param text : The text to enter into the label.
      * @param color : The color of the label.
      */
     public Label(final String text, final Color color) {
@@ -107,15 +113,17 @@ public class Label extends AbstractSecondaryObject {
     /**
      * The constructor of the label, with no default parameters.
      *
-     * @param text             : The text to enter into the label.
-     * @param color            : The color of the label.
+     * @param text : The text to enter into the label.
+     * @param color : The color of the label.
      * @param horizontalOrigin : The horizontal origin of the label.
-     * @param verticalOrigin   : The vertical origin of the label.
-     * @param labelStyle       : The style of the label.
-     * @param show             : To display or not the label.
+     * @param verticalOrigin : The vertical origin of the label.
+     * @param labelStyle : The style of the label.
+     * @param show : To display or not the label.
      */
-    public Label(final String text, final Color color, final CesiumHorizontalOrigin horizontalOrigin,
-                 final CesiumVerticalOrigin verticalOrigin, final CesiumLabelStyle labelStyle, final boolean show) {
+    public Label(final String text, final Color color,
+                 final CesiumHorizontalOrigin horizontalOrigin,
+                 final CesiumVerticalOrigin verticalOrigin,
+                 final CesiumLabelStyle labelStyle, final boolean show) {
         this.color = color;
         this.horizontalOrigin = horizontalOrigin;
         this.verticalOrigin = verticalOrigin;
@@ -124,11 +132,11 @@ public class Label extends AbstractSecondaryObject {
         this.show = show;
     }
 
-
     // Overrides
 
     @Override
-    public void write(final PacketCesiumWriter packet, final CesiumOutputStream output) {
+    public void write(final PacketCesiumWriter packet,
+                      final CesiumOutputStream output) {
         try (LabelCesiumWriter labelWriter = packet.getLabelWriter()) {
             labelWriter.open(output);
             labelWriter.writeFillColorProperty(color);
@@ -139,7 +147,6 @@ public class Label extends AbstractSecondaryObject {
             labelWriter.writeShowProperty(show);
         }
     }
-
 
     // Getters
 
@@ -180,15 +187,6 @@ public class Label extends AbstractSecondaryObject {
     }
 
     /**
-     * Gets label style.
-     *
-     * @return the label style
-     */
-    public CesiumLabelStyle getLabelStyle() {
-        return labelStyle;
-    }
-
-    /**
      * Gets show.
      *
      * @return the show
@@ -196,5 +194,5 @@ public class Label extends AbstractSecondaryObject {
     public boolean getShow() {
         return show;
     }
-}
 
+}

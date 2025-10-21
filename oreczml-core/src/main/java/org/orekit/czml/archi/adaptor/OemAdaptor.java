@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -23,8 +23,9 @@ import org.orekit.time.AbsoluteDate;
 /**
  * Oem adaptor
  * <p>
- * Adaptor for the {@link Oem} class, this helps build satellites from Oems. With all the parameters available in this class
- * a satellite object can be built.
+ * Adaptor for the {@link Oem} class, this helps build satellites from Oems.
+ * With all the parameters available in this class a satellite object can be
+ * built.
  *
  * @author Julien LEBLOND
  * @since 1.0.0
@@ -53,9 +54,7 @@ public class OemAdaptor {
      * @return : A propagator extracted from the oem.
      */
     public Propagator buildPropagator() {
-        return oem.getSegments()
-                  .get(0)
-                  .getPropagator();
+        return oem.getSegments().get(0).getPropagator();
     }
 
     /**
@@ -64,10 +63,7 @@ public class OemAdaptor {
      * @return : A final date extracted from the oem.
      */
     public AbsoluteDate buildFinalDate() {
-        return oem.getSegments()
-                  .get(oem.getSegments()
-                          .size() - 1)
-                  .getStop();
+        return oem.getSegments().get(oem.getSegments().size() - 1).getStop();
     }
 
     /**
@@ -76,9 +72,7 @@ public class OemAdaptor {
      * @return : A start date extracted from the oem.
      */
     public AbsoluteDate buildStartDate() {
-        return oem.getSegments()
-                  .get(0)
-                  .getStart();
+        return oem.getSegments().get(0).getStart();
     }
 
     /**

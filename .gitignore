@@ -9,6 +9,7 @@
 *.iml
 *.ipr
 *.bak
+*.sh
 
 ### Eclipse ###
 .apt_generated

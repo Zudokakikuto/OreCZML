@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -19,7 +19,7 @@ package org.orekit.czml.interplanetary;
 import org.orekit.czml.TutorialUtils;
 import org.orekit.czml.archi.factory.BodyFactory;
 import org.orekit.czml.file.CzmlFile;
-import org.orekit.czml.object.primary.Body;
+import org.orekit.czml.object.primary.entities.Body;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.time.AbsoluteDate;
@@ -33,7 +33,7 @@ import java.util.List;
  */
 public class BodyDisplayExample {
 
-    private BodyDisplayExample () {
+    private BodyDisplayExample() {
     }
 
     /**
@@ -42,39 +42,58 @@ public class BodyDisplayExample {
      * @param args the args
      * @throws Exception the exception
      */
-    public static void main (final String[] args) throws Exception {
+    public static void main(final String[] args)
+        throws Exception {
         // Load orekit data
         TutorialUtils.loadOrekitData();
 
         // Paths
         final String output = TutorialUtils.generateOutput();
-        // !!! Here you need to change the path inside 'generateJsPath' to the path you are using for images or Model.
-        // This folder can also be the public folder of your cesium javascript interface.
-        final String pathToJSFolder = TutorialUtils.generateJSPath(
-                System.getProperty("user.dir") + "/Javascript/public");
+        // !!! Here you need to change the path inside 'generateJsPath' to the
+        // path you are using for images or Model.
+        // This folder can also be the public folder of your cesium javascript
+        // interface.
+        final String pathToJSFolder =
+            TutorialUtils
+                .generateJSPath(System.getProperty("user.dir") +
+                                "/oreczml-tutorials/src/main/resources/Default3DModels/");
 
         // Creation of the clock.
+        final double durationOfSimulation = 24 * 3600; // in seconds;
+        final AbsoluteDate startDate =
+            new AbsoluteDate(2024, 3, 15, 0, 0, 0.0,
+                             TimeScalesFactory.getUTC());
+        final AbsoluteDate finalDate =
+            startDate.shiftedBy(durationOfSimulation);
+        final Clock clock =
+            new Clock(startDate, finalDate,
+                      TutorialUtils.STEP_BETWEEN_EACH_INSTANT);
 
-        final double       durationOfSimulation = 24 * 3600; // in seconds;
-        final AbsoluteDate startDate            = new AbsoluteDate(2024, 3, 15, 0, 0, 0.0, TimeScalesFactory.getUTC());
-        final AbsoluteDate finalDate            = startDate.shiftedBy(durationOfSimulation);
-        final Clock clock = new Clock(startDate, finalDate, TimeScalesFactory.getUTC(),
-                TutorialUtils.STEP_BETWEEN_EACH_INSTANT);
-
-        final Header header = new Header("Setup of the solar system in the simulation", clock, pathToJSFolder);
+        final Header header =
+            new Header("Setup of the solar system in the simulation", clock,
+                       pathToJSFolder);
 
         // Solar system
-        final List<Body> solarSystem    = new ArrayList<>();
-        final Body       sunDisplay     = BodyFactory.getSun(header);
-        final Body       moonDisplay    = BodyFactory.getMoon(header);
-        final Body       mercuryDisplay = BodyFactory.getMercury(header);
-        final Body       venusDisplay   = BodyFactory.getVenus(header);
-        final Body       marsDisplay    = BodyFactory.getMars(header);
-        final Body       jupiterDisplay = BodyFactory.getJupiter(header);
-        final Body       saturnDisplay  = BodyFactory.getSaturn(header);
-        final Body       uranusDisplay  = BodyFactory.getUranus(header);
-        final Body       neptuneDisplay = BodyFactory.getNeptune(header);
-        final Body       plutoDisplay   = BodyFactory.getPluto(header);
+        final List<Body> solarSystem = new ArrayList<>();
+        final Body sunDisplay = BodyFactory.getSun(clock);
+        final Body moonDisplay = BodyFactory.getMoon(clock);
+        moonDisplay.displayInfluenceSphere();
+        final Body mercuryDisplay = BodyFactory.getMercury(clock);
+        mercuryDisplay.displayInfluenceSphere();
+        final Body venusDisplay = BodyFactory.getVenus(clock);
+        venusDisplay.displayInfluenceSphere();
+        final Body marsDisplay = BodyFactory.getMars(clock);
+        marsDisplay.displayInfluenceSphere();
+        final Body jupiterDisplay = BodyFactory.getJupiter(clock);
+        jupiterDisplay.displayInfluenceSphere();
+        final Body saturnDisplay = BodyFactory.getSaturn(clock);
+        saturnDisplay.displayInfluenceSphere();
+        final Body uranusDisplay = BodyFactory.getUranus(clock);
+        uranusDisplay.displayInfluenceSphere();
+        final Body neptuneDisplay = BodyFactory.getNeptune(clock);
+        neptuneDisplay.displayInfluenceSphere();
+        final Body plutoDisplay = BodyFactory.getPluto(clock);
+        plutoDisplay.displayInfluenceSphere();
         solarSystem.add(sunDisplay);
         solarSystem.add(moonDisplay);
         solarSystem.add(mercuryDisplay);
@@ -86,10 +105,8 @@ public class BodyDisplayExample {
         solarSystem.add(neptuneDisplay);
         solarSystem.add(plutoDisplay);
 
-        final CzmlFile file = CzmlFile.builder()
-                                      .withHeader(header)
-                                      .withBody(solarSystem)
-                                      .build();
+        final CzmlFile file =
+            CzmlFile.builder(header).withBody(solarSystem).build();
         // Writing in the file
         file.write(output);
     }

@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -16,18 +16,23 @@
  */
 package org.orekit.czml.object.secondary;
 
-import org.junit.jupiter.api.Assertions;
+import cesiumlanguagewriter.CesiumHorizontalOrigin;
+import cesiumlanguagewriter.CesiumResourceBehavior;
+import cesiumlanguagewriter.NearFarScalar;
 import org.junit.jupiter.api.Test;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
 
+import java.awt.Color;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.net.URISyntaxException;
 
 /**
  * The type Billboard test.
  */
-public class BillboardTest extends AbstractTest {
+public class BillboardTest
+    extends
+    AbstractTest {
 
     /**
      * Billboard constructor test.
@@ -35,16 +40,44 @@ public class BillboardTest extends AbstractTest {
      * @throws IOException the io exception
      */
     @Test
-    void BillboardConstructorTest() throws IOException {
+    @DefaultDataContext
+    void BillboardConstructorTest()
+        throws IOException,
+            URISyntaxException {
 
         loadOrekitData();
 
-        final String imageStr ="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACvSURBVDhPrZDRDcMgDAU9GqN0lIzijw6SUbJJygUeNQgSqepJTyHG91LVVpwDdfxM3T9TSl1EXZvDwii471fivK73cBFFQNTT/d2KoGpfGOpSIkhUpgUMxq9DFEsWv4IXhlyCnhBFnZcFEEuYqbiUlNwWgMTdrZ3JbQFoEVG53rd8ztG9aPJMnBUQf/VFraBJeWnLS0RfjbKyLJA8FkT5seDYS1Qwyv8t0B/5C2ZmH2/eTGNNBgMmAAAAAElFTkSuQmCC";
+        final String imageStr =
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACvSURBVDhPrZDRDcMgDAU9GqN0lIzijw6SUbJJygUeNQgSqepJTyHG91LVVpwDdfxM3T9TSl1EXZvDwii471fivK73cBFFQNTT/d2KoGpfGOpSIkhUpgUMxq9DFEsWv4IXhlyCnhBFnZcFEEuYqbiUlNwWgMTdrZ3JbQFoEVG53rd8ztG9aPJMnBUQf/VFraBJeWnLS0RfjbKyLJA8FkT5seDYS1Qwyv8t0B/5C2ZmH2/eTGNNBgMmAAAAAElFTkSuQmCC";
 
         final Billboard billboard = new Billboard(imageStr);
 
-        final String pathFile = loadResources("templateFile/secondary/BillboardTemplate.txt");
+        final Billboard billboardCoverage = new Billboard(imageStr, 10);
 
-        Assertions.assertEquals(Files.readString(Path.of(pathFile)), billboard.toString());
+        final NearFarScalar nearFarScalar =
+            new NearFarScalar(10.0, 20.0, 100.0, 50.0);
+
+        final Billboard billboardNearFar =
+            new Billboard(imageStr, nearFarScalar);
+
+        final Billboard complexConstructor =
+            new Billboard(CesiumResourceBehavior.LINK_TO,
+                          CesiumHorizontalOrigin.CENTER, imageStr, true, 10,
+                          Color.RED, nearFarScalar);
+
+        final String pathFile =
+            loadResources("templateFile/object/secondary/BillboardTemplate.txt");
+        final String coveragePathFile =
+            loadResources("templateFile/object/secondary/BillboardCoverageTemplate.txt");
+        final String nearFarPathFile =
+            loadResources("templateFile/object/secondary/BillboardNearFarTemplate.txt");
+        final String complexConstructorPathFile =
+            loadResources("templateFile/object/secondary/BillboardComplexConstructorTemplate.txt");
+
+        verifyFileOutput(pathFile, billboard.toString(), 1e-8);
+        verifyFileOutput(coveragePathFile, billboardCoverage.toString(), 1e-8);
+        verifyFileOutput(nearFarPathFile, billboardNearFar.toString(), 1e-8);
+        verifyFileOutput(complexConstructorPathFile,
+                         complexConstructor.toString(), 1e-8);
     }
 }

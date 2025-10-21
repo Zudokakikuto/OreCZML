@@ -1,4 +1,4 @@
-/* Copyright 2002-2024 CS GROUP
+/* Copyright 2002-2025 CS GROUP
  * Licensed to CS GROUP (CS) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -19,16 +19,19 @@ package org.orekit.czml.object;
 import cesiumlanguagewriter.TimeInterval;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.Header;
 
 import java.io.IOException;
-import java.nio.file.Files;
+import java.net.URISyntaxException;
 
 /**
  * The type Path test.
  */
-public class PathTest extends AbstractTest {
+public class PathTest
+    extends
+    AbstractTest {
 
     /**
      * Path constructor test.
@@ -36,7 +39,10 @@ public class PathTest extends AbstractTest {
      * @throws IOException the io exception
      */
     @Test
-    void PathConstructorTest() throws IOException {
+    @DefaultDataContext
+    void PathConstructorTest()
+        throws IOException,
+            URISyntaxException {
 
         loadOrekitData();
 
@@ -44,8 +50,18 @@ public class PathTest extends AbstractTest {
 
         final TimeInterval availability = header.getAvailability();
 
-        final Path   path     = new Path(availability);
+        final Path path = new Path(availability);
+
+        final Path pathCoverage = new Path(availability, true);
+
         final String pathFile = loadResources("templateFile/PathTemplate.txt");
-        Assertions.assertEquals(Files.readString(java.nio.file.Path.of(pathFile)), path.toString());
+        final String pathCoverageFile =
+            loadResources("templateFile/PathCoverageTemplate.txt");
+
+        verifyFileOutput(pathFile, path.toString(), 1e-8);
+        verifyFileOutput(pathCoverageFile, pathCoverage.toString(), 1e-8);
+
+        Assertions.assertTrue(pathCoverage.isShow());
+        Assertions.assertEquals(availability, pathCoverage.getAvailability());
     }
 }
