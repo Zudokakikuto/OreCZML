@@ -35,8 +35,6 @@ build/
 
 ### Mac OS ###
 .DS_Store
-/JavaScript/
-/Output/
 /.idea/
 /src/main/resources/Dependencies/cesiumlanguagewriter-1.0.jar
 /oreczml-core/target/
