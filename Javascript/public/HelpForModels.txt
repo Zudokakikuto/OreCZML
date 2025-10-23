@@ -1,0 +1,22 @@
+  ____  _____        __  ___  _____    __  __  ____  _____  ______ _       _____
+ |___ \|  __ \      / / |__ \|  __ \  |  \/  |/ __ \|  __ \|  ____| |     / ____|
+   __) | |  | |    / /     ) | |  | | | \  / | |  | | |  | | |__  | |    | (___
+  |__ <| |  | |   / /     / /| |  | | | |\/| | |  | | |  | |  __| | |     \___ \
+  ___) | |__| |  / /     / /_| |__| | | |  | | |__| | |__| | |____| |____ ____) |
+ |____/|_____/  /_/     |____|_____/  |_|  |_|\____/|_____/|______|______|_____/
+
+// HELP FOR MODELS \\
+
+This folder can contain all the models you want to load in the scene.
+
+* 3D Models
+
+The 3D models must be .glb files. Be sure the model you load renders well (use Blender to visualize it first).
+
+* 2D Models
+
+The 2D models can be any image format file (.png is recommended).
+
+* Load models
+You just has to create a String that will contains the path of your model, and use it in a CzmlModel.
+In a spacecraft object you can use .withModelPath() and enter your String.
