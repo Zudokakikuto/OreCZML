@@ -126,7 +126,7 @@ public class AemAdaptorExample {
                                                        new GeodeticPoint(0, 0,
                                                                          0),
                                                        "Station"),
-                                  "", clock.getAvailability());
+                                  "", clock);
 
         final CzmlFile file =
             CzmlFile.builder(header).withSpacecraft(satellite)

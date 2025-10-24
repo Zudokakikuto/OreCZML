@@ -152,7 +152,7 @@ public class AttitudePointingExample {
         final AttitudePointing pointing =
             AttitudePointing
                 .builder(satellite, TutorialUtils.getEarth(), Vector3D.MINUS_J,
-                         clock.getAvailability())
+                         clock)
                 .withColor(Color.ORANGE).displayPointingPath()
                 .displayPeriodPointingPath().build();
 

@@ -22,7 +22,6 @@ import cesiumlanguagewriter.CesiumOutputStream;
 import cesiumlanguagewriter.CesiumStreamWriter;
 import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.PositionCesiumWriter;
-import cesiumlanguagewriter.TimeInterval;
 import cesiumlanguagewriter.TimeStandard;
 import cesiumlanguagewriter.UriCesiumWriter;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
@@ -30,6 +29,7 @@ import org.orekit.czml.object.nonvisual.CzmlModel;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
 import org.orekit.czml.object.primary.visu.StationVisibilityCircle;
 import org.orekit.czml.object.secondary.Billboard;
+import org.orekit.czml.object.secondary.Clock;
 import org.orekit.czml.object.secondary.Label;
 import org.orekit.frames.TopocentricFrame;
 
@@ -111,6 +111,9 @@ public class CzmlGroundStation
     /** Boolean to know if the visibility circle is created or not. */
     private boolean displayCircle = false;
 
+    /** The clock considered. */
+    private final Clock clock;
+
     //// Constructors
     // Single Station Constructors
 
@@ -119,15 +122,15 @@ public class CzmlGroundStation
      *
      * @param topocentricFrame : The topocentric frame where the ground station
      *        must be located.
-     * @param availability : The availability considered.
+     * @param clock : The clock considered.
      * @throws URISyntaxException : the uri syntax of the ground station
      * @throws IOException : the io exception
      */
     public CzmlGroundStation(final TopocentricFrame topocentricFrame,
-                             final TimeInterval availability)
+                             final Clock clock)
         throws URISyntaxException,
             IOException {
-        this(topocentricFrame, DEFAULT_3D_MODEL, availability);
+        this(topocentricFrame, DEFAULT_3D_MODEL, clock);
     }
 
     /**
@@ -137,20 +140,20 @@ public class CzmlGroundStation
      * @param topocentricFrame : The topocentric frame where the ground station
      *        must be located.
      * @param modelPath : The path of the model to load.
-     * @param availability : The availability of the ground station.
+     * @param clock : The availability of the ground station.
      * @throws URISyntaxException the uri syntax exception
      * @throws IOException the io exception
      */
     public CzmlGroundStation(final TopocentricFrame topocentricFrame,
-                             final String modelPath,
-                             final TimeInterval availability)
+                             final String modelPath, final Clock clock)
         throws URISyntaxException,
             IOException {
 
         this.topocentricFrame = topocentricFrame;
         this.setName(DEFAULT_NAME + topocentricFrame.getName());
         this.setId(DEFAULT_ID + topocentricFrame.getName());
-        this.setAvailability(availability
+        this.clock = clock;
+        this.setAvailability(clock.getAvailability()
             .toTimeStandard(TimeStandard.COORDINATED_UNIVERSAL_TIME));
         final double latitude = topocentricFrame.getPoint().getLatitude();
         final double longitude = topocentricFrame.getPoint().getLongitude();
@@ -168,8 +171,7 @@ public class CzmlGroundStation
         if (modelPath.isEmpty()) {
             this.model = null;
         } else {
-            this.model =
-                new CzmlModel(modelPath, 50, 300, 2, false, availability);
+            this.model = new CzmlModel(modelPath, 50, 300, 2, false, clock);
         }
     }
 
@@ -179,14 +181,13 @@ public class CzmlGroundStation
      * Builder czml ground station builder.
      *
      * @param topocentricFrameInput the topocentric frame input
-     * @param availability : The availability.
+     * @param clock : The clock.
      * @return the czml ground station builder
      */
     public static CzmlGroundStationBuilder
         builder(final TopocentricFrame topocentricFrameInput,
-                final TimeInterval availability) {
-        return new CzmlGroundStationBuilder(topocentricFrameInput,
-                                            availability);
+                final Clock clock) {
+        return new CzmlGroundStationBuilder(topocentricFrameInput, clock);
     }
 
     // Overrides
@@ -219,7 +220,7 @@ public class CzmlGroundStation
                               final double angleOfAperture) {
         visibilityCircle =
             StationVisibilityCircle
-                .builder(topocentricFrame, satellite, getAvailability())
+                .builder(topocentricFrame, satellite, getClock())
                 .withAngleOfAperture(angleOfAperture).build();
         displayCircle = true;
 
@@ -234,6 +235,15 @@ public class CzmlGroundStation
      */
     public Billboard getBillboard() {
         return billboard;
+    }
+
+    /**
+     * Gets the clock.
+     *
+     * @return the clock
+     */
+    public Clock getClock() {
+        return clock;
     }
 
     /**

@@ -18,6 +18,7 @@ package org.orekit.czml.error;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.errors.OreCzmlMessages;
 import org.orekit.czml.file.AbstractTest;
 
@@ -32,6 +33,7 @@ public class OreCzmlMessagesTest
      * OreCzml messages test.
      */
     @Test
+    @DefaultDataContext
     void OreCzmlMessagesTests() {
 
         loadOrekitData();

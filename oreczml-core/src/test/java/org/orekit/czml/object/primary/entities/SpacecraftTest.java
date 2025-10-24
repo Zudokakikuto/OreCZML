@@ -17,6 +17,7 @@
 package org.orekit.czml.object.primary.entities;
 
 import org.junit.jupiter.api.Test;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.archi.factory.BodyFactory;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.Header;
@@ -33,6 +34,7 @@ import java.util.List;
 /**
  * The type Satellite test.
  */
+@DefaultDataContext
 public class SpacecraftTest
     extends
     AbstractTest {
@@ -73,6 +75,7 @@ public class SpacecraftTest
      * @throws IOException the io exception
      */
     @Test
+    @DefaultDataContext
     void attitudeConstructorTest()
         throws URISyntaxException,
             IOException {
@@ -100,6 +103,7 @@ public class SpacecraftTest
 
     /** Test for the display of the influence sphere. */
     @Test
+    @DefaultDataContext
     void influenceSphereDisplayTest()
         throws URISyntaxException,
             IOException {

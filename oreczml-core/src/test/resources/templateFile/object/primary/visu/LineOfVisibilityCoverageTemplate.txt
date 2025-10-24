@@ -51,7 +51,6 @@
         }
       }
     },
-    "arcType":"NONE",
     "positions":{
       "references":[
         "VIS/Toulouse Frame/Spacecraft#position",

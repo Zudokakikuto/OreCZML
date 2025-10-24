@@ -67,7 +67,7 @@ public class Header
     private static String pathToExternalResourceFolder;
 
     /** The private clock of the header. */
-    private Clock clock;
+    private final Clock clock;
 
     /**
      * The version of Cesium.
@@ -151,7 +151,6 @@ public class Header
 
         try (PacketCesiumWriter packet = stream.openPacket(output)) {
             packet.writeId(this.getId());
-            packet.writeVersion(DEFAULT_VERSION);
             packet.writeName(this.getName());
             packet.writeVersion(version);
             try (ClockCesiumWriter ignored = packet.getClockWriter()) {

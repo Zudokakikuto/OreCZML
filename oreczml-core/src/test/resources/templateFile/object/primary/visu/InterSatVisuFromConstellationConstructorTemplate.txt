@@ -14,7 +14,6 @@
         }
       }
     },
-    "arcType":"NONE",
     "positions":{
       "references":[
         "SPACECRAFT/{P(7.87800000e+06, 0.00000000e+00, 0.00000000e+00), V(-0.00000000e+00, 7.11313252e+03, 0.00000000e+00)}#position",

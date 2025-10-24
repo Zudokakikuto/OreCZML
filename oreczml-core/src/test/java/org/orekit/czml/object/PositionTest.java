@@ -19,6 +19,7 @@ package org.orekit.czml.object;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.Header;
 
@@ -38,6 +39,7 @@ public class PositionTest
      * @throws IOException the io exception
      */
     @Test
+    @DefaultDataContext
     void PositionConstructorTest()
         throws IOException,
             URISyntaxException {
@@ -48,15 +50,15 @@ public class PositionTest
 
         final Position positionCartesian =
             new Position(1, 45, 20, PositionType.CARTESIAN_POSITION,
-                         header.getAvailability());
+                         header.getClock());
 
         final Position positionDegrees =
             new Position(1, 45, 20, PositionType.CARTOGRAPHIC_DEGREES,
-                         header.getAvailability());
+                         header.getClock());
 
         final Position positionRadians =
             new Position(1, 45, 20, PositionType.CARTOGRAPHIC_RADIANS,
-                         header.getAvailability());
+                         header.getClock());
 
         final String cartesianPathFile =
             loadResources("templateFile/PositionCartesianTemplate.txt");

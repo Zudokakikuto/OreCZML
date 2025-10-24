@@ -176,8 +176,11 @@ public class CzmlFile {
             }
 
             // Write in file
-            outputFile.getParentFile().mkdirs(); // Create output directory if
-                                                 // needed
+            final boolean out = outputFile.getParentFile().mkdirs(); // Create
+                                                                     // output
+                                                                     // directory
+                                                                     // if
+                                                                     // needed
             try (FileWriter FileWriter = new FileWriter(outputFile)) {
                 FileWriter.write(writer + System.lineSeparator() + "]");
             }

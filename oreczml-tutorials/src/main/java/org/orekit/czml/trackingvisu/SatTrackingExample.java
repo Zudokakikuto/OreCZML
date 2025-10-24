@@ -189,33 +189,30 @@ public class SatTrackingExample {
         final List<CzmlGroundStation> groundStations = new ArrayList<>();
         for (TopocentricFrame station : stations) {
             final CzmlGroundStation currentCzmlStation =
-                CzmlGroundStation.builder(station, header.getAvailability())
+                CzmlGroundStation.builder(station, header.getClock())
                     .displayCircle(satellite, 70.0).build();
             groundStations.add(currentCzmlStation);
         }
 
         final LineOfVisibility lineOfVisibilityToulouse =
             LineOfVisibility
-                .builder(topocentricToulouse, satellite,
-                         header.getAvailability())
+                .builder(topocentricToulouse, satellite, header.getClock())
                 .withAngleOfAperture(70.0).build();
         final LineOfVisibility lineOfVisibilityGibraltar =
             LineOfVisibility
-                .builder(topocentricGibraltar, satellite,
-                         header.getAvailability())
+                .builder(topocentricGibraltar, satellite, header.getClock())
                 .withAngleOfAperture(70.0).build();
         final LineOfVisibility lineOfVisibilityQuito =
             LineOfVisibility
-                .builder(topocentricQuito, satellite, header.getAvailability())
+                .builder(topocentricQuito, satellite, header.getClock())
                 .withAngleOfAperture(70.0).build();
         final LineOfVisibility lineOfVisibilityLasVegas =
             LineOfVisibility
-                .builder(topocentricLasVegas, satellite,
-                         header.getAvailability())
+                .builder(topocentricLasVegas, satellite, header.getClock())
                 .withAngleOfAperture(70.0).build();
         final LineOfVisibility lineOfVisibilitySydney =
             LineOfVisibility
-                .builder(topocentricSydney, satellite, header.getAvailability())
+                .builder(topocentricSydney, satellite, header.getClock())
                 .withAngleOfAperture(70.0).build();
 
         //// Creation of a line of visu between the satellite and all the ground

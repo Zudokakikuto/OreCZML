@@ -26,11 +26,11 @@ import cesiumlanguagewriter.OrientationCesiumWriter;
 import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.PathCesiumWriter;
 import cesiumlanguagewriter.PolylineMaterialCesiumWriter;
-import cesiumlanguagewriter.PositionCesiumWriter;
 import cesiumlanguagewriter.SolidColorMaterialCesiumWriter;
 import cesiumlanguagewriter.TimeInterval;
 import org.hipparchus.geometry.euclidean.threed.Rotation;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.attitudes.Attitude;
 import org.orekit.czml.errors.OreCzmlException;
 import org.orekit.czml.errors.OreCzmlMessages;
@@ -119,9 +119,6 @@ public class Spacecraft
     public static final String DEFAULT_FORMAT =
         DEFAULT_ID + "{P(%1.8e, %2.8e, %3.8e), V(%4.8e, %5.8e, %6.8e)}";
 
-    /** The intertial frame used in the position. */
-    public static final String DEFAULT_INERTIAL = "INERTIAL";
-
     /**
      * The default orbit color of the Spacecraft.
      */
@@ -193,11 +190,6 @@ public class Spacecraft
     // Writing arguments
 
     /**
-     * The period of the orbit.
-     */
-    private double period;
-
-    /**
      * The orientation in the local orbital frame of the Spacecraft.
      */
     private Orientation orientation;
@@ -236,6 +228,9 @@ public class Spacecraft
 
     /** The description of the Spacecraft. */
     private String description;
+
+    /** The clock of the spacecraft. */
+    private final Clock clock;
 
     // Constructor
 
@@ -282,6 +277,7 @@ public class Spacecraft
      * @throws URISyntaxException the uri syntax exception
      * @throws IOException the io exception
      */
+    @DefaultDataContext
     public Spacecraft(final BoundedPropagator propagator,
                       final AbsoluteDate startDateInput,
                       final AbsoluteDate finalDateInput,
@@ -301,7 +297,8 @@ public class Spacecraft
                            startDateInput + " to " + finalDateInput + "</p>";
         this.frame = propagator.getFrame();
         this.color = color;
-        this.model = new CzmlModel(modelPath, true, this.getAvailability());
+        this.clock = new Clock(startDateInput, finalDateInput, clockMultiplier);
+        this.model = new CzmlModel(modelPath, true, clock);
         this.modelType = model.getModelType();
         this.startDate = startDateInput;
         this.finalDate = finalDateInput;
@@ -358,7 +355,7 @@ public class Spacecraft
                 packet.writeAvailability(getAvailability());
                 packet.writeDescriptionProperty(description);
 
-                czmlDisplay(packet, stream, output);
+                czmlDisplay(packet, output);
 
                 czmlPath(packet, output, getColor());
 
@@ -394,7 +391,7 @@ public class Spacecraft
                                                   " going through influence spheres");
 
                     czmlPath(packet, output, colors.get(i));
-                    czmlDisplay(packet, stream, output);
+                    czmlDisplay(packet, output);
                     czmlPosition(packet, output, cartesians, julianDates);
                 }
             }
@@ -575,6 +572,15 @@ public class Spacecraft
     }
 
     /**
+     * Gets the clock.
+     *
+     * @return the clock
+     */
+    public Clock getClock() {
+        return clock;
+    }
+
+    /**
      * Gets color.
      *
      * @return the color
@@ -656,8 +662,9 @@ public class Spacecraft
      * @return the period
      */
     public double getPeriod() {
+        final double period;
         try {
-            this.period =
+            period =
                 spacecraftPropagator.getInitialState().getKeplerianPeriod();
         } catch (OrekitException e) {
             throw new OreCzmlException(OreCzmlMessages.NO_ORBIT_FOR_KEPLERIAN_PERIOD);
@@ -748,32 +755,19 @@ public class Spacecraft
      * @param packet : The packet that will write in the czml file.
      * @param output : The output stream of cesium that will contain the strings
      *        to write into the CzmLFile.
-     * @param stream : The stream that converts all the strings into
-     *        understandable string for the CzmlFile.
      */
     private void czmlDisplay(final PacketCesiumWriter packet,
-                             final CesiumStreamWriter stream,
                              final CesiumOutputStream output)
         throws URISyntaxException,
             IOException {
 
         if (getModelType() == ModelType.MODEL_2D ||
             getModelType() == ModelType.EMPTY_MODEL) {
-            try (PositionCesiumWriter positionWriter =
-                packet.getPositionWriter()) {
-                positionWriter.open(output);
-                positionWriter.writeReferenceFrame(DEFAULT_INERTIAL);
-            }
             getModel().generateCZML(packet, output);
             if (getDisplayAttitude()) {
                 orientation.write(packet, output);
             }
         } else if (getModelType() == ModelType.MODEL_3D) {
-            try (PositionCesiumWriter positionWriter =
-                packet.getPositionWriter()) {
-                positionWriter.open(output);
-                positionWriter.writeReferenceFrame(DEFAULT_INERTIAL);
-            }
             if (!getDisplayAttitude()) {
 
                 try (OrientationCesiumWriter orientationWriter =
@@ -908,79 +902,4 @@ public class Spacecraft
         }
     }
 
-    /**
-     * Function to compute the first influence sphere in which the satellite is.
-     *
-     * @param bodies The bodies considered for the influence spheres
-     * @param spheres The influence sphere considered
-     * @param spheresRadius The radius of the spheres
-     * @param centralBodyFrame The inertial frame of the sun
-     * @param initialPosition The initial position of the spacecraft
-     * @return The initial influence sphere where the satellite is
-     */
-    private InfluenceSphere
-        computeInitialInfluenceSphere(final List<InfluenceSphere> spheres,
-                                      final List<Double> spheresRadius,
-                                      final List<Body> bodies,
-                                      final Vector3D initialPosition,
-                                      final Frame centralBodyFrame) {
-        for (int i = 0; i < bodies.size(); i++) {
-            final Body currentBody = bodies.get(i);
-            final Vector3D positionOfBodyAtInitialState =
-                currentBody.getCelestialBody()
-                    .getPosition(this.spaceCraftStates.get(0).getDate(),
-                                 centralBodyFrame);
-            if (initialPosition
-                .distance(positionOfBodyAtInitialState) < spheresRadius
-                    .get(i)) {
-                return spheres.get(i);
-            }
-        }
-        return null;
-    }
-
-    private List<Body> sortedBodies(final List<Double> radiusesSorted,
-                                    final List<Body> bodiesNotSorted) {
-        final List<Body> toReturn = new ArrayList<>();
-
-        for (final double currentRadius : radiusesSorted) {
-            for (final Body currentBody : bodiesNotSorted) {
-                if (currentBody.getInfluenceSphere()
-                    .getRadius() == currentRadius) {
-                    toReturn.add(currentBody);
-                }
-            }
-        }
-        return toReturn;
-    }
-
-    private List<InfluenceSphere>
-        sortedSpheres(final List<Double> radiusesSorted,
-                      final List<InfluenceSphere> spheres) {
-        final List<InfluenceSphere> toReturn = new ArrayList<>();
-        for (final double currentRadius : radiusesSorted) {
-            for (final InfluenceSphere currentSphere : spheres) {
-                if (currentSphere.getRadius() == currentRadius) {
-                    toReturn.add(currentSphere);
-                }
-            }
-        }
-        return toReturn;
-    }
-
-    private void
-        buildInfluenceSphere(final List<Body> bodies,
-                             final List<InfluenceSphere> emptyListSphere,
-                             final List<Double> emptyListRadius) {
-        for (final Body currentBody : bodies) {
-            try {
-                final InfluenceSphere currentSphereBody =
-                    currentBody.getInfluenceSphere();
-                emptyListSphere.add(currentSphereBody);
-                emptyListRadius.add(currentSphereBody.getRadius());
-            } catch (OreCzmlException exception) {
-                throw new OreCzmlException(OreCzmlMessages.TRY_INFLUENCE_SPHERE_WITHOUT_SPHERES);
-            }
-        }
-    }
 }

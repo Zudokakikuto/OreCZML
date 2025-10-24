@@ -143,8 +143,7 @@ public class GroundTrackConstellationExample {
 
         // Build of the ground track
         final GroundTrack groundTrack =
-            GroundTrack.builder(constellation, TutorialUtils.getEarth(),
-                                clock.getAvailability())
+            GroundTrack.builder(constellation, TutorialUtils.getEarth(), clock)
                 .build();
         groundTrack.displayLinkSatellite();
 

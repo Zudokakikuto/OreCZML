@@ -18,7 +18,6 @@ package org.orekit.czml.object.secondary;
 
 import cesiumlanguagewriter.Cartesian;
 import cesiumlanguagewriter.JulianDate;
-import cesiumlanguagewriter.TimeInterval;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -108,7 +107,7 @@ public class CzmlEllipsoidBuilder {
     private final boolean multipleBuilder;
 
     /** The availability considered. */
-    private final TimeInterval availability;
+    private Clock clock;
 
     // Constructors
 
@@ -116,11 +115,11 @@ public class CzmlEllipsoidBuilder {
      * The constructor of the multiple ellipsoid builder.
      *
      * @param cartesianInput : The dimensions of the ellipsoid.
-     * @param availability : The availability considered.
+     * @param clockInput : The clock considered.
      */
     public CzmlEllipsoidBuilder(final Cartesian cartesianInput,
-                                final TimeInterval availability) {
-        this.availability = availability;
+                                final Clock clockInput) {
+        this.clock = clockInput;
         this.cartesian = cartesianInput;
         this.multipleBuilder = true;
     }
@@ -130,12 +129,12 @@ public class CzmlEllipsoidBuilder {
      *
      * @param julianDates : The dates where the ellipsoid should be displayed.
      * @param dimensions : The dimensions of the ellipsoid.
-     * @param availability : The availability considered.
+     * @param clockInput : The clock considered.
      */
     public CzmlEllipsoidBuilder(final List<JulianDate> julianDates,
                                 final List<Cartesian> dimensions,
-                                final TimeInterval availability) {
-        this.availability = availability;
+                                final Clock clockInput) {
+        this.clock = clockInput;
         this.julianDates = new ArrayList<>(julianDates);
         this.cartesians = new ArrayList<>(dimensions);
         this.multipleBuilder = false;
@@ -179,6 +178,17 @@ public class CzmlEllipsoidBuilder {
     }
 
     /**
+     * Function to set up a clock.
+     *
+     * @param clockInput : The clock to set up.
+     * @return : The ellipsoid builder with the given clock.
+     */
+    public CzmlEllipsoidBuilder withClock(final Clock clockInput) {
+        this.clock = clockInput;
+        return this;
+    }
+
+    /**
      * Function to set up if the outline should be displayed or not.
      *
      * @param outlineInput : The outline input to set up.
@@ -198,11 +208,11 @@ public class CzmlEllipsoidBuilder {
     public CzmlEllipsoid build() {
         if (multipleBuilder) {
             return new CzmlEllipsoid(cartesian, fill, outline, slicePartition,
-                                     stackPartition, color, availability);
+                                     stackPartition, color, clock);
         } else {
             return new CzmlEllipsoid(julianDates, cartesians, fill, outline,
                                      slicePartition, stackPartition, color,
-                                     availability);
+                                     clock);
         }
     }
 }

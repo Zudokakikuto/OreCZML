@@ -22,6 +22,7 @@ import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
 import org.junit.jupiter.api.Test;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.primary.entities.Spacecraft;
@@ -59,6 +60,7 @@ public class TimePositionTest
      * @throws URISyntaxException the uri syntax exception
      */
     @Test
+    @DefaultDataContext
     void TimePositionConstructorTest()
         throws IOException,
             URISyntaxException {

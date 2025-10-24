@@ -18,6 +18,7 @@ package org.orekit.czml.object.primary.entities;
 
 import org.hipparchus.util.FastMath;
 import org.junit.jupiter.api.Test;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.Header;
@@ -42,6 +43,7 @@ public class CzmlGroundStationTest
      * @throws IOException the io exception
      */
     @Test
+    @DefaultDataContext
     void CzmlGroundStationConstructorTest()
         throws URISyntaxException,
             IOException {
@@ -76,12 +78,10 @@ public class CzmlGroundStationTest
         strings.add(modelJuno);
 
         final CzmlGroundStation station =
-            new CzmlGroundStation(topocentricToulouse,
-                                  header.getAvailability());
+            new CzmlGroundStation(topocentricToulouse, header.getClock());
 
         final CzmlGroundStation stationBuilder =
-            CzmlGroundStation
-                .builder(topocentricToulouse, header.getAvailability())
+            CzmlGroundStation.builder(topocentricToulouse, header.getClock())
                 .withModel(modelISS).build();
 
         final String pathFile =

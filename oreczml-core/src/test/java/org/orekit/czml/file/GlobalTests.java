@@ -23,7 +23,7 @@ import org.hipparchus.linear.RealMatrix;
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
-import org.junit.jupiter.api.Assertions;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.attitudes.AttitudesSequence;
 import org.orekit.attitudes.CelestialBodyPointed;
 import org.orekit.attitudes.LofOffset;
@@ -104,6 +104,7 @@ import java.util.List;
 /**
  * The type Global tests.
  */
+@DefaultDataContext
 class GlobalTests
     extends
     AbstractTest {
@@ -189,13 +190,12 @@ class GlobalTests
         final TopocentricFrame topocentricForStation =
             new TopocentricFrame(earth, new GeodeticPoint(0, 0, 0), "Station");
         final CzmlGroundStation groundStation =
-            new CzmlGroundStation(topocentricForStation, "",
-                                  header.getAvailability());
+            new CzmlGroundStation(topocentricForStation, "", header.getClock());
 
         // Attitude pointing
         final AttitudePointing pointing =
-            AttitudePointing.builder(satellite, earth, Vector3D.MINUS_I,
-                                     header.getAvailability())
+            AttitudePointing
+                .builder(satellite, earth, Vector3D.MINUS_I, header.getClock())
                 .build();
 
         // Body
@@ -203,12 +203,11 @@ class GlobalTests
 
         // CentralBodyReferenceSystem
         final CentralBodyReferenceSystem system =
-            CentralBodyReferenceSystem.builder(header.getAvailability())
-                .build();
+            CentralBodyReferenceSystem.builder(header.getClock()).build();
 
         // Latitude longitude lines display
         final LatLongLines latLong =
-            LatLongLines.builder(header.getAvailability()).build();
+            LatLongLines.builder(header.getClock()).build();
 
         final List<Spacecraft> satellites = new ArrayList<>();
         satellites.add(satellite);
@@ -497,11 +496,11 @@ class GlobalTests
 
         // Ground track
         final GroundTrack groundTrack =
-            GroundTrack.builder(firstSatellite, earth, header.getAvailability())
+            GroundTrack.builder(firstSatellite, earth, header.getClock())
                 .build();
 
         final GroundTrack groundTrackConstellation =
-            GroundTrack.builder(constellation, earth, header.getAvailability())
+            GroundTrack.builder(constellation, earth, header.getClock())
                 .build();
 
         // Covered surface on body
@@ -752,7 +751,7 @@ class GlobalTests
         final ManeuverSequence maneuverSequence =
             ManeuverSequence
                 .builder(sequence, maneuvers, satellite, accelerationDirection,
-                         LOFType.TNW, header.getAvailability())
+                         LOFType.TNW, header.getClock())
                 .build();
 
         // Multiple Ground Stations
@@ -773,19 +772,16 @@ class GlobalTests
         // Creation of all the ground stations
         final List<CzmlGroundStation> groundStation = new ArrayList<>();
         final CzmlGroundStation groundStationToulouse =
-            new CzmlGroundStation(topocentricToulouse,
-                                  header.getAvailability());
+            new CzmlGroundStation(topocentricToulouse, header.getClock());
         final CzmlGroundStation groundStationLasVegas =
-            new CzmlGroundStation(topocentricLasVegas,
-                                  header.getAvailability());
+            new CzmlGroundStation(topocentricLasVegas, header.getClock());
         groundStation.add(groundStationToulouse);
         groundStation.add(groundStationLasVegas);
         final List<TopocentricFrame> topocentrics = new ArrayList<>();
         topocentrics.add(topocentricToulouse);
         topocentrics.add(topocentricLasVegas);
         final CzmlGroundStation soloGroundStation =
-            new CzmlGroundStation(topocentricToulouse,
-                                  header.getAvailability());
+            new CzmlGroundStation(topocentricToulouse, header.getClock());
 
         soloGroundStation.getTopocentricFrame();
 
@@ -798,23 +794,21 @@ class GlobalTests
             Constellation.builder(propagators, finalDate, clock).build();
 
         final LineOfVisibility lineToulouse =
-            LineOfVisibility.builder(topocentricToulouse, satellite,
-                                     header.getAvailability())
+            LineOfVisibility
+                .builder(topocentricToulouse, satellite, header.getClock())
                 .build();
         final LineOfVisibility lineVegasAperture =
             LineOfVisibility
-                .builder(topocentricLasVegas, satellite,
-                         header.getAvailability())
+                .builder(topocentricLasVegas, satellite, header.getClock())
                 .withAngleOfAperture(90.0).build();
 
         final LineOfVisibility lineVegasConstellation =
-            LineOfVisibility.builder(topocentricLasVegas, constellation,
-                                     header.getAvailability())
+            LineOfVisibility
+                .builder(topocentricLasVegas, constellation, header.getClock())
                 .build();
         final LineOfVisibility lineVegasConstellationAperture =
             LineOfVisibility
-                .builder(topocentricLasVegas, constellation,
-                         header.getAvailability())
+                .builder(topocentricLasVegas, constellation, header.getClock())
                 .withAngleOfAperture(90.0).build();
 
         final CzmlFile file =

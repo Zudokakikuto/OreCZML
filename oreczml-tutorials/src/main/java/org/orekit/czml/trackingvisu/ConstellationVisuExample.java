@@ -170,18 +170,16 @@ public class ConstellationVisuExample {
         final List<CzmlGroundStation> groundStation = new ArrayList<>();
         for (TopocentricFrame station : stations) {
             groundStation
-                .add(new CzmlGroundStation(station, header.getAvailability()));
+                .add(new CzmlGroundStation(station, header.getClock()));
         }
 
         final LineOfVisibility lineOfVisibilityToulouse =
             LineOfVisibility
-                .builder(topocentricToulouse, constellation,
-                         header.getAvailability())
+                .builder(topocentricToulouse, constellation, header.getClock())
                 .withVisibilityTriangle().build();
         final LineOfVisibility lineOfVisibilityLasVegas =
             LineOfVisibility
-                .builder(topocentricLasVegas, constellation,
-                         header.getAvailability())
+                .builder(topocentricLasVegas, constellation, header.getClock())
                 .withVisibilityTriangle().build();
 
         final CzmlFile file =

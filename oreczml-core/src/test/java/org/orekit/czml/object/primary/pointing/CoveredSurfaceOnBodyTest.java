@@ -21,6 +21,7 @@ import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
 import org.junit.jupiter.api.Test;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.attitudes.LofOffset;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.Header;
@@ -63,6 +64,7 @@ public class CoveredSurfaceOnBodyTest
      * @throws URISyntaxException the uri syntax exception
      */
     @Test
+    @DefaultDataContext
     void CoveredSurfaceOnBodyConstructorTest()
         throws IOException,
             URISyntaxException {
@@ -145,10 +147,10 @@ public class CoveredSurfaceOnBodyTest
 
         final String pathFile =
             loadResources("templateFile/object/primary/pointing/CoveredSurfaceOnBodyTemplate.txt");
-        verifyFileOutput(pathFile, surface.toString(), 1e-3);
+        verifyFileOutput(pathFile, surface.toString(), 1e-8);
 
         final String builderPathFile =
             loadResources("templateFile/object/primary/pointing/CoveredSurfaceOnBodyWithBuilderTemplate.txt");
-        verifyFileOutput(builderPathFile, surfaceBuilder.toString(), 1e-3);
+        verifyFileOutput(builderPathFile, surfaceBuilder.toString(), 1e-8);
     }
 }

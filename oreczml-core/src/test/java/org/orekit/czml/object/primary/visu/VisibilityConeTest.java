@@ -19,15 +19,16 @@ package org.orekit.czml.object.primary.visu;
 import cesiumlanguagewriter.CesiumHeightReference;
 import org.hipparchus.util.FastMath;
 import org.junit.jupiter.api.Test;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.Position;
 import org.orekit.czml.object.PositionType;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.utils.DateUtils;
 import org.orekit.czml.object.primary.entities.CzmlGroundStation;
 import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.secondary.Cylinder;
+import org.orekit.czml.object.utils.DateUtils;
 import org.orekit.frames.TopocentricFrame;
 import org.orekit.propagation.BoundedPropagator;
 import org.orekit.time.AbsoluteDate;
@@ -39,6 +40,7 @@ import java.net.URISyntaxException;
 /**
  * The type Visibility cone test.
  */
+@DefaultDataContext
 public class VisibilityConeTest
     extends
     AbstractTest {
@@ -75,32 +77,30 @@ public class VisibilityConeTest
         final Cylinder coverageCylinder =
             new Cylinder(10, 20, 10, Color.RED,
                          new Position(1, 2, 1, PositionType.CARTESIAN_POSITION,
-                                      header.getAvailability()),
+                                      header.getClock()),
                          CesiumHeightReference.CLAMP_TO_GROUND,
-                         header.getAvailability());
+                         header.getClock());
 
         final CzmlGroundStation groundStation =
-            new CzmlGroundStation(topocentricToulouse,
-                                  header.getAvailability());
+            new CzmlGroundStation(topocentricToulouse, header.getClock());
 
         final VisibilityCone cone =
             new VisibilityCone(topocentricToulouse, satellite,
-                               header.getAvailability());
+                               header.getClock());
 
         final VisibilityCone coverageCone =
             new VisibilityCone("An id", "a name", coverageCylinder,
-                               header.getAvailability());
+                               header.getClock());
 
         final VisibilityCone cylinderSatCone =
             new VisibilityCone("An id", "A name", coverageCylinder, satellite,
-                               header.getAvailability());
+                               header.getClock());
 
         final VisibilityCone groundStationCone =
-            new VisibilityCone(groundStation, header.getAvailability());
+            new VisibilityCone(groundStation, header.getClock());
 
         final VisibilityCone groundStationSatCone =
-            new VisibilityCone(groundStation, satellite,
-                               header.getAvailability());
+            new VisibilityCone(groundStation, satellite, header.getClock());
 
         final String pathFile =
             loadResources("templateFile/object/primary/visu/VisibilityConeTemplate.txt");

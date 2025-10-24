@@ -20,6 +20,7 @@ import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
 import org.junit.jupiter.api.Test;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.utils.DateUtils;
@@ -46,6 +47,7 @@ import java.util.List;
 /**
  * The type Constellation test.
  */
+@DefaultDataContext
 public class ConstellationTest
     extends
     AbstractTest {

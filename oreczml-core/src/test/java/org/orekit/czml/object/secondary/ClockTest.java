@@ -20,6 +20,7 @@ import cesiumlanguagewriter.ClockRange;
 import cesiumlanguagewriter.ClockStep;
 import cesiumlanguagewriter.TimeInterval;
 import org.junit.jupiter.api.Test;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.utils.DateUtils;
 import org.orekit.czml.object.primary.Header;
@@ -35,6 +36,7 @@ import java.net.URISyntaxException;
 /**
  * The type Clock test.
  */
+@DefaultDataContext
 public class ClockTest
     extends
     AbstractTest {

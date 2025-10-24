@@ -1,7 +1,6 @@
 [
   {
     "id":"document",
-    "version":"1.0",
     "name":"Generated test 3",
     "version":"1.0",
     "clock":{
@@ -17,9 +16,6 @@
     "name":"Spacecraft",
     "availability":"2024-03-15T00:00:00Z/2024-03-15T05:00:00Z",
     "description":"<!--HTML-->\r\n<p>Id : SPACECRAFT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-6.68415814e+03, 4.09286643e-13, 2.43283460e+03)}</p>\r\n<p>Simulated from : 2024-03-15T00:00:00.000Z to 2024-03-15T05:00:00.000Z</p>",
-    "position":{
-      "referenceFrame":"INERTIAL"
-    },
     "orientation":{
       "interval":"2024-03-15T00:00:00Z/2024-03-15T05:00:00Z",
       "epoch":"2024-03-15T00:00:00Z",
@@ -1400,7 +1396,6 @@
           }
         }
       },
-      "arcType":"NONE",
       "positions":{
         "references":[
           "VIS/Toulouse Frame/Spacecraft#position",

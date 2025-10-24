@@ -23,7 +23,6 @@ import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.PolygonCesiumWriter;
 import cesiumlanguagewriter.PositionListCesiumWriter;
 import cesiumlanguagewriter.SolidColorMaterialCesiumWriter;
-import cesiumlanguagewriter.TimeInterval;
 
 import java.awt.Color;
 import java.util.Collections;
@@ -56,7 +55,7 @@ public class Polygon
     /**
      * Time interval when the polygon is displayed.
      */
-    private final TimeInterval availability;
+    private final Clock clock;
 
     /**
      * The color of the polygon.
@@ -79,12 +78,11 @@ public class Polygon
      * The default constructor for the polygon object with default parameters.
      *
      * @param cartesiansInput : The list of the positions of the polygon.
-     * @param availability : The availability of the polygon
+     * @param clock : The clock of the polygon
      */
-    public Polygon(final List<Cartesian> cartesiansInput,
-                   final TimeInterval availability) {
+    public Polygon(final List<Cartesian> cartesiansInput, final Clock clock) {
         this.cartesians = cartesiansInput;
-        this.availability = availability;
+        this.clock = clock;
         this.color = DEFAULT_COLOR;
         this.outline = false;
         this.fill = true;
@@ -98,13 +96,13 @@ public class Polygon
      * @param outline : The outline of the polygon.
      * @param fill : To fill or not with color the polygon. (might cause some
      *        lags if put to true)
-     * @param availability : The availability of the polygon
+     * @param clock : The clock of the polygon
      */
     public Polygon(final List<Cartesian> cartesiansInput,
                    final Color colorInput, final boolean outline,
-                   final boolean fill, final TimeInterval availability) {
+                   final boolean fill, final Clock clock) {
         this.cartesians = cartesiansInput;
-        this.availability = availability;
+        this.clock = clock;
         this.color = colorInput;
         this.outline = outline;
         this.fill = fill;
@@ -122,7 +120,7 @@ public class Polygon
             try (PositionListCesiumWriter positionListWriter =
                 polygonWriter.getPositionsWriter()) {
                 positionListWriter.open(output);
-                positionListWriter.writeInterval(availability);
+                positionListWriter.writeInterval(clock.getAvailability());
                 positionListWriter.writeCartesian(cartesians);
             }
             try (MaterialCesiumWriter materialWriter =
@@ -145,13 +143,12 @@ public class Polygon
      * Builder polygon builder.
      *
      * @param cartesiansInput the cartesians input
-     * @param availabilityInput the time interval for which the feature will be
-     *        visible in the simulation
+     * @param clockInput the clock
      * @return the polygon builder
      */
     public static PolygonBuilder builder(final List<Cartesian> cartesiansInput,
-                                         final TimeInterval availabilityInput) {
-        return new PolygonBuilder(cartesiansInput, availabilityInput);
+                                         final Clock clockInput) {
+        return new PolygonBuilder(cartesiansInput, clockInput);
     }
 
     // Getters
@@ -166,12 +163,12 @@ public class Polygon
     }
 
     /**
-     * Gets availability.
+     * Gets the clock.
      *
-     * @return the availability
+     * @return the clock
      */
-    public TimeInterval getAvailability() {
-        return availability;
+    public Clock getClock() {
+        return clock;
     }
 
     /**

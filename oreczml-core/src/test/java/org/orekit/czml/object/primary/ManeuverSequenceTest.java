@@ -22,6 +22,7 @@ import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.attitudes.AttitudesSequence;
 import org.orekit.attitudes.CelestialBodyPointed;
 import org.orekit.attitudes.LofOffset;
@@ -73,6 +74,7 @@ public class ManeuverSequenceTest
      * @throws URISyntaxException the uri syntax exception
      */
     @Test
+    @DefaultDataContext
     void ManeuverSequenceConstructorTest()
         throws IOException,
             URISyntaxException {
@@ -223,19 +225,19 @@ public class ManeuverSequenceTest
         final ManeuverSequence maneuverSequence =
             ManeuverSequence
                 .builder(sequence, maneuvers, satellite, Vector3D.PLUS_I,
-                         LOFType.TNW, header.getAvailability())
+                         LOFType.TNW, header.getClock())
                 .build();
 
         final ManeuverSequence maneuverSequenceSimple =
             ManeuverSequence
                 .builder(sequence, firstManeuver, satellite, Vector3D.PLUS_I,
-                         LOFType.TNW, header.getAvailability())
+                         LOFType.TNW, header.getClock())
                 .build();
 
         final ManeuverSequence maneuverSequenceMultiple =
             ManeuverSequence
                 .builder(sequence, maneuvers, satellite, accelerations,
-                         LOFType.TNW, header.getAvailability())
+                         LOFType.TNW, header.getClock())
                 .build();
 
         final String maneuversPathFile =

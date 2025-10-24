@@ -23,11 +23,11 @@ import cesiumlanguagewriter.CesiumOutputStream;
 import cesiumlanguagewriter.CesiumStreamWriter;
 import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.PositionCesiumWriter;
-import cesiumlanguagewriter.TimeInterval;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.hipparchus.util.FastMath;
 import org.orekit.czml.errors.OreCzmlException;
 import org.orekit.czml.errors.OreCzmlMessages;
+import org.orekit.czml.object.secondary.Clock;
 import org.orekit.czml.object.secondary.TimePosition;
 
 import java.io.StringWriter;
@@ -111,7 +111,7 @@ public class Position {
     /**
      * The timeframe for which the feature is visible.
      */
-    private TimeInterval availability;
+    private Clock clock;
 
     // Constructor
 
@@ -124,11 +124,11 @@ public class Position {
      *        or latitude deg)
      * @param param3 : The third parameter of the tuple (can be z, vz or height)
      * @param positionType : The type of the tuple.
-     * @param availability : The availability of the position
+     * @param clock : The availability of the position
      */
     public Position(final double param1, final double param2,
                     final double param3, final PositionType positionType,
-                    final TimeInterval availability) {
+                    final Clock clock) {
         if (positionType == PositionType.CARTESIAN_POSITION) {
             this.x = param1;
             this.y = param2;
@@ -147,7 +147,7 @@ public class Position {
 
         this.positionType = positionType;
         this.ReferenceFrame = "INERTIAL";
-        this.availability = availability;
+        this.clock = clock;
     }
 
     // Display functions
@@ -164,7 +164,7 @@ public class Position {
         try (PositionCesiumWriter positionWriter =
             packetWriter.getPositionWriter()) {
             positionWriter.open(output);
-            positionWriter.writeInterval(availability);
+            positionWriter.writeInterval(clock.getAvailability());
 
             if (positionType == PositionType.CARTESIAN_POSITION) {
                 final Cartesian cartesian =
@@ -198,7 +198,7 @@ public class Position {
         try (PositionCesiumWriter positionWriter =
             packetWriter.getPositionWriter()) {
             positionWriter.open(output);
-            positionWriter.writeInterval(availability);
+            positionWriter.writeInterval(clock.getAvailability());
             positionWriter.writeReferenceFrame(referenceFrame);
             positionWriter
                 .writeInterpolationAlgorithm(CesiumInterpolationAlgorithm.LAGRANGE);

@@ -26,11 +26,12 @@ import cesiumlanguagewriter.PositionListCesiumWriter;
 import cesiumlanguagewriter.SolidColorMaterialCesiumWriter;
 import cesiumlanguagewriter.TimeInterval;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.bodies.OneAxisEllipsoid;
 import org.orekit.czml.object.CzmlShow;
-import org.orekit.czml.object.utils.DateUtils;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
+import org.orekit.czml.object.utils.DateUtils;
 import org.orekit.frames.Frame;
 import org.orekit.frames.FramesFactory;
 import org.orekit.frames.TopocentricFrame;
@@ -56,8 +57,8 @@ import java.util.List;
  * .displayTriangle() method from the line of visibility.
  * </p>
  *
- * @since 1.1
  * @author Julien LEBLOND
+ * @since 1.1
  */
 
 public class VisibilityTriangle
@@ -79,11 +80,11 @@ public class VisibilityTriangle
     VisibilityTriangle(final LineOfVisibility line) {
         /* Availability of the triangles. */
         final List<CzmlShow> shows = line.getShowList();
-        this.setId(DEFAULT_ID + line.getSatellite().getId());
-        this.setName(DEFAULT_NAME + line.getSatellite().getName());
+        this.setId(DEFAULT_ID + line.getSpacecraft().getId());
+        this.setName(DEFAULT_NAME + line.getSpacecraft().getName());
         /* The positions in cartesian of the satellite. */
         final List<SpacecraftState> spacecraftStatesSatellite =
-            line.getSatellite().getSpaceCraftStates();
+            line.getSpacecraft().getSpaceCraftStates();
         this.trianglesCartesians =
             buildTriangleCartesians(shows, spacecraftStatesSatellite);
         this.availabilityTriangles = buildTrueIntervals(shows);
@@ -139,6 +140,7 @@ public class VisibilityTriangle
      * @return : A list of list of cartesians representing a list of triplets of
      *         positions of points for each triangle.
      */
+    @DefaultDataContext
     private List<List<Cartesian>>
         buildTriangleCartesians(final List<CzmlShow> showsInput,
                                 final List<SpacecraftState> statesInput) {
@@ -159,7 +161,7 @@ public class VisibilityTriangle
             // The second object of the czml show built by a line of visibility
             // is a topocentric frame
             final TopocentricFrame topocentricShow =
-                (TopocentricFrame) currentShow.getObject2();
+                (TopocentricFrame) currentShow.getObject();
             final Vector3D positionTopocentricShow =
                 topocentricShow.getCartesianPoint();
 

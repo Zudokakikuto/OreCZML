@@ -17,6 +17,7 @@
 package org.orekit.czml.object.primary.systems;
 
 import org.junit.jupiter.api.Test;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.utils.DateUtils;
@@ -30,6 +31,7 @@ import java.net.URISyntaxException;
 /**
  * The type Satellite reference system test.
  */
+@DefaultDataContext
 public class SpacecraftReferenceSystemTest
     extends
     AbstractTest {

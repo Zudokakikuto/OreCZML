@@ -1,3 +1,19 @@
+/* Copyright 2002-2025 CS GROUP
+ * Licensed to CS GROUP (CS) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * CS licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.orekit.czml.object.utils;
 
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
@@ -5,6 +21,7 @@ import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.bodies.CelestialBodyFactory;
 import org.orekit.czml.archi.factory.BodyFactory;
 import org.orekit.czml.file.AbstractTest;
@@ -39,10 +56,18 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Test class for the influence sphere util class
+ *
+ * @author Julien Leblond
+ * @since 1.1.
+ */
+@DefaultDataContext
 public class InfluenceSphereUtilsTest
     extends
     AbstractTest {
 
+    /** Test for finding the crossing of influence sphere. */
     @Test
     void findCrossingSphereDatesTest()
         throws URISyntaxException,
@@ -50,27 +75,7 @@ public class InfluenceSphereUtilsTest
 
         loadOrekitData();
 
-        String ROOT = System.getProperty("user.dir");
-        ROOT = ROOT.replace("\\oreczml-core", "");
-
-        String output;
-
-        final String osName = System.getProperty("os.name");
-        final String outputName = "Output.czml";
-        final String outputFolder = "/Output";
-        if (osName.contains("Windows")) {
-            ROOT = ROOT.replace("\\", "/");
-            final String outputPath = ROOT + outputFolder;
-            output = outputPath + "/" + outputName;
-        } else if (osName.contains("Linux")) {
-            final String outputPath =
-                ROOT + "\\..\\oreczml-js-interface\\public";
-            output = outputPath + outputName;
-        } else {
-            ROOT = ROOT.replace("\\", "/");
-            final String outputPath = ROOT + outputFolder;
-            output = outputPath + "/" + outputName;
-        }
+        final String output = generateOutput();
 
         // Creation of the clock.
 

@@ -18,6 +18,7 @@ package org.orekit.czml.object.secondary;
 
 import cesiumlanguagewriter.Cartesian;
 import org.junit.jupiter.api.Test;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.Header;
 
@@ -39,6 +40,7 @@ public class PolygonTest
      * @throws IOException the io exception
      */
     @Test
+    @DefaultDataContext
     void PolygonConstructorTest()
         throws IOException,
             URISyntaxException {
@@ -49,8 +51,7 @@ public class PolygonTest
 
         final List<Cartesian> cartesians = randomCartesian();
 
-        final Polygon polygon =
-            new Polygon(cartesians, header.getAvailability());
+        final Polygon polygon = new Polygon(cartesians, header.getClock());
 
         final String pathFile =
             loadResources("templateFile/object/secondary/PolygonTemplate.txt");

@@ -16,10 +16,10 @@
  */
 package org.orekit.czml.object.primary.pointing;
 
-import cesiumlanguagewriter.TimeInterval;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.orekit.bodies.OneAxisEllipsoid;
 import org.orekit.czml.object.primary.entities.Spacecraft;
+import org.orekit.czml.object.secondary.Clock;
 
 import java.awt.Color;
 
@@ -53,8 +53,8 @@ public class AttitudePointingBuilder {
      */
     private String customID;
 
-    /** . */
-    private TimeInterval availability;
+    /** The clock. */
+    private Clock clock;
 
     /**
      * The direction of the pointing.
@@ -95,17 +95,17 @@ public class AttitudePointingBuilder {
      * @param satelliteInput : The satellite that has a pointing.
      * @param bodyInput : The body that is pointed at.
      * @param directionInput : The direction of the pointing.
-     * @param availability : The availability of the pointing
+     * @param clock : The clock of the pointing
      */
     public AttitudePointingBuilder(final Spacecraft satelliteInput,
                                    final OneAxisEllipsoid bodyInput,
                                    final Vector3D directionInput,
-                                   final TimeInterval availability) {
+                                   final Clock clock) {
         this.satellite = satelliteInput;
         this.body = bodyInput;
         this.direction = directionInput;
         this.customID = "ATTITUDE_POINTING/" + satelliteInput.getId();
-        this.availability = availability;
+        this.clock = clock;
     }
 
     /**
@@ -143,14 +143,13 @@ public class AttitudePointingBuilder {
     }
 
     /**
-     * Function to set up a availability when several are used.
+     * Function to set up a clock.
      *
-     * @param availabilityInput : The availability to set up.
-     * @return : The builder with an availability set up.
+     * @param clockInput : The clock to set up.
+     * @return : The builder with a clock set up.
      */
-    public AttitudePointingBuilder
-        withAvailability(final TimeInterval availabilityInput) {
-        this.availability = availabilityInput;
+    public AttitudePointingBuilder withClock(final Clock clockInput) {
+        this.clock = clockInput;
         return this;
     }
 
@@ -185,7 +184,7 @@ public class AttitudePointingBuilder {
     public AttitudePointing build() {
         final AttitudePointing toReturn =
             new AttitudePointing(satellite, body, direction, color,
-                                 displayOnGround, customID, availability);
+                                 displayOnGround, customID, clock);
         return this.checkAttributes(toReturn);
     }
 

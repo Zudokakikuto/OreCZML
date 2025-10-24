@@ -17,6 +17,7 @@
 package org.orekit.czml.object.primary.systems;
 
 import org.junit.jupiter.api.Test;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.Header;
 
@@ -38,6 +39,7 @@ public class CentralBodyReferenceSystemTest
      * @throws IOException the io exception
      */
     @Test
+    @DefaultDataContext
     void CentralBodyReferenceSystemConstructorTest()
         throws URISyntaxException,
             IOException {
@@ -47,11 +49,10 @@ public class CentralBodyReferenceSystemTest
         final Header header = dummyHeader();
 
         final CentralBodyReferenceSystem system =
-            CentralBodyReferenceSystem.builder(header.getAvailability())
-                .build();
+            CentralBodyReferenceSystem.builder(header.getClock()).build();
 
         final CentralBodyReferenceSystem systemBuilder =
-            CentralBodyReferenceSystem.builder(header.getAvailability())
+            CentralBodyReferenceSystem.builder(header.getClock())
                 .withBody(getEarth())
                 .withColors(Color.BLUE, Color.GREEN, Color.RED)
                 .withName("A name").withCustomId("CustomID").build();

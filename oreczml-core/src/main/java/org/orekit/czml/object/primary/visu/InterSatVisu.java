@@ -230,6 +230,7 @@ public class InterSatVisu
      * @param satellite2Input : The second satellite for the visu.
      * @param finalDate : The final date for the propagation.
      */
+    @DefaultDataContext
     InterSatVisu(final Spacecraft satellite1Input,
                  final Spacecraft satellite2Input,
                  final AbsoluteDate finalDate) {
@@ -287,7 +288,7 @@ public class InterSatVisu
             this.buildIntervals(datesWhenVisu, datesWhenNotVisu,
                                 getAvailability());
         this.polyline =
-            Polyline.nonVectorBuilder(getAvailability())
+            Polyline.nonVectorBuilder(satellite1.getClock())
                 .withFirstReference(referenceFirstSatellite)
                 .withSecondReference(referenceSecondSatellite).build();
         this.showList =
@@ -311,7 +312,7 @@ public class InterSatVisu
         throws URISyntaxException,
             IOException {
         this(Constellation.builder(propagators, finalDate, clock).build(),
-             finalDate, clock.getAvailability());
+             finalDate, clock);
     }
 
     /**
@@ -326,13 +327,14 @@ public class InterSatVisu
      * @throws URISyntaxException the uri syntax exception
      * @throws IOException the io exception
      */
+    @DefaultDataContext
     InterSatVisu(final List<BoundedPropagator> propagators,
                  final AbsoluteDate finalDate, final String customID,
                  final Clock clock)
         throws URISyntaxException,
             IOException {
         this(Constellation.builder(propagators, finalDate, clock).build(),
-             finalDate, customID, clock.getAvailability());
+             finalDate, customID, clock);
     }
 
     /**
@@ -341,13 +343,13 @@ public class InterSatVisu
      *
      * @param constellationPropagators : The constellation object
      * @param finalDate : The final date for the propagation
-     * @param availability : The availability considered.
+     * @param clock : The clock considered.
      */
+    @DefaultDataContext
     InterSatVisu(final Constellation constellationPropagators,
-                 final AbsoluteDate finalDate,
-                 final TimeInterval availability) {
+                 final AbsoluteDate finalDate, final Clock clock) {
         this(constellationPropagators, finalDate,
-             DEFAULT_ID + constellationPropagators.getId(), availability);
+             DEFAULT_ID + constellationPropagators.getId(), clock);
     }
 
     /**
@@ -357,14 +359,14 @@ public class InterSatVisu
      * @param constellationPropagators : The constellation object
      * @param finalDate : The final date for the propagation
      * @param customID : The custom ID of the inter sat visu.
-     * @param availability : The availability considered.
+     * @param clock : The clock considered.
      */
     @DefaultDataContext
     InterSatVisu(final Constellation constellationPropagators,
                  final AbsoluteDate finalDate, final String customID,
-                 final TimeInterval availability) {
+                 final Clock clock) {
 
-        this.setAvailability(availability);
+        this.setAvailability(clock.getAvailability());
         this.orbits = constellationPropagators.getInitialOrbits();
         this.setId(customID);
         this.setName(DEFAULT_NAME +
@@ -410,7 +412,8 @@ public class InterSatVisu
                                 secondReferenceSatellite)
                         .toArray(new Reference[0]);
                 referencesList.add(convertToIterable(referenceList));
-                polylines.add(Polyline.nonVectorBuilder(getAvailability())
+                polylines.add(Polyline
+                    .nonVectorBuilder(constellationSatellites.get(0).getClock())
                     .withFirstReference(firstReferenceSatellite)
                     .withSecondReference(secondReferenceSatellite).build());
                 currentPairOfSatellites.add(firstSatellite);
@@ -979,6 +982,7 @@ public class InterSatVisu
      * @return : A list of CzmlShow objects built to represent when satellites
      *         see or not each other.
      */
+    @DefaultDataContext
     private List<CzmlShow>
         buildShowList(final List<TimeInterval> timeIntervalsInput,
                       final List<Boolean> booleanListInput) {

@@ -23,13 +23,13 @@ import cesiumlanguagewriter.CesiumStreamWriter;
 import cesiumlanguagewriter.JulianDate;
 import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.TimeInterval;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.czml.object.nonvisual.PointOnBody;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
 import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.primary.visu.FieldOfObservation;
 import org.orekit.czml.object.secondary.Polygon;
-import org.orekit.frames.Transform;
 import org.orekit.geometry.fov.FieldOfView;
 
 import java.awt.Color;
@@ -70,12 +70,6 @@ public class CoveredSurfaceOnBody
      * The field of view of the satellite that will observe the body.
      */
     private final FieldOfView fov;
-
-    /**
-     * The transform inputted that represents the fov of the object and how it
-     * looks at the body.
-     */
-    private final Transform initialFovToBody;
 
     /**
      * The field of observation of the satellite that will define the surface
@@ -134,6 +128,7 @@ public class CoveredSurfaceOnBody
      * @param outline : Custom parameter for the outline property
      * @param color : Custom parameter for the color of the polygons.
      */
+    @DefaultDataContext
     CoveredSurfaceOnBody(final Spacecraft satelliteInput,
                          final FieldOfObservation fieldOfObservationInput,
                          final String customID, final boolean fill,
@@ -147,8 +142,6 @@ public class CoveredSurfaceOnBody
 
         this.satellite = satelliteInput;
         this.fieldOfObservation = fieldOfObservationInput;
-        this.initialFovToBody =
-            fieldOfObservationInput.getInitialTransformFovToBody();
         this.fov = fieldOfObservationInput.getFov();
 
         final List<PointOnBody> pointsOnBody = fieldOfObservation.getPoints();
@@ -175,14 +168,14 @@ public class CoveredSurfaceOnBody
             final JulianDate t1 =
                 fieldOfObservation.getJulianDates().get(i + 1);
             final TimeInterval tInterval = new TimeInterval(t0, t1);
-            ;
 
             // Get current polygon and close it off
             final List<Cartesian> currentCartesianList =
                 pointsCartesiansInTime.get(i);
 
             // Add polygon to list
-            this.polygon.add(Polygon.builder(currentCartesianList, tInterval)
+            this.polygon.add(Polygon
+                .builder(currentCartesianList, satelliteInput.getClock())
                 .withColor(color).withOutline(outline).withFill(fill).build());
         }
 
@@ -232,7 +225,7 @@ public class CoveredSurfaceOnBody
                                                .getBodyFrame().getName() +
                                            NUMBER + i;
                 packet.writeName(currentName);
-                packet.writeAvailability(poly.getAvailability());
+                packet.writeAvailability(poly.getClock().getAvailability());
 
                 poly.write(packet, output);
             }

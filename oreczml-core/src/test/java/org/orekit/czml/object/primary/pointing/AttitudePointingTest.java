@@ -18,6 +18,7 @@ package org.orekit.czml.object.primary.pointing;
 
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.junit.jupiter.api.Test;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.utils.DateUtils;
@@ -32,6 +33,7 @@ import java.net.URISyntaxException;
 /**
  * The type Attitude pointing test.
  */
+@DefaultDataContext
 public class AttitudePointingTest
     extends
     AbstractTest {
@@ -65,7 +67,7 @@ public class AttitudePointingTest
 
         final AttitudePointing attitudePointing =
             AttitudePointing.builder(satellite, getEarth(), Vector3D.MINUS_I,
-                                     header.getAvailability())
+                                     header.getClock())
                 .build();
         attitudePointing.displayPointingPath();
         attitudePointing.displayPeriodPointingPath();
@@ -73,7 +75,7 @@ public class AttitudePointingTest
         final AttitudePointing attitudePointingWithBuilder =
             AttitudePointing
                 .builder(satellite, getEarth(), Vector3D.MINUS_I,
-                         header.getAvailability())
+                         header.getClock())
                 .withCustomID("CustomID").withDisplayOnGround(false)
                 .withColor(Color.ORANGE).build();
 

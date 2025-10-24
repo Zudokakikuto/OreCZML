@@ -1,7 +1,6 @@
 
   {
     "id":"document",
-    "version":"1.0",
     "name":"A header",
     "version":"1.0",
     "clock":{

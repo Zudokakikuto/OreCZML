@@ -17,6 +17,7 @@
 package org.orekit.czml.object.primary.systems;
 
 import org.junit.jupiter.api.Test;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.Header;
 
@@ -36,6 +37,7 @@ public class LatLongLinesTest
      * @throws IOException the io exception
      */
     @Test
+    @DefaultDataContext
     void LatLongLinesConstructorTest()
         throws IOException,
             URISyntaxException {
@@ -45,13 +47,12 @@ public class LatLongLinesTest
         final Header header = dummyHeader();
 
         final LatLongLines lines =
-            LatLongLines.builder(header.getAvailability()).build();
+            LatLongLines.builder(header.getClock()).build();
 
         final LatLongLines linesBuilder =
-            LatLongLines.builder(header.getAvailability())
-                .withCustomID("CustomID").withDisplay(true)
-                .withLatitudeAngularStep(20).withLongitudeAngularStep(20)
-                .build();
+            LatLongLines.builder(header.getClock()).withCustomID("CustomID")
+                .withDisplay(true).withLatitudeAngularStep(20)
+                .withLongitudeAngularStep(20).build();
 
         final String pathFile =
             loadResources("templateFile/object/primary/systems/LatLongLinesTemplate.txt");

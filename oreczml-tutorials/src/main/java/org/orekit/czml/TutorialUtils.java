@@ -28,6 +28,7 @@ import org.orekit.utils.Constants;
 import org.orekit.utils.IERSConventions;
 
 import java.io.File;
+import java.util.Objects;
 
 /**
  * This class aims at giving the tutorial utilities to ease the understanding of
@@ -35,31 +36,21 @@ import java.io.File;
  */
 public class TutorialUtils {
 
-    /**
-     * .
-     */
+    /** The number of seconde between each step of the propagation. */
     public static final double STEP_BETWEEN_EACH_INSTANT = 60.0; // in seconds
 
-    /**
-     * .
-     */
+    /** The minimum position tolerance for the numerical propagator. */
     public static final double POSITION_TOLERANCE = 10.0;
 
-    /**
-     * .
-     */
+    /** The minimum step for the dormant prince integrator. */
     public static final double MIN_STEP = 0.001;
 
-    /**
-     * .
-     */
+    /** The maximum step for the dormant prince integrator. */
     public static final double MAX_STEP = 1000.0;
 
-    /**
-     * .
-     */
+    /** The classic duration of the simulation. */
     public static final double CLASSIC_DURATION_OF_SIMULATION = 10 * 3600; // in
-                                                                           // seconds;
+    // seconds;
 
     /** user home. */
     private static final String USER_HOME = "user.home";
@@ -67,9 +58,7 @@ public class TutorialUtils {
     /** orekit data. */
     private static final String OREKIT_DATA = "orekit-data";
 
-    /**
-     * The root of the project.
-     */
+    /** The root of the project. */
     private static String ROOT = System.getProperty("user.dir");
 
     private TutorialUtils() {
@@ -122,7 +111,7 @@ public class TutorialUtils {
      */
     public static String generateJSPath(final String JsPath) {
         final File javascriptFolder = new File(JsPath);
-        javascriptFolder.mkdir();
+        final boolean out = javascriptFolder.mkdir();
         return JsPath;
     }
 
@@ -133,8 +122,9 @@ public class TutorialUtils {
      * @return the string
      */
     public static String loadResources(final String resourcePath) {
-        return new File(TutorialUtils.class.getClassLoader()
-            .getResource(resourcePath).getFile()).toPath().toString();
+        return new File(Objects.requireNonNull(TutorialUtils.class
+            .getClassLoader().getResource(resourcePath)).getFile()).toPath()
+            .toString();
     }
 
     /**

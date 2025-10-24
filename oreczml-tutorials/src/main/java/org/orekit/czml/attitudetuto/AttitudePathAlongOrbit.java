@@ -31,10 +31,10 @@ import org.orekit.bodies.CelestialBodyFactory;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.czml.TutorialUtils;
 import org.orekit.czml.file.CzmlFile;
-import org.orekit.czml.object.primary.pointing.AttitudePointing;
-import org.orekit.czml.object.primary.entities.CzmlGroundStation;
 import org.orekit.czml.object.primary.Header;
+import org.orekit.czml.object.primary.entities.CzmlGroundStation;
 import org.orekit.czml.object.primary.entities.Spacecraft;
+import org.orekit.czml.object.primary.pointing.AttitudePointing;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.forces.ForceModel;
 import org.orekit.forces.gravity.HolmesFeatherstoneAttractionModel;
@@ -322,21 +322,18 @@ public class AttitudePathAlongOrbit {
         final AttitudePointing attitudePointing =
             AttitudePointing
                 .builder(satellite, TutorialUtils.getEarth(), Vector3D.PLUS_I,
-                         clock.getAvailability())
+                         clock)
                 .withColor(Color.cyan).withDisplayOnGround(true)
                 .displayPointingPath().displayPeriodPointingPath().build();
 
         final CzmlGroundStation mexicoGroundStation =
-            new CzmlGroundStation(topocentricMexico, clock.getAvailability());
+            new CzmlGroundStation(topocentricMexico, clock);
         final CzmlGroundStation madagascarGroundStation =
-            new CzmlGroundStation(topocentricMadagascar,
-                                  clock.getAvailability());
+            new CzmlGroundStation(topocentricMadagascar, clock);
         final CzmlGroundStation portMoresbyGroundStation =
-            new CzmlGroundStation(topocentricPortMoresby,
-                                  clock.getAvailability());
+            new CzmlGroundStation(topocentricPortMoresby, clock);
         final CzmlGroundStation maracaiboGroundStation =
-            new CzmlGroundStation(topocentricMaracaibo,
-                                  clock.getAvailability());
+            new CzmlGroundStation(topocentricMaracaibo, clock);
         final List<CzmlGroundStation> allGroundStation = new ArrayList<>();
         allGroundStation.add(mexicoGroundStation);
         allGroundStation.add(madagascarGroundStation);

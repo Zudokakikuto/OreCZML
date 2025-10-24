@@ -22,6 +22,7 @@ import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
 import org.junit.jupiter.api.Test;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.primary.entities.Spacecraft;
@@ -60,6 +61,7 @@ public class CzmlEllipsoidTest
      * @throws URISyntaxException the uri syntax exception
      */
     @Test
+    @DefaultDataContext
     void CzmlEllipsoidConstructorTest()
         throws IOException,
             URISyntaxException {
@@ -119,12 +121,10 @@ public class CzmlEllipsoidTest
             computeRandomCartesians(julianDates.size());
 
         final CzmlEllipsoid ellipsoid =
-            new CzmlEllipsoid(julianDates, randomCartesians,
-                              header.getAvailability());
+            new CzmlEllipsoid(julianDates, randomCartesians, header.getClock());
 
         final CzmlEllipsoid ellipsoidBuilder =
-            CzmlEllipsoid
-                .builder(new Cartesian(0, 0, 0), header.getAvailability())
+            CzmlEllipsoid.builder(new Cartesian(0, 0, 0), header.getClock())
                 .withColor(Color.ORANGE).withFill(true).withOutline(true)
                 .withSliceStackPartition(6, 5).build();
 

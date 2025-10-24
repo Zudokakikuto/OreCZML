@@ -49,7 +49,7 @@ in any Maven repository. Two methods can be used:
     </dependency>
     ```
 
-    Then, install this dependency using the command below:
+   Then, install this dependency using the command below:
 
     ```bash
     mvn install:install-file \
@@ -61,8 +61,8 @@ in any Maven repository. Two methods can be used:
         -DgeneratePom=true
     ```
 
-    If Maven doesn't find the path with `.\`, replace the dot with your local
-    path.
+   If Maven doesn't find the path with `.\`, replace the dot with your local
+   path.
 
 2. Directly add the `.jar` file locally in your IDE, here are some methods for
    the most used IDE:
@@ -114,7 +114,7 @@ modify following Java instruction:
 
 ```java
 final String pathToJSFolder = TutorialUtils.generateJSPath(
-        System.getProperty("user.dir"));
+                System.getProperty("user.dir"));
 ```
 
 Replace the `System.getProperty("user.dir")` with the path of the file where
@@ -160,10 +160,10 @@ This converter accepts several inputs to write a CZML file:
 * A TLE (Two-Line Elements message) file
 * An Orekit Orbit defined with orbital parameters, the orbital parameters
   supported are:
-  * Keplerian parameters
-  * Cartesian parameters
-  * Equinoctial parameters
-  * Circular parameters
+    * Keplerian parameters
+    * Cartesian parameters
+    * Equinoctial parameters
+    * Circular parameters
 
 # Output
 

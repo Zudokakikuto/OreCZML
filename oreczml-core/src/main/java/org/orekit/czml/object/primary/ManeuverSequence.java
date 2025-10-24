@@ -27,10 +27,11 @@ import org.hipparchus.geometry.euclidean.threed.RotationConvention;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.orekit.attitudes.Attitude;
 import org.orekit.attitudes.AttitudesSequence;
-import org.orekit.czml.object.utils.DateUtils;
 import org.orekit.czml.object.nonvisual.CzmlModel;
 import org.orekit.czml.object.primary.entities.Spacecraft;
+import org.orekit.czml.object.secondary.Clock;
 import org.orekit.czml.object.secondary.Orientation;
+import org.orekit.czml.object.utils.DateUtils;
 import org.orekit.forces.maneuvers.Maneuver;
 import org.orekit.forces.maneuvers.trigger.AbstractManeuverTriggers;
 import org.orekit.forces.maneuvers.trigger.ManeuverTriggers;
@@ -169,18 +170,18 @@ public class ManeuverSequence
      *        the 'ManeuverSequenceExample' tutorial to see the usage of this
      *        class.
      * @param customID : The custom ID of the Maneuver Sequence.
-     * @param availability : The availability considered if several ared used.
+     * @param clock : The clock considered
      */
     ManeuverSequence(final AttitudesSequence sequenceInput,
                      final Maneuver maneuverInput,
                      final Spacecraft satelliteInput,
                      final Vector3D accelerationDirection, final LOF lofInput,
                      final boolean showTrustInput, final String pathModel,
-                     final String customID, final TimeInterval availability) {
+                     final String customID, final Clock clock) {
 
         final List<Maneuver> maneuversTemp = new ArrayList<>();
         maneuversTemp.add(maneuverInput);
-        setAvailability(availability);
+        setAvailability(clock.getAvailability());
 
         this.maneuvers = maneuversTemp;
         this.propagator =
@@ -206,10 +207,9 @@ public class ManeuverSequence
 
         this.attitudesWithManeuver =
             generateAttitudesManeuvers(states, maneuversTemp, arrowsDirection);
-        this.model =
-            new CzmlModel(pathModel, 500000, 40, 5E-05, false, availability);
+        this.model = new CzmlModel(pathModel, 500000, 40, 5E-05, false, clock);
         this.availabilitiesManeuvers =
-            generateAvailabilitiesManeuvers(maneuvers, availability);
+            generateAvailabilitiesManeuvers(maneuvers, clock.getAvailability());
         this.orientations = generateOrientationManeuvers(attitudesWithManeuver);
     }
 
@@ -225,13 +225,13 @@ public class ManeuverSequence
      *        maneuver.
      * @param lofInput : The local orbital frame of the satellite. Check the
      *        'ManeuverSequenceExample' tutorial.
-     * @param availability : The availability considered.
+     * @param clock : The clock considered.
      */
     ManeuverSequence(final AttitudesSequence sequenceInput,
                      final List<Maneuver> maneuversInput,
                      final Spacecraft satelliteInput,
                      final Vector3D accelerationDirection, final LOF lofInput,
-                     final TimeInterval availability) {
+                     final Clock clock) {
         this(sequenceInput, maneuversInput, satelliteInput,
              accelerationDirection, lofInput, false, DEFAULT_PATH_MODEL,
              ManeuverSequence.DEFAULT_ID +
@@ -240,7 +240,7 @@ public class ManeuverSequence
                                                                                       maneuversInput
                                                                                           .size() -
                                                                                          1),
-             availability);
+             clock);
     }
 
     /**
@@ -261,17 +261,17 @@ public class ManeuverSequence
      * @param pathModel : The path to the model of the arrow to display. Check
      *        the 'ManeuverSequenceExample' tutorial.
      * @param customID : The custom ID of the maneuver sequence object.
-     * @param availability : The availability considered.
+     * @param clock : The clock considered.
      */
     ManeuverSequence(final AttitudesSequence sequenceInput,
                      final List<Maneuver> maneuversInput,
                      final Spacecraft satelliteInput,
                      final Vector3D accelerationDirection, final LOF lofInput,
                      final boolean showTrustInput, final String pathModel,
-                     final String customID, final TimeInterval availability) {
+                     final String customID, final Clock clock) {
         this(sequenceInput, maneuversInput, satelliteInput,
              Collections.singletonList(accelerationDirection), lofInput,
-             showTrustInput, pathModel, customID, availability);
+             showTrustInput, pathModel, customID, clock);
     }
 
     /**
@@ -289,7 +289,7 @@ public class ManeuverSequence
      *        thrust (by default, it shows the direction of the acceleration).
      * @param pathModel : The path to the model of the arrow to display.
      * @param customID : The custom id of the maneuver sequence object
-     * @param availability : The availability considered when several are used.
+     * @param clock : The clock considered
      */
     ManeuverSequence(final AttitudesSequence sequenceInput,
                      final List<Maneuver> maneuversInput,
@@ -297,12 +297,12 @@ public class ManeuverSequence
                      final List<Vector3D> accelerationDirection,
                      final LOF lofInput, final boolean showTrustInput,
                      final String pathModel, final String customID,
-                     final TimeInterval availability) {
+                     final Clock clock) {
 
         this.maneuvers = maneuversInput;
         this.propagator = satelliteInput.getSpacecraftBoundedPropagator();
         this.states = satelliteInput.getSpaceCraftStates();
-        setAvailability(availability);
+        setAvailability(clock.getAvailability());
 
         if (accelerationDirection.size() == 1) {
             for (int i = 0; i < maneuversInput.size(); i++) {
@@ -331,10 +331,9 @@ public class ManeuverSequence
             new Reference(satelliteInput.getId() + DEFAULT_H_POSITION);
         this.attitudesWithManeuver =
             generateAttitudesManeuvers(states, maneuversInput, arrowsDirection);
-        this.model =
-            new CzmlModel(pathModel, 500000, 40, 5E-05, false, availability);
+        this.model = new CzmlModel(pathModel, 500000, 40, 5E-05, false, clock);
         this.availabilitiesManeuvers =
-            generateAvailabilitiesManeuvers(maneuvers, availability);
+            generateAvailabilitiesManeuvers(maneuvers, clock.getAvailability());
         this.orientations = generateOrientationManeuvers(attitudesWithManeuver);
     }
 
@@ -348,17 +347,17 @@ public class ManeuverSequence
      * @param satellite the satellite
      * @param accelerationDirection the acceleration direction
      * @param lofInput the lof input
-     * @param availability the availability
+     * @param clockInput the clock
      * @return the maneuver sequence builder
      */
     public static ManeuverSequenceBuilder
         builder(final AttitudesSequence sequenceInput,
                 final Maneuver maneuverInput, final Spacecraft satellite,
                 final Vector3D accelerationDirection, final LOF lofInput,
-                final TimeInterval availability) {
+                final Clock clockInput) {
         return new ManeuverSequenceBuilder(sequenceInput, maneuverInput,
                                            satellite, accelerationDirection,
-                                           lofInput, availability);
+                                           lofInput, clockInput);
     }
 
     /**
@@ -369,17 +368,17 @@ public class ManeuverSequence
      * @param satellite the satellite
      * @param accelerationDirection the acceleration direction
      * @param lofInput the lof input
-     * @param availability the availability
+     * @param clockInput the clock
      * @return the maneuver sequence builder
      */
     public static ManeuverSequenceBuilder
         builder(final AttitudesSequence sequenceInput,
                 final List<Maneuver> maneuversInput, final Spacecraft satellite,
                 final Vector3D accelerationDirection, final LOF lofInput,
-                final TimeInterval availability) {
+                final Clock clockInput) {
         return new ManeuverSequenceBuilder(sequenceInput, maneuversInput,
                                            satellite, accelerationDirection,
-                                           lofInput, availability);
+                                           lofInput, clockInput);
     }
 
     /**
@@ -390,17 +389,17 @@ public class ManeuverSequence
      * @param satellite the satellite
      * @param accelerationDirections the acceleration directions
      * @param lofInput the lof input
-     * @param availability the availability
+     * @param clockInput the clock
      * @return the maneuver sequence builder
      */
     public static ManeuverSequenceBuilder
         builder(final AttitudesSequence sequenceInput,
                 final List<Maneuver> maneuversInput, final Spacecraft satellite,
                 final List<Vector3D> accelerationDirections, final LOF lofInput,
-                final TimeInterval availability) {
+                final Clock clockInput) {
         return new ManeuverSequenceBuilder(sequenceInput, maneuversInput,
                                            satellite, accelerationDirections,
-                                           lofInput, availability);
+                                           lofInput, clockInput);
     }
 
     // Overrides

@@ -16,10 +16,10 @@
  */
 package org.orekit.czml.object.primary;
 
-import cesiumlanguagewriter.TimeInterval;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.orekit.attitudes.AttitudesSequence;
 import org.orekit.czml.object.primary.entities.Spacecraft;
+import org.orekit.czml.object.secondary.Clock;
 import org.orekit.forces.maneuvers.Maneuver;
 import org.orekit.frames.LOF;
 
@@ -101,8 +101,8 @@ public class ManeuverSequenceBuilder {
      */
     private boolean showTrust = false;
 
-    /** The availability to consider when several are used. */
-    private TimeInterval availability;
+    /** The clock to consider. */
+    private Clock clock;
 
     // Constructors
 
@@ -116,14 +116,13 @@ public class ManeuverSequenceBuilder {
      * @param directionInput : Direction of the maneuvers. (multiple directions
      *        will soon be added)
      * @param lofInput : The local orbital frame of the satellite.
-     * @param availability : The availability considered.
+     * @param clock : The clock considered.
      */
     public ManeuverSequenceBuilder(final AttitudesSequence sequenceInput,
                                    final List<Maneuver> maneuversInput,
                                    final Spacecraft satelliteInput,
                                    final Vector3D directionInput,
-                                   final LOF lofInput,
-                                   final TimeInterval availability) {
+                                   final LOF lofInput, final Clock clock) {
         this.sequence = sequenceInput;
         this.satellite = satelliteInput;
         this.maneuvers = new ArrayList<>(maneuversInput);
@@ -132,7 +131,7 @@ public class ManeuverSequenceBuilder {
         this.customID =
             ManeuverSequence.DEFAULT_ID +
                         maneuvers.subList(0, maneuvers.size() - 1);
-        this.availability = availability;
+        this.clock = clock;
     }
 
     /**
@@ -144,21 +143,20 @@ public class ManeuverSequenceBuilder {
      * @param satelliteInput : The satellite which performs the maneuver.
      * @param directionInput : Direction of the maneuver.
      * @param lofInput : The local orbital frame iof the satellite.
-     * @param availability : The availability considered.
+     * @param clock : The clock considered.
      */
     public ManeuverSequenceBuilder(final AttitudesSequence sequenceInput,
                                    final Maneuver maneuverInput,
                                    final Spacecraft satelliteInput,
                                    final Vector3D directionInput,
-                                   final LOF lofInput,
-                                   final TimeInterval availability) {
+                                   final LOF lofInput, final Clock clock) {
         this.sequence = sequenceInput;
         this.singleManeuver = maneuverInput;
         this.satellite = satelliteInput;
         this.direction = directionInput;
         this.lof = lofInput;
         this.customID = ManeuverSequence.DEFAULT_ID + singleManeuver.getName();
-        this.availability = availability;
+        this.clock = clock;
     }
 
     /**
@@ -170,14 +168,13 @@ public class ManeuverSequenceBuilder {
      * @param satelliteInput : The satellite which performs the maneuver.
      * @param directionsInput : The list of directions of the maneuvers.
      * @param lofInput : The local orbital frame iof the satellite.
-     * @param availability : The availability considered.
+     * @param clock : The clock considered.
      */
     public ManeuverSequenceBuilder(final AttitudesSequence sequenceInput,
                                    final List<Maneuver> maneuversInput,
                                    final Spacecraft satelliteInput,
                                    final List<Vector3D> directionsInput,
-                                   final LOF lofInput,
-                                   final TimeInterval availability) {
+                                   final LOF lofInput, final Clock clock) {
         this.sequence = sequenceInput;
         this.maneuvers = new ArrayList<>(maneuversInput);
         this.satellite = satelliteInput;
@@ -186,7 +183,7 @@ public class ManeuverSequenceBuilder {
         this.customID =
             ManeuverSequence.DEFAULT_ID +
                         maneuvers.subList(0, maneuvers.size() - 1);
-        this.availability = availability;
+        this.clock = clock;
     }
 
     /**
@@ -224,14 +221,13 @@ public class ManeuverSequenceBuilder {
     }
 
     /**
-     * Function to set up the availability.
+     * Function to set up the clock.
      *
-     * @param availabilityInput : The availability to set up.
-     * @return : The maneuver sequence builder with a given availability.
+     * @param clockInput : The clock to set up.
+     * @return : The maneuver sequence builder with a given clock.
      */
-    public ManeuverSequenceBuilder
-        withAvailability(final TimeInterval availabilityInput) {
-        this.availability = availabilityInput;
+    public ManeuverSequenceBuilder withClock(final Clock clockInput) {
+        this.clock = clockInput;
         return this;
     }
 
@@ -250,16 +246,16 @@ public class ManeuverSequenceBuilder {
             if (direction == null) {
                 return new ManeuverSequence(sequence, maneuvers, satellite,
                                             directions, lof, showTrust,
-                                            pathModel, customID, availability);
+                                            pathModel, customID, clock);
             } else {
                 return new ManeuverSequence(sequence, maneuvers, satellite,
                                             direction, lof, showTrust,
-                                            pathModel, customID, availability);
+                                            pathModel, customID, clock);
             }
         } else {
             return new ManeuverSequence(sequence, singleManeuver, satellite,
                                         direction, lof, showTrust, pathModel,
-                                        customID, availability);
+                                        customID, clock);
         }
     }
 }

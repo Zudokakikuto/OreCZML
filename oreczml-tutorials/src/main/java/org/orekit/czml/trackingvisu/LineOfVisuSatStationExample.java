@@ -143,7 +143,7 @@ public class LineOfVisuSatStationExample {
         // Creation of a ground Station at Toulouse
         final CzmlGroundStation toulouseStation =
             new CzmlGroundStation(topocentricToulouse, groundStationModel,
-                                  header.getAvailability());
+                                  header.getClock());
 
         // Creation of the satellite
         final Spacecraft satellite =
@@ -152,8 +152,7 @@ public class LineOfVisuSatStationExample {
 
         final LineOfVisibility lineOfVisibility =
             LineOfVisibility
-                .builder(topocentricToulouse, satellite,
-                         header.getAvailability())
+                .builder(topocentricToulouse, satellite, header.getClock())
                 .withVisibilityTriangle().build();
 
         final CzmlFile file =

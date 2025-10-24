@@ -3,9 +3,6 @@
   "name":"Spacecraft",
   "availability":"2024-01-01T00:00:00Z/2024-01-01T00:01:00Z",
   "description":"<!--HTML-->\r\n<p>Id : SPACECRAFT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-7.00506805e+03, 4.28936708e-13, 1.23518250e+03)}</p>\r\n<p>Simulated from : 2024-01-01T00:00:00.000Z to 2024-01-01T00:01:00.000Z</p>",
-  "position":{
-    "referenceFrame":"INERTIAL"
-  },
   "billboard":{
     "horizontalOrigin":"CENTER",
     "color":{

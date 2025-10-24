@@ -16,8 +16,9 @@
  */
 package org.orekit.czml.object.primary.systems;
 
-import cesiumlanguagewriter.TimeInterval;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.bodies.OneAxisEllipsoid;
+import org.orekit.czml.object.secondary.Clock;
 import org.orekit.frames.FramesFactory;
 import org.orekit.utils.Constants;
 import org.orekit.utils.IERSConventions;
@@ -32,6 +33,7 @@ import java.awt.Color;
  * @author Julien LEBLOND
  * @since 1.0
  */
+@DefaultDataContext
 public class CentralBodyReferenceSystemBuilder {
 
     /**
@@ -99,19 +101,18 @@ public class CentralBodyReferenceSystemBuilder {
      */
     private String name = DEFAULT_NAME;
 
-    /** The availability of the central body reference system. */
-    private TimeInterval availability;
+    /** The clock of the central body reference system. */
+    private Clock clock;
 
     // Constructor
 
     /**
-     * The basic constructor for the central body reference system, it does not
-     * need an argument, all arguments have a default value.
+     * The basic constructor for the central body reference system.
      *
-     * @param availability : The availability
+     * @param clockInput : The clock
      */
-    public CentralBodyReferenceSystemBuilder(final TimeInterval availability) {
-        this.availability = availability;
+    public CentralBodyReferenceSystemBuilder(final Clock clockInput) {
+        this.clock = clockInput;
     }
 
     /**
@@ -168,15 +169,13 @@ public class CentralBodyReferenceSystemBuilder {
     }
 
     /**
-     * Function to set up the availability.
+     * Function to set up the clock.
      *
-     * @param availabilityInput : The availability to set up.
-     * @return : The central body reference system builder with the given
-     *         availability.
+     * @param clockInput : The clock to set up.
+     * @return : The central body reference system builder with the given clock.
      */
-    public CentralBodyReferenceSystemBuilder
-        withAvailability(final TimeInterval availabilityInput) {
-        this.availability = availabilityInput;
+    public CentralBodyReferenceSystemBuilder withClock(final Clock clockInput) {
+        this.clock = clockInput;
         return this;
     }
 
@@ -188,7 +187,7 @@ public class CentralBodyReferenceSystemBuilder {
      */
     public CentralBodyReferenceSystem build() {
         return new CentralBodyReferenceSystem(body, id, name, color1, color2,
-                                              color3, availability);
+                                              color3, clock);
     }
 
 }

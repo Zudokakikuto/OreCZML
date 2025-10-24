@@ -72,10 +72,9 @@ public class LatLongLinesExample {
 
         // LatLongLinesDisplay
         final LatLongLines latLongLines =
-            LatLongLines.builder(header.getAvailability())
-                .withLongitudeAngularStep(30).withLatitudeAngularStep(30)
-                .withDisplay(true).withCustomID(LatLongLines.DEFAULT_ID)
-                .build();
+            LatLongLines.builder(header.getClock()).withLongitudeAngularStep(30)
+                .withLatitudeAngularStep(30).withDisplay(true)
+                .withCustomID(LatLongLines.DEFAULT_ID).build();
 
         final CzmlFile file =
             CzmlFile.builder(header).withLatLong(latLongLines).build();

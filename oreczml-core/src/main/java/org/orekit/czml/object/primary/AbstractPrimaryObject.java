@@ -62,7 +62,7 @@ public abstract class AbstractPrimaryObject
      */
     private final List<TimeInterval> availabilities = new ArrayList<>();
 
-    //// Overrides
+    /// / Overrides
 
     @Override
     public String toString() {

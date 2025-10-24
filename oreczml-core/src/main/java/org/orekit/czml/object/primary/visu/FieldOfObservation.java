@@ -88,8 +88,11 @@ public class FieldOfObservation
 
     // Intrinsic parameters
 
+    /** The spacecraft. */
+    private final Spacecraft spacecraft;
+
     /**
-     * The fov of the satellite.
+     * The fov of the spacecraft.
      */
     private final FieldOfView fov;
 
@@ -186,7 +189,7 @@ public class FieldOfObservation
      * The constructor for the field of observation object with no default
      * parameters.
      *
-     * @param satellite : The satellite which is observing the body.
+     * @param spacecraft : The satellite which is observing the body.
      * @param fovInput : The field of view of the satellite.
      * @param transformFovToBody : The transform between the fov and the frame
      *        of the body.
@@ -197,24 +200,25 @@ public class FieldOfObservation
      *        of observation.
      * @param customID : The custom ID of the field of observation object.
      */
-    FieldOfObservation(final Spacecraft satellite, final FieldOfView fovInput,
+    FieldOfObservation(final Spacecraft spacecraft, final FieldOfView fovInput,
                        final Transform transformFovToBody,
                        final OneAxisEllipsoid body,
                        final double angularStepInput, final Color color,
                        final String customID) {
 
         this.setId(customID);
-        this.setName(DEFAULT_NAME + satellite.getName());
+        this.setName(DEFAULT_NAME + spacecraft.getName());
+        this.spacecraft = spacecraft;
         this.initialTransformFovToBody = transformFovToBody;
         this.fov = fovInput;
         this.polylineColor = color;
         referenceSatellite =
-            new Reference(satellite.getId() + DEFAULT_H_POSITION);
+            new Reference(spacecraft.getId() + DEFAULT_H_POSITION);
         this.body = body;
         final List<SpacecraftState> satelliteSpaceCraftStates =
-            satellite.getSpaceCraftStates();
+            spacecraft.getSpaceCraftStates();
         this.julianDates =
-            DateUtils.toJulianDates(satellite.getAbsoluteDateList());
+            DateUtils.toJulianDates(spacecraft.getAbsoluteDateList());
 
         for (int i = 0; i < julianDates.size(); i++) {
             final SpacecraftState currentState =
@@ -428,7 +432,7 @@ public class FieldOfObservation
                                final CesiumOutputStream output) {
         try (PacketCesiumWriter packet = stream.openPacket(output)) {
             final Polyline currentPolyline =
-                Polyline.nonVectorBuilder(getAvailability())
+                Polyline.nonVectorBuilder(spacecraft.getClock())
                     .withFirstReference(firstPointReference)
                     .withSecondReference(secondPointReference)
                     .withColor(polylineColorInput).build();

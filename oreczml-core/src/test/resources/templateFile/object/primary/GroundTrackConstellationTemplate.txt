@@ -44,7 +44,6 @@
         }
       }
     },
-    "arcType":"NONE",
     "positions":{
       "references":[
         "GROUND_TRACK/Constellation/1  satellites SPACECRAFT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-7.00506805e+03, 4.28936708e-13, 1.23518250e+03)}#position",

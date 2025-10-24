@@ -1,7 +1,6 @@
 [
   {
     "id":"document",
-    "version":"1.0",
     "name":"Generated test 1",
     "version":"1.0",
     "clock":{
@@ -17,9 +16,6 @@
     "name":"Spacecraft",
     "availability":"2020-12-01T00:00:00Z/2020-12-01T00:30:00Z",
     "description":"<!--HTML-->\r\n<p>Id : SPACECRAFT/{P(6.87800000e+06, 0.00000000e+00, 0.00000000e+00), V(0.00000000e+00, 7.61268399e+03, 0.00000000e+00)}</p>\r\n<p>Simulated from : 2020-12-01T00:00:00.000Z to 2020-12-01T00:30:00.000Z</p>",
-    "position":{
-      "referenceFrame":"INERTIAL"
-    },
     "orientation":{
       "interval":"2020-12-01T00:00:00Z/2020-12-01T00:30:00Z",
       "epoch":"2020-12-01T00:00:00Z",
