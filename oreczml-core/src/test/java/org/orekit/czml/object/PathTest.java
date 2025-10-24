@@ -19,6 +19,7 @@ package org.orekit.czml.object;
 import cesiumlanguagewriter.TimeInterval;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.Header;
 
@@ -38,6 +39,7 @@ public class PathTest
      * @throws IOException the io exception
      */
     @Test
+    @DefaultDataContext
     void PathConstructorTest()
         throws IOException,
             URISyntaxException {

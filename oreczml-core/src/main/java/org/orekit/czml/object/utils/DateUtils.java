@@ -21,6 +21,7 @@ import cesiumlanguagewriter.JulianDate;
 import cesiumlanguagewriter.TimeInterval;
 import cesiumlanguagewriter.TimeStandard;
 import org.hipparchus.util.FastMath;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.Constants;
@@ -38,6 +39,7 @@ import java.util.List;
  * @author Julien LEBLOND
  * @since 1.0.0
  */
+@DefaultDataContext
 public class DateUtils {
 
     private DateUtils() {
@@ -82,7 +84,7 @@ public class DateUtils {
                86400.0;
     }
 
-    // TODO: Asd a parameter to select if seconds should be rounded or not.
+    // TODO: Add a parameter to select if seconds should be rounded or not.
 
     /**
      * Converts an absolute date to a julian date.

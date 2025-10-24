@@ -17,7 +17,6 @@
 package org.orekit.czml.object.secondary;
 
 import cesiumlanguagewriter.Cartesian;
-import cesiumlanguagewriter.TimeInterval;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -51,7 +50,7 @@ public class PolygonBuilder {
     /**
      * Time interval when the polygon is displayed.
      */
-    private TimeInterval availability;
+    private Clock clock;
 
     /**
      * To display the outline or not.
@@ -68,11 +67,11 @@ public class PolygonBuilder {
      *
      * @param cartesiansInput : The list of cartesians that will build the
      *        polygon.
-     * @param availability : The availability of the polygon
+     * @param clockInput : The clock of the polygon
      */
     public PolygonBuilder(final List<Cartesian> cartesiansInput,
-                          final TimeInterval availability) {
-        this.availability = availability;
+                          final Clock clockInput) {
+        this.clock = clockInput;
         this.cartesians = new ArrayList<>(cartesiansInput);
     }
 
@@ -110,14 +109,13 @@ public class PolygonBuilder {
     }
 
     /**
-     * Function to set up the valid time interval of the polygon.
+     * Function to set up a clock for the polygon.
      *
-     * @param availabilityInput : The availability of the polygon
-     * @return : Time frame in simulation during which feature will be visible.
+     * @param clockInput : The clock of the polygon
+     * @return : The Polygon builder with a given clock.
      */
-    public PolygonBuilder
-        withAvailability(final TimeInterval availabilityInput) {
-        this.availability = availabilityInput;
+    public PolygonBuilder withClock(final Clock clockInput) {
+        this.clock = clockInput;
         return this;
     }
 
@@ -127,7 +125,7 @@ public class PolygonBuilder {
      * @return : A polygon object with the given parameters of the builder.
      */
     public Polygon build() {
-        return new Polygon(cartesians, color, outline, fill, availability);
+        return new Polygon(cartesians, color, outline, fill, clock);
     }
 
 }

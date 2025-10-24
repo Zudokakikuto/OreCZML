@@ -21,6 +21,7 @@ import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.Polyline;
 import org.orekit.czml.object.primary.Header;
@@ -64,6 +65,7 @@ public class InterSatVisuTest
      * @throws URISyntaxException the uri syntax exception
      */
     @Test
+    @DefaultDataContext
     void InterSatVisuConstructorTest()
         throws IOException,
             URISyntaxException {
@@ -229,8 +231,7 @@ public class InterSatVisuTest
         final Constellation constellation =
             Constellation.builder(propagators, finalDate, clock).build();
         final InterSatVisu interSatVisuFromConstellation =
-            new InterSatVisu(constellation, finalDate,
-                             header.getAvailability());
+            new InterSatVisu(constellation, finalDate, header.getClock());
 
         final String pathFile =
             loadResources("templateFile/object/primary/visu/InterSatVisuTemplate.txt");
@@ -285,11 +286,10 @@ public class InterSatVisuTest
                                                                   .getId())),
                                 interSatVisuFromConstellationBuilder
                                     .getIdsSatellites());
-        Assertions.assertEquals(
-                                Polyline
-                                    .nonVectorBuilder(header.getAvailability())
-                                    .build().getAvailability(),
-                                interSatVisu.getPolyline().getAvailability());
+        Assertions
+            .assertEquals(Polyline.nonVectorBuilder(header.getClock()).build()
+                .getClock().toString(),
+                          interSatVisu.getPolyline().getClock().toString());
         Assertions.assertEquals(new ArrayList<>(Arrays
             .asList(true, false, true, false, true, false, true)),
                                 interSatVisu.getBooleanList());

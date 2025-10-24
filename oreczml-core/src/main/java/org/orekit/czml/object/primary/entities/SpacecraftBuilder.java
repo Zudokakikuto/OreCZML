@@ -307,6 +307,8 @@ public class SpacecraftBuilder {
      *
      * @param bodiesInput The list of bodies considered
      * @param centralBodyInput The central body of the problem
+     * @return The spacecraft builder with the sphere of influence changes in
+     *         path displayed
      */
     public SpacecraftBuilder
         displayInfluenceSphereChanges(final List<Body> bodiesInput,

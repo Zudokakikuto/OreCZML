@@ -27,6 +27,7 @@ import cesiumlanguagewriter.UnitQuaternion;
 import org.hipparchus.geometry.euclidean.threed.Rotation;
 import org.hipparchus.geometry.euclidean.threed.RotationConvention;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.attitudes.Attitude;
 import org.orekit.attitudes.BoundedAttitudeProvider;
 import org.orekit.czml.errors.OreCzmlException;
@@ -105,6 +106,7 @@ public class Orientation
      * @throws URISyntaxException the uri syntax exception
      * @throws IOException the io exception
      */
+    @DefaultDataContext
     public Orientation(final BoundedAttitudeProvider provider,
                        final BoundedPropagator propagator, final Clock clock,
                        final Rotation optionalRotation,
@@ -268,6 +270,7 @@ public class Orientation
      * @param optionalRotation : An optional rotation that can be applied to the
      *        attitude.
      */
+    @DefaultDataContext
     public Orientation(final List<Attitude> attitudes, final Frame objectFrame,
                        final boolean invertToITRF,
                        final Rotation optionalRotation) {

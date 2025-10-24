@@ -17,7 +17,7 @@
 
 package org.orekit.czml.object.primary.entities;
 
-import cesiumlanguagewriter.TimeInterval;
+import org.orekit.czml.object.secondary.Clock;
 import org.orekit.propagation.BoundedPropagator;
 import org.orekit.time.AbsoluteDate;
 
@@ -65,7 +65,7 @@ public class ConstellationBuilder {
     private String customID;
 
     /** The availability of the constellation. */
-    private TimeInterval availability;
+    private Clock clock;
 
     /**  */
     private double clockMultiplier;
@@ -82,16 +82,16 @@ public class ConstellationBuilder {
      * @param propagatorsInput : All the propagators that represent the
      *        satellites.
      * @param finalDateInput : The final date of the propagation.
-     * @param availability : The availability of the constellation.
+     * @param clock : The clock of the constellation.
      * @param clockMultiplier : The clock considered.
      */
     public ConstellationBuilder(final List<BoundedPropagator> propagatorsInput,
                                 final AbsoluteDate finalDateInput,
-                                final TimeInterval availability,
+                                final Clock clock,
                                 final double clockMultiplier) {
         this.propagators = new ArrayList<>(propagatorsInput);
         this.finalDate = finalDateInput;
-        this.availability = availability;
+        this.clock = clock;
         this.clockMultiplier = clockMultiplier;
         this.customID =
             DEFAULT_ID + propagatorsInput.size() + " " + DEFAULT_NUMBER_OF_SAT;
@@ -120,14 +120,13 @@ public class ConstellationBuilder {
     }
 
     /**
-     * Function to set a time interval.
+     * Function to set a clock.
      *
-     * @param availabilityInput : The availability to set up.
-     * @return : The constellation builder with a custom availability.
+     * @param clockInput : The clock to set up.
+     * @return : The constellation builder with a custom clock.
      */
-    public ConstellationBuilder
-        withTimeInterval(final TimeInterval availabilityInput) {
-        this.availability = availabilityInput;
+    public ConstellationBuilder withClock(final Clock clockInput) {
+        this.clock = clockInput;
         return this;
     }
 
@@ -166,7 +165,7 @@ public class ConstellationBuilder {
             IOException {
         final Constellation tempConstellation =
             new Constellation(propagators, finalDate, pathToModel, customID,
-                              availability, clockMultiplier);
+                              clock, clockMultiplier);
         return checkAttributes(tempConstellation);
     }
 

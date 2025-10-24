@@ -18,7 +18,7 @@ package org.orekit.czml.object;
 
 import cesiumlanguagewriter.CesiumArcType;
 import cesiumlanguagewriter.Reference;
-import cesiumlanguagewriter.TimeInterval;
+import org.orekit.czml.object.secondary.Clock;
 
 import java.awt.Color;
 
@@ -112,17 +112,17 @@ public class NonVectorPolylineBuilder {
     private double farDistance = DEFAULT_FAR_DISTANCE;
 
     /** The time interval considered. */
-    private TimeInterval availability;
+    private Clock clock;
 
     // Constructor
 
     /**
      * Empty constructor.
      *
-     * @param availability : The availability considered.
+     * @param clock : The clock considered.
      */
-    public NonVectorPolylineBuilder(final TimeInterval availability) {
-        this.availability = availability;
+    public NonVectorPolylineBuilder(final Clock clock) {
+        this.clock = clock;
     }
 
     /**
@@ -137,14 +137,13 @@ public class NonVectorPolylineBuilder {
     }
 
     /**
-     * Function to set up a availability.
+     * Function to set up a clock.
      *
-     * @param availabilityInput : The availability to set up.
-     * @return : The vector polyline builder with the given availability.
+     * @param clockInput : The clock to set up.
+     * @return : The vector polyline builder with the given clock.
      */
-    public NonVectorPolylineBuilder
-        withAvailability(final TimeInterval availabilityInput) {
-        this.availability = availabilityInput;
+    public NonVectorPolylineBuilder withAvailability(final Clock clockInput) {
+        this.clock = clockInput;
         return this;
     }
 
@@ -242,6 +241,6 @@ public class NonVectorPolylineBuilder {
      */
     public Polyline build() {
         return new Polyline(firstReference, secondReference, color, width, show,
-                            arcType, nearDistance, farDistance, availability);
+                            arcType, nearDistance, farDistance, clock);
     }
 }

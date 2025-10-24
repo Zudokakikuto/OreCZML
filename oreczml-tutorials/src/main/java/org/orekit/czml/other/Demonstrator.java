@@ -198,8 +198,7 @@ public class Demonstrator {
         // Build of the ground stations
         final List<CzmlGroundStation> groundStations = new ArrayList<>();
         for (TopocentricFrame station : stations) {
-            groundStations
-                .add(new CzmlGroundStation(station, clock.getAvailability()));
+            groundStations.add(new CzmlGroundStation(station, clock));
         }
 
         // Creation of the field of observation of the satellite, it describes
@@ -227,20 +226,16 @@ public class Demonstrator {
                 .withColor(Color.PINK).build();
 
         final LineOfVisibility lineOfVisibilityToulouse =
-            LineOfVisibility.builder(topocentricToulouse, satellite,
-                                     clock.getAvailability())
+            LineOfVisibility.builder(topocentricToulouse, satellite, clock)
                 .build();
         final LineOfVisibility lineOfVisibilityLasVegas =
-            LineOfVisibility.builder(topocentricLasVegas, satellite,
-                                     clock.getAvailability())
+            LineOfVisibility.builder(topocentricLasVegas, satellite, clock)
                 .build();
         final LineOfVisibility lineOfVisibilityKiruna =
-            LineOfVisibility
-                .builder(topocentricKiruna, satellite, clock.getAvailability())
+            LineOfVisibility.builder(topocentricKiruna, satellite, clock)
                 .build();
         final LineOfVisibility lineOfVisibilityTroll =
-            LineOfVisibility
-                .builder(topocentricTroll, satellite, clock.getAvailability())
+            LineOfVisibility.builder(topocentricTroll, satellite, clock)
                 .build();
 
         // Creation of the file

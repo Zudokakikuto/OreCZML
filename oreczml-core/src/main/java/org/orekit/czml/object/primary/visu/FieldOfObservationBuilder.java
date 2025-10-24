@@ -17,6 +17,7 @@
 package org.orekit.czml.object.primary.visu;
 
 import org.hipparchus.util.FastMath;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.bodies.OneAxisEllipsoid;
 import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.frames.FramesFactory;
@@ -37,6 +38,7 @@ import java.net.URISyntaxException;
  * @author Julien LEBLOND
  * @since 1.0.0
  */
+@DefaultDataContext
 public class FieldOfObservationBuilder {
 
     /**

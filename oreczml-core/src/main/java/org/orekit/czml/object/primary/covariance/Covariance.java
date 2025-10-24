@@ -25,11 +25,11 @@ import cesiumlanguagewriter.Reference;
 import org.hipparchus.util.FastMath;
 import org.orekit.attitudes.Attitude;
 import org.orekit.attitudes.LofOffset;
-import org.orekit.czml.object.utils.DateUtils;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
 import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.secondary.CzmlEllipsoid;
 import org.orekit.czml.object.secondary.Orientation;
+import org.orekit.czml.object.utils.DateUtils;
 import org.orekit.frames.Frame;
 import org.orekit.frames.LOF;
 import org.orekit.propagation.SpacecraftState;
@@ -54,6 +54,7 @@ public class Covariance
     AbstractPrimaryObject {
 
     // STATICS
+
     /**
      * The default string to call the ID of the covariance.
      */
@@ -292,8 +293,8 @@ public class Covariance
         }
 
         this.uniqueEllipsoid =
-            CzmlEllipsoid
-                .builder(julianDates, dimensionsOfEllipsoids, getAvailability())
+            CzmlEllipsoid.builder(julianDates, dimensionsOfEllipsoids,
+                                  spacecraft.getClock())
                 .withColor(color).build();
     }
 }

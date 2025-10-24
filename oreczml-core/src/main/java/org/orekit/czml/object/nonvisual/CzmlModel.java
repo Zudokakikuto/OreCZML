@@ -24,12 +24,12 @@ import cesiumlanguagewriter.CesiumStreamWriter;
 import cesiumlanguagewriter.ModelCesiumWriter;
 import cesiumlanguagewriter.NearFarScalar;
 import cesiumlanguagewriter.PacketCesiumWriter;
-import cesiumlanguagewriter.TimeInterval;
 import org.orekit.czml.errors.OreCzmlException;
 import org.orekit.czml.errors.OreCzmlMessages;
 import org.orekit.czml.object.ModelType;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.secondary.Billboard;
+import org.orekit.czml.object.secondary.Clock;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -99,7 +99,7 @@ public class CzmlModel {
     /**
      * The time interval when the model is displayed.
      */
-    private final TimeInterval availability;
+    private final Clock clock;
 
     /**
      * The absolute path of the file for 2D or 3D model.
@@ -141,13 +141,11 @@ public class CzmlModel {
      * @param absolutePathToObject : The string leading to the absolute path of
      *        the object
      * @param isSatelliteInput : Is the mode loaded for a satellite?
-     * @param availability : The availability of the model
+     * @param clock : The availability of the model
      */
     public CzmlModel(final String absolutePathToObject,
-                     final boolean isSatelliteInput,
-                     final TimeInterval availability) {
-        this(absolutePathToObject, 5000000, 400, 1, isSatelliteInput,
-             availability);
+                     final boolean isSatelliteInput, final Clock clock) {
+        this(absolutePathToObject, 5000000, 400, 1, isSatelliteInput, clock);
     }
 
     /**
@@ -161,36 +159,35 @@ public class CzmlModel {
      *        object
      * @param scale : The scale of the 3D model
      * @param isSatelliteInput : Is the model loaded for a satellite
-     * @param availability : The availability of the model
+     * @param clockInput : The clock for the model
      */
     public CzmlModel(final String absolutePathToObject,
                      final double maximumScale,
                      final double minimumPixelSizeInput, final double scale,
-                     final boolean isSatelliteInput,
-                     final TimeInterval availability) {
+                     final boolean isSatelliteInput, final Clock clockInput) {
 
         this.isSatellite = isSatelliteInput;
         this.modelType = getModelTypeFromString(absolutePathToObject);
 
         if (this.modelType == ModelType.MODEL_3D) {
             this.absolutePath = absolutePathToObject;
-            this.availability = availability;
+            this.clock = clockInput;
             this.show = true;
             this.minimumPixelSize = minimumPixelSizeInput;
             this.maximumScale = maximumScale;
             this.scale = scale;
         } else if (this.modelType == ModelType.MODEL_2D) {
             this.absolutePath = absolutePathToObject;
-            this.availability = availability;
+            this.clock = clockInput;
             this.show = true;
         } else {
             if (isSatellite) {
                 this.absolutePath = getSatelliteResourcePath();
-                this.availability = availability;
+                this.clock = clockInput;
                 this.show = true;
             } else {
                 this.absolutePath = "";
-                this.availability = availability;
+                this.clock = clockInput;
                 this.show = false;
             }
         }
@@ -268,8 +265,8 @@ public class CzmlModel {
      *
      * @return : The availability used.
      */
-    public TimeInterval getAvailability() {
-        return availability;
+    public Clock getClock() {
+        return clock;
     }
 
     /**

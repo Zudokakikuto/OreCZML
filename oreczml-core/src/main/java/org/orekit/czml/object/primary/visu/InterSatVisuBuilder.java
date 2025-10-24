@@ -17,6 +17,7 @@
 
 package org.orekit.czml.object.primary.visu;
 
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.object.primary.entities.Constellation;
 import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.secondary.Clock;
@@ -140,10 +141,10 @@ public class InterSatVisuBuilder {
      *
      * @return the inter sat visu
      */
+    @DefaultDataContext
     public InterSatVisu build() {
         if (constellation != null) {
-            return new InterSatVisu(constellation, finalDate, customId,
-                                    clock.getAvailability());
+            return new InterSatVisu(constellation, finalDate, customId, clock);
         } else {
             return new InterSatVisu(satellite1, satellite2, finalDate,
                                     customId);

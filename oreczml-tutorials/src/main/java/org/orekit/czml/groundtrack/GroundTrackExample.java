@@ -16,10 +16,10 @@
  */
 package org.orekit.czml.groundtrack;
 
-import org.orekit.czml.TutorialUtils;
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
+import org.orekit.czml.TutorialUtils;
 import org.orekit.czml.file.CzmlFile;
 import org.orekit.czml.object.primary.GroundTrack;
 import org.orekit.czml.object.primary.Header;
@@ -133,9 +133,7 @@ public class GroundTrackExample {
 
         // Build of the ground track
         final GroundTrack groundTrack =
-            GroundTrack
-                .builder(satellite, TutorialUtils.getEarth(),
-                         clock.getAvailability())
+            GroundTrack.builder(satellite, TutorialUtils.getEarth(), clock)
                 .withColor(new Color(255, 10, 20)).build();
 
         // Creation of the file

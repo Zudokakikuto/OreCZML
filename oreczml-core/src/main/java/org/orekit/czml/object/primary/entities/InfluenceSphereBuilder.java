@@ -16,7 +16,6 @@
  */
 package org.orekit.czml.object.primary.entities;
 
-import org.orekit.czml.archi.factory.BodyFactory;
 import org.orekit.czml.object.secondary.Clock;
 
 public class InfluenceSphereBuilder {
@@ -36,17 +35,8 @@ public class InfluenceSphereBuilder {
     /** The customID that can be set up. */
     private String customID;
 
-    /** The mass of the central body. */
-    private Body centralBody;
-
     /** The name of the body. */
     private String bodyName;
-
-    /** Orbiting around the sun. */
-    private boolean orbitingAroundTheSun;
-
-    /** Gravitationnal constant * mass of the body. */
-    private double mu;
 
     /**
      * Classic constructor for the builder of the influence sphere.
@@ -57,25 +47,6 @@ public class InfluenceSphereBuilder {
     public InfluenceSphereBuilder(final Body bodyInput, final Clock clock) {
         this.body = bodyInput;
         this.clock = clock;
-        this.customID = DEFAULT_ID + bodyInput.getName();
-        this.centralBody = BodyFactory.getSun(clock);
-    }
-
-    /**
-     * A constructor for the builder of the influence sphere with a central
-     * body.
-     *
-     * @param centralBodyInput The central body of the body of the influence
-     *        sphere
-     * @param clock The clock used for the influence sphere
-     * @param bodyInput The body used for the influence sphere
-     */
-    public InfluenceSphereBuilder(final Body bodyInput,
-                                  final Body centralBodyInput,
-                                  final Clock clock) {
-        this.body = bodyInput;
-        this.clock = clock;
-        this.centralBody = centralBodyInput;
         this.customID = DEFAULT_ID + bodyInput.getName();
     }
 
@@ -104,28 +75,6 @@ public class InfluenceSphereBuilder {
     }
 
     /**
-     * This function set up the influence sphere of a body orbiting around the
-     * sun.
-     *
-     * @return : The influence sphere builder of a body orbiting around the sun
-     */
-    public InfluenceSphereBuilder withOrbitAroundTheSun() {
-        this.orbitingAroundTheSun = true;
-        return this;
-    }
-
-    /**
-     * This function set up a custom mu for the sphere of influence.
-     *
-     * @param muInput : The mu to set up.
-     * @return : The influence sphere builder with a custom mu.
-     */
-    public InfluenceSphereBuilder withCustomMu(final double muInput) {
-        this.mu = muInput;
-        return this;
-    }
-
-    /**
      * This function set up a custom clock for the sphere of influence.
      *
      * @param clockInput : The clock to set up.
@@ -133,20 +82,6 @@ public class InfluenceSphereBuilder {
      */
     public InfluenceSphereBuilder withClock(final Clock clockInput) {
         this.clock = clockInput;
-        return this;
-    }
-
-    /**
-     * This function set up a custom mass for the central body. Using this
-     * method will make the sphere of influence not assume the body is orbiting
-     * around the sun.
-     *
-     * @param centralBodyInput : The mass to set up.
-     * @return : The influence sphere builder with a custom mass for the central
-     *         body.
-     */
-    public InfluenceSphereBuilder withCentralBody(final Body centralBodyInput) {
-        this.centralBody = centralBodyInput;
         return this;
     }
 

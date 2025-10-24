@@ -294,6 +294,20 @@ public enum OreCzmlMessages
                   */
                  NOT_SAME_SIZE_TIME_POSITION("The list of julian dates and the list of cartesian is not the same, thus the influence sphere crossing segregation cannot happen"),
 
+                 // MultipleLinesVisibility
+
+                 /**
+                  * Trigger when the list of lines of visibility is tried to be
+                  * built, but no spacecraft or no constellation are defined.
+                  */
+                 NO_SPACECRAFT_OR_CONSTELLATION("No spacecraft or constellation are defined to build the lines of visibility."),
+
+                 /**
+                  * Trigger when the size of the custom availabilities, custom
+                  * name or custom ids are not the same as the number of
+                  * topocentric frame when building the line of visibilities.
+                  */
+                 NOT_SAME_SIZE_TOPOCENTRIC_FRAMES("The custom ids, names or clocks size are not the same as the number of topocentric frame inputted in the multiple line of visibility."),
                  // unit testing
 
                  /**

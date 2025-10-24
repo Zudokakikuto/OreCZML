@@ -27,9 +27,9 @@ import cesiumlanguagewriter.PolylineMaterialCesiumWriter;
 import cesiumlanguagewriter.PositionListCesiumWriter;
 import cesiumlanguagewriter.Reference;
 import cesiumlanguagewriter.SolidColorMaterialCesiumWriter;
-import cesiumlanguagewriter.TimeInterval;
 import org.orekit.czml.errors.OreCzmlException;
 import org.orekit.czml.errors.OreCzmlMessages;
+import org.orekit.czml.object.secondary.Clock;
 
 import java.awt.Color;
 import java.io.StringWriter;
@@ -102,9 +102,9 @@ public class Polyline {
     private final Color color;
 
     /**
-     * The availability of the polyline.
+     * The clock of the polyline.
      */
-    private TimeInterval availability;
+    private Clock clock;
 
     /**
      * To show or not the polyline.
@@ -164,12 +164,12 @@ public class Polyline {
      * This constructor generates a polyline to be used as a non-vector. It uses
      * default parameters.
      *
-     * @param availability : The availability considered.
+     * @param clock : The clock considered.
      */
-    Polyline(final TimeInterval availability) {
+    Polyline(final Clock clock) {
         this(DEFAULT_REFERENCE, DEFAULT_REFERENCE, DEFAULT_COLOR, DEFAULT_WIDTH,
              DEFAULT_SHOW, DEFAULT_ARC_TYPE, DEFAULT_NEAR_DISTANCE,
-             DEFAULT_FAR_DISTANCE, availability);
+             DEFAULT_FAR_DISTANCE, clock);
     }
 
     /**
@@ -188,16 +188,15 @@ public class Polyline {
      *        displayed.
      * @param farDistance : The far distance where the polyline must not be
      *        displayed anymore.
-     * @param availability : The length of time for which the polyline is
-     *        visible/available.
+     * @param clock : The clock
      */
     Polyline(final Reference firstReference, final Reference secondReference,
              final Color color, final double width, final boolean show,
              final CesiumArcType arcType, final double nearDistance,
-             final double farDistance, final TimeInterval availability) {
+             final double farDistance, final Clock clock) {
         this.firstReference = firstReference;
         this.secondReference = secondReference;
-        this.availability = availability;
+        this.clock = clock;
         this.color = color;
         this.width = width;
         this.show = show;
@@ -214,13 +213,11 @@ public class Polyline {
      *
      * @param cartesians : A list of cartesians with size 2, containing the
      *        first and the second position of the polyline
-     * @param availability : The length of time for which the polyline is
-     *        visible/available.
+     * @param clock : The clock
      */
-    Polyline(final List<Cartesian> cartesians,
-             final TimeInterval availability) {
+    Polyline(final List<Cartesian> cartesians, final Clock clock) {
         this(cartesians, DEFAULT_COLOR, DEFAULT_NEAR_DISTANCE,
-             DEFAULT_FAR_DISTANCE, availability);
+             DEFAULT_FAR_DISTANCE, clock);
     }
 
     /**
@@ -232,12 +229,11 @@ public class Polyline {
      * @param nearDistance : The nearest distance where the polyline is
      *        displayed
      * @param farDistance : The fairest distance where the polyline is displayed
-     * @param availability : The length of time for which the polyline is
-     *        visible/available.
+     * @param clock : The clock
      */
     Polyline(final List<Cartesian> cartesians, final Color color,
              final double nearDistance, final double farDistance,
-             final TimeInterval availability) {
+             final Clock clock) {
         if (cartesians.size() != 2) {
             throw new OreCzmlException(OreCzmlMessages.MORE_THAN_2_CARTESIAN_POLYLINE);
         } else {
@@ -246,7 +242,7 @@ public class Polyline {
             this.show = true;
             this.arcType = CesiumArcType.NONE;
             this.arrow = true;
-            this.availability = availability;
+            this.clock = clock;
             firstPosition = cartesians.get(0);
             secondPosition = cartesians.get(1);
             this.nearDistance = nearDistance;
@@ -259,26 +255,23 @@ public class Polyline {
     /**
      * Non vector builder non vector polyline builder.
      *
-     * @param availability : The length of time for which the polyline is
-     *        visible/available.
+     * @param clock : The clock.
      * @return the non vector polyline builder
      */
-    public static NonVectorPolylineBuilder
-        nonVectorBuilder(final TimeInterval availability) {
-        return new NonVectorPolylineBuilder(availability);
+    public static NonVectorPolylineBuilder nonVectorBuilder(final Clock clock) {
+        return new NonVectorPolylineBuilder(clock);
     }
 
     /**
      * Vector builder vector polyline builder.
      *
      * @param cartesians the cartesians
-     * @param availability the availability
+     * @param clock the clock
      * @return the vector polyline builder
      */
     public static VectorPolylineBuilder
-        vectorBuilder(final List<Cartesian> cartesians,
-                      final TimeInterval availability) {
-        return new VectorPolylineBuilder(cartesians, availability);
+        vectorBuilder(final List<Cartesian> cartesians, final Clock clock) {
+        return new VectorPolylineBuilder(cartesians, clock);
     }
 
     @Override
@@ -301,7 +294,8 @@ public class Polyline {
                                                    iterableReferences,
                                                    new ArrayList<>(List
                                                        .of(new CzmlShow(show,
-                                                                        availability))));
+                                                                        clock
+                                                                            .getAvailability()))));
                 } else {
                     try (PolylineCesiumWriter polylineCesiumWriter =
                         packet.getPolylineWriter()) {
@@ -318,21 +312,21 @@ public class Polyline {
     // Getters
 
     /**
-     * Gets availability.
+     * Gets the clock.
      *
-     * @return the availability
+     * @return the clock
      */
-    public TimeInterval getAvailability() {
-        return availability;
+    public Clock getClock() {
+        return clock;
     }
 
     /**
-     * Sets availability.
+     * Sets the clock.
      *
-     * @param availability the availability
+     * @param clockInput the clock
      */
-    public void setAvailability(final TimeInterval availability) {
-        this.availability = availability;
+    public void setAvailability(final Clock clockInput) {
+        this.clock = clockInput;
     }
 
     /**
@@ -419,7 +413,7 @@ public class Polyline {
                 try (BooleanCesiumWriter showWriter =
                     polylineWriter.getShowWriter()) {
                     showWriter.open(output);
-                    showWriter.writeInterval(availability);
+                    showWriter.writeInterval(clock.getAvailability());
                     showWriter.writeBoolean(true);
                 }
             }
@@ -463,7 +457,7 @@ public class Polyline {
                 try (BooleanCesiumWriter showWriter =
                     polylineWriter.getShowWriter()) {
                     showWriter.open(output);
-                    showWriter.writeInterval(availability);
+                    showWriter.writeInterval(clock.getAvailability());
                     showWriter.writeBoolean(true);
                 }
             }
@@ -503,8 +497,7 @@ public class Polyline {
                     solidColorWriter.writeColorProperty(this.getColor());
                 }
                 output.writeEndObject();
-                writePositionOfVisibility(polylineWriter, this, output,
-                                          references);
+                writePositionOfVisibility(polylineWriter, output, references);
                 writeShowOfVisibility(polylineWriter, output, showList);
                 output.writeEndSequence();
             }
@@ -590,7 +583,6 @@ public class Polyline {
      *
      * @param polylineWriter : the writer extracted from a packet cesium writer
      *        to write parameters of the polyline
-     * @param polylineInput : the polyline object inputted
      * @param output : The cesium output stream that writes the strings in the
      *        file
      * @param references : The references (example: object_ID#position the
@@ -599,10 +591,8 @@ public class Polyline {
      */
     private void
         writePositionOfVisibility(final PolylineCesiumWriter polylineWriter,
-                                  final Polyline polylineInput,
                                   final CesiumOutputStream output,
                                   final Iterable<Reference> references) {
-        polylineWriter.writeArcTypeProperty(polylineInput.getArcType());
 
         try (PositionListCesiumWriter positionWriter =
             polylineWriter.getPositionsWriter()) {

@@ -95,14 +95,14 @@ public class MultipleGroundStationsExample {
 
         // Creation of all the ground stations
         final List<CzmlGroundStation> groundStation = new ArrayList<>();
-        groundStation.add(new CzmlGroundStation(topocentricToulouse,
-                                                header.getAvailability()));
-        groundStation.add(new CzmlGroundStation(topocentricLasVegas,
-                                                header.getAvailability()));
+        groundStation
+            .add(new CzmlGroundStation(topocentricToulouse, header.getClock()));
+        groundStation
+            .add(new CzmlGroundStation(topocentricLasVegas, header.getClock()));
 
         final CzmlGroundStation groundStation1 =
-            CzmlGroundStation
-                .builder(topocentricToulouse, header.getAvailability()).build();
+            CzmlGroundStation.builder(topocentricToulouse, header.getClock())
+                .build();
 
         // Creation of the file
         final CzmlFile file =

@@ -18,6 +18,7 @@ package org.orekit.czml.object.primary.entities;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.bodies.CelestialBodyFactory;
 import org.orekit.czml.archi.factory.BodyFactory;
 import org.orekit.czml.file.AbstractTest;
@@ -34,6 +35,7 @@ import java.net.URISyntaxException;
 /**
  * The type Body test.
  */
+@DefaultDataContext
 public class BodyTest
     extends
     AbstractTest {

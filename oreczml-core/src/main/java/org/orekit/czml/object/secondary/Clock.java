@@ -59,7 +59,7 @@ public class Clock
     /**
      * The multiplier, how many seconds between each step.
      */
-    private final double multiplier;
+    private double multiplier;
 
     /**
      * The range of the clock: what should the simulation do when it is
@@ -221,6 +221,17 @@ public class Clock
      */
     public List<JulianDate> getJulianDatesSimulation() {
         return Collections.unmodifiableList(JulianDateSimulation);
+    }
+
+    // Setters
+
+    /**
+     * Sets the multiplier.
+     *
+     * @param multiplierInput : The multiplier to input
+     */
+    public void setMultiplier(final double multiplierInput) {
+        this.multiplier = multiplierInput;
     }
 
     // Private functions

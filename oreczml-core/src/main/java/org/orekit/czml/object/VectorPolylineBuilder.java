@@ -17,7 +17,7 @@
 package org.orekit.czml.object;
 
 import cesiumlanguagewriter.Cartesian;
-import cesiumlanguagewriter.TimeInterval;
+import org.orekit.czml.object.secondary.Clock;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -69,8 +69,8 @@ public class VectorPolylineBuilder {
      */
     private final List<Cartesian> cartesianList;
 
-    /** The availability considered. */
-    private TimeInterval availability;
+    /** The clock considered. */
+    private Clock clock;
 
     // Constructors
 
@@ -79,12 +79,12 @@ public class VectorPolylineBuilder {
      *
      * @param cartesiansInput : The list of cartesian that represents the
      *        extremities of the polyline.
-     * @param availability : The availability considered.s
+     * @param clock : The clock considered.
      */
     public VectorPolylineBuilder(final List<Cartesian> cartesiansInput,
-                                 final TimeInterval availability) {
+                                 final Clock clock) {
         this.cartesianList = new ArrayList<>(cartesiansInput);
-        this.availability = availability;
+        this.clock = clock;
     }
 
     /**
@@ -99,14 +99,13 @@ public class VectorPolylineBuilder {
     }
 
     /**
-     * Function to set up an availability.
+     * Function to set up a clock.
      *
-     * @param availabilityInput : The availability to set up.
-     * @return : The vector polyline builder with the given availability.
+     * @param clockInput : The clock to set up.
+     * @return : The vector polyline builder with the given clock.
      */
-    public VectorPolylineBuilder
-        withAvailability(final TimeInterval availabilityInput) {
-        this.availability = availabilityInput;
+    public VectorPolylineBuilder withClock(final Clock clockInput) {
+        this.clock = clockInput;
         return this;
     }
 
@@ -141,7 +140,7 @@ public class VectorPolylineBuilder {
      */
     public Polyline build() {
         return new Polyline(cartesianList, color, nearDistance, farDistance,
-                            availability);
+                            clock);
     }
 
 }

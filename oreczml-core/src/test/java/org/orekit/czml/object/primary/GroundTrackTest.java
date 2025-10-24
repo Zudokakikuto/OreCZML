@@ -17,6 +17,7 @@
 package org.orekit.czml.object.primary;
 
 import org.junit.jupiter.api.Test;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.utils.DateUtils;
 import org.orekit.czml.object.primary.entities.Constellation;
@@ -33,6 +34,7 @@ import java.util.List;
 /**
  * The type Ground track test.
  */
+@DefaultDataContext
 public class GroundTrackTest
     extends
     AbstractTest {
@@ -69,16 +71,15 @@ public class GroundTrackTest
                 .build();
 
         final GroundTrack groundTrack =
-            new GroundTrack(satellite, getEarth(), header.getAvailability());
+            new GroundTrack(satellite, getEarth(), header.getClock());
         groundTrack.displayLinkSatellite();
 
         final GroundTrack groundTrackWithBuilder =
-            GroundTrack.builder(satellite, getEarth(), header.getAvailability())
+            GroundTrack.builder(satellite, getEarth(), header.getClock())
                 .withColor(Color.ORANGE).withCustomID("CustomID").build();
 
         final GroundTrack constellationGroundTrack =
-            GroundTrack
-                .builder(constellation, getEarth(), header.getAvailability())
+            GroundTrack.builder(constellation, getEarth(), header.getClock())
                 .build();
         constellationGroundTrack.displayLinkSatellite();
 

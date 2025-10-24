@@ -21,6 +21,7 @@ import cesiumlanguagewriter.TimeInterval;
 import org.hipparchus.util.FastMath;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.utils.DateUtils;
@@ -35,6 +36,7 @@ import java.util.List;
 /**
  * The type Point on body test.
  */
+@DefaultDataContext
 public class PointOnBodyTest
     extends
     AbstractTest {

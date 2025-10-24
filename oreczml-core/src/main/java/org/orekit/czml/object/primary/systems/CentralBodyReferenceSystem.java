@@ -21,11 +21,11 @@ import cesiumlanguagewriter.CesiumOutputStream;
 import cesiumlanguagewriter.CesiumStreamWriter;
 import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.PositionCesiumWriter;
-import cesiumlanguagewriter.TimeInterval;
 import org.orekit.annotation.DefaultDataContext;
 import org.orekit.bodies.OneAxisEllipsoid;
 import org.orekit.czml.object.Polyline;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
+import org.orekit.czml.object.secondary.Clock;
 import org.orekit.data.DataContext;
 import org.orekit.utils.Constants;
 import org.orekit.utils.IERSConventions;
@@ -82,18 +82,17 @@ public class CentralBodyReferenceSystem
      * This constructor builds a central body reference system on the earth with
      * basic parameters.
      *
-     * @param availability : The availability of the central body reference
-     *        system.
+     * @param clock : The clock of the central body reference system.
      */
     @DefaultDataContext
-    CentralBodyReferenceSystem(final TimeInterval availability) {
+    CentralBodyReferenceSystem(final Clock clock) {
         this(new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS,
                                   Constants.WGS84_EARTH_FLATTENING,
                                   DataContext.getDefault().getFrames()
                                       .getITRF(IERSConventions.IERS_2010,
                                                true)),
              DEFAULT_ID, DEFAULT_NAME, DEFAULT_RED, DEFAULT_GREEN, DEFAULT_BLUE,
-             availability);
+             clock);
     }
 
     /**
@@ -106,17 +105,16 @@ public class CentralBodyReferenceSystem
      * @param color1 : The color of the x-axis.
      * @param color2 : The color of the y-axis.
      * @param color3 : The color of the z-axis.
-     * @param availability : The availability of the central body reference
-     *        system.
+     * @param clock : The clock of the central body reference system.
      */
     CentralBodyReferenceSystem(final OneAxisEllipsoid body, final String id,
                                final String name, final Color color1,
                                final Color color2, final Color color3,
-                               final TimeInterval availability) {
+                               final Clock clock) {
 
         this.setId(id);
         this.setName(name);
-        this.setAvailability(availability);
+        this.setAvailability(clock.getAvailability());
 
         final Cartesian centralCartesian = new Cartesian(0.1, 0.1, 0.1);
         final double depth = body.getEquatorialRadius() * 3;
@@ -139,15 +137,15 @@ public class CentralBodyReferenceSystem
         vectorToZ.add(plusZCartesian);
 
         final Polyline XPolyline =
-            Polyline.vectorBuilder(vectorToX, availability).withColor(color1)
+            Polyline.vectorBuilder(vectorToX, clock).withColor(color1)
                 .withNearDistance(1).withFarDistance(1e9).build();
 
         final Polyline YPolyline =
-            Polyline.vectorBuilder(vectorToY, availability).withColor(color2)
+            Polyline.vectorBuilder(vectorToY, clock).withColor(color2)
                 .withNearDistance(1).withFarDistance(1e9).build();
 
         final Polyline ZPolyline =
-            Polyline.vectorBuilder(vectorToZ, availability).withColor(color3)
+            Polyline.vectorBuilder(vectorToZ, clock).withColor(color3)
                 .withNearDistance(1).withFarDistance(1e9).build();
 
         this.polylines.add(XPolyline);
@@ -158,13 +156,12 @@ public class CentralBodyReferenceSystem
     /**
      * Builder central body reference system builder.
      *
-     * @param availability the availability input
+     * @param clock the clock input
      * @return the central body reference system builder
      */
     // builder
-    public static CentralBodyReferenceSystemBuilder
-        builder(final TimeInterval availability) {
-        return new CentralBodyReferenceSystemBuilder(availability);
+    public static CentralBodyReferenceSystemBuilder builder(final Clock clock) {
+        return new CentralBodyReferenceSystemBuilder(clock);
     }
     // Overrides
 

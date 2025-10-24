@@ -21,7 +21,6 @@ import cesiumlanguagewriter.CesiumStreamWriter;
 import cesiumlanguagewriter.JulianDate;
 import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.Reference;
-import cesiumlanguagewriter.TimeInterval;
 import org.hipparchus.geometry.euclidean.threed.Line;
 import org.hipparchus.geometry.euclidean.threed.Rotation;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
@@ -34,6 +33,7 @@ import org.orekit.czml.object.Polyline;
 import org.orekit.czml.object.nonvisual.PointOnBody;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
 import org.orekit.czml.object.primary.entities.Spacecraft;
+import org.orekit.czml.object.secondary.Clock;
 import org.orekit.czml.object.secondary.Orientation;
 import org.orekit.frames.Frame;
 import org.orekit.propagation.SpacecraftState;
@@ -143,13 +143,12 @@ public class AttitudePointing
      * @param satellite : The satellite that will point to the body.
      * @param body : The body to point to.
      * @param direction : The direction to point to.
-     * @param availability : The availability of the attitude pointing.
+     * @param clock : The clock of the attitude pointing.
      */
     AttitudePointing(final Spacecraft satellite, final OneAxisEllipsoid body,
-                     final Vector3D direction,
-                     final TimeInterval availability) {
+                     final Vector3D direction, final Clock clock) {
         this(satellite, body, direction, DEFAULT_COLOR, false,
-             DEFAULT_ID + satellite.getId(), availability);
+             DEFAULT_ID + satellite.getId(), clock);
     }
 
     /**
@@ -167,16 +166,16 @@ public class AttitudePointing
      *        projection on the pointed object
      *        AttitudeTuto.AttitudePathAlongOrbit
      * @param ID : The ID of the attitude pointing object
-     * @param availability : The availability of the attitude pointing
+     * @param clock : The clock of the attitude pointing
      */
     AttitudePointing(final Spacecraft satellite, final OneAxisEllipsoid body,
                      final Vector3D direction, final Color color,
                      final boolean alwaysDisplayOnGround, final String ID,
-                     final TimeInterval availability) {
+                     final Clock clock) {
         this.setId(ID);
         this.satellite = satellite;
         this.setName(DEFAULT_NAME + satellite.getName());
-        this.setAvailability(availability);
+        this.setAvailability(clock.getAvailability());
         this.satelliteOrientation = satellite.getOrientation();
         this.satelliteAttitudes = satellite.getAttitudes();
         this.states = satellite.getSpaceCraftStates();
@@ -197,7 +196,7 @@ public class AttitudePointing
         final Reference groundReference =
             new Reference(pointOnBody.getId() + DEFAULT_H_POSITION);
         this.attitudePointingPolyline =
-            Polyline.nonVectorBuilder(availability)
+            Polyline.nonVectorBuilder(clock)
                 .withFirstReference(satelliteReference)
                 .withSecondReference(groundReference).withColor(color).build();
     }
@@ -210,16 +209,15 @@ public class AttitudePointing
      * @param satelliteInput the satellite input
      * @param bodyInput the body input
      * @param directionInput the direction input
-     * @param availability the time interval for which the attitude pointing
-     *        line is available
+     * @param clock the clock
      * @return the attitude pointing builder
      */
     public static AttitudePointingBuilder
         builder(final Spacecraft satelliteInput,
                 final OneAxisEllipsoid bodyInput, final Vector3D directionInput,
-                final TimeInterval availability) {
+                final Clock clock) {
         return new AttitudePointingBuilder(satelliteInput, bodyInput,
-                                           directionInput, availability);
+                                           directionInput, clock);
     }
 
     // Overrides

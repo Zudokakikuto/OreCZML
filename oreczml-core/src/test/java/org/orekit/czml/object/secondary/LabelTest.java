@@ -20,6 +20,7 @@ import cesiumlanguagewriter.CesiumHorizontalOrigin;
 import cesiumlanguagewriter.CesiumLabelStyle;
 import cesiumlanguagewriter.CesiumVerticalOrigin;
 import org.junit.jupiter.api.Test;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
 
 import java.awt.Color;
@@ -39,6 +40,7 @@ public class LabelTest
      * @throws IOException the io exception
      */
     @Test
+    @DefaultDataContext
     void LabelConstructorTest()
         throws IOException,
             URISyntaxException {

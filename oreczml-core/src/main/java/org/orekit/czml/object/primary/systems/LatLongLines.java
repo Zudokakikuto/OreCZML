@@ -26,10 +26,10 @@ import cesiumlanguagewriter.PolylineCesiumWriter;
 import cesiumlanguagewriter.PolylineMaterialCesiumWriter;
 import cesiumlanguagewriter.PositionCesiumWriter;
 import cesiumlanguagewriter.SolidColorMaterialCesiumWriter;
-import cesiumlanguagewriter.TimeInterval;
 import org.orekit.czml.errors.OreCzmlException;
 import org.orekit.czml.errors.OreCzmlMessages;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
+import org.orekit.czml.object.secondary.Clock;
 import org.orekit.czml.object.secondary.Label;
 
 import java.awt.Color;
@@ -103,11 +103,11 @@ public class LatLongLines
      * The default constructor using the default angular step while not
      * displaying the labels.
      *
-     * @param availability : The availability considered.
+     * @param clock : The clock considered.
      */
-    LatLongLines(final TimeInterval availability) {
+    LatLongLines(final Clock clock) {
         this(DEFAULT_ANGULAR_STEP, DEFAULT_ANGULAR_STEP, false, DEFAULT_ID,
-             availability);
+             clock);
     }
 
     /**
@@ -120,15 +120,15 @@ public class LatLongLines
      * @param displayLabelsInput : To display the labels of the lines or not (°
      *        of the parallels or of the meridians)
      * @param customID : The custom ID of the lat long lines object.
-     * @param availability : The availability considered when several are used.
+     * @param clock : The clock considered.
      */
     LatLongLines(final int latitudeAngularStep, final int longitudeAngularStep,
                  final boolean displayLabelsInput, final String customID,
-                 final TimeInterval availability) {
+                 final Clock clock) {
 
         this.setId(customID);
         this.setName(DEFAULT_NAME);
-        this.setAvailability(availability);
+        this.setAvailability(clock.getAvailability());
 
         this.displayLabels = displayLabelsInput;
         final List<Integer> divisorsLatitude = findAllDivisors(360);
@@ -182,11 +182,11 @@ public class LatLongLines
     /**
      * Builder lat long lines builder.
      *
-     * @param availability the availability
+     * @param clock the clock
      * @return the lat long lines builder
      */
-    public static LatLongLinesBuilder builder(final TimeInterval availability) {
-        return new LatLongLinesBuilder(availability);
+    public static LatLongLinesBuilder builder(final Clock clock) {
+        return new LatLongLinesBuilder(clock);
     }
 
     // Overrides

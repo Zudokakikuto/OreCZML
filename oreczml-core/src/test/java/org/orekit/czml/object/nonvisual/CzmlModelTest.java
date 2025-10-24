@@ -18,6 +18,7 @@ package org.orekit.czml.object.nonvisual;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.Header;
 
@@ -38,6 +39,7 @@ public class CzmlModelTest
      * @throws IOException the io exception
      */
     @Test
+    @DefaultDataContext
     void CzmlModelConstructorTest()
         throws IOException {
 
@@ -47,7 +49,7 @@ public class CzmlModelTest
 
         final CzmlModel modelToTest =
             new CzmlModel(loadResources("Default3DModels/ISSModel.glb"), false,
-                          header.getAvailability());
+                          header.getClock());
 
         final String pathFile =
             loadResources("templateFile/nonvisual/CzmlModelTemplate.txt");

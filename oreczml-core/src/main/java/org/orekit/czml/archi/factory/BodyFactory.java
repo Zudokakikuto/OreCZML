@@ -16,6 +16,7 @@
  */
 package org.orekit.czml.archi.factory;
 
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.bodies.CelestialBody;
 import org.orekit.bodies.CelestialBodyFactory;
 import org.orekit.czml.object.primary.entities.Body;
@@ -32,6 +33,7 @@ import org.orekit.utils.IERSConventions;
  * @author Julien LEBLOND
  * @since 1.0
  */
+@DefaultDataContext
 public class BodyFactory {
 
     /** The frame of the sun. */

@@ -20,6 +20,7 @@ import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
 import org.junit.jupiter.api.Test;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.Header;
@@ -52,12 +53,13 @@ public class LineOfVisibilityTest
     AbstractTest {
 
     /**
-     * Line of visbility constructor test.
+     * Line of visibility constructor test.
      *
      * @throws IOException the io exception
      * @throws URISyntaxException the uri syntax exception
      */
     @Test
+    @DefaultDataContext
     void lineOfVisibilityConstructorTest()
         throws IOException,
             URISyntaxException {
@@ -113,17 +115,16 @@ public class LineOfVisibilityTest
             generator.getGeneratedEphemeris();
 
         final Spacecraft satellite =
-            new Spacecraft(boundedPropagator, header.getClock());
+            Spacecraft.builder(boundedPropagator, header.getClock()).build();
 
         final LineOfVisibility line =
-            LineOfVisibility.builder(topocentricToulouse, satellite,
-                                     header.getAvailability())
+            LineOfVisibility
+                .builder(topocentricToulouse, satellite, header.getClock())
                 .build();
 
         final LineOfVisibility coverageLine =
             LineOfVisibility
-                .builder(topocentricToulouse, satellite,
-                         header.getAvailability())
+                .builder(topocentricToulouse, satellite, header.getClock())
                 .withCustomID("CustomID").withAngleOfAperture(90.0).build();
 
         final String pathFile =

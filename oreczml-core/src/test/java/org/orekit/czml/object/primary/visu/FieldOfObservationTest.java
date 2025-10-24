@@ -21,10 +21,12 @@ import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
 import org.junit.jupiter.api.Test;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.attitudes.LofOffset;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.primary.entities.Spacecraft;
+import org.orekit.czml.object.secondary.Clock;
 import org.orekit.forces.ForceModel;
 import org.orekit.forces.gravity.HolmesFeatherstoneAttractionModel;
 import org.orekit.forces.gravity.potential.GravityFieldFactory;
@@ -63,6 +65,7 @@ public class FieldOfObservationTest
      * @throws URISyntaxException the uri syntax exception
      */
     @Test
+    @DefaultDataContext
     void FieldOfObservationConstructorTest()
         throws IOException,
             URISyntaxException {
@@ -70,6 +73,9 @@ public class FieldOfObservationTest
         loadOrekitData();
 
         final Header header = dummyHeader();
+        final Clock clock = header.getClock();
+        clock.setMultiplier(10.0);
+
         final AbsoluteDate startDate =
             new AbsoluteDate(2024, 3, 15, 0, 0, 0.0,
                              TimeScalesFactory.getUTC());

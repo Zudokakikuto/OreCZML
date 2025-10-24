@@ -110,9 +110,7 @@ public class InfluenceSphere
 
         // The position of the sphere of visibility.
         this.ellipsoid =
-            CzmlEllipsoid
-                .builder(cartesianForSphericalEllipsoid,
-                         clock.getAvailability())
+            CzmlEllipsoid.builder(cartesianForSphericalEllipsoid, clock)
                 .withFill(false).withSliceStackPartition(10, 10)
                 .withOutline(true).build();
 
@@ -130,20 +128,6 @@ public class InfluenceSphere
     public static InfluenceSphereBuilder builder(final Body bodyInput,
                                                  final Clock clock) {
         return new InfluenceSphereBuilder(bodyInput, clock);
-    }
-
-    /**
-     * This builder does not assume that the body is orbiting around the sun.
-     *
-     * @param clock : The clock of the influence sphere
-     * @param bodyInput : The body considered
-     * @param centralBodyInput : The central body of the body
-     * @return An influence sphere builder with the given inputs
-     */
-    public static InfluenceSphereBuilder builder(final Body bodyInput,
-                                                 final Body centralBodyInput,
-                                                 final Clock clock) {
-        return new InfluenceSphereBuilder(bodyInput, centralBodyInput, clock);
     }
 
     @Override

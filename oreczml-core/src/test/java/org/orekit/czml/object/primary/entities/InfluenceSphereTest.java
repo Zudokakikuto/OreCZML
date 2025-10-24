@@ -17,6 +17,7 @@
 package org.orekit.czml.object.primary.entities;
 
 import org.junit.jupiter.api.Test;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.bodies.CelestialBodyFactory;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.Header;
@@ -31,6 +32,7 @@ import java.net.URISyntaxException;
 /**
  * The type Influence sphere test.
  */
+@DefaultDataContext
 public class InfluenceSphereTest
     extends
     AbstractTest {
@@ -77,7 +79,7 @@ public class InfluenceSphereTest
                 .build();
 
         final InfluenceSphere influenceSphereWithCentralBody =
-            InfluenceSphere.builder(earth, clock).withCentralBody(sun).build();
+            InfluenceSphere.builder(earth, clock).build();
 
         final String influenceSphereWithCentralBodyTemplate =
             loadResources("templateFile/object/primary/entities/InfluenceSphereWithCentralBodyTemplate.txt");

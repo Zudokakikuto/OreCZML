@@ -19,6 +19,7 @@ package org.orekit.czml.object.secondary;
 import org.hipparchus.geometry.euclidean.threed.Rotation;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.attitudes.Attitude;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.utils.DateUtils;
@@ -35,6 +36,7 @@ import java.util.List;
 /**
  * The type Orientation test.
  */
+@DefaultDataContext
 public class OrientationTest
     extends
     AbstractTest {

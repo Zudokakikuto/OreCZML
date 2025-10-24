@@ -16,7 +16,7 @@
  */
 package org.orekit.czml.object.primary.entities;
 
-import cesiumlanguagewriter.TimeInterval;
+import org.orekit.czml.object.secondary.Clock;
 import org.orekit.frames.TopocentricFrame;
 
 import java.io.IOException;
@@ -64,7 +64,7 @@ public class CzmlGroundStationBuilder {
     private double angleOfAperture;
 
     /** The time frame for which this feature is visible. */
-    private TimeInterval availability;
+    private Clock clock;
 
     // Constructor
 
@@ -73,12 +73,12 @@ public class CzmlGroundStationBuilder {
      *
      * @param topocentricFrameInput : The topocentric frame where the station
      *        must be.
-     * @param availability : The availability of the ground station
+     * @param clockInput : The availability of the ground station
      */
     public CzmlGroundStationBuilder(final TopocentricFrame topocentricFrameInput,
-                                    final TimeInterval availability) {
+                                    final Clock clockInput) {
         this.topocentricFrame = topocentricFrameInput;
-        this.availability = availability;
+        this.clock = clockInput;
     }
 
     public CzmlGroundStationBuilder
@@ -104,13 +104,11 @@ public class CzmlGroundStationBuilder {
     /**
      * Function to set up an availability.
      *
-     * @param availabilityInput : The time frame for which this feature is
-     *        visible.
+     * @param clockInput : The time frame for which this feature is visible.
      * @return : The ground station object with a custom availability.
      */
-    public CzmlGroundStationBuilder
-        withAvailability(final TimeInterval availabilityInput) {
-        this.availability = availabilityInput;
+    public CzmlGroundStationBuilder withClock(final Clock clockInput) {
+        this.clock = clockInput;
         return this;
     }
 
@@ -126,8 +124,7 @@ public class CzmlGroundStationBuilder {
         throws URISyntaxException,
             IOException {
         final CzmlGroundStation toReturn;
-        toReturn =
-            new CzmlGroundStation(topocentricFrame, modelPath, availability);
+        toReturn = new CzmlGroundStation(topocentricFrame, modelPath, clock);
         if (displayCircle) {
             toReturn.displayCircle(spacecraft, angleOfAperture);
         }

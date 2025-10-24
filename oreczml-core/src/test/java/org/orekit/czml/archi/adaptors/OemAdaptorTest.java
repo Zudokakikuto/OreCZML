@@ -18,6 +18,7 @@ package org.orekit.czml.archi.adaptors;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.archi.adaptor.OemAdaptor;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.data.DataSource;
@@ -44,9 +45,8 @@ public class OemAdaptorTest
      * @throws IOException the io exception
      */
     @Test
-    void oemConstructorTest()
-        throws URISyntaxException,
-            IOException {
+    @DefaultDataContext
+    void oemConstructorTest() {
 
         loadOrekitData();
 

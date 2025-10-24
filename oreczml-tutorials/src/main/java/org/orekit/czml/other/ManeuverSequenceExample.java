@@ -248,7 +248,7 @@ public class ManeuverSequenceExample {
         final ManeuverSequence maneuverSequence =
             ManeuverSequence
                 .builder(sequence, maneuvers, satellite, accelerationDirection,
-                         LOFType.TNW, header.getAvailability())
+                         LOFType.TNW, header.getClock())
                 .build();
 
         // Creation of the file

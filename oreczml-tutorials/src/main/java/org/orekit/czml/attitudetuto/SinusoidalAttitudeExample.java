@@ -163,12 +163,12 @@ public class SinusoidalAttitudeExample {
         final AttitudePointing pointing =
             AttitudePointing
                 .builder(satellite, TutorialUtils.getEarth(), Vector3D.MINUS_K,
-                         clock.getAvailability())
+                         clock)
                 .withColor(Color.ORANGE).displayPointingPath()
                 .displayPeriodPointingPath().build();
 
         final CentralBodyReferenceSystem system =
-            CentralBodyReferenceSystem.builder(clock.getAvailability()).build();
+            CentralBodyReferenceSystem.builder(clock).build();
 
         // Creation of the field of observation of the satellite, it describes
         // the area the satellite see

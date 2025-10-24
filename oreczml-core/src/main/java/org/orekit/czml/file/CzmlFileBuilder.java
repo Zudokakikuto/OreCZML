@@ -34,6 +34,7 @@ import org.orekit.czml.object.primary.systems.SpacecraftReferenceSystem;
 import org.orekit.czml.object.primary.visu.FieldOfObservation;
 import org.orekit.czml.object.primary.visu.InterSatVisu;
 import org.orekit.czml.object.primary.visu.LineOfVisibility;
+import org.orekit.czml.object.primary.visu.MultipleLineOfVisibility;
 import org.orekit.czml.object.primary.visu.StationVisibilityCircle;
 import org.orekit.czml.object.primary.visu.VisibilityTriangle;
 
@@ -52,43 +53,33 @@ import java.util.List;
  */
 public class CzmlFileBuilder {
 
-    /**
-     * The default angle of aperture of a ground station.
-     */
+    /** The default angle of aperture of a ground station. */
     public static final double DEFAULT_ANGLE_OF_APERTURE = 80.0;
 
-    /**
-     * List of all the satellites to write.
-     */
+    /** List of all the satellites to write. */
     private List<Spacecraft> satellites = new ArrayList<>();
 
-    /**
-     * List of all the constellations to write.
-     */
+    /** List of all the constellations to write. */
     private List<Constellation> constellations = new ArrayList<>();
 
-    /**
-     * List of all the czml ground stations to write.
-     */
+    /** List of all the czml ground stations to write. */
     private List<CzmlGroundStation> groundStations = new ArrayList<>();
 
     /** List of all the influence sphere. */
     private List<InfluenceSphere> influenceSpheres = new ArrayList<>();
 
-    /**
-     * List of all the inter-sat visu to write.
-     */
+    /** List of all the inter-sat visu to write. */
     private List<InterSatVisu> interSatVisus = new ArrayList<>();
 
-    /**
-     * List of all the collision to write.
-     */
+    /** List of all the collision to write. */
     private List<Collision> collisions = new ArrayList<>();
 
-    /**
-     * List of all the lines of visibility to write.
-     */
+    /** List of all the lines of visibility to write. */
     private List<LineOfVisibility> lines = new ArrayList<>();
+
+    /** List of all the multiple line of visibility object to write. */
+    private List<MultipleLineOfVisibility> multipleLineVisibilities =
+        new ArrayList<>();
 
     /** List of all the Station visibility circle. */
     private List<StationVisibilityCircle> visibilityCircles = new ArrayList<>();
@@ -96,60 +87,38 @@ public class CzmlFileBuilder {
     /** List of all the visibility triangles. */
     private List<VisibilityTriangle> visibilityTriangles = new ArrayList<>();
 
-    /**
-     * List of all the ground tracks to write.
-     */
+    /** List of all the ground tracks to write. */
     private List<GroundTrack> groundTracks = new ArrayList<>();
 
-    /**
-     * List of all the attitude pointings to write.
-     */
+    /** List of all the attitude pointings to write. */
     private List<AttitudePointing> attitudePointings = new ArrayList<>();
 
-    /**
-     * List of all the covariance display to write.
-     */
+    /** List of all the covariance display to write. */
     private List<Covariance> covariances = new ArrayList<>();
 
-    /**
-     * List of all the fields of observation to write.
-     */
+    /** List of all the fields of observation to write. */
     private List<FieldOfObservation> fieldOfObservations = new ArrayList<>();
 
-    /**
-     * List of all the maneuver sequences to write.
-     */
+    /** List of all the maneuver sequences to write. */
     private List<ManeuverSequence> maneuverSequences = new ArrayList<>();
 
-    /**
-     * List of all the satellite reference systems to write.
-     */
+    /** List of all the satellite reference systems to write. */
     private List<SpacecraftReferenceSystem> satelliteSystems =
         new ArrayList<>();
 
-    /**
-     * List of all the covered surfaces on body to write.
-     */
+    /** List of all the covered surfaces on body to write. */
     private List<CoveredSurfaceOnBody> surfaces = new ArrayList<>();
 
-    /**
-     * List of all the latitude longitude lines display to write.
-     */
+    /** List of all the latitude longitude lines display to write. */
     private List<LatLongLines> latLongs = new ArrayList<>();
 
-    /**
-     * List of all the body to write.
-     */
+    /** List of all the body to write. */
     private List<Body> bodies = new ArrayList<>();
 
-    /**
-     * The header of the czml file.
-     */
+    /** The header of the czml file. */
     private Header header;
 
-    /**
-     * The central body reference system to write.
-     */
+    /** The central body reference system to write. */
     private CentralBodyReferenceSystem system;
 
     // Constructor
@@ -371,6 +340,37 @@ public class CzmlFileBuilder {
     public CzmlFileBuilder
         withLineOfVisibility(final List<LineOfVisibility> linesOfVisibility) {
         this.lines.addAll(linesOfVisibility);
+        return this;
+    }
+
+    // Multiple line of visibility
+
+    /**
+     * Function to set up a multiple line of visibility object.
+     *
+     * @param multipleLineOfVisibilityInput : The list of multiple line of
+     *        visibility objects to set up.
+     * @return : The czml file builder with the given multiple lines of
+     *         visibility object
+     */
+    public CzmlFileBuilder
+        withMultipleLineOfVisibility(final MultipleLineOfVisibility... multipleLineOfVisibilityInput) {
+        this.multipleLineVisibilities
+            .addAll(Arrays.asList(multipleLineOfVisibilityInput));
+        return this;
+    }
+
+    /**
+     * Function to set up a list of multiple lines of visibility objects.
+     *
+     * @param multipleLineOfVisibilityInput : The list of line of visibility to
+     *        set up.
+     * @return : The czml file builder with the given list of multiple lines of
+     *         visibility objects.
+     */
+    public CzmlFileBuilder
+        withMultipleLineOfVisibility(final List<MultipleLineOfVisibility> multipleLineOfVisibilityInput) {
+        this.multipleLineVisibilities.addAll(multipleLineOfVisibilityInput);
         return this;
     }
 
@@ -673,6 +673,7 @@ public class CzmlFileBuilder {
         addCovarianceDisplays(toReturn);
         addFieldOfObservation(toReturn);
         addLineOfVisibility(toReturn);
+        addMultipleLineOfVisibility(toReturn);
         addVisibilityCircles(toReturn);
         addVisibilityTriangles(toReturn);
         addInterSatVisu(toReturn);
@@ -698,7 +699,7 @@ public class CzmlFileBuilder {
      * @param file : The czml file that will be written.
      */
     private void addSatellites(final CzmlFile file) {
-        for (Spacecraft satellite : satellites) {
+        for (final Spacecraft satellite : satellites) {
             file.addObject(satellite);
         }
     }
@@ -709,7 +710,7 @@ public class CzmlFileBuilder {
      * @param file : The czml file that will be written.
      */
     private void addConstellations(final CzmlFile file) {
-        for (Constellation constellation : constellations) {
+        for (final Constellation constellation : constellations) {
             file.addObject(constellation);
         }
     }
@@ -720,7 +721,7 @@ public class CzmlFileBuilder {
      * @param file : The czml file that will be written.
      */
     private void addGroundStations(final CzmlFile file) {
-        for (CzmlGroundStation station : groundStations) {
+        for (final CzmlGroundStation station : groundStations) {
             file.addObject(station);
         }
     }
@@ -731,7 +732,7 @@ public class CzmlFileBuilder {
      * @param file : The czml file that will be written
      */
     private void addInfluenceSpheres(final CzmlFile file) {
-        for (InfluenceSphere sphere : influenceSpheres) {
+        for (final InfluenceSphere sphere : influenceSpheres) {
             file.addObject(sphere);
         }
     }
@@ -742,7 +743,7 @@ public class CzmlFileBuilder {
      * @param file : The czml file that will be written.
      */
     private void addAttitudePointings(final CzmlFile file) {
-        for (AttitudePointing pointing : attitudePointings) {
+        for (final AttitudePointing pointing : attitudePointings) {
             file.addObject(pointing);
         }
     }
@@ -753,7 +754,7 @@ public class CzmlFileBuilder {
      * @param file : The czml file that will be written.
      */
     private void addCovarianceDisplays(final CzmlFile file) {
-        for (Covariance covariance : covariances) {
+        for (final Covariance covariance : covariances) {
             file.addObject(covariance);
         }
     }
@@ -764,7 +765,7 @@ public class CzmlFileBuilder {
      * @param file : The czml file that will be written.
      */
     private void addFieldOfObservation(final CzmlFile file) {
-        for (FieldOfObservation field : fieldOfObservations) {
+        for (final FieldOfObservation field : fieldOfObservations) {
             file.addObject(field);
         }
     }
@@ -775,8 +776,19 @@ public class CzmlFileBuilder {
      * @param file : The czml file that will be written.
      */
     private void addLineOfVisibility(final CzmlFile file) {
-        for (LineOfVisibility line : lines) {
+        for (final LineOfVisibility line : lines) {
             file.addObject(line);
+        }
+    }
+
+    /**
+     * This function adds the multiple lines of visibility to the czml file.
+     *
+     * @param file : The czml file that will be written.
+     */
+    private void addMultipleLineOfVisibility(final CzmlFile file) {
+        for (final MultipleLineOfVisibility multipleLineOfVisibility : multipleLineVisibilities) {
+            file.addObject(multipleLineOfVisibility);
         }
     }
 
@@ -786,7 +798,7 @@ public class CzmlFileBuilder {
      * @param file : The czml file that will be written.
      */
     private void addVisibilityCircles(final CzmlFile file) {
-        for (StationVisibilityCircle circle : visibilityCircles) {
+        for (final StationVisibilityCircle circle : visibilityCircles) {
             file.addObject(circle);
         }
     }
@@ -797,7 +809,7 @@ public class CzmlFileBuilder {
      * @param file : The czml file that will be written.
      */
     private void addVisibilityTriangles(final CzmlFile file) {
-        for (VisibilityTriangle triangle : visibilityTriangles) {
+        for (final VisibilityTriangle triangle : visibilityTriangles) {
             file.addObject(triangle);
         }
     }
@@ -808,7 +820,7 @@ public class CzmlFileBuilder {
      * @param file : The czml file that will be written.
      */
     private void addInterSatVisu(final CzmlFile file) {
-        for (InterSatVisu visu : interSatVisus) {
+        for (final InterSatVisu visu : interSatVisus) {
             file.addObject(visu);
         }
     }
@@ -819,7 +831,7 @@ public class CzmlFileBuilder {
      * @param file : The czml file that will be written.
      */
     private void addCollisionDisplay(final CzmlFile file) {
-        for (Collision collision : collisions) {
+        for (final Collision collision : collisions) {
             file.addObject(collision);
         }
     }
@@ -830,7 +842,7 @@ public class CzmlFileBuilder {
      * @param file : The czml file that will be written.
      */
     private void addManeuverSequence(final CzmlFile file) {
-        for (ManeuverSequence maneuverSequence : maneuverSequences) {
+        for (final ManeuverSequence maneuverSequence : maneuverSequences) {
             file.addObject(maneuverSequence);
         }
     }
@@ -841,7 +853,7 @@ public class CzmlFileBuilder {
      * @param file : The czml file that will be written.
      */
     private void addGroundTrack(final CzmlFile file) {
-        for (GroundTrack groundTrack : groundTracks) {
+        for (final GroundTrack groundTrack : groundTracks) {
             file.addObject(groundTrack);
         }
     }
@@ -852,7 +864,7 @@ public class CzmlFileBuilder {
      * @param file : The czml file that will be written.
      */
     private void addSatelliteReferenceSystem(final CzmlFile file) {
-        for (SpacecraftReferenceSystem systemInput : satelliteSystems) {
+        for (final SpacecraftReferenceSystem systemInput : satelliteSystems) {
             file.addObject(systemInput);
         }
     }
@@ -863,7 +875,7 @@ public class CzmlFileBuilder {
      * @param file : The czml file that will be written.
      */
     private void addCoveredSurfaceOnBody(final CzmlFile file) {
-        for (CoveredSurfaceOnBody surface : surfaces) {
+        for (final CoveredSurfaceOnBody surface : surfaces) {
             file.addObject(surface);
         }
     }
@@ -874,7 +886,7 @@ public class CzmlFileBuilder {
      * @param file : The czml file that will be written.
      */
     private void addLatLongDisplay(final CzmlFile file) {
-        for (LatLongLines latLong : latLongs) {
+        for (final LatLongLines latLong : latLongs) {
             file.addObject(latLong);
         }
     }
@@ -885,7 +897,7 @@ public class CzmlFileBuilder {
      * @param file : The czml file that will be written.
      */
     private void addBodyDisplay(final CzmlFile file) {
-        for (Body body : bodies) {
+        for (final Body body : bodies) {
             file.addObject(body);
         }
     }
@@ -909,6 +921,7 @@ public class CzmlFileBuilder {
         this.interSatVisus = new ArrayList<>();
         this.collisions = new ArrayList<>();
         this.lines = new ArrayList<>();
+        this.multipleLineVisibilities = new ArrayList<>();
         this.groundTracks = new ArrayList<>();
         this.attitudePointings = new ArrayList<>();
         this.covariances = new ArrayList<>();

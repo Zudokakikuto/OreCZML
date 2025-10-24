@@ -17,7 +17,7 @@
 
 package org.orekit.czml.object.primary.systems;
 
-import cesiumlanguagewriter.TimeInterval;
+import org.orekit.czml.object.secondary.Clock;
 
 /**
  * Lat Long Lines Builder class
@@ -42,16 +42,16 @@ public class LatLongLinesBuilder {
     private String customID;
 
     /** The availability considered when several are used. */
-    private TimeInterval availability;
+    private Clock clock;
 
     /**
      * The builder of the lat long line display builder object.
      *
-     * @param availability : The availability considered.
+     * @param clockInput : The availability considered.
      */
-    public LatLongLinesBuilder(final TimeInterval availability) {
+    public LatLongLinesBuilder(final Clock clockInput) {
         this.customID = "LAT_LONG";
-        this.availability = availability;
+        this.clock = clockInput;
     }
 
     /**
@@ -69,13 +69,12 @@ public class LatLongLinesBuilder {
     /**
      * The function to set up a availability.
      *
-     * @param availabilityInput : The availability to set up
+     * @param clockInput : The availability to set up
      * @return : The lat long lines display builder object with a given
      *         availability.
      */
-    public LatLongLinesBuilder
-        withAvailability(final TimeInterval availabilityInput) {
-        this.availability = availabilityInput;
+    public LatLongLinesBuilder withClock(final Clock clockInput) {
+        this.clock = clockInput;
         return this;
     }
 
@@ -128,7 +127,7 @@ public class LatLongLinesBuilder {
      */
     public LatLongLines build() {
         return new LatLongLines(latitudeAngularStep, longitudeAngularStep,
-                                displayLabels, customID, availability);
+                                displayLabels, customID, clock);
     }
 
 }

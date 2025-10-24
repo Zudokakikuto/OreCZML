@@ -21,6 +21,7 @@ import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
 import org.junit.jupiter.api.Assertions;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.bodies.OneAxisEllipsoid;
 import org.orekit.czml.errors.OreCzmlException;
 import org.orekit.czml.errors.OreCzmlMessages;
@@ -70,7 +71,34 @@ import java.util.regex.Pattern;
 /**
  * The type Abstract test.
  */
+@DefaultDataContext
 public class AbstractTest {
+
+    /** The number of seconde between each step of the propagation. */
+    public static final double STEP_BETWEEN_EACH_INSTANT = 60.0; // in seconds
+
+    /** The minimum position tolerance for the numerical propagator. */
+    public static final double POSITION_TOLERANCE = 10.0;
+
+    /** The minimum step for the dormant prince integrator. */
+    public static final double MIN_STEP = 0.001;
+
+    /** The maximum step for the dormant prince integrator. */
+    public static final double MAX_STEP = 1000.0;
+
+    /** The classic duration of the simulation */
+    public static final double CLASSIC_DURATION_OF_SIMULATION = 10 * 3600; // in
+    // seconds;
+
+    /** user home. */
+    private static final String USER_HOME = "user.home";
+
+    /** orekit data. */
+    private static final String OREKIT_DATA = "orekit-data";
+
+    /** The root of the project. */
+    private static String ROOT =
+        System.getProperty("user.dir").replace("oreczml-core", "");
 
     /**
      * Load orekit data.
@@ -102,12 +130,32 @@ public class AbstractTest {
             .getResource(resourcePath).getFile()).toPath().toString();
     }
 
-    public static String loadOutputLocation() {
-        return "Output";
-    }
-
     public static String loadModelFile() {
         return "Default3DModels/ISSModel.glb";
+    }
+
+    /**
+     * Generate output string.
+     *
+     * @return the string
+     */
+    public static String generateOutput() {
+        final String osName = System.getProperty("os.name");
+        final String outputName = "Output.czml";
+        final String outputFolder = "/Output";
+        if (osName.contains("Windows")) {
+            ROOT = ROOT.replace("\\", "/");
+            final String outputPath = ROOT + outputFolder;
+            return outputPath + "/" + outputName;
+        } else if (osName.contains("Linux")) {
+            final String outputPath =
+                ROOT + "\\..\\oreczml-js-interface\\public";
+            return outputPath + outputName;
+        } else {
+            ROOT = ROOT.replace("\\", "/");
+            final String outputPath = ROOT + outputFolder;
+            return outputPath + "/" + outputName;
+        }
     }
 
     /**
@@ -115,6 +163,7 @@ public class AbstractTest {
      *
      * @return the header
      */
+    @DefaultDataContext
     public static Header dummyHeader() {
         final AbsoluteDate starDate =
             new AbsoluteDate(2024, 1, 1, 0, 0, 0.0, TimeScalesFactory.getUTC());
@@ -129,6 +178,7 @@ public class AbstractTest {
      * @param startDate the start date
      * @return the orbit
      */
+    @DefaultDataContext
     public static Orbit dummyOrbit(final AbsoluteDate startDate) {
         return new KeplerianOrbit(7878000, 0, FastMath.toRadians(10), 0,
                                   FastMath.toRadians(90), FastMath.toRadians(0),
@@ -144,14 +194,16 @@ public class AbstractTest {
      * @param finalDate the final date
      * @return the bounded propagator
      */
+    @DefaultDataContext
     public static BoundedPropagator
         dummyPropagator(final AbsoluteDate startDate,
                         final AbsoluteDate finalDate) {
         final double[][] tolerances =
-            NumericalPropagator.tolerances(10.0, dummyOrbit(startDate),
+            NumericalPropagator.tolerances(POSITION_TOLERANCE,
+                                           dummyOrbit(startDate),
                                            OrbitType.CARTESIAN);
         final AdaptiveStepsizeIntegrator integrator =
-            new DormandPrince853Integrator(0.001, 1000.0, tolerances[0],
+            new DormandPrince853Integrator(MIN_STEP, MAX_STEP, tolerances[0],
                                            tolerances[1]);
 
         final NumericalPropagator propagator =
@@ -195,6 +247,7 @@ public class AbstractTest {
      *
      * @return the earth
      */
+    @DefaultDataContext
     public static OneAxisEllipsoid getEarth() {
         final Frame ITRF =
             FramesFactory.getITRF(IERSConventions.IERS_2010, true);
@@ -211,6 +264,7 @@ public class AbstractTest {
      * @param clockMultiplier clock multiplier
      * @return the list
      */
+    @DefaultDataContext
     public static List<StateCovariance>
         covariancePropagation(final Spacecraft satellite,
                               final Propagator propagator,
@@ -291,9 +345,7 @@ public class AbstractTest {
      * @param text Raw unit test output
      * @return the list
      */
-    private static List<Pair<Integer, Object>> readValues(final String text)
-        throws URISyntaxException,
-            IOException {
+    private static List<Pair<Integer, Object>> readValues(final String text) {
 
         // List holds broken down string data as a series of text strings and
         // numeric values

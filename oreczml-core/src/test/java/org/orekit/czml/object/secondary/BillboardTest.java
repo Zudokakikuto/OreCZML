@@ -20,6 +20,7 @@ import cesiumlanguagewriter.CesiumHorizontalOrigin;
 import cesiumlanguagewriter.CesiumResourceBehavior;
 import cesiumlanguagewriter.NearFarScalar;
 import org.junit.jupiter.api.Test;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
 
 import java.awt.Color;
@@ -39,6 +40,7 @@ public class BillboardTest
      * @throws IOException the io exception
      */
     @Test
+    @DefaultDataContext
     void BillboardConstructorTest()
         throws IOException,
             URISyntaxException {

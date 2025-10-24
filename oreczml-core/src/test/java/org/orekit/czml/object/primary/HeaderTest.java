@@ -17,6 +17,7 @@
 package org.orekit.czml.object.primary;
 
 import org.junit.jupiter.api.Test;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
 
 import java.io.IOException;
@@ -35,6 +36,7 @@ public class HeaderTest
      * @throws IOException the io exception
      */
     @Test
+    @DefaultDataContext
     void HeaderConstructorTest()
         throws IOException,
             URISyntaxException {

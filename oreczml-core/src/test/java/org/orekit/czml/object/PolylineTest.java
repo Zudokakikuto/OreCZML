@@ -19,6 +19,7 @@ package org.orekit.czml.object;
 import cesiumlanguagewriter.CesiumArcType;
 import cesiumlanguagewriter.Reference;
 import org.junit.jupiter.api.Test;
+import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.Header;
 
@@ -39,7 +40,8 @@ public class PolylineTest
      * @throws IOException the io exception
      */
     @Test
-    void PolylinecConstructorTest()
+    @DefaultDataContext
+    void PolylineConstructorTest()
         throws IOException,
             URISyntaxException {
 
@@ -48,13 +50,12 @@ public class PolylineTest
         final Header header = dummyHeader();
 
         final Polyline polyline =
-            Polyline.nonVectorBuilder(header.getAvailability()).build();
+            Polyline.nonVectorBuilder(header.getClock()).build();
 
         final Polyline polylineNonVector =
-            Polyline.nonVectorBuilder(header.getAvailability())
-                .withColor(Color.ORANGE).withArcType(CesiumArcType.NONE)
-                .withShow(true).withWidth(10.0).withFarDistance(10.0)
-                .withNearDistance(1.0)
+            Polyline.nonVectorBuilder(header.getClock()).withColor(Color.ORANGE)
+                .withArcType(CesiumArcType.NONE).withShow(true).withWidth(10.0)
+                .withFarDistance(10.0).withNearDistance(1.0)
                 .withFirstReference(new Reference("sat#position"))
                 .withSecondReference(new Reference("groundstation#position"))
                 .build();

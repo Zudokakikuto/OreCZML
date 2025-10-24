@@ -77,6 +77,7 @@ public class SpacecraftReferenceSystem
     private final Spacecraft spacecraft;
 
     // Other parameters
+
     /**
      * The reference in position of the Spacecraft.
      */
@@ -133,7 +134,7 @@ public class SpacecraftReferenceSystem
         this.referenceSystemModel =
             new CzmlModel(PATH_TO_REFERENCE_SYSTEM, maximumScale,
                           minimumPixelSize, scale, false,
-                          spacecraft.getAvailability());
+                          spacecraft.getClock());
     }
 
     // Overrides

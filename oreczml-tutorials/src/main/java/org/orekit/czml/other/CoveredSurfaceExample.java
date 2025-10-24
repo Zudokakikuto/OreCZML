@@ -166,7 +166,7 @@ public class CoveredSurfaceExample {
         final AttitudePointing pointing =
             AttitudePointing
                 .builder(satellite, TutorialUtils.getEarth(), Vector3D.MINUS_K,
-                         clock.getAvailability())
+                         clock)
                 .withColor(Color.ORANGE).displayPointingPath()
                 .displayPeriodPointingPath().build();
 

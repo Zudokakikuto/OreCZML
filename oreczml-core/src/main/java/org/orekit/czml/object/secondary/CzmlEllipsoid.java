@@ -22,7 +22,6 @@ import cesiumlanguagewriter.EllipsoidCesiumWriter;
 import cesiumlanguagewriter.EllipsoidRadiiCesiumWriter;
 import cesiumlanguagewriter.JulianDate;
 import cesiumlanguagewriter.PacketCesiumWriter;
-import cesiumlanguagewriter.TimeInterval;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -67,9 +66,9 @@ public class CzmlEllipsoid
     public static final int DEFAULT_STACK_PARTITION = 36;
 
     /**
-     * The availability of the ellipsoid.
+     * The clock of the ellipsoid.
      */
-    private final TimeInterval availability;
+    private final Clock clock;
 
     /**
      * The color of the ellipsoid.
@@ -130,12 +129,11 @@ public class CzmlEllipsoid
      * and a position, with default parameters.
      *
      * @param cartesian : The dimensions of the ellipsoid.
-     * @param availability : The availability considered.
+     * @param clock : The clock considered.
      */
-    public CzmlEllipsoid(final Cartesian cartesian,
-                         final TimeInterval availability) {
+    public CzmlEllipsoid(final Cartesian cartesian, final Clock clock) {
         this(cartesian, DEFAULT_FILL, DEFAULT_OUTLINE, DEFAULT_SLICE_PARTITION,
-             DEFAULT_STACK_PARTITION, DEFAULT_COLOR, availability);
+             DEFAULT_STACK_PARTITION, DEFAULT_COLOR, clock);
     }
 
     /**
@@ -150,14 +148,14 @@ public class CzmlEllipsoid
      * @param stackPartition : The number of stacks of the ellipsoid (number of
      *        parallels lines in the vertical direction)
      * @param color : The color of the ellipsoid.
-     * @param availability : The availability considered.
+     * @param clock : The clock considered.
      */
     public CzmlEllipsoid(final Cartesian cartesian, final boolean fill,
                          final boolean outline, final int slicePartition,
                          final int stackPartition, final Color color,
-                         final TimeInterval availability) {
+                         final Clock clock) {
         this.cartesian = cartesian;
-        this.availability = availability;
+        this.clock = clock;
         this.fill = fill;
         this.outline = outline;
         this.color = color;
@@ -175,14 +173,13 @@ public class CzmlEllipsoid
      * @param dimensions : These cartesians represent the dimensions of the
      *        ellipsoid (x,y,z), each value is the distance from the center for
      *        each dimension.
-     * @param availability : The availability considered.
+     * @param clock : The clock considered.
      */
     public CzmlEllipsoid(final List<JulianDate> julianDates,
-                         final List<Cartesian> dimensions,
-                         final TimeInterval availability) {
+                         final List<Cartesian> dimensions, final Clock clock) {
         this(julianDates, dimensions, DEFAULT_FILL, DEFAULT_OUTLINE,
              DEFAULT_SLICE_PARTITION, DEFAULT_STACK_PARTITION, DEFAULT_COLOR,
-             availability);
+             clock);
     }
 
     /**
@@ -200,17 +197,17 @@ public class CzmlEllipsoid
      * @param stackPartition : The number of stacks of the ellipsoid (number of
      *        parallels lines in the vertical direction).
      * @param color : The color of the ellipsoid.
-     * @param availability : The availability considered.
+     * @param clock : The availability considered.
      */
     public CzmlEllipsoid(final List<JulianDate> julianDates,
                          final List<Cartesian> dimensions, final boolean fill,
                          final boolean outline, final int slicePartition,
                          final int stackPartition, final Color color,
-                         final TimeInterval availability) {
+                         final Clock clock) {
         this.fill = fill;
         this.outline = outline;
         this.color = color;
-        this.availability = availability;
+        this.clock = clock;
         this.slicePartition = slicePartition;
         this.stackPartition = stackPartition;
         this.julianDates = julianDates;
@@ -224,12 +221,12 @@ public class CzmlEllipsoid
      * Builder czml ellipsoid builder.
      *
      * @param cartesian the cartesian
-     * @param availability the availability
+     * @param clockInput the clock
      * @return the czml ellipsoid builder
      */
-    public static CzmlEllipsoidBuilder
-        builder(final Cartesian cartesian, final TimeInterval availability) {
-        return new CzmlEllipsoidBuilder(cartesian, availability);
+    public static CzmlEllipsoidBuilder builder(final Cartesian cartesian,
+                                               final Clock clockInput) {
+        return new CzmlEllipsoidBuilder(cartesian, clockInput);
     }
 
     /**
@@ -237,14 +234,13 @@ public class CzmlEllipsoid
      *
      * @param julianDates the julian dates
      * @param dimensions the dimensions
-     * @param availability the availability
+     * @param clock the clock
      * @return the czml ellipsoid builder
      */
     public static CzmlEllipsoidBuilder
         builder(final List<JulianDate> julianDates,
-                final List<Cartesian> dimensions,
-                final TimeInterval availability) {
-        return new CzmlEllipsoidBuilder(julianDates, dimensions, availability);
+                final List<Cartesian> dimensions, final Clock clock) {
+        return new CzmlEllipsoidBuilder(julianDates, dimensions, clock);
     }
 
     // Overrides
@@ -262,7 +258,8 @@ public class CzmlEllipsoid
                 .writeSlicePartitionsProperty(this.getSlicePartition());
             ellipsoidCesiumWriter
                 .writeStackPartitionsProperty(this.getStackPartition());
-            ellipsoidCesiumWriter.writeInterval(this.getAvailability());
+            ellipsoidCesiumWriter
+                .writeInterval(this.getClock().getAvailability());
 
             if (multipleEllipsoids) {
                 try (EllipsoidRadiiCesiumWriter radiiWriter =
@@ -345,7 +342,7 @@ public class CzmlEllipsoid
      *
      * @return the availability
      */
-    public TimeInterval getAvailability() {
-        return availability;
+    public Clock getClock() {
+        return clock;
     }
 }
