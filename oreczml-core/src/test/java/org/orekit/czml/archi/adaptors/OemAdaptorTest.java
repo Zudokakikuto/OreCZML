@@ -63,7 +63,7 @@ public class OemAdaptorTest
 
         final OemAdaptor oemAdaptor = new OemAdaptor(oem);
 
-        Assertions.assertEquals(oem, oemAdaptor.getOem());
+        Assertions.assertEquals(oem, oemAdaptor.oem());
         Assertions.assertEquals(startDate, oemAdaptor.buildStartDate());
         Assertions.assertEquals(finalDate, oemAdaptor.buildFinalDate());
     }

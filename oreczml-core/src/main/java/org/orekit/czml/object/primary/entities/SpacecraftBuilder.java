@@ -17,6 +17,7 @@
 package org.orekit.czml.object.primary.entities;
 
 import org.hipparchus.geometry.euclidean.threed.Rotation;
+import org.orekit.czml.object.primary.AbstractPrimaryObject;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.czml.object.secondary.Orientation;
 import org.orekit.propagation.BoundedPropagator;
@@ -28,6 +29,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Spacecraft builder class
@@ -43,8 +45,8 @@ public class SpacecraftBuilder {
      * The default model path of the model for the Spacecraft.
      */
     public static final String DEFAULT_MODEL_PATH =
-        new File(Spacecraft.class.getClassLoader().getResource("satellite.png")
-            .getFile()).toPath().toString();
+        new File(Objects.requireNonNull(Spacecraft.class.getClassLoader()
+            .getResource("satellite.png")).getFile()).toPath().toString();
 
     /**
      * The default color of the orbit of the Spacecraft.
@@ -114,7 +116,7 @@ public class SpacecraftBuilder {
     private Rotation rotation;
 
     /** The list of bodies considered when influence sphere are computed. */
-    private List<Body> bodies = new ArrayList<>();
+    private List bodies = new ArrayList<>();
 
     /** The central body. */
     private Body centralBody;
@@ -264,7 +266,7 @@ public class SpacecraftBuilder {
      */
     public SpacecraftBuilder
         withOrientation(final Orientation orientationInput) {
-        this.orientation = orientationInput;
+        this.orientation = orientationInput.cloneObject();
         this.displayAttitude = true;
         return this;
     }
@@ -283,22 +285,10 @@ public class SpacecraftBuilder {
      * Function to set up a custom ID.
      *
      * @param customIDInput : The custom ID to set up.
-     * @return : The Spacecraft object with a custom ID.
+     * @return : The Spacecraft Builder with a custom ID.
      */
     public SpacecraftBuilder withCustomID(final String customIDInput) {
         this.customID = customIDInput;
-        return this;
-    }
-
-    /**
-     * Function to set up a custom ID.
-     *
-     * @param optionalRotationInput : The custom ID to set up.
-     * @return : The Spacecraft object with a custom ID.
-     */
-    public SpacecraftBuilder
-        withOptionalRotation(final Rotation optionalRotationInput) {
-        this.rotation = optionalRotationInput;
         return this;
     }
 
@@ -307,15 +297,14 @@ public class SpacecraftBuilder {
      *
      * @param bodiesInput The list of bodies considered
      * @param centralBodyInput The central body of the problem
-     * @return The spacecraft builder with the sphere of influence changes in
-     *         path displayed
+     * @return : The Spacecraft Builder with a custom influence sphere changes
      */
     public SpacecraftBuilder
         displayInfluenceSphereChanges(final List<Body> bodiesInput,
                                       final Body centralBodyInput) {
         this.displayInfluenceSphere = true;
-        this.bodies = bodiesInput;
-        this.centralBody = centralBodyInput;
+        this.bodies = Body.cloneList(bodiesInput);
+        this.centralBody = centralBodyInput.cloneObject();
         return this;
     }
 

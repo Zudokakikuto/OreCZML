@@ -22,6 +22,8 @@ import cesiumlanguagewriter.CesiumOutputStream;
 import cesiumlanguagewriter.JulianDate;
 import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.PositionCesiumWriter;
+import org.orekit.czml.errors.OreCzmlException;
+import org.orekit.czml.errors.OreCzmlMessages;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,7 +40,7 @@ import java.util.List;
  */
 public class TimePosition
     extends
-    AbstractSecondaryObject {
+    AbstractSecondaryObject<TimePosition> {
 
     /**
      * The julian dates when the position is defined.
@@ -98,6 +100,15 @@ public class TimePosition
             writer.writeInterpolationAlgorithm(cesiumInterpolationAlgorithm);
             writer.writeInterpolationDegree(interpolationDegree);
             writer.writeCartesian(dates, positions);
+        }
+    }
+
+    @Override
+    public TimePosition cloneObject() {
+        if (!positions.isEmpty() && !dates.isEmpty()) {
+            return new TimePosition(this.positions, this.dates);
+        } else {
+            throw new OreCzmlException(OreCzmlMessages.NOT_VALID_SECONDARY_OBJECT_FOR_CLONE);
         }
     }
 

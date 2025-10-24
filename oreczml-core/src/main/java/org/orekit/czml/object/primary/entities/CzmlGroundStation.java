@@ -25,6 +25,8 @@ import cesiumlanguagewriter.PositionCesiumWriter;
 import cesiumlanguagewriter.TimeStandard;
 import cesiumlanguagewriter.UriCesiumWriter;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
+import org.orekit.czml.errors.OreCzmlException;
+import org.orekit.czml.errors.OreCzmlMessages;
 import org.orekit.czml.object.nonvisual.CzmlModel;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
 import org.orekit.czml.object.primary.visu.StationVisibilityCircle;
@@ -53,7 +55,7 @@ import java.util.List;
  */
 public class CzmlGroundStation
     extends
-    AbstractPrimaryObject {
+    AbstractPrimaryObject<CzmlGroundStation> {
 
     /**
      * The default image used when no image/model is used for the station.
@@ -214,6 +216,22 @@ public class CzmlGroundStation
         if (displayCircle) {
             visibilityCircle.writeCzmlBlock(stream, output);
         }
+    }
+
+    @Override
+    public CzmlGroundStation cloneObject() {
+        try {
+            final CzmlGroundStation copy =
+                CzmlGroundStation
+                    .builder(this.topocentricFrame, this.getAvailability())
+                    .withModel(String.valueOf(this.model)).build();
+            copy.setId(getId());
+            copy.setName(getName());
+            return copy;
+        } catch (URISyntaxException | IOException e) {
+            throw new OreCzmlException(OreCzmlMessages.NOT_VALID_PRIMARY_OBJECT_FOR_CLONE);
+        }
+
     }
 
     public void displayCircle(final Spacecraft satellite,

@@ -17,7 +17,7 @@
 
 package org.orekit.czml.object.primary.entities;
 
-import org.orekit.czml.object.secondary.Clock;
+import cesiumlanguagewriter.TimeInterval;
 import org.orekit.propagation.BoundedPropagator;
 import org.orekit.time.AbsoluteDate;
 
@@ -57,7 +57,7 @@ public class ConstellationBuilder {
     /**
      * Path to the model.
      */
-    private String pathToModel = Constellation.DEFAULT_STRING_MODEL;
+    private List<String> pathToModel = new ArrayList<>();
 
     /**
      * The custom ID for the constellation.
@@ -65,7 +65,7 @@ public class ConstellationBuilder {
     private String customID;
 
     /** The availability of the constellation. */
-    private Clock clock;
+    private TimeInterval availability;
 
     /**  */
     private double clockMultiplier;
@@ -79,32 +79,30 @@ public class ConstellationBuilder {
     /**
      * The default builder for the constellation builder.
      *
-     * @param propagatorsInput : All the propagators that represent the
-     *        satellites.
-     * @param finalDateInput : The final date of the propagation.
-     * @param clock : The clock of the constellation.
-     * @param clockMultiplier : The clock considered.
+     * @param propagatorsInput : All the propagators that represent the satellites.
+     * @param finalDateInput   : The final date of the propagation.
+     * @param availability     : The availability of the constellation.
+     * @param clockMultiplier  : The clock considered.
      */
-    public ConstellationBuilder(final List<BoundedPropagator> propagatorsInput,
-                                final AbsoluteDate finalDateInput,
-                                final Clock clock,
+    public ConstellationBuilder(final List<BoundedPropagator> propagatorsInput, final AbsoluteDate finalDateInput, final TimeInterval availability,
                                 final double clockMultiplier) {
-        this.propagators = new ArrayList<>(propagatorsInput);
-        this.finalDate = finalDateInput;
-        this.clock = clock;
+        this.propagators     = new ArrayList<>(propagatorsInput);
+        this.finalDate       = finalDateInput;
+        this.availability    = availability;
         this.clockMultiplier = clockMultiplier;
-        this.customID =
-            DEFAULT_ID + propagatorsInput.size() + " " + DEFAULT_NUMBER_OF_SAT;
+        this.customID        = DEFAULT_ID + propagatorsInput.size() + " " + DEFAULT_NUMBER_OF_SAT;
+        this.pathToModel.add("");
     }
 
     /**
-     * Function to set up a custom model.
+     * Function to set up one or several custom models.
      *
-     * @param pathToModelInput : The path to the model.
-     * @return : The constellation builder with a custom model.
+     * @param pathToModelsInput : The list of paths to the models.
+     * @return : The constellation builder with custom models.
      */
-    public ConstellationBuilder withModel(final String pathToModelInput) {
-        this.pathToModel = pathToModelInput;
+    public ConstellationBuilder withModel(final List<String> pathToModelsInput) {
+        this.pathToModel.clear();
+        this.pathToModel = pathToModelsInput;
         return this;
     }
 
@@ -120,13 +118,13 @@ public class ConstellationBuilder {
     }
 
     /**
-     * Function to set a clock.
+     * Function to set a time interval.
      *
-     * @param clockInput : The clock to set up.
-     * @return : The constellation builder with a custom clock.
+     * @param availabilityInput : The availability to set up.
+     * @return : The constellation builder with a custom availability.
      */
-    public ConstellationBuilder withClock(final Clock clockInput) {
-        this.clock = clockInput;
+    public ConstellationBuilder withTimeInterval(final TimeInterval availabilityInput) {
+        this.availability = availabilityInput;
         return this;
     }
 
@@ -136,8 +134,7 @@ public class ConstellationBuilder {
      * @param clockMultiplierInput : The multiplier to set up.
      * @return : The constellation builder with a custom ID.
      */
-    public ConstellationBuilder
-        withClockMultiplier(final double clockMultiplierInput) {
+    public ConstellationBuilder withClockMultiplier(final double clockMultiplierInput) {
         this.clockMultiplier = clockMultiplierInput;
         return this;
     }
@@ -155,22 +152,19 @@ public class ConstellationBuilder {
     /**
      * The build function that generates a constellation object.
      *
-     * @return : A constellation object with the given parameters of the
-     *         builder.
+     * @return : A constellation object with the given parameters of the builder.
      * @throws URISyntaxException the uri syntax exception
-     * @throws IOException the io exception
+     * @throws IOException        the io exception
      */
     public Constellation build()
-        throws URISyntaxException,
-            IOException {
-        final Constellation tempConstellation =
-            new Constellation(propagators, finalDate, pathToModel, customID,
-                              clock, clockMultiplier);
+                    throws
+                    URISyntaxException,
+                    IOException {
+        final Constellation tempConstellation = new Constellation(propagators, finalDate, pathToModel, customID, availability, clockMultiplier);
         return checkAttributes(tempConstellation);
     }
 
-    private Constellation
-        checkAttributes(final Constellation constellationInput) {
+    private Constellation checkAttributes(final Constellation constellationInput) {
         if (displayAttitude) {
             constellationInput.displayAttitude();
         }

@@ -24,14 +24,13 @@ import cesiumlanguagewriter.MaterialCesiumWriter;
 import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.PolygonCesiumWriter;
 import cesiumlanguagewriter.SolidColorMaterialCesiumWriter;
+import cesiumlanguagewriter.TimeInterval;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.hipparchus.util.FastMath;
-import org.orekit.annotation.DefaultDataContext;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.bodies.OneAxisEllipsoid;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
 import org.orekit.czml.object.primary.entities.Spacecraft;
-import org.orekit.czml.object.secondary.Clock;
 import org.orekit.frames.Frame;
 import org.orekit.frames.FramesFactory;
 import org.orekit.frames.TopocentricFrame;
@@ -54,7 +53,7 @@ import java.util.List;
 
 public class StationVisibilityCircle
     extends
-    AbstractPrimaryObject {
+    AbstractPrimaryObject<StationVisibilityCircle> {
 
     /** The default id for the visibility station circle. */
     public static final String DEFAULT_ID = "STATION_CIRCLE/";
@@ -63,7 +62,7 @@ public class StationVisibilityCircle
     public static final String DEFAULT_NAME =
         "Circle of visibility of the station : ";
 
-    /** The spacecraft observed. */
+    /** The satellite observed. */
     private final Spacecraft spacecraft;
 
     /** The list of geodetic point representing the visibility circle. */
@@ -72,49 +71,51 @@ public class StationVisibilityCircle
     /** The list of cartesians points representing the visibility circle. */
     private List<Cartesian> circleCartesian = new ArrayList<>();
 
+    /** The topocentric frame used. */
+    private final TopocentricFrame topocentricFrame;
+
+    /** The angle of aperture. */
+    private final double angleOfAperture;
+
     /**
      * Default constructor of the station visibility circle.
      *
-     * @param topocentricFrame : The topocentric frame representing a ground
-     *        station.
-     * @param satellite : The satellite observed.
-     * @param angleOfAperture : The angle of aperture of the visibility of the
-     *        station.
-     * @param clock : The clock considered.
+     * @param topocentricFrameInput : The topocentric frame representing a
+     *        ground station.
+     * @param spacecraft : The satellite observed.
+     * @param angleOfApertureInput : The angle of aperture of the visibility of
+     *        the station.
+     * @param availability : The availability considered.
      */
-    StationVisibilityCircle(final TopocentricFrame topocentricFrame,
-                            final Spacecraft satellite,
-                            final double angleOfAperture, final Clock clock) {
+    StationVisibilityCircle(final TopocentricFrame topocentricFrameInput,
+                            final Spacecraft spacecraft,
+                            final double angleOfApertureInput,
+                            final TimeInterval availability) {
         this.setId(DEFAULT_ID +
-                   topocentricFrame.getName() + "/" + satellite.getId());
-        this.setName(DEFAULT_NAME + topocentricFrame.getName());
-        this.setAvailability(clock.getAvailability());
-        this.spacecraft = satellite;
+                   topocentricFrameInput.getName() + "/" + spacecraft.getId());
+        this.setName(DEFAULT_NAME + topocentricFrameInput.getName());
+        this.setAvailability(availability);
+        this.spacecraft = spacecraft.cloneObject();
+        this.topocentricFrame = topocentricFrameInput;
+        this.angleOfAperture = angleOfApertureInput;
         // Visibility cone need to be built, even if not used.
         final VisibilityCone cone =
-            new VisibilityCone(topocentricFrame, satellite, angleOfAperture,
-                               clock);
+            new VisibilityCone(topocentricFrameInput, spacecraft,
+                               angleOfApertureInput, availability);
         this.circleGeodetic =
-            computePointPositions(topocentricFrame, satellite, angleOfAperture);
-        this.circleCartesian = buildCartesianListGround(circleGeodetic);
+            computePointPositions(topocentricFrameInput, spacecraft,
+                                  angleOfApertureInput);
+        this.circleCartesian = cartesianGround(circleGeodetic);
     }
 
     // Builder
 
-    /**
-     * The builder of the station visibility circle.
-     *
-     * @param topocentricFrameInput : The topocentric frame representing a
-     *        ground station.
-     * @param satelliteInput : The satellite observed.
-     * @param clockInput : The clock considered.
-     * @return The station visibility builder
-     */
     public static StationVisibilityCircleBuilder
         builder(final TopocentricFrame topocentricFrameInput,
-                final Spacecraft satelliteInput, final Clock clockInput) {
+                final Spacecraft satelliteInput,
+                final TimeInterval availability) {
         return new StationVisibilityCircleBuilder(topocentricFrameInput,
-                                                  satelliteInput, clockInput);
+                                                  satelliteInput, availability);
     }
 
     @Override
@@ -150,14 +151,26 @@ public class StationVisibilityCircle
         }
     }
 
+    @Override
+    public StationVisibilityCircle cloneObject() {
+        final StationVisibilityCircle copy =
+            StationVisibilityCircle
+                .builder(this.topocentricFrame, this.spacecraft,
+                         getAvailability())
+                .withAngleOfAperture(this.angleOfAperture).build();
+        copy.setId(getId());
+        copy.setName(getName());
+        return copy;
+    }
+
     // Private functions
 
     final List<GeodeticPoint>
         computePointPositions(final TopocentricFrame topocentricFrameInput,
                               final Spacecraft satelliteInput,
-                              final double angleOfAperture) {
+                              final double angleOfApertureInput) {
         final List<GeodeticPoint> toReturn = new ArrayList<>();
-        final double fixedElevation = 90.0 - angleOfAperture;
+        final double fixedElevation = 90.0 - angleOfApertureInput;
         final double radiansElevation = FastMath.toRadians(fixedElevation);
         for (int i = 0; i < 360; i = i + 5) {
             final double radiansI = FastMath.toRadians(i);
@@ -169,17 +182,7 @@ public class StationVisibilityCircle
         return toReturn;
     }
 
-    /**
-     * This function aims at building the list of cartesian that build the
-     * circle projected on the ground.
-     *
-     * @param geodetics : The list of Geodetic Points needed to build the circle
-     *        on the ground
-     * @return A list of cartesian projected to the ground
-     */
-    @DefaultDataContext
-    final List<Cartesian>
-        buildCartesianListGround(final List<GeodeticPoint> geodetics) {
+    final List<Cartesian> cartesianGround(final List<GeodeticPoint> geodetics) {
         final List<Cartesian> toReturn = new ArrayList<>();
         final Frame ITRF =
             FramesFactory.getITRF(IERSConventions.IERS_2010, true);

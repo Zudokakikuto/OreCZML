@@ -23,7 +23,6 @@ import cesiumlanguagewriter.CesiumStreamWriter;
 import cesiumlanguagewriter.JulianDate;
 import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.TimeInterval;
-import org.orekit.annotation.DefaultDataContext;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.czml.object.nonvisual.PointOnBody;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
@@ -40,10 +39,13 @@ import java.util.List;
 
 /**
  * The type Covered surface on body.
+ *
+ * @author Julien Leblond
+ * @since 1.0
  */
 public class CoveredSurfaceOnBody
     extends
-    AbstractPrimaryObject {
+    AbstractPrimaryObject<CoveredSurfaceOnBody> {
 
     /** The default color of the covered surface. */
     public static final Color DEFAULT_COLOR = new Color(34, 155, 83);
@@ -93,6 +95,15 @@ public class CoveredSurfaceOnBody
      */
     private final List<Polygon> polygon;
 
+    /** The color considered for the surface. */
+    private final Color color;
+
+    /** To fill or not the surface. */
+    private final boolean fill;
+
+    /** Boolean to show the outline or not of the surface. */
+    private final boolean outline;
+
     // Constructors
 
     /**
@@ -124,15 +135,14 @@ public class CoveredSurfaceOnBody
      * @param fieldOfObservationInput : The field of observation of the
      *        satellite that will define the surface covered.
      * @param customID : The custom ID of the covered surface on body object.
-     * @param fill : Custom parameter for the fill property
-     * @param outline : Custom parameter for the outline property
-     * @param color : Custom parameter for the color of the polygons.
+     * @param fillInput : Custom parameter for the fill property
+     * @param outlineInput : Custom parameter for the outline property
+     * @param colorInput : Custom parameter for the color of the polygons.
      */
-    @DefaultDataContext
     CoveredSurfaceOnBody(final Spacecraft satelliteInput,
                          final FieldOfObservation fieldOfObservationInput,
-                         final String customID, final boolean fill,
-                         final boolean outline, final Color color) {
+                         final String customID, final boolean fillInput,
+                         final boolean outlineInput, final Color colorInput) {
 
         this.setId(customID);
         this.setName(DEFAULT_NAME +
@@ -143,6 +153,9 @@ public class CoveredSurfaceOnBody
         this.satellite = satelliteInput;
         this.fieldOfObservation = fieldOfObservationInput;
         this.fov = fieldOfObservationInput.getFov();
+        this.color = colorInput;
+        this.fill = fillInput;
+        this.outline = outlineInput;
 
         final List<PointOnBody> pointsOnBody = fieldOfObservation.getPoints();
         final List<List<Cartesian>> tempCartesians = new ArrayList<>();
@@ -152,11 +165,7 @@ public class CoveredSurfaceOnBody
             tempCartesians.add(currentCartesian);
         }
 
-        final List<Cartesian> cartesiansToBuildOnePolygon = new ArrayList<>();
         pointsCartesiansInTime = sortingListList(tempCartesians);
-        for (final List<Cartesian> currentCartesianList : pointsCartesiansInTime) {
-            cartesiansToBuildOnePolygon.addAll(currentCartesianList);
-        }
 
         this.polygon = new ArrayList<>();
         for (int i = 0; i < pointsCartesiansInTime.size() - 1; i++) {
@@ -168,15 +177,16 @@ public class CoveredSurfaceOnBody
             final JulianDate t1 =
                 fieldOfObservation.getJulianDates().get(i + 1);
             final TimeInterval tInterval = new TimeInterval(t0, t1);
+            ;
 
             // Get current polygon and close it off
             final List<Cartesian> currentCartesianList =
                 pointsCartesiansInTime.get(i);
 
             // Add polygon to list
-            this.polygon.add(Polygon
-                .builder(currentCartesianList, satelliteInput.getClock())
-                .withColor(color).withOutline(outline).withFill(fill).build());
+            this.polygon.add(Polygon.builder(currentCartesianList, tInterval)
+                .withColor(colorInput).withOutline(outlineInput)
+                .withFill(fillInput).build());
         }
 
     }
@@ -225,12 +235,23 @@ public class CoveredSurfaceOnBody
                                                .getBodyFrame().getName() +
                                            NUMBER + i;
                 packet.writeName(currentName);
-                packet.writeAvailability(poly.getClock().getAvailability());
+                packet.writeAvailability(poly.getAvailability());
 
                 poly.write(packet, output);
             }
             i += 1;
         }
+    }
+
+    @Override
+    public CoveredSurfaceOnBody cloneObject() {
+        final CoveredSurfaceOnBody copy =
+            CoveredSurfaceOnBody
+                .builder(this.satellite, this.fieldOfObservation)
+                .withColor(this.color).withFill(this.fill)
+                .withOutline(this.outline).withCustomId(getId()).build();
+        copy.setName(getName());
+        return copy;
     }
 
     // GETTERS

@@ -16,9 +16,9 @@
  */
 package org.orekit.czml.object.primary.visu;
 
+import cesiumlanguagewriter.TimeInterval;
 import org.orekit.czml.object.primary.entities.Constellation;
 import org.orekit.czml.object.primary.entities.Spacecraft;
-import org.orekit.czml.object.secondary.Clock;
 import org.orekit.frames.TopocentricFrame;
 
 import java.io.IOException;
@@ -47,7 +47,7 @@ public class LineOfVisibilityBuilder {
     /**
      * The satellite observed.
      */
-    private Spacecraft spacecraft;
+    private Spacecraft satellite;
 
     // Optional parameters
 
@@ -61,55 +61,56 @@ public class LineOfVisibilityBuilder {
      */
     private String customID;
 
+    /** The availability considered when several are used. */
+    private TimeInterval availability;
+
     /** The constellation of the lines. */
     private Constellation constellation;
 
     /** Boolean to display the triangle or not. */
     private boolean displayTriangle = false;
 
-    /** The clock considered. */
-    private Clock clock;
-
     // Constructor
 
     /**
-     * The constructor of the line of visibility builder with a spacecraft.
+     * The constructor of the line of visibility builder with a single
+     * spacecraft.
      *
      * @param topocentricFrameInput : The topocentric frame where the ground
      *        station is.
-     * @param spacecraftInput : The satellite observed.
-     * @param clock : The clock considered.
+     * @param spacecraftInput : The spacecraft observed.
+     * @param availability : The availability considered.
      */
     public LineOfVisibilityBuilder(final TopocentricFrame topocentricFrameInput,
                                    final Spacecraft spacecraftInput,
-                                   final Clock clock) {
-        this.spacecraft = spacecraftInput;
+                                   final TimeInterval availability) {
+        this.satellite = spacecraftInput;
         this.topocentricFrame = topocentricFrameInput;
         this.customID =
             LineOfVisibility.DEFAULT_ID +
                         topocentricFrameInput.getName() + "/" +
                         spacecraftInput.getId();
-        this.clock = clock;
+        this.availability = availability;
     }
 
     /**
-     * The constructor fo the line of visibility builder with a constellation.
+     * The constructor of the line of visibility builder with the constellation.
      *
      * @param topocentricFrameInput : The topocentric frame where the ground
      *        station is.
      * @param constellationInput : The constellation observed.
-     * @param clock : The clock considered.
+     * @param availability : The availability considered.
      */
     public LineOfVisibilityBuilder(final TopocentricFrame topocentricFrameInput,
                                    final Constellation constellationInput,
-                                   final Clock clock) {
-        this.constellation = constellationInput;
+                                   final TimeInterval availability) {
+        this.constellation = constellationInput.cloneObject();
         this.topocentricFrame = topocentricFrameInput;
         this.customID =
             LineOfVisibility.DEFAULT_ID +
                         topocentricFrameInput.getName() + "/" +
                         constellationInput.getId();
-        this.clock = clock;
+        this.availability = availability;
     }
 
     /**
@@ -137,22 +138,17 @@ public class LineOfVisibilityBuilder {
     }
 
     /**
-     * Function to set up a clock.
+     * Function to set up a availability.
      *
-     * @param clockInput : The clock to set up.
-     * @return : The line of visibility builder with a clock.
+     * @param availabilityInput : The availability to set up.
+     * @return : The line of visibility object with a availability.
      */
-    public LineOfVisibilityBuilder withClock(final Clock clockInput) {
-        this.clock = clockInput;
+    public LineOfVisibilityBuilder
+        withAvailability(final TimeInterval availabilityInput) {
+        this.availability = availabilityInput;
         return this;
     }
 
-    /**
-     * Function to display the visibility triangle of the line of visibility.
-     *
-     * @return : The line of visibility builder with visibility triangles
-     *         displayed
-     */
     public LineOfVisibilityBuilder withVisibilityTriangle() {
         this.displayTriangle = true;
         return this;
@@ -170,19 +166,19 @@ public class LineOfVisibilityBuilder {
         throws URISyntaxException,
             IOException {
         LineOfVisibility toReturn = null;
-        if (spacecraft != null) {
+        if (satellite != null) {
             toReturn =
-                new LineOfVisibility(topocentricFrame, spacecraft,
-                                     angleOfAperture, customID, clock);
+                new LineOfVisibility(topocentricFrame, satellite,
+                                     angleOfAperture, customID, availability);
 
         }
         if (constellation != null) {
             toReturn =
                 new LineOfVisibility(topocentricFrame, constellation,
-                                     angleOfAperture, customID, clock);
+                                     angleOfAperture, customID, availability);
         }
         if (displayTriangle) {
-            if (spacecraft != null) {
+            if (satellite != null) {
                 toReturn.displayTriangle();
             } else {
                 if (constellation != null) {
@@ -195,4 +191,5 @@ public class LineOfVisibilityBuilder {
         }
         return toReturn;
     }
+
 }

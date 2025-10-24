@@ -42,6 +42,7 @@ import org.orekit.utils.Constants;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -212,7 +213,8 @@ public class ConstellationTest
 
         final Constellation constellation =
             Constellation.builder(propagators, finalDate, header.getClock())
-                .withModel(ISSModel).withCustomId("CustomID").displayAttitude()
+                .withModel(Collections.singletonList(ISSModel))
+                .withCustomId("CustomID").displayAttitude()
                 .displayOnlyOnePeriod().build();
 
         final String pathFile =

@@ -28,6 +28,8 @@ import org.hipparchus.util.FastMath;
 import org.orekit.annotation.DefaultDataContext;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.bodies.OneAxisEllipsoid;
+import org.orekit.czml.errors.OreCzmlException;
+import org.orekit.czml.errors.OreCzmlMessages;
 import org.orekit.czml.object.Polyline;
 import org.orekit.czml.object.nonvisual.PointOnBody;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
@@ -59,7 +61,7 @@ import java.util.List;
  */
 public class FieldOfObservation
     extends
-    AbstractPrimaryObject {
+    AbstractPrimaryObject<FieldOfObservation> {
 
     /**
      * The default ID of the field of observation.
@@ -88,11 +90,8 @@ public class FieldOfObservation
 
     // Intrinsic parameters
 
-    /** The spacecraft. */
-    private final Spacecraft spacecraft;
-
     /**
-     * The fov of the spacecraft.
+     * The fov of the satellite.
      */
     private final FieldOfView fov;
 
@@ -151,21 +150,27 @@ public class FieldOfObservation
     /** Number of polylines. */
     private int numberOfPolylines;
 
+    /** The spacecraft. */
+    private Spacecraft spacecraft;
+
+    /** The angular step. */
+    private double angularStep;
+
     // Constructors
 
     /**
      * The basic constructor for the field of observation object with default
      * parameters.
      *
-     * @param satellite : The satellite which is observing the body.
+     * @param spacecraft : The satellite which is observing the body.
      * @param fovInput : The field of view of the satellite.
      * @param fovToBodyInput : The transform between the fov and the frame of
      *        the body.
      */
     @DefaultDataContext
-    FieldOfObservation(final Spacecraft satellite, final FieldOfView fovInput,
+    FieldOfObservation(final Spacecraft spacecraft, final FieldOfView fovInput,
                        final Transform fovToBodyInput) {
-        this(satellite, fovInput, fovToBodyInput,
+        this(spacecraft, fovInput, fovToBodyInput,
              new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS,
                                   Constants.WGS84_EARTH_FLATTENING,
                                   DataContext.getDefault().getFrames()
@@ -173,7 +178,7 @@ public class FieldOfObservation
                                                true)),
              DEFAULT_ANGULAR_STEP, DEFAULT_COLOR,
              DEFAULT_ID +
-                                                  satellite.getName() + "/" +
+                                                  spacecraft.getName() + "/" +
                                                   new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS,
                                                                        Constants.WGS84_EARTH_FLATTENING,
                                                                        DataContext
@@ -206,12 +211,13 @@ public class FieldOfObservation
                        final double angularStepInput, final Color color,
                        final String customID) {
 
+        this.spacecraft = spacecraft;
         this.setId(customID);
         this.setName(DEFAULT_NAME + spacecraft.getName());
-        this.spacecraft = spacecraft;
         this.initialTransformFovToBody = transformFovToBody;
         this.fov = fovInput;
         this.polylineColor = color;
+        this.angularStep = angularStepInput;
         referenceSatellite =
             new Reference(spacecraft.getId() + DEFAULT_H_POSITION);
         this.body = body;
@@ -259,15 +265,15 @@ public class FieldOfObservation
     /**
      * Builder field of observation builder.
      *
-     * @param satellite the satellite
+     * @param spacecraft the spacecraft
      * @param fieldOfView the field of view
      * @param transformFovToBodyInput the transform fov to body input
      * @return the field of observation builder
      */
     public static FieldOfObservationBuilder
-        builder(final Spacecraft satellite, final FieldOfView fieldOfView,
+        builder(final Spacecraft spacecraft, final FieldOfView fieldOfView,
                 final Transform transformFovToBodyInput) {
-        return new FieldOfObservationBuilder(satellite, fieldOfView,
+        return new FieldOfObservationBuilder(spacecraft, fieldOfView,
                                              transformFovToBodyInput);
     }
 
@@ -311,6 +317,23 @@ public class FieldOfObservation
                 new Reference(firstPoint.getId() + DEFAULT_H_POSITION);
             buildPolyline(polylineColor, lastPointReference,
                           firstPointReference, false, stream, output);
+        }
+    }
+
+    @Override
+    public FieldOfObservation cloneObject() {
+        try {
+            final FieldOfObservation copy =
+                FieldOfObservation
+                    .builder(this.spacecraft, this.fov,
+                             this.initialTransformFovToBody)
+                    .withColor(this.polylineColor).withBody(this.body)
+                    .withCustomID(getId()).withAngularStep(this.angularStep)
+                    .build();
+            copy.setName(getName());
+            return copy;
+        } catch (URISyntaxException | IOException e) {
+            throw new OreCzmlException(OreCzmlMessages.NOT_VALID_PRIMARY_OBJECT_FOR_CLONE);
         }
     }
 
@@ -432,7 +455,7 @@ public class FieldOfObservation
                                final CesiumOutputStream output) {
         try (PacketCesiumWriter packet = stream.openPacket(output)) {
             final Polyline currentPolyline =
-                Polyline.nonVectorBuilder(spacecraft.getClock())
+                Polyline.nonVectorBuilder(getAvailability())
                     .withFirstReference(firstPointReference)
                     .withSecondReference(secondPointReference)
                     .withColor(polylineColorInput).build();

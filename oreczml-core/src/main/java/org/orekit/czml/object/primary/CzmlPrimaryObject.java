@@ -22,6 +22,7 @@ import cesiumlanguagewriter.TimeInterval;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.List;
 
 /**
  * CZML Primary Object Interface
@@ -32,7 +33,7 @@ import java.net.URISyntaxException;
  * @author Julien LEBLOND
  * @since 1.0.0
  */
-public interface CzmlPrimaryObject {
+public interface CzmlPrimaryObject<T extends CzmlPrimaryObject<T>> {
 
     // Overrides methods
 
@@ -93,4 +94,11 @@ public interface CzmlPrimaryObject {
     void setAvailability(TimeInterval interval);
 
     String toString();
+
+    /**
+     * This function aims at copying the object.
+     *
+     * @return A copy of the object
+     */
+    T cloneObject();
 }

@@ -26,21 +26,21 @@ import cesiumlanguagewriter.OrientationCesiumWriter;
 import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.PathCesiumWriter;
 import cesiumlanguagewriter.PolylineMaterialCesiumWriter;
+import cesiumlanguagewriter.PositionCesiumWriter;
 import cesiumlanguagewriter.SolidColorMaterialCesiumWriter;
 import cesiumlanguagewriter.TimeInterval;
 import org.hipparchus.geometry.euclidean.threed.Rotation;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
-import org.orekit.annotation.DefaultDataContext;
 import org.orekit.attitudes.Attitude;
 import org.orekit.czml.errors.OreCzmlException;
 import org.orekit.czml.errors.OreCzmlMessages;
 import org.orekit.czml.object.ModelType;
-import org.orekit.czml.object.Path;
 import org.orekit.czml.object.nonvisual.CzmlModel;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
 import org.orekit.czml.object.primary.systems.SpacecraftReferenceSystem;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.czml.object.secondary.Orientation;
+import org.orekit.czml.object.secondary.Path;
 import org.orekit.czml.object.secondary.TimePosition;
 import org.orekit.czml.object.utils.DateUtils;
 import org.orekit.czml.object.utils.InfluenceSphereUtils;
@@ -63,34 +63,29 @@ import java.util.List;
 /**
  * Spacecraft class.
  * <p>
- * This class represents the Spacecraft object to be displayed. It can be build
- * from many orekit outputs and admits several functions to display or not
- * intrinsic parameters.
+ * This class represents the Spacecraft object to be displayed. It can be build from many orekit outputs and admits several functions to display or
+ * not intrinsic parameters.
  * </p>
  * <p>
- * Each Spacecraft object created will imply a propagation with default
- * parameters, if you want you own parameters in the propagator, you can still
+ * Each Spacecraft object created will imply a propagation with default parameters, if you want you own parameters in the propagator, you can still
  * build a Spacecraft with a propagator to do so.
  * </p>
  * <p>
- * The Spacecraft object admits also 2D and 3D models. By default builders will
- * load a 2D image to represent the Spacecraft, but each builder is overloaded
- * with a path to the 3D model to charge your own 2D or 3D model.
+ * The Spacecraft object admits also 2D and 3D models. By default builders will load a 2D image to represent the Spacecraft, but each builder is
+ * overloaded with a path to the 3D model to charge your own 2D or 3D model.
  * </p>
  *
  * @author Julien LEBLOND
  * @since 1.0.0
  */
 public class Spacecraft
-    extends
-    AbstractPrimaryObject {
+                extends AbstractPrimaryObject<Spacecraft> {
 
     /**
      * The default model path, empty.
      */
     public static final String DEFAULT_MODEL_PATH =
-        new File(Spacecraft.class.getClassLoader().getResource("satellite.png")
-            .getFile()).toPath().toString();
+                    new File(Spacecraft.class.getClassLoader().getResource("satellite.png").getFile()).toPath().toString();
 
     /**
      * The default id of the Spacecraft.
@@ -103,21 +98,21 @@ public class Spacecraft
     public static final String DEFAULT_NAME = "Spacecraft";
 
     /** The default id when a path if created when influence sphere are used. */
-    public static final String DEFAULT_ID_PATH_INFLUENCE_SPHERE =
-        "PATH INSIDE INFLUENCE SPHERE:";
+    public static final String DEFAULT_ID_PATH_INFLUENCE_SPHERE = "PATH INSIDE INFLUENCE SPHERE:";
 
     /**
      * The default name when a path if created when influence sphere are used.
      */
-    public static final String DEFAULT_NAME_PATH_INFLUENCE_SPHERE =
-        "Path inside the sphere of influence of :";
+    public static final String DEFAULT_NAME_PATH_INFLUENCE_SPHERE = "Path inside the sphere of influence of :";
 
     /** The default reference position tool. */
     public static final String H_REFERENCE_POSITION = "#position";
 
     /** The default format for the formatted ID. */
-    public static final String DEFAULT_FORMAT =
-        DEFAULT_ID + "{P(%1.8e, %2.8e, %3.8e), V(%4.8e, %5.8e, %6.8e)}";
+    public static final String DEFAULT_FORMAT = DEFAULT_ID + "{P(%1.8e, %2.8e, %3.8e), V(%4.8e, %5.8e, %6.8e)}";
+
+    /** The inertial frame used in the position. */
+    public static final String DEFAULT_INERTIAL = "INERTIAL";
 
     /**
      * The default orbit color of the Spacecraft.
@@ -137,8 +132,7 @@ public class Spacecraft
     private boolean displayOnlyOnePeriod = false;
 
     /**
-     * To display or not the attitude of the Spacecraft. By default, the
-     * Spacecraft is oriented in TNW in the local orbital frame.
+     * To display or not the attitude of the Spacecraft. By default, the Spacecraft is oriented in TNW in the local orbital frame.
      */
     private boolean displayAttitude = false;
 
@@ -154,14 +148,12 @@ public class Spacecraft
     private List<TimeInterval> intervalInfluenceSpheres;
 
     /**
-     * The list containing the list of position of the satellite splitted for
-     * each influence sphere.
+     * The list containing the list of position of the satellite splitted for each influence sphere.
      */
     private List<List<Cartesian>> positionInsideInfluenceSphere;
 
     /**
-     * The list containing the list of time of the satellite splitted for each
-     * influence sphere.
+     * The list containing the list of time of the satellite splitted for each influence sphere.
      */
     private List<List<JulianDate>> timeInsideInfluenceSphere;
 
@@ -188,6 +180,11 @@ public class Spacecraft
     private final Frame frame;
 
     // Writing arguments
+
+    /**
+     * The period of the orbit.
+     */
+    private double period;
 
     /**
      * The orientation in the local orbital frame of the Spacecraft.
@@ -230,79 +227,61 @@ public class Spacecraft
     private String description;
 
     /** The clock of the spacecraft. */
-    private final Clock clock;
-
+    private Clock clock;
     // Constructor
 
     /**
-     * The basic Spacecraft constructor, it only needs one bounded propagator.
-     * It uses default parameters.
+     * The basic Spacecraft constructor, it only needs one bounded propagator. It uses default parameters.
      *
-     * @param propagator : A bounded propagator resulting from an already done
-     *        propagation.
-     * @param clock : The clock used for the spacecraft
+     * @param propagator : A bounded propagator resulting from an already done propagation.
+     * @param clock      : The clock used for the spacecraft
      * @throws URISyntaxException the uri syntax exception
-     * @throws IOException the io exception
+     * @throws IOException        the io exception
      */
     public Spacecraft(final BoundedPropagator propagator, final Clock clock)
-        throws URISyntaxException,
-            IOException {
-        this(propagator, propagator.getMinDate(), propagator.getMaxDate(),
-             clock.getMultiplier(), DEFAULT_MODEL_PATH, DEFAULT_COLOR,
-             String.format(DEFAULT_FORMAT,
-                           propagator.getInitialState().getPosition().getX(),
-                           propagator.getInitialState().getPosition().getY(),
-                           propagator.getInitialState().getPosition().getZ(),
-                           propagator.getInitialState().getPVCoordinates()
-                               .getVelocity().getX(),
-                           propagator.getInitialState().getPVCoordinates()
-                               .getVelocity().getY(),
-                           propagator.getInitialState().getPVCoordinates()
-                               .getVelocity().getZ()));
+                    throws
+                    URISyntaxException,
+                    IOException {
+        this(propagator, propagator.getMinDate(), propagator.getMaxDate(), clock.getMultiplier(), DEFAULT_MODEL_PATH, DEFAULT_COLOR,
+             String.format(DEFAULT_FORMAT, propagator.getInitialState().getPosition().getX(), propagator.getInitialState().getPosition().getY(),
+                           propagator.getInitialState().getPosition().getZ(), propagator.getInitialState().getPVCoordinates().getVelocity().getX(),
+                           propagator.getInitialState().getPVCoordinates().getVelocity().getY(),
+                           propagator.getInitialState().getPVCoordinates().getVelocity().getZ()));
     }
 
     /**
      * The Spacecraft constructor with no default parameters.
      *
-     * @param propagator : A bounded propagator resulting from an already done
-     *        propagation.
-     * @param startDateInput : The start date to consider for the start of the
-     *        propagation and the availability of the Spacecraft.
-     * @param finalDateInput : The stop date to consider for the stop the
-     *        propagation and the availability of the Spacecraft.
-     * @param modelPath : The path to the model to load.
-     * @param color : The color of the orbit.
-     * @param customID : The custom ID of the Spacecraft.
+     * @param propagator      : A bounded propagator resulting from an already done propagation.
+     * @param startDateInput  : The start date to consider for the start of the propagation and the availability of the Spacecraft.
+     * @param finalDateInput  : The stop date to consider for the stop the propagation and the availability of the Spacecraft.
+     * @param modelPath       : The path to the model to load.
+     * @param color           : The color of the orbit.
+     * @param customID        : The custom ID of the Spacecraft.
      * @param clockMultiplier : The clock multiplier
      * @throws URISyntaxException the uri syntax exception
-     * @throws IOException the io exception
+     * @throws IOException        the io exception
      */
-    @DefaultDataContext
-    public Spacecraft(final BoundedPropagator propagator,
-                      final AbsoluteDate startDateInput,
-                      final AbsoluteDate finalDateInput,
-                      final double clockMultiplier, final String modelPath,
-                      final Color color, final String customID)
-        throws URISyntaxException,
-            IOException {
+    public Spacecraft(final BoundedPropagator propagator, final AbsoluteDate startDateInput, final AbsoluteDate finalDateInput,
+                      final double clockMultiplier, final String modelPath, final Color color, final String customID)
+                    throws
+                    URISyntaxException,
+                    IOException {
 
         this.setId(customID);
         this.setName(DEFAULT_NAME);
-        this.setAvailability(new TimeInterval(DateUtils
-            .toJulianDate(startDateInput), DateUtils.toJulianDate(finalDateInput)));
-        this.spacecraftPropagator = propagator;
-        this.description =
-            "<!--HTML-->\r\n<p>Id : " +
-                           customID + "</p>\r\n<p>" + "Simulated from : " +
-                           startDateInput + " to " + finalDateInput + "</p>";
-        this.frame = propagator.getFrame();
-        this.color = color;
         this.clock = new Clock(startDateInput, finalDateInput, clockMultiplier);
-        this.model = new CzmlModel(modelPath, true, clock);
-        this.modelType = model.getModelType();
-        this.startDate = startDateInput;
-        this.finalDate = finalDateInput;
-        this.clockMultiplier = clockMultiplier;
+        this.setAvailability(new TimeInterval(DateUtils.toJulianDate(startDateInput), DateUtils.toJulianDate(finalDateInput)));
+        this.spacecraftPropagator = propagator;
+        this.description          =
+                        "<!--HTML-->\r\n<p>Id : " + customID + "</p>\r\n<p>" + "Simulated from : " + startDateInput + " to " + finalDateInput + "</p>";
+        this.frame                = propagator.getFrame();
+        this.color                = color;
+        this.model                = new CzmlModel(modelPath, true, this.getAvailability());
+        this.modelType            = model.getModelType();
+        this.startDate            = startDateInput;
+        this.finalDate            = finalDateInput;
+        this.clockMultiplier      = clockMultiplier;
 
         // Setup propagator
         multiplexerSetup(propagator);
@@ -317,33 +296,31 @@ public class Spacecraft
      * Builder Spacecraft builder.
      *
      * @param propagator the propagator
-     * @param clock the clock
+     * @param clock      the clock
      * @return the Spacecraft builder
      */
-    public static SpacecraftBuilder builder(final BoundedPropagator propagator,
-                                            final Clock clock) {
+    public static SpacecraftBuilder builder(final BoundedPropagator propagator, final Clock clock) {
         return new SpacecraftBuilder(propagator, clock);
     }
 
     /**
      * Builder Spacecraft builder.
      *
-     * @param propagator the propagator
+     * @param propagator           the propagator
      * @param clockMultiplierInput the clock multiplier
      * @return the Spacecraft builder
      */
-    public static SpacecraftBuilder builder(final BoundedPropagator propagator,
-                                            final double clockMultiplierInput) {
+    public static SpacecraftBuilder builder(final BoundedPropagator propagator, final double clockMultiplierInput) {
         return new SpacecraftBuilder(propagator, clockMultiplierInput);
     }
 
     // Overrides
 
     @Override
-    public void writeCzmlBlock(final CesiumStreamWriter stream,
-                               final CesiumOutputStream output)
-        throws URISyntaxException,
-            IOException {
+    public void writeCzmlBlock(final CesiumStreamWriter stream, final CesiumOutputStream output)
+                    throws
+                    URISyntaxException,
+                    IOException {
 
         output.setPrettyFormatting(true);
         // If the influence sphere are to be displayed, the path must be written
@@ -355,12 +332,11 @@ public class Spacecraft
                 packet.writeAvailability(getAvailability());
                 packet.writeDescriptionProperty(description);
 
-                czmlDisplay(packet, output);
+                czmlDisplay(packet, stream, output);
 
                 czmlPath(packet, output, getColor());
 
-                czmlPosition(packet, output, getCartesianArraylist(),
-                             getJulianDates());
+                czmlPosition(packet, output, getCartesianArraylist(), getJulianDates());
 
             } catch (URISyntaxException | IOException e) {
                 throw new RuntimeException(e);
@@ -369,32 +345,54 @@ public class Spacecraft
                 getSpacecraftReferenceSystem().writeCzmlBlock(stream, output);
             }
         } else {
-            final List<Color> colors =
-                this.colorWheel(intervalInfluenceSpheres.size());
+            final List<Color> colors = this.colorWheel(intervalInfluenceSpheres.size());
             for (int i = 0; i < intervalInfluenceSpheres.size(); i++) {
-                final List<Cartesian> cartesians =
-                    positionInsideInfluenceSphere.get(i);
-                final List<JulianDate> julianDates =
-                    timeInsideInfluenceSphere.get(i);
+                final List<Cartesian>  cartesians  = positionInsideInfluenceSphere.get(i);
+                final List<JulianDate> julianDates = timeInsideInfluenceSphere.get(i);
                 try (PacketCesiumWriter packet = stream.openPacket(output)) {
-                    packet.writeId(this.getId() +
-                                   " " + DEFAULT_ID_PATH_INFLUENCE_SPHERE +
-                                   " " + i);
-                    packet.writeName(DEFAULT_NAME_PATH_INFLUENCE_SPHERE +
-                                     " " + i);
+                    packet.writeId(this.getId() + " " + DEFAULT_ID_PATH_INFLUENCE_SPHERE + " " + i);
+                    packet.writeName(DEFAULT_NAME_PATH_INFLUENCE_SPHERE + " " + i);
                     packet.writeAvailability(getAvailability());
-                    packet
-                        .writeDescriptionProperty("Path representing the " +
-                                                  i +
-                                                  "the path of the spacecraft " +
-                                                  getId() +
-                                                  " going through influence spheres");
+                    packet.writeDescriptionProperty(
+                                    "Path representing the " + i + "the path of the spacecraft " + getId() + " going through influence spheres");
 
                     czmlPath(packet, output, colors.get(i));
-                    czmlDisplay(packet, output);
+                    czmlDisplay(packet, stream, output);
                     czmlPosition(packet, output, cartesians, julianDates);
                 }
             }
+        }
+    }
+
+    @Override
+    public Spacecraft cloneObject() {
+        try {
+            final Spacecraft copy = new Spacecraft(this.getSpacecraftBoundedPropagator(), this.getClock());
+            copy.setAttitudes(this.attitudes);
+            copy.setAvailability(this.getAvailability());
+            copy.setClock(this.clock);
+            copy.setColor(this.color);
+            copy.setDescription(this.description);
+            copy.setDisplayAttitude(this.displayAttitude);
+            if (displayAttitude) {
+                copy.setOriented(this.oriented);
+                copy.setOrientation(this.orientation);
+            }
+            copy.setDisplayInfluenceSphereChanges(this.displayInfluenceSphereChanges);
+            copy.setDisplayOnlyOnePeriod(this.displayOnlyOnePeriod);
+            copy.setDisplayReferenceSystem(this.displayReferenceSystem);
+            copy.setId(this.getId());
+            copy.setIntervalInfluenceSpheres(this.intervalInfluenceSpheres);
+            copy.setName(this.getName());
+            copy.setPeriod(this.period);
+            copy.setPositionInsideInfluenceSphere(this.positionInsideInfluenceSphere);
+            copy.setPropagator(this.getSpacecraftBoundedPropagator());
+            copy.setSpacecraftPropagator(this.spacecraftPropagator);
+            copy.setSpacecraftReferenceSystem(this.spacecraftReferenceSystem);
+            copy.setTimeInsideInfluenceSphere(this.timeInsideInfluenceSphere);
+            return copy;
+        } catch (URISyntaxException | IOException e) {
+            throw new OreCzmlException(OreCzmlMessages.NOT_VALID_PRIMARY_OBJECT_FOR_CLONE);
         }
     }
 
@@ -419,47 +417,33 @@ public class Spacecraft
      * Display Spacecraft reference system.
      */
     public void displaySpacecraftReferenceSystem() {
-        this.displayReferenceSystem = true;
+        this.displayReferenceSystem    = true;
         this.spacecraftReferenceSystem = new SpacecraftReferenceSystem(this);
     }
 
     /**
-     * Detects and prints all dates when the spacecraft changes the sphere of
-     * influence.
+     * Detects and prints all dates when the spacecraft changes the sphere of influence.
      *
-     * @param bodies list of celestial bodies with defined influence spheres
+     * @param bodies      list of celestial bodies with defined influence spheres
      * @param centralBody the main reference body (e.g., the Sun)
      */
-    public void displayInfluenceSphereChanges(final List<Body> bodies,
-                                              final Body centralBody) {
+    public void displayInfluenceSphereChanges(final List<Body> bodies, final Body centralBody) {
 
-        final Frame centralFrame =
-            centralBody.getCelestialBody().getInertiallyOrientedFrame();
+        final Frame centralFrame = centralBody.getCelestialBody().getInertiallyOrientedFrame();
 
         final List<AbsoluteDate> datesChanges =
-            InfluenceSphereUtils
-                .findCrossingSphereDates(bodies, centralFrame,
-                                         this.getSpaceCraftStates(), this.frame,
-                                         this.finalDate);
+                        InfluenceSphereUtils.findCrossingSphereDates(bodies, centralFrame, this.getSpaceCraftStates(), this.frame, this.finalDate);
 
         if (datesChanges.size() > 2) {
             displayInfluenceSphereChanges = true;
-            final List<JulianDate> datesChangesJulian =
-                DateUtils.toJulianDates(datesChanges);
-            this.intervalInfluenceSpheres =
-                DateUtils.createTimeIntervals(datesChangesJulian);
+            final List<JulianDate> datesChangesJulian = DateUtils.toJulianDates(datesChanges);
+            this.intervalInfluenceSpheres = DateUtils.createTimeIntervals(datesChangesJulian);
             // We remove the first interval because it starts at the 01/01/1900
             // to the first date of the simulation, which is useless here.
             this.intervalInfluenceSpheres.remove(0);
-            this.positionInsideInfluenceSphere =
-                InfluenceSphereUtils
-                    .findPositionInsideInfluenceSpheres(getCartesianArraylist(),
-                                                        getJulianDates(),
-                                                        intervalInfluenceSpheres);
-            this.timeInsideInfluenceSphere =
-                InfluenceSphereUtils
-                    .findTimeInsideInfluenceSpheres(getJulianDates(),
-                                                    intervalInfluenceSpheres);
+            this.positionInsideInfluenceSphere = InfluenceSphereUtils.findPositionInsideInfluenceSpheres(getCartesianArraylist(), getJulianDates(),
+                                                                                                         intervalInfluenceSpheres);
+            this.timeInsideInfluenceSphere     = InfluenceSphereUtils.findTimeInsideInfluenceSpheres(getJulianDates(), intervalInfluenceSpheres);
         }
     }
 
@@ -487,6 +471,15 @@ public class Spacecraft
             toReturn.add(spacecraftState.getDate());
         }
         return Collections.unmodifiableList(toReturn);
+    }
+
+    /**
+     * Gets the clock.
+     *
+     * @return The clock
+     */
+    public Clock getClock() {
+        return clock.cloneObject();
     }
 
     /**
@@ -528,9 +521,7 @@ public class Spacecraft
         final List<Cartesian> toReturn = new ArrayList<>();
         for (SpacecraftState spacecraftState : spaceCraftStates) {
             final Vector3D currentVector3D = spacecraftState.getPosition();
-            toReturn.add(new Cartesian(currentVector3D.getX(),
-                                       currentVector3D.getY(),
-                                       currentVector3D.getZ()));
+            toReturn.add(new Cartesian(currentVector3D.getX(), currentVector3D.getY(), currentVector3D.getZ()));
         }
         return Collections.unmodifiableList(toReturn);
     }
@@ -572,21 +563,129 @@ public class Spacecraft
     }
 
     /**
-     * Gets the clock.
-     *
-     * @return the clock
-     */
-    public Clock getClock() {
-        return clock;
-    }
-
-    /**
      * Gets color.
      *
      * @return the color
      */
     public Color getColor() {
         return color;
+    }
+
+    /**
+     * Get if the spacecraft is oriented or not.
+     *
+     * @return Boolean to know if it is oriented or not
+     */
+    public boolean isOriented() {
+        return oriented;
+    }
+
+    /**
+     * Get if the spacecraft displays only one period or the orbit or not.
+     *
+     * @return Boolean to know if only one period or the orbit is displayed or not
+     */
+    public boolean isDisplayOnlyOnePeriod() {
+        return displayOnlyOnePeriod;
+    }
+
+    /**
+     * Get if the spacecraft displays the attitude or not.
+     *
+     * @return Boolean to know the attitude is displayed or not
+     */
+    public boolean isDisplayAttitude() {
+        return displayAttitude;
+    }
+
+    /**
+     * Get if the spacecraft displays its reference system or not.
+     *
+     * @return Boolean to know the reference system of the spacecraft is displayed or not
+     */
+    public boolean isDisplayReferenceSystem() {
+        return displayReferenceSystem;
+    }
+
+    /**
+     * Get if the spacecraft displays the influence sphere changes or not.
+     *
+     * @return Boolean to know the influence sphere changes are displayed
+     */
+    public boolean isDisplayInfluenceSphereChanges() {
+        return displayInfluenceSphereChanges;
+    }
+
+    /**
+     * Gets the intervalInfluenceSpheres.
+     *
+     * @return the intervalInfluenceSpheres
+     */
+    public List<TimeInterval> getIntervalInfluenceSpheres() {
+        return intervalInfluenceSpheres;
+    }
+
+    /**
+     * Gets the positionInsideInfluenceSphere.
+     *
+     * @return the positionInsideInfluenceSphere
+     */
+    public List<List<Cartesian>> getPositionInsideInfluenceSphere() {
+        return positionInsideInfluenceSphere;
+    }
+
+    /**
+     * Gets the timeInsideInfluenceSphere.
+     *
+     * @return the timeInsideInfluenceSphere
+     */
+    public List<List<JulianDate>> getTimeInsideInfluenceSphere() {
+        return timeInsideInfluenceSphere;
+    }
+
+    /**
+     * Gets the optionalRotation.
+     *
+     * @return the optionalRotation
+     */
+    public Rotation getOptionalRotation() {
+        return optionalRotation;
+    }
+
+    /**
+     * Gets the startDate.
+     *
+     * @return the startDate
+     */
+    public AbsoluteDate getStartDate() {
+        return startDate;
+    }
+
+    /**
+     * Gets the finalDate.
+     *
+     * @return the finalDate
+     */
+    public AbsoluteDate getFinalDate() {
+        return finalDate;
+    }
+
+    /**
+     * Gets the clockMultiplier.
+     *
+     * @return the clockMultiplier
+     */
+    public double getClockMultiplier() {
+        return clockMultiplier;
+    }
+
+    /**
+     * Gets the description.
+     *
+     * @return the description
+     */
+    public String getDescription() {
+        return description;
     }
 
     /**
@@ -635,7 +734,7 @@ public class Spacecraft
      * @return the Spacecraft reference system
      */
     public SpacecraftReferenceSystem getSpacecraftReferenceSystem() {
-        return spacecraftReferenceSystem;
+        return spacecraftReferenceSystem.cloneObject();
     }
 
     /**
@@ -662,10 +761,8 @@ public class Spacecraft
      * @return the period
      */
     public double getPeriod() {
-        final double period;
         try {
-            period =
-                spacecraftPropagator.getInitialState().getKeplerianPeriod();
+            this.period = spacecraftPropagator.getInitialState().getKeplerianPeriod();
         } catch (OrekitException e) {
             throw new OreCzmlException(OreCzmlMessages.NO_ORBIT_FOR_KEPLERIAN_PERIOD);
         }
@@ -684,14 +781,140 @@ public class Spacecraft
     }
 
     /**
+     * Sets the clock.
+     *
+     * @param clock The clock
+     */
+    public void setClock(final Clock clock) {
+        this.clock = clock;
+    }
+
+    /**
+     * Sets the color.
+     *
+     * @param color The color
+     */
+    public void setColor(final Color color) {
+        this.color = color;
+    }
+
+    /**
+     * Sets the spacecraft Reference System.
+     *
+     * @param spacecraftReferenceSystem The spacecraft Reference System
+     */
+    public void setSpacecraftReferenceSystem(final SpacecraftReferenceSystem spacecraftReferenceSystem) {
+        this.spacecraftReferenceSystem = spacecraftReferenceSystem;
+    }
+
+    /**
+     * Sets the spacecraft Propagator.
+     *
+     * @param spacecraftPropagator The spacecraft Propagator
+     */
+    public void setSpacecraftPropagator(final Propagator spacecraftPropagator) {
+        this.spacecraftPropagator = spacecraftPropagator;
+    }
+
+    /**
+     * Sets the orientation.
+     *
+     * @param orientation The orientation
+     */
+    public void setOrientation(final Orientation orientation) {
+        this.orientation = orientation;
+    }
+
+    /**
+     * Sets the period.
+     *
+     * @param period The period
+     */
+    public void setPeriod(final double period) {
+        this.period = period;
+    }
+
+    /**
+     * Sets the time Inside the Influence Sphere.
+     *
+     * @param timeInsideInfluenceSphere The time Inside the Influence Sphere
+     */
+    public void setTimeInsideInfluenceSphere(final List<List<JulianDate>> timeInsideInfluenceSphere) {
+        this.timeInsideInfluenceSphere = timeInsideInfluenceSphere;
+    }
+
+    /**
+     * Sets the position Inside the Influence Sphere.
+     *
+     * @param positionInsideInfluenceSphere The position Inside the Influence Sphere
+     */
+    public void setPositionInsideInfluenceSphere(final List<List<Cartesian>> positionInsideInfluenceSphere) {
+        this.positionInsideInfluenceSphere = positionInsideInfluenceSphere;
+    }
+
+    /**
+     * Sets the interval Influence Spheres.
+     *
+     * @param intervalInfluenceSpheres The interval of Influence Spheres
+     */
+    public void setIntervalInfluenceSpheres(final List<TimeInterval> intervalInfluenceSpheres) {
+        this.intervalInfluenceSpheres = intervalInfluenceSpheres;
+    }
+
+    /**
+     * Sets the display Influence Sphere Changes.
+     *
+     * @param displayInfluenceSphereChanges To display the Influence sphere Changes
+     */
+    public void setDisplayInfluenceSphereChanges(final boolean displayInfluenceSphereChanges) {
+        this.displayInfluenceSphereChanges = displayInfluenceSphereChanges;
+    }
+
+    /**
+     * Display the Reference System or not.
+     *
+     * @param displayReferenceSystem To Display the Reference System or not.
+     */
+    public void setDisplayReferenceSystem(final boolean displayReferenceSystem) {
+        this.displayReferenceSystem = displayReferenceSystem;
+    }
+
+    /**
+     * To display the attitude or not.
+     *
+     * @param displayAttitude To display the attitude or not
+     */
+    public void setDisplayAttitude(final boolean displayAttitude) {
+        this.displayAttitude = displayAttitude;
+    }
+
+    /**
+     * To display Only One Period on the orbit of the spacecraft of not.
+     *
+     * @param displayOnlyOnePeriod To display Only One Period on the orbit of the spacecraft of not
+     */
+    public void setDisplayOnlyOnePeriod(final boolean displayOnlyOnePeriod) {
+        this.displayOnlyOnePeriod = displayOnlyOnePeriod;
+    }
+
+    /**
+     * If the spacecraft is already oriented or not.
+     *
+     * @param oriented Oriented or not
+     */
+    public void setOriented(final boolean oriented) {
+        this.oriented = oriented;
+    }
+
+    /**
      * Sets attitudes.
      *
      * @param attitudes the attitudes
      */
     public void setAttitudes(final List<Attitude> attitudes) {
-        this.attitudes = new ArrayList<>(attitudes);
+        this.attitudes   = new ArrayList<>(attitudes);
         this.orientation = new Orientation(attitudes, getFrame());
-        oriented = true;
+        oriented         = true;
     }
 
     /**
@@ -725,16 +948,16 @@ public class Spacecraft
      * Reset attitudes.
      */
     public void resetAttitudes() {
-        this.attitudes = new ArrayList<>();
+        this.attitudes   = new ArrayList<>();
         this.orientation = null;
-        oriented = false;
+        oriented         = false;
     }
 
     // Private functions
 
     /**
-     * This function set a multiplexer for the propagator of the Spacecraft. It
-     * will handle the retrieving of the spacecraft states and of the attitudes.
+     * This function set a multiplexer for the propagator of the Spacecraft. It will handle the retrieving of the spacecraft states and of the
+     * attitudes.
      *
      * @param propagator : The propagator of the Spacecraft.
      */
@@ -742,47 +965,47 @@ public class Spacecraft
 
         propagator.getMultiplexer().add(clockMultiplier, currentState -> {
             spaceCraftStates.add(currentState);
-            final Attitude currentSpaceCraftAttitude =
-                currentState.getAttitude();
+            final Attitude currentSpaceCraftAttitude = currentState.getAttitude();
             attitudes.add(currentSpaceCraftAttitude);
         });
     }
 
     /**
-     * This function aims at writing the global display of the Spacecraft, it
-     * ensures that the model loaded and the orientation are correct.
+     * This function aims at writing the global display of the Spacecraft, it ensures that the model loaded and the orientation are correct.
      *
      * @param packet : The packet that will write in the czml file.
-     * @param output : The output stream of cesium that will contain the strings
-     *        to write into the CzmLFile.
+     * @param output : The output stream of cesium that will contain the strings to write into the CzmLFile.
+     * @param stream : The stream that converts all the strings into understandable string for the CzmlFile.
      */
-    private void czmlDisplay(final PacketCesiumWriter packet,
-                             final CesiumOutputStream output)
-        throws URISyntaxException,
-            IOException {
+    private void czmlDisplay(final PacketCesiumWriter packet, final CesiumStreamWriter stream, final CesiumOutputStream output)
+                    throws
+                    URISyntaxException,
+                    IOException {
 
-        if (getModelType() == ModelType.MODEL_2D ||
-            getModelType() == ModelType.EMPTY_MODEL) {
+        if (getModelType() == ModelType.MODEL_2D || getModelType() == ModelType.EMPTY_MODEL) {
+            try (PositionCesiumWriter positionWriter = packet.getPositionWriter()) {
+                positionWriter.open(output);
+                positionWriter.writeReferenceFrame(DEFAULT_INERTIAL);
+            }
             getModel().generateCZML(packet, output);
             if (getDisplayAttitude()) {
                 orientation.write(packet, output);
             }
         } else if (getModelType() == ModelType.MODEL_3D) {
+            try (PositionCesiumWriter positionWriter = packet.getPositionWriter()) {
+                positionWriter.open(output);
+                positionWriter.writeReferenceFrame(DEFAULT_INERTIAL);
+            }
             if (!getDisplayAttitude()) {
 
-                try (OrientationCesiumWriter orientationWriter =
-                    packet.getOrientationWriter()) {
+                try (OrientationCesiumWriter orientationWriter = packet.getOrientationWriter()) {
                     orientationWriter.open(output);
-                    orientationWriter
-                        .writeVelocityReference(this.getId() +
-                                                H_REFERENCE_POSITION);
+                    orientationWriter.writeVelocityReference(this.getId() + H_REFERENCE_POSITION);
                     this.orientation = null;
                 }
             } else {
                 if (!oriented) {
-                    this.orientation =
-                        new Orientation(attitudes, getFrame(), false,
-                                        optionalRotation);
+                    this.orientation = new Orientation(attitudes, getFrame(), false, optionalRotation);
                 }
                 this.orientation.write(packet, output);
             }
@@ -793,14 +1016,11 @@ public class Spacecraft
     /**
      * This function writes the path of the Spacecraft to display the orbit.
      *
-     * @param packet : The packet that will write in the czml file.
-     * @param output : The output stream of cesium that will contain the strings
-     *        to write into the CzmLFile.
+     * @param packet     : The packet that will write in the czml file.
+     * @param output     : The output stream of cesium that will contain the strings to write into the CzmLFile.
      * @param colorInput : The color of the path
      */
-    private void czmlPath(final PacketCesiumWriter packet,
-                          final CesiumOutputStream output,
-                          final Color colorInput) {
+    private void czmlPath(final PacketCesiumWriter packet, final CesiumOutputStream output, final Color colorInput) {
         try (PathCesiumWriter pathProperty = packet.openPathProperty()) {
             // If only one period of the orbit is displayed (and that the period
             // is less long than the time of simulation, elseway this will not
@@ -809,10 +1029,8 @@ public class Spacecraft
             // the period
             if (!getDisplayOnlyOnePeriod()) {
                 final Path path = new Path(getAvailability());
-                try (BooleanCesiumWriter showPath =
-                    pathProperty.openShowProperty()) {
-                    showPath.writeInterval(getAvailability().getStart(),
-                                           getAvailability().getStop());
+                try (BooleanCesiumWriter showPath = pathProperty.openShowProperty()) {
+                    showPath.writeInterval(getAvailability().getStart(), getAvailability().getStop());
                     showPath.writeBoolean(path.getShow());
                 }
             }
@@ -822,28 +1040,22 @@ public class Spacecraft
                 final Path path = new Path(getAvailability());
                 // If the keplerian period is incredibly big, we fix the display
                 // of the path to 1 h
-                if ((this.getOrbits().get(0).getKeplerianPeriod() + "")
-                    .equals("Infinity")) {
+                if ((this.getOrbits().get(0).getKeplerianPeriod() + "").equals("Infinity")) {
                     pathProperty.writeLeadTimeProperty(3600);
                 } else {
-                    pathProperty.writeLeadTimeProperty(this.getOrbits().get(0)
-                        .getKeplerianPeriod());
+                    pathProperty.writeLeadTimeProperty(this.getOrbits().get(0).getKeplerianPeriod());
                 }
                 pathProperty.writeTrailTimeProperty(0.0);
-                try (BooleanCesiumWriter showPath =
-                    pathProperty.openShowProperty()) {
-                    showPath.writeInterval(getAvailability().getStart(),
-                                           getAvailability().getStop());
+                try (BooleanCesiumWriter showPath = pathProperty.openShowProperty()) {
+                    showPath.writeInterval(getAvailability().getStart(), getAvailability().getStop());
                     showPath.writeBoolean(path.getShow());
                 }
             }
             // Writing of the color of the path
-            try (PolylineMaterialCesiumWriter materialWriter =
-                pathProperty.getMaterialWriter()) {
+            try (PolylineMaterialCesiumWriter materialWriter = pathProperty.getMaterialWriter()) {
                 materialWriter.open(output);
                 output.writeStartObject();
-                try (SolidColorMaterialCesiumWriter solidColorWriter =
-                    materialWriter.getSolidColorWriter()) {
+                try (SolidColorMaterialCesiumWriter solidColorWriter = materialWriter.getSolidColorWriter()) {
                     solidColorWriter.open(output);
                     solidColorWriter.writeColorProperty(colorInput);
                 }
@@ -855,51 +1067,99 @@ public class Spacecraft
     /**
      * This function writes the position of the Spacecraft in time.
      *
-     * @param packet : The packet that will write in the czml file.
-     * @param output : The output stream of cesium that will contain the strings
-     *        to write into the CzmLFile.
-     * @param cartesians : The cartesians coordinates to be written
-     * @param julianDates : The JulianDate corresponding the cartesian
-     *        coordinates
+     * @param packet      : The packet that will write in the czml file.
+     * @param output      : The output stream of cesium that will contain the strings to write into the CzmLFile.
+     * @param cartesians  : The cartesians coordinates to be written
+     * @param julianDates : The JulianDate corresponding the cartesian coordinates
      */
-    private void czmlPosition(final PacketCesiumWriter packet,
-                              final CesiumOutputStream output,
-                              final List<Cartesian> cartesians,
+    private void czmlPosition(final PacketCesiumWriter packet, final CesiumOutputStream output, final List<Cartesian> cartesians,
                               final List<JulianDate> julianDates) {
 
-        final TimePosition timePosition =
-            new TimePosition(cartesians, julianDates);
+        final TimePosition timePosition = new TimePosition(cartesians, julianDates);
         timePosition.write(packet, output);
     }
 
     /**
-     * This function is used when the attitude of the Spacecraft must be
-     * displayed. To do so, this function defines an orientation object
-     * depending on the type of the model loaded.s
+     * This function is used when the attitude of the Spacecraft must be displayed. To do so, this function defines an orientation object depending on
+     * the type of the model loaded.s
      */
     private void orientationSetup() {
         if (!oriented) {
-            if (getModelType() == ModelType.MODEL_2D ||
-                getModelType() == ModelType.EMPTY_MODEL) {
+            if (getModelType() == ModelType.MODEL_2D || getModelType() == ModelType.EMPTY_MODEL) {
                 if (displayAttitude) {
-                    this.orientation =
-                        Orientation.builder(getAttitudes(), getFrame())
-                            .withOptionalRotation(optionalRotation)
-                            .withInvertToITRF(false).build();
-                    oriented = true;
+                    this.orientation = Orientation.builder(getAttitudes(), getFrame()).withOptionalRotation(optionalRotation).withInvertToITRF(false)
+                                    .build();
+                    oriented         = true;
                 }
             } else if (getModelType() == ModelType.MODEL_3D) {
                 if (!displayAttitude) {
                     this.orientation = null;
                 } else {
-                    this.orientation =
-                        Orientation.builder(getAttitudes(), getFrame())
-                            .withOptionalRotation(optionalRotation)
-                            .withInvertToITRF(false).build();
-                    oriented = true;
+                    this.orientation = Orientation.builder(getAttitudes(), getFrame()).withOptionalRotation(optionalRotation).withInvertToITRF(false)
+                                    .build();
+                    oriented         = true;
                 }
             }
         }
     }
 
+    /**
+     * Function to compute the first influence sphere in which the satellite is.
+     *
+     * @param bodies           The bodies considered for the influence spheres
+     * @param spheres          The influence sphere considered
+     * @param spheresRadius    The radius of the spheres
+     * @param centralBodyFrame The inertial frame of the sun
+     * @param initialPosition  The initial position of the spacecraft
+     * @return The initial influence sphere where the satellite is
+     */
+    private InfluenceSphere computeInitialInfluenceSphere(final List<InfluenceSphere> spheres, final List<Double> spheresRadius,
+                                                          final List<Body> bodies, final Vector3D initialPosition, final Frame centralBodyFrame) {
+        for (int i = 0; i < bodies.size(); i++) {
+            final Body currentBody = bodies.get(i);
+            final Vector3D positionOfBodyAtInitialState =
+                            currentBody.getCelestialBody().getPosition(this.spaceCraftStates.get(0).getDate(), centralBodyFrame);
+            if (initialPosition.distance(positionOfBodyAtInitialState) < spheresRadius.get(i)) {
+                return spheres.get(i);
+            }
+        }
+        return null;
+    }
+
+    private List<Body> sortedBodies(final List<Double> radiusesSorted, final List<Body> bodiesNotSorted) {
+        final List<Body> toReturn = new ArrayList<>();
+
+        for (final double currentRadius : radiusesSorted) {
+            for (final Body currentBody : bodiesNotSorted) {
+                if (currentBody.getInfluenceSphere().getRadius() == currentRadius) {
+                    toReturn.add(currentBody);
+                }
+            }
+        }
+        return toReturn;
+    }
+
+    private List<InfluenceSphere> sortedSpheres(final List<Double> radiusesSorted, final List<InfluenceSphere> spheres) {
+        final List<InfluenceSphere> toReturn = new ArrayList<>();
+        for (final double currentRadius : radiusesSorted) {
+            for (final InfluenceSphere currentSphere : spheres) {
+                if (currentSphere.getRadius() == currentRadius) {
+                    toReturn.add(currentSphere);
+                }
+            }
+        }
+        return toReturn;
+    }
+
+    private void buildInfluenceSphere(final List<Body> bodies, final List<InfluenceSphere> emptyListSphere, final List<Double> emptyListRadius) {
+        for (final Body currentBody : bodies) {
+            try {
+                final InfluenceSphere currentSphereBody = currentBody.getInfluenceSphere();
+                emptyListSphere.add(currentSphereBody);
+                emptyListRadius.add(currentSphereBody.getRadius());
+            } catch (OreCzmlException exception) {
+                throw new OreCzmlException(OreCzmlMessages.TRY_INFLUENCE_SPHERE_WITHOUT_SPHERES);
+            }
+        }
+    }
 }

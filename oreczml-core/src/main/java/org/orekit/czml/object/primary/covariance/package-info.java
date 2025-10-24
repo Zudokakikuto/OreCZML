@@ -14,33 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.orekit.czml.object.secondary;
-
-import cesiumlanguagewriter.CesiumOutputStream;
-import cesiumlanguagewriter.PacketCesiumWriter;
 
 /**
- * CZML Secondary Object Interface
- * <p>
- * This interface represents the objects that are not directly displayed on
- * screen,they depends to primary objects.
- * </p>
- *
- * @author Julien LEBLOND
- * @since 1.0
+ * This package contains all the objects related to the covarariance or the
+ * collision between objects.
  */
-public interface CzmlSecondaryObject<T extends CzmlSecondaryObject<T>> {
-
-    /**
-     * Write the secondary object
-     *
-     * @param packetWriter the packet writer
-     * @param output the output
-     */
-    void write(PacketCesiumWriter packetWriter, CesiumOutputStream output);
-
-    String toString();
-
-    /** Clone the object. */
-    T cloneObject();
-}
+package org.orekit.czml.object.primary.covariance;

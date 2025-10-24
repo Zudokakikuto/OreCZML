@@ -40,7 +40,7 @@ import java.util.Objects;
  */
 public class SpacecraftReferenceSystem
     extends
-    AbstractPrimaryObject {
+    AbstractPrimaryObject<SpacecraftReferenceSystem> {
 
     /**
      * The default ID for the reference system.
@@ -123,7 +123,7 @@ public class SpacecraftReferenceSystem
                                      final double maximumScale,
                                      final double minimumPixelSize,
                                      final String customID) {
-        this.spacecraft = spacecraft;
+        this.spacecraft = spacecraft.cloneObject();
         this.setId(customID);
         this.setName(DEFAULT_NAME + spacecraft.getName());
         this.setAvailability(spacecraft.getAvailability());
@@ -134,7 +134,7 @@ public class SpacecraftReferenceSystem
         this.referenceSystemModel =
             new CzmlModel(PATH_TO_REFERENCE_SYSTEM, maximumScale,
                           minimumPixelSize, scale, false,
-                          spacecraft.getClock());
+                          spacecraft.getAvailability());
     }
 
     // Overrides
@@ -155,6 +155,16 @@ public class SpacecraftReferenceSystem
         }
     }
 
+    @Override
+    public SpacecraftReferenceSystem cloneObject() {
+        final SpacecraftReferenceSystem copy =
+            new SpacecraftReferenceSystem(this.spacecraft);
+        copy.setId(getId());
+        copy.setName(getName());
+        copy.setAvailability(getAvailability());
+        return copy;
+    }
+
     // Getters
 
     /**
@@ -163,7 +173,7 @@ public class SpacecraftReferenceSystem
      * @return the Spacecraft
      */
     public Spacecraft getSpacecraft() {
-        return spacecraft;
+        return spacecraft.cloneObject();
     }
 
     /**

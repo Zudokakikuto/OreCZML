@@ -19,15 +19,14 @@ package org.orekit.czml.object.secondary;
 import cesiumlanguagewriter.CesiumHeightReference;
 import org.hipparchus.util.FastMath;
 import org.junit.jupiter.api.Test;
-import org.orekit.annotation.DefaultDataContext;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.Position;
 import org.orekit.czml.object.PositionType;
-import org.orekit.czml.object.utils.DateUtils;
-import org.orekit.czml.object.primary.entities.CzmlGroundStation;
 import org.orekit.czml.object.primary.Header;
+import org.orekit.czml.object.primary.entities.CzmlGroundStation;
 import org.orekit.czml.object.primary.entities.Spacecraft;
+import org.orekit.czml.object.utils.DateUtils;
 import org.orekit.frames.TopocentricFrame;
 import org.orekit.propagation.BoundedPropagator;
 import org.orekit.time.AbsoluteDate;
@@ -39,7 +38,6 @@ import java.net.URISyntaxException;
 /**
  * The type Cylinder test.
  */
-@DefaultDataContext
 public class CylinderTest
     extends
     AbstractTest {
@@ -69,29 +67,30 @@ public class CylinderTest
 
         final BoundedPropagator propagator =
             dummyPropagator(startDate, finalDate);
-        final Spacecraft satellite =
+        final Spacecraft spacecraft =
             new Spacecraft(propagator, header.getClock());
 
         final Cylinder cylinder =
-            new Cylinder(topocentricToulouse, satellite, 90.0,
-                         header.getClock());
+            new Cylinder(topocentricToulouse, 90.0, header.getAvailability(),
+                         spacecraft);
 
         final Cylinder coverageCylinder =
             new Cylinder(10.0, 20.0, 1.0, Color.BLUE,
                          new Position(1, 45, 20,
                                       PositionType.CARTESIAN_POSITION,
-                                      header.getClock()),
+                                      header.getAvailability()),
                          CesiumHeightReference.CLAMP_TO_GROUND,
-                         header.getClock());
+                         header.getAvailability());
 
         final CzmlGroundStation groundStation =
-            new CzmlGroundStation(topocentricToulouse, header.getClock());
+            new CzmlGroundStation(topocentricToulouse,
+                                  header.getAvailability());
 
         final Cylinder groundStationCylinder =
-            new Cylinder(groundStation, 80.0, header.getClock());
+            new Cylinder(groundStation, 80.0, header.getAvailability());
 
         final Cylinder topocentricCylinder =
-            new Cylinder(topocentricToulouse, 90.0, header.getClock());
+            new Cylinder(topocentricToulouse, 90.0, header.getAvailability());
 
         final String pathFile =
             loadResources("templateFile/object/secondary/CylinderTemplate.txt");

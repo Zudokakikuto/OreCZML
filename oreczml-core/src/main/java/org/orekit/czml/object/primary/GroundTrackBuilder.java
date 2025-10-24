@@ -16,10 +16,10 @@
  */
 package org.orekit.czml.object.primary;
 
+import cesiumlanguagewriter.TimeInterval;
 import org.orekit.bodies.BodyShape;
 import org.orekit.czml.object.primary.entities.Constellation;
 import org.orekit.czml.object.primary.entities.Spacecraft;
-import org.orekit.czml.object.secondary.Clock;
 
 import java.awt.Color;
 
@@ -67,7 +67,7 @@ public class GroundTrackBuilder {
     private String customID;
 
     /** The availability to consider. */
-    private Clock clock;
+    private final TimeInterval availability;
 
     // Constructor
 
@@ -77,14 +77,14 @@ public class GroundTrackBuilder {
      * @param satellite : The satellite that will project the ground track on
      *        the ground.
      * @param body : The body where the ground track will be projected on.
-     * @param clockInput : The clock considered.
+     * @param availability : The availability considered.
      */
     public GroundTrackBuilder(final Spacecraft satellite, final BodyShape body,
-                              final Clock clockInput) {
+                              final TimeInterval availability) {
         this.satellite = satellite;
         this.body = body;
         this.customID = DEFAULT_ID + satellite.getId();
-        this.clock = clockInput;
+        this.availability = availability;
     }
 
     /**
@@ -93,13 +93,14 @@ public class GroundTrackBuilder {
      * @param constellation : The constellation that will project the ground
      *        track on the ground.
      * @param body : The body where the ground track will be projected on.
-     * @param clockInput : The clock considered.
+     * @param availability : The availability considered.
      */
     public GroundTrackBuilder(final Constellation constellation,
-                              final BodyShape body, final Clock clockInput) {
+                              final BodyShape body,
+                              final TimeInterval availability) {
         this.constellation = constellation;
         this.body = body;
-        this.clock = clockInput;
+        this.availability = availability;
         this.customID = DEFAULT_ID + constellation.getId();
     }
 
@@ -126,26 +127,17 @@ public class GroundTrackBuilder {
     }
 
     /**
-     * Function to set up the clock.
-     *
-     * @param clockInput : The clock to set up.
-     * @return : The ground track builder with a given clock.
-     */
-    public GroundTrackBuilder withClock(final Clock clockInput) {
-        this.clock = clockInput;
-        return this;
-    }
-
-    /**
      * Build ground track.
      *
      * @return the ground track
      */
     public GroundTrack build() {
         if (satellite != null) {
-            return new GroundTrack(satellite, body, color, customID, clock);
+            return new GroundTrack(satellite, body, color, customID,
+                                   availability);
         } else if (constellation != null) {
-            return new GroundTrack(constellation, body, color, customID, clock);
+            return new GroundTrack(constellation, body, color, customID,
+                                   availability);
         } else {
             return null;
         }

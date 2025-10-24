@@ -49,7 +49,7 @@ public class CzmlShow {
     private TimeInterval availability;
 
     /** The second object related to the show. */
-    private Object object;
+    private Object object2;
 
     // Constructors
 
@@ -58,26 +58,28 @@ public class CzmlShow {
      *
      * @param toShow : The boolean that represent if the object is displayed or
      *        not.
-     * @param interval : The availability
+     * @param availability : The time interval when the object is displayed or
+     *        not.
      */
-    public CzmlShow(final boolean toShow, final TimeInterval interval) {
+    public CzmlShow(final boolean toShow, final TimeInterval availability) {
         this.toShow = toShow;
-        this.availability = interval;
+        this.availability = availability;
     }
 
     /**
-     * The czml show constructor with two objects related to it.
+     * The czml show constructor with an object related to it.
      *
      * @param toShow : The boolean that represent if the object is displayed or
      *        not.
-     * @param interval : The availability
-     * @param objectInput : The second object related to the show.
+     * @param availability : The time interval when the object is displayed or
+     *        not.
+     * @param object2Input : The object related to the show.
      */
-    public CzmlShow(final boolean toShow, final TimeInterval interval,
-                    final Object objectInput) {
+    public CzmlShow(final boolean toShow, final TimeInterval availability,
+                    final Object object2Input) {
         this.toShow = toShow;
-        this.availability = interval;
-        this.object = objectInput;
+        this.availability = availability;
+        this.object2 = object2Input;
     }
 
     // Display functions
@@ -128,12 +130,12 @@ public class CzmlShow {
     }
 
     /**
-     * Sets the clock.
+     * Sets availability.
      *
-     * @param interval the availability
+     * @param availability the availability
      */
-    public void setAvailability(final TimeInterval interval) {
-        this.availability = interval;
+    public void setAvailability(final TimeInterval availability) {
+        this.availability = availability;
     }
 
     /**
@@ -150,8 +152,8 @@ public class CzmlShow {
      *
      * @return the second object
      */
-    public Object getObject() {
-        return object;
+    public Object getObject2() {
+        return object2;
     }
 
     // Setters

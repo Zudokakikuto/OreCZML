@@ -16,8 +16,8 @@
  */
 package org.orekit.czml.object.primary.visu;
 
+import cesiumlanguagewriter.TimeInterval;
 import org.orekit.czml.object.primary.entities.Spacecraft;
-import org.orekit.czml.object.secondary.Clock;
 import org.orekit.frames.TopocentricFrame;
 
 public class StationVisibilityCircleBuilder {
@@ -26,16 +26,16 @@ public class StationVisibilityCircleBuilder {
     public static final double DEFAULT_ANGLE_OF_APERTURE = 90.0;
 
     /** The topocentric frame representing the station. */
-    private TopocentricFrame topocentricFrame;
+    private final TopocentricFrame topocentricFrame;
 
     /** The satellite observed. */
-    private Spacecraft satellite;
+    private final Spacecraft satellite;
 
     /** The angle of aperture of the station. */
     private double angleOfAperture = DEFAULT_ANGLE_OF_APERTURE;
 
-    /** The clock considered. */
-    private Clock clock;
+    /** The availability considered. */
+    private final TimeInterval availability;
 
     /**
      * The default constructor for the station visibility circle builder.
@@ -43,14 +43,14 @@ public class StationVisibilityCircleBuilder {
      * @param topocentricFrameInput : The topocentric frame representing the
      *        ground station.
      * @param satelliteInput : The satellite observed.
-     * @param clock : The clock considered.
+     * @param availability : The availability considered.
      */
     public StationVisibilityCircleBuilder(final TopocentricFrame topocentricFrameInput,
                                           final Spacecraft satelliteInput,
-                                          final Clock clock) {
+                                          final TimeInterval availability) {
         this.topocentricFrame = topocentricFrameInput;
-        this.satellite = satelliteInput;
-        this.clock = clock;
+        this.satellite = satelliteInput.cloneObject();
+        this.availability = availability;
     }
 
     /**
@@ -73,7 +73,7 @@ public class StationVisibilityCircleBuilder {
      */
     public StationVisibilityCircle build() {
         return new StationVisibilityCircle(topocentricFrame, satellite,
-                                           angleOfAperture, clock);
+                                           angleOfAperture, availability);
     }
 
 }

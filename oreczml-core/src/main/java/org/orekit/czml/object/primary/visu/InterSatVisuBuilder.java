@@ -41,11 +41,11 @@ public class InterSatVisuBuilder {
     /** The default id for the inter sat visu object. */
     public static final String DEFAULT_ID = "INTER_SAT_VISU/";
 
-    /** The first satellite to consider for the inter sat visu. */
-    private Spacecraft satellite1;
+    /** The first spacecraft to consider for the inter sat visu. */
+    private Spacecraft spacecraft1;
 
-    /** The second satellite to consider for the inter sat visu. */
-    private Spacecraft satellite2;
+    /** The second spacecraft to consider for the inter sat visu. */
+    private Spacecraft spacecraft2;
 
     /** The final date of the propagation. */
     private final AbsoluteDate finalDate;
@@ -62,22 +62,23 @@ public class InterSatVisuBuilder {
     /**
      * Instantiates a new Inter sat visu builder.
      *
-     * @param satellite1Input the satellite 1 input
-     * @param satellite2Input the satellite 2 input
+     * @param spacecraft1Input the spacecraft 1 input
+     * @param spacecraft2Input the spacecraft 2 input
      * @param finalDateInput the final date input
      * @param clock the clock input
      */
-    public InterSatVisuBuilder(final Spacecraft satellite1Input,
-                               final Spacecraft satellite2Input,
+    public InterSatVisuBuilder(final Spacecraft spacecraft1Input,
+                               final Spacecraft spacecraft2Input,
                                final AbsoluteDate finalDateInput,
                                final Clock clock) {
-        this.satellite1 = satellite1Input;
-        this.satellite2 = satellite2Input;
+        this.spacecraft1 = spacecraft1Input.cloneObject();
+        this.spacecraft2 = spacecraft2Input.cloneObject();
         this.finalDate = finalDateInput;
         this.customId =
             DEFAULT_ID +
-                        satellite1Input.getId() + "/" + satellite2Input.getId();
-        this.clock = clock;
+                        spacecraft1Input.getId() + "/" +
+                        spacecraft2Input.getId();
+        this.clock = clock.cloneObject();
     }
 
     /**
@@ -132,7 +133,7 @@ public class InterSatVisuBuilder {
      * @return : An inter sat visu builder with the given clock.
      */
     public InterSatVisuBuilder withClock(final Clock clockInput) {
-        this.clock = clockInput;
+        this.clock = clockInput.cloneObject();
         return this;
     }
 
@@ -142,11 +143,13 @@ public class InterSatVisuBuilder {
      * @return the inter sat visu
      */
     @DefaultDataContext
-    public InterSatVisu build() {
+    public InterSatVisu build()
+        throws URISyntaxException,
+            IOException {
         if (constellation != null) {
             return new InterSatVisu(constellation, finalDate, customId, clock);
         } else {
-            return new InterSatVisu(satellite1, satellite2, finalDate,
+            return new InterSatVisu(spacecraft1, spacecraft2, finalDate,
                                     customId);
         }
     }

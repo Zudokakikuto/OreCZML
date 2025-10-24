@@ -22,6 +22,8 @@ import cesiumlanguagewriter.CesiumStreamWriter;
 import cesiumlanguagewriter.ClockCesiumWriter;
 import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.TimeInterval;
+import org.orekit.czml.errors.OreCzmlException;
+import org.orekit.czml.errors.OreCzmlMessages;
 import org.orekit.czml.file.CzmlFile;
 import org.orekit.czml.object.secondary.Clock;
 
@@ -40,7 +42,7 @@ import java.io.StringWriter;
  */
 public class Header
     extends
-    AbstractPrimaryObject {
+    AbstractPrimaryObject<Header> {
 
     /**
      * The default id of a CZML file.
@@ -74,6 +76,9 @@ public class Header
      */
     private final String version;
 
+    /** The path ot the external resources. */
+    private String pathToExternalResources = DEFAULT_RESOURCES;
+
     // Constructors
 
     /**
@@ -102,6 +107,7 @@ public class Header
                   final String pathToExternalResourceFolder) {
         this.setId(DEFAULT_ID);
         this.setName(name);
+        this.pathToExternalResources = pathToExternalResourceFolder;
         Header.pathToExternalResourceFolder = pathToExternalResourceFolder;
         this.clock = masterClock;
         this.version = DEFAULT_VERSION;
@@ -119,7 +125,7 @@ public class Header
         this.setId(DEFAULT_ID);
         this.setName(name);
         this.version = version;
-        this.clock = clock;
+        this.clock = clock.cloneObject();
     }
 
     /**
@@ -137,8 +143,9 @@ public class Header
         this.setId(DEFAULT_ID);
         this.setName(name);
         this.version = version;
-        this.clock = clock;
+        this.clock = clock.cloneObject();
         Header.pathToExternalResourceFolder = pathToExternalResourceFolder;
+        this.pathToExternalResources = pathToExternalResourceFolder;
     }
 
     // Overrides
@@ -151,6 +158,7 @@ public class Header
 
         try (PacketCesiumWriter packet = stream.openPacket(output)) {
             packet.writeId(this.getId());
+            packet.writeVersion(DEFAULT_VERSION);
             packet.writeName(this.getName());
             packet.writeVersion(version);
             try (ClockCesiumWriter ignored = packet.getClockWriter()) {
@@ -168,6 +176,44 @@ public class Header
         final String tempString = writer.toString();
         final String[] splittedString = tempString.split("\\[");
         return splittedString[1];
+    }
+
+    @Override
+    public Header cloneObject() {
+        final Header toReturn;
+        if (this.getName() != null && this.getAvailability() != null) {
+            if (this.version != null) {
+                if (this.pathToExternalResources != DEFAULT_RESOURCES) {
+                    final Header copy =
+                        new Header(this.getName(), this.version, this.clock,
+                                   this.pathToExternalResources);
+                    copy.setId(getId());
+                    copy.setAvailability(getAvailability());
+                    toReturn = copy;
+                } else {
+                    final Header copy =
+                        new Header(this.getName(), this.version, this.clock);
+                    copy.setId(getId());
+                    copy.setAvailability(getAvailability());
+                    toReturn = copy;
+                }
+            } else if (this.pathToExternalResources != DEFAULT_RESOURCES) {
+                final Header copy =
+                    new Header(this.getName(), this.clock,
+                               this.pathToExternalResources);
+                copy.setId(getId());
+                copy.setAvailability(getAvailability());
+                toReturn = copy;
+            } else {
+                final Header copy = new Header(this.getName(), this.clock);
+                copy.setId(getId());
+                copy.setAvailability(getAvailability());
+                toReturn = copy;
+            }
+            return toReturn;
+        } else {
+            throw new OreCzmlException(OreCzmlMessages.NOT_VALID_PRIMARY_OBJECT_FOR_CLONE);
+        }
     }
 
     @Override

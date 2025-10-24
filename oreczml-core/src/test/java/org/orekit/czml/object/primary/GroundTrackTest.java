@@ -17,11 +17,10 @@
 package org.orekit.czml.object.primary;
 
 import org.junit.jupiter.api.Test;
-import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
-import org.orekit.czml.object.utils.DateUtils;
 import org.orekit.czml.object.primary.entities.Constellation;
 import org.orekit.czml.object.primary.entities.Spacecraft;
+import org.orekit.czml.object.utils.DateUtils;
 import org.orekit.propagation.BoundedPropagator;
 import org.orekit.time.AbsoluteDate;
 
@@ -34,66 +33,50 @@ import java.util.List;
 /**
  * The type Ground track test.
  */
-@DefaultDataContext
 public class GroundTrackTest
-    extends
-    AbstractTest {
+                extends AbstractTest {
 
     /**
      * Ground track constructor test.
      *
-     * @throws IOException the io exception
+     * @throws IOException        the io exception
      * @throws URISyntaxException the uri syntax exception
      */
     @Test
     void GroundTrackConstructorTest()
-        throws IOException,
-            URISyntaxException {
+                    throws
+                    IOException,
+                    URISyntaxException {
 
         loadOrekitData();
 
-        final Header header = dummyHeader();
-        final AbsoluteDate startDate =
-            DateUtils.toAbsoluteDate(header.getAvailability().getStart());
+        final Header       header    = dummyHeader();
+        final AbsoluteDate startDate = DateUtils.toAbsoluteDate(header.getAvailability().getStart());
         final AbsoluteDate finalDate = startDate.shiftedBy(60.0);
 
-        final BoundedPropagator propagator =
-            dummyPropagator(startDate, finalDate);
+        final BoundedPropagator propagator = dummyPropagator(startDate, finalDate);
 
-        final Spacecraft satellite =
-            new Spacecraft(propagator, header.getClock());
+        final Spacecraft satellite = Spacecraft.builder(propagator, header.getClock()).build();
 
-        final List<BoundedPropagator> propagators =
-            new ArrayList<>(List.of(propagator));
+        final List<BoundedPropagator> propagators = new ArrayList<>(List.of(propagator));
 
-        final Constellation constellation =
-            Constellation.builder(propagators, finalDate, header.getClock())
-                .build();
+        final Constellation constellation = Constellation.builder(propagators, finalDate, header.getClock()).build();
 
-        final GroundTrack groundTrack =
-            new GroundTrack(satellite, getEarth(), header.getClock());
+        final GroundTrack groundTrack = GroundTrack.builder(satellite, getEarth(), header.getAvailability()).build();
         groundTrack.displayLinkSatellite();
 
         final GroundTrack groundTrackWithBuilder =
-            GroundTrack.builder(satellite, getEarth(), header.getClock())
-                .withColor(Color.ORANGE).withCustomID("CustomID").build();
+                        GroundTrack.builder(satellite, getEarth(), header.getAvailability()).withColor(Color.ORANGE).withCustomID("CustomID").build();
 
-        final GroundTrack constellationGroundTrack =
-            GroundTrack.builder(constellation, getEarth(), header.getClock())
-                .build();
+        final GroundTrack constellationGroundTrack = GroundTrack.builder(constellation, getEarth(), header.getAvailability()).build();
         constellationGroundTrack.displayLinkSatellite();
 
-        final String pathFile =
-            loadResources("templateFile/object/primary/GroundTrackTemplate.txt");
-        final String builderPathFile =
-            loadResources("templateFile/object/primary/GroundTrackWithBuilderTemplate.txt");
-        final String constellationPathFile =
-            loadResources("templateFile/object/primary/GroundTrackConstellationTemplate.txt");
+        final String pathFile              = loadResources("templateFile/object/primary/GroundTrackTemplate.txt");
+        final String builderPathFile       = loadResources("templateFile/object/primary/GroundTrackWithBuilderTemplate.txt");
+        final String constellationPathFile = loadResources("templateFile/object/primary/GroundTrackConstellationTemplate.txt");
 
         verifyFileOutput(pathFile, groundTrack.toString(), 1e-8);
-        verifyFileOutput(builderPathFile, groundTrackWithBuilder.toString(),
-                         1e-8);
-        verifyFileOutput(constellationPathFile,
-                         constellationGroundTrack.toString(), 1e-8);
+        verifyFileOutput(builderPathFile, groundTrackWithBuilder.toString(), 1e-8);
+        verifyFileOutput(constellationPathFile, constellationGroundTrack.toString(), 1e-8);
     }
 }

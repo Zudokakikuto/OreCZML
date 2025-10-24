@@ -40,7 +40,7 @@ import java.util.List;
  */
 public class Polygon
     extends
-    AbstractSecondaryObject {
+    AbstractSecondaryObject<Polygon> {
 
     /**
      * The default color.
@@ -135,6 +135,13 @@ public class Polygon
                 output.writeEndObject();
             }
         }
+    }
+
+    @Override
+    public Polygon cloneObject() {
+        return Polygon.builder(this.cartesians, this.availability)
+            .withColor(this.color).withFill(this.fill).withOutline(this.outline)
+            .build();
     }
 
     // Overrides

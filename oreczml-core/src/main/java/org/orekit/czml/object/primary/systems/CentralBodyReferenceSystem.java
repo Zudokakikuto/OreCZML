@@ -45,7 +45,7 @@ import java.util.List;
  */
 public class CentralBodyReferenceSystem
     extends
-    AbstractPrimaryObject {
+    AbstractPrimaryObject<CentralBodyReferenceSystem> {
 
     /**
      * The default ID for the central body reference system.
@@ -185,6 +185,15 @@ public class CentralBodyReferenceSystem
             }
         }
         cleanObject();
+    }
+
+    @Override
+    public CentralBodyReferenceSystem cloneObject() {
+        final CentralBodyReferenceSystem copy =
+            CentralBodyReferenceSystem.builder(this.getAvailability()).build();
+        copy.setName(this.getName());
+        copy.setId(this.getId());
+        return copy;
     }
 
     /**

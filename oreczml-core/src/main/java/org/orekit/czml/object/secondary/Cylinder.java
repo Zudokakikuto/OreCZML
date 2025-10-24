@@ -23,6 +23,7 @@ import cesiumlanguagewriter.CylinderCesiumWriter;
 import cesiumlanguagewriter.MaterialCesiumWriter;
 import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.SolidColorMaterialCesiumWriter;
+import cesiumlanguagewriter.TimeInterval;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.hipparchus.util.FastMath;
 import org.orekit.czml.object.Position;
@@ -46,7 +47,7 @@ import java.awt.Color;
  */
 public class Cylinder
     extends
-    AbstractSecondaryObject {
+    AbstractSecondaryObject<Cylinder> {
 
     /**
      * The length of the cylinder.
@@ -79,14 +80,27 @@ public class Cylinder
     private Color color;
 
     /**
-     * The clock.
+     * The time frame for which the feature is visible.
      */
-    private final Clock clock;
+    private final TimeInterval availability;
 
     /**
      * To show or not the cylinder.
      */
     private boolean show = false;
+
+    /** The topocentric frame if one is used. */
+    private TopocentricFrame topocentricFrame;
+
+    /** The ground station if one is used. */
+    private CzmlGroundStation groundStation;
+
+    /** The spacecraft if one is used. */
+    private Spacecraft spacecraft;
+
+    /** The angle of the aperture of the cylinder (cone). */
+    private double angleOfAperture;
+
     // Constructors
 
     /**
@@ -99,13 +113,13 @@ public class Cylinder
      * @param color : The color of the cylinder.
      * @param position : The position of the cylinder.
      * @param heightReference : The height reference of the base.
-     * @param clock : The availability of the cylinder.
+     * @param availability : The availability of the cylinder.
      */
     public Cylinder(final double length, final double topRadius,
                     final double bottomRadius, final Color color,
                     final Position position,
                     final CesiumHeightReference heightReference,
-                    final Clock clock) {
+                    final TimeInterval availability) {
         this.length = length;
         this.topRadius = topRadius;
         this.bottomRadius = bottomRadius;
@@ -113,74 +127,39 @@ public class Cylinder
         this.position = position;
         this.show = true;
         this.heightReference = heightReference;
-        this.clock = clock;
-    }
-
-    /**
-     * The cylinder constructor from a czml station and a satellite. This helps
-     * define a visibility cone.
-     *
-     * @param topocentricFrame : The topocentric ram representing the ground
-     *        station.
-     * @param satellite : The satellite that will be observed by the station.
-     * @param angleOfAperture : The angle of aperture of the visibility of the
-     *        station in degrees.
-     * @param clock : The clock considered.
-     */
-    public Cylinder(final TopocentricFrame topocentricFrame,
-                    final Spacecraft satellite, final double angleOfAperture,
-                    final Clock clock) {
-        final Color color_temp = new Color(255, 255, 255, 50);
-
-        final Vector3D positionInCartesian =
-            topocentricFrame.getCartesianPoint();
-
-        final double x = positionInCartesian.getX();
-        final double y = positionInCartesian.getY();
-        final double z = positionInCartesian.getZ();
-        final PositionType positionType = PositionType.CARTESIAN_POSITION;
-
-        this.length =
-            satellite.getOrbits().get(0).getA() -
-                      Constants.WGS84_EARTH_EQUATORIAL_RADIUS;
-        // Angle of aperture in degrees !
-        this.topRadius =
-            length * FastMath.tan(FastMath.toRadians(angleOfAperture));
-        this.bottomRadius = 10.0;
-        this.position = new Position(x, y, z, positionType, clock);
-        this.color = color_temp;
-        this.show = true;
-        this.heightReference = CesiumHeightReference.CLAMP_TO_GROUND;
-        this.clock = clock;
+        this.availability = availability;
     }
 
     /**
      * The cylinder constructor from a single station and an angle of aperture.
      *
-     * @param InputGroundStation : The czml ground station that will have a
+     * @param inputGroundStation : The czml ground station that will have a
      *        visibility cone.
-     * @param angleOfAperture : The angle of aperture of the visibility of the
-     *        station
-     * @param clock : The clock considered.
+     * @param angleOfApertureInput : The angle of aperture of the visibility of
+     *        the station
+     * @param availability : The availability considered.
      */
-    public Cylinder(final CzmlGroundStation InputGroundStation,
-                    final double angleOfAperture, final Clock clock) {
+    public Cylinder(final CzmlGroundStation inputGroundStation,
+                    final double angleOfApertureInput,
+                    final TimeInterval availability) {
 
         final Color color_temp = new Color(255, 255, 255, 50);
 
-        final double x = InputGroundStation.getPositions().getX();
-        final double y = InputGroundStation.getPositions().getY();
-        final double z = InputGroundStation.getPositions().getZ();
+        final double x = inputGroundStation.getPositions().getX();
+        final double y = inputGroundStation.getPositions().getY();
+        final double z = inputGroundStation.getPositions().getZ();
         final PositionType positionType = PositionType.CARTESIAN_POSITION;
 
+        this.angleOfAperture = angleOfApertureInput;
+        this.groundStation = inputGroundStation;
         this.length = Constants.WGS84_EARTH_EQUATORIAL_RADIUS;
         this.topRadius =
-            length * FastMath.tan(FastMath.toRadians(angleOfAperture));
+            length * FastMath.tan(FastMath.toRadians(angleOfApertureInput));
         this.bottomRadius = 0.0;
-        this.position = new Position(x, y, z, positionType, clock);
+        this.position = new Position(x, y, z, positionType, availability);
         this.color = color_temp;
         this.heightReference = CesiumHeightReference.CLAMP_TO_GROUND;
-        this.clock = clock;
+        this.availability = availability;
     }
 
     /**
@@ -189,28 +168,73 @@ public class Cylinder
      *
      * @param topocentricFrame : The topocentric frame where the ground station
      *        must be.
-     * @param angleOfAperture : The angle of aperture of the visibility of the
-     *        station
-     * @param clock : The clock considered.
+     * @param angleOfApertureInput : The angle of aperture of the visibility of
+     *        the station
+     * @param availability : The availability considered.
      */
     public Cylinder(final TopocentricFrame topocentricFrame,
-                    final double angleOfAperture, final Clock clock) {
+                    final double angleOfApertureInput,
+                    final TimeInterval availability) {
         final Color color_temp = new Color(255, 255, 255, 50);
 
         final double x = topocentricFrame.getCartesianPoint().getX();
         final double y = topocentricFrame.getCartesianPoint().getY();
         final double z = topocentricFrame.getCartesianPoint().getZ();
 
+        this.angleOfAperture = angleOfApertureInput;
+        this.topocentricFrame = topocentricFrame;
         final PositionType positionType = PositionType.CARTESIAN_POSITION;
 
         this.length = Constants.WGS84_EARTH_EQUATORIAL_RADIUS;
         this.topRadius =
-            length * FastMath.tan(FastMath.toRadians(angleOfAperture));
+            length * FastMath.tan(FastMath.toRadians(angleOfApertureInput));
         this.bottomRadius = 0.0;
-        this.position = new Position(x, y, z, positionType, clock);
+        this.position = new Position(x, y, z, positionType, availability);
         this.color = color_temp;
         this.heightReference = CesiumHeightReference.CLAMP_TO_GROUND;
-        this.clock = clock;
+        this.availability = availability;
+    }
+
+    /**
+     * The cylinder constructor from a czml station and a satellite. This helps
+     * define a visibility cone.
+     *
+     * @param topocentricFrame : The topocentric ram representing the ground
+     *        station.
+     * @param spacecraftInput : The satellite that will be observed by the
+     *        station.
+     * @param angleOfApertureInput : The angle of aperture of the visibility of
+     *        the station in degrees.
+     * @param availability : The availability considered.
+     */
+    public Cylinder(final TopocentricFrame topocentricFrame,
+                    final double angleOfApertureInput,
+                    final TimeInterval availability,
+                    final Spacecraft spacecraftInput) {
+        final Color color_temp = new Color(255, 255, 255, 50);
+
+        final Vector3D positionInCartesian =
+            topocentricFrame.getCartesianPoint();
+        this.topocentricFrame = topocentricFrame;
+
+        final double x = positionInCartesian.getX();
+        final double y = positionInCartesian.getY();
+        final double z = positionInCartesian.getZ();
+        final PositionType positionType = PositionType.CARTESIAN_POSITION;
+        this.spacecraft = spacecraftInput;
+
+        this.length =
+            spacecraftInput.getOrbits().get(0).getA() -
+                      Constants.WGS84_EARTH_EQUATORIAL_RADIUS;
+        // Angle of aperture in degrees !
+        this.topRadius =
+            length * FastMath.tan(FastMath.toRadians(angleOfApertureInput));
+        this.bottomRadius = 10.0;
+        this.position = new Position(x, y, z, positionType, availability);
+        this.color = color_temp;
+        this.show = true;
+        this.heightReference = CesiumHeightReference.CLAMP_TO_GROUND;
+        this.availability = availability;
     }
 
     // Overrides
@@ -241,6 +265,32 @@ public class Cylinder
 
             cylinderWriter.writeHeightReferenceProperty(heightReference);
         }
+    }
+
+    @Override
+    public Cylinder cloneObject() {
+        final Cylinder toReturn;
+        if (this.topocentricFrame != null) {
+            if (this.spacecraft != null) {
+                toReturn =
+                    new Cylinder(this.topocentricFrame, this.angleOfAperture,
+                                 this.getAvailability(), this.spacecraft);
+            } else {
+                toReturn =
+                    new Cylinder(this.topocentricFrame, this.angleOfAperture,
+                                 this.getAvailability());
+            }
+        } else if (this.groundStation != null) {
+            toReturn =
+                new Cylinder(this.groundStation, this.angleOfAperture,
+                             this.getAvailability());
+        } else {
+            toReturn =
+                new Cylinder(this.length, this.topRadius, this.bottomRadius,
+                             this.color, this.position, this.heightReference,
+                             this.getAvailability());
+        }
+        return toReturn;
     }
 
     // Getters
@@ -313,8 +363,8 @@ public class Cylinder
      *
      * @return the time interval value
      */
-    public Clock getClock() {
-        return clock;
+    public TimeInterval getAvailability() {
+        return availability;
     }
 
 }

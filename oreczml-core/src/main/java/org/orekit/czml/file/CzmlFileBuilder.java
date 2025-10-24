@@ -128,6 +128,7 @@ public class CzmlFileBuilder {
      *
      * @param headerInput : The header considered.
      */
+    @SuppressWarnings("squid:S2384")
     public CzmlFileBuilder(final Header headerInput) {
         this.header = headerInput;
     }
@@ -651,7 +652,7 @@ public class CzmlFileBuilder {
      */
     public CzmlFileBuilder
         withCentralBodyReferenceSystem(final CentralBodyReferenceSystem systemInput) {
-        this.system = systemInput;
+        this.system = systemInput.cloneObject();
         return this;
     }
 

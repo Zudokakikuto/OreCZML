@@ -26,10 +26,10 @@ import cesiumlanguagewriter.PolylineCesiumWriter;
 import cesiumlanguagewriter.PolylineMaterialCesiumWriter;
 import cesiumlanguagewriter.PositionCesiumWriter;
 import cesiumlanguagewriter.SolidColorMaterialCesiumWriter;
+import cesiumlanguagewriter.TimeInterval;
 import org.orekit.czml.errors.OreCzmlException;
 import org.orekit.czml.errors.OreCzmlMessages;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
-import org.orekit.czml.object.secondary.Clock;
 import org.orekit.czml.object.secondary.Label;
 
 import java.awt.Color;
@@ -51,7 +51,7 @@ import java.util.Objects;
  */
 public class LatLongLines
     extends
-    AbstractPrimaryObject {
+    AbstractPrimaryObject<LatLongLines> {
 
     /**
      * The default id of the lat long display object.
@@ -97,38 +97,47 @@ public class LatLongLines
      */
     private final boolean displayLabels;
 
+    /** The latitude angular step. */
+    private int latitudeAngularStep;
+
+    /** The longitude angular step. */
+    private int longitudeAngularStep;
+
     // Constructors
 
     /**
      * The default constructor using the default angular step while not
      * displaying the labels.
      *
-     * @param clock : The clock considered.
+     * @param availability : The availability considered.
      */
-    LatLongLines(final Clock clock) {
+    LatLongLines(final TimeInterval availability) {
         this(DEFAULT_ANGULAR_STEP, DEFAULT_ANGULAR_STEP, false, DEFAULT_ID,
-             clock);
+             availability);
     }
 
     /**
      * Constructor using an angular step for the latitude and the longitude.
      *
-     * @param latitudeAngularStep : The angular step between each line of
+     * @param latitudeAngularStepInput : The angular step between each line of
      *        latitude.
-     * @param longitudeAngularStep : The angular step between each line of
+     * @param longitudeAngularStepInput : The angular step between each line of
      *        longitude.
      * @param displayLabelsInput : To display the labels of the lines or not (°
      *        of the parallels or of the meridians)
      * @param customID : The custom ID of the lat long lines object.
-     * @param clock : The clock considered.
+     * @param availability : The availability considered when several are used.
      */
-    LatLongLines(final int latitudeAngularStep, final int longitudeAngularStep,
+    LatLongLines(final int latitudeAngularStepInput,
+                 final int longitudeAngularStepInput,
                  final boolean displayLabelsInput, final String customID,
-                 final Clock clock) {
+                 final TimeInterval availability) {
 
         this.setId(customID);
         this.setName(DEFAULT_NAME);
-        this.setAvailability(clock.getAvailability());
+        this.setAvailability(availability);
+        this.latitudeAngularStep = latitudeAngularStepInput;
+        this.longitudeAngularStep = longitudeAngularStepInput;
 
         this.displayLabels = displayLabelsInput;
         final List<Integer> divisorsLatitude = findAllDivisors(360);
@@ -137,20 +146,20 @@ public class LatLongLines
         if (latitudeAngularStep > 180) {
             throw new OreCzmlException(OreCzmlMessages.GREATER_ANGULAR_LATITUDE_STEP);
         }
-        if (longitudeAngularStep > 360) {
+        if (longitudeAngularStepInput > 360) {
             throw new OreCzmlException(OreCzmlMessages.GREATER_ANGULAR_LONGITUDE_STEP);
         }
 
         int divisorLatitudeToUse = latitudeAngularStep;
-        int divisorLongitudeToUse = longitudeAngularStep;
+        int divisorLongitudeToUse = longitudeAngularStepInput;
 
         if (!(divisorsLatitude.contains(latitudeAngularStep))) {
             divisorLatitudeToUse =
                 findNearestLowerDivisor(360, latitudeAngularStep);
         }
-        if (!divisorsLongitude.contains(longitudeAngularStep)) {
+        if (!divisorsLongitude.contains(longitudeAngularStepInput)) {
             divisorLongitudeToUse =
-                findNearestLowerDivisor(360, longitudeAngularStep);
+                findNearestLowerDivisor(360, longitudeAngularStepInput);
         }
 
         this.numberOfLatitudeLines = 360 / divisorLatitudeToUse;
@@ -182,11 +191,11 @@ public class LatLongLines
     /**
      * Builder lat long lines builder.
      *
-     * @param clock the clock
+     * @param availability the availability
      * @return the lat long lines builder
      */
-    public static LatLongLinesBuilder builder(final Clock clock) {
-        return new LatLongLinesBuilder(clock);
+    public static LatLongLinesBuilder builder(final TimeInterval availability) {
+        return new LatLongLinesBuilder(availability);
     }
 
     // Overrides
@@ -202,6 +211,17 @@ public class LatLongLines
         writeLatitudeAndLongitude(cartographicLongitudeByLine,
                                   numberOfLongitudeLines, false, output,
                                   stream);
+    }
+
+    @Override
+    public LatLongLines cloneObject() {
+        final LatLongLines copy =
+            LatLongLines.builder(getAvailability()).withCustomID(getId())
+                .withDisplay(this.displayLabels)
+                .withLatitudeAngularStep(this.latitudeAngularStep)
+                .withLongitudeAngularStep(longitudeAngularStep).build();
+        copy.setName(getName());
+        return copy;
     }
 
     // Private functions

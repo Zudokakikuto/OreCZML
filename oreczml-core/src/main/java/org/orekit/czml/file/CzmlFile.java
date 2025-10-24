@@ -180,9 +180,11 @@ public class CzmlFile {
                                                                      // output
                                                                      // directory
                                                                      // if
-                                                                     // needed
-            try (FileWriter FileWriter = new FileWriter(outputFile)) {
-                FileWriter.write(writer + System.lineSeparator() + "]");
+            // needed
+            try (BufferedWriter FileWriter =
+                Files.newBufferedWriter(outputFile.toPath(),
+                                        StandardCharsets.UTF_8)) {
+                FileWriter.write(content + System.lineSeparator() + "]");
             }
         }
         clear();
