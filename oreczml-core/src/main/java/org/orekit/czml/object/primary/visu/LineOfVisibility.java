@@ -325,47 +325,45 @@ public class LineOfVisibility
         final LineOfVisibility toReturn;
         try {
             if (this.spacecraft != null) {
+                final LineOfVisibility copy;
                 if (this.triangle != null) {
-                    final LineOfVisibility copy =
+                    copy =
                         LineOfVisibility
                             .builder(this.topocentricFrame, this.spacecraft,
                                      this.clock)
                             .withAngleOfAperture(this.angleOfAperture)
                             .withCustomID(getId()).withVisibilityTriangle()
                             .build();
-                    copy.setName(getName());
-                    toReturn = copy;
                 } else {
-                    final LineOfVisibility copy =
+                    copy =
                         LineOfVisibility
                             .builder(this.topocentricFrame, this.spacecraft,
                                      this.clock)
                             .withAngleOfAperture(this.angleOfAperture)
                             .withCustomID(getId()).build();
-                    copy.setName(getName());
-                    toReturn = copy;
                 }
+                copy.setName(getName());
+                toReturn = copy;
             } else if (!this.satellites.isEmpty()) {
+                final LineOfVisibility copy;
                 if (!this.triangles.isEmpty()) {
-                    final LineOfVisibility copy =
+                    copy =
                         LineOfVisibility
                             .builder(this.topocentricFrame, this.constellation,
                                      this.clock)
                             .withCustomID(getId())
                             .withAngleOfAperture(this.angleOfAperture)
                             .withVisibilityTriangle().build();
-                    copy.setName(getName());
-                    toReturn = copy;
                 } else {
-                    final LineOfVisibility copy =
+                    copy =
                         LineOfVisibility
                             .builder(this.topocentricFrame, this.constellation,
                                      this.clock)
                             .withCustomID(getId())
                             .withAngleOfAperture(this.angleOfAperture).build();
-                    copy.setName(getName());
-                    toReturn = copy;
                 }
+                copy.setName(getName());
+                toReturn = copy;
             } else {
                 throw new OreCzmlException(OreCzmlMessages.NOT_VALID_PRIMARY_OBJECT_FOR_CLONE);
             }
