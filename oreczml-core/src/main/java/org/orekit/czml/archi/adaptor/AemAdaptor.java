@@ -35,30 +35,40 @@ import java.net.URISyntaxException;
  * @author Julien LEBLOND
  * @since 1.0.0
  */
-@SuppressWarnings("checkstyle:Indentation")
-public record AemAdaptor(Aem aem){
+public record AemAdaptor(Aem aem) {
 
-/**
- * The constructor of the adaptor.
- *
- * @param aem : The aem to input.
- */
-public AemAdaptor{}
+    /**
+     * The constructor of the adaptor.
+     *
+     * @param aem : The aem to input.
+     */
+    public AemAdaptor {
+    }
 
-/**
- * Build orientation orientation.
- *
- * @param propagator the propagator
- * @param clock the clock
- * @return the orientation
- * @throws URISyntaxException the uri syntax exception
- * @throws IOException the io exception
- */
-public Orientation buildOrientation(final BoundedPropagator propagator,final Clock clock)throws URISyntaxException,IOException{return new Orientation(aem.getSegments().get(0).getAttitudeProvider(),propagator,clock,Rotation.IDENTITY,false);}
+    /**
+     * Build orientation orientation.
+     *
+     * @param propagator the propagator
+     * @param clock the clock
+     * @return the orientation
+     * @throws URISyntaxException the uri syntax exception
+     * @throws IOException the io exception
+     */
+    public Orientation buildOrientation(final BoundedPropagator propagator,
+                                        final Clock clock)
+        throws URISyntaxException,
+            IOException {
+        return new Orientation(aem.getSegments().get(0).getAttitudeProvider(),
+                               propagator, clock, Rotation.IDENTITY, false);
+    }
 
-/**
- * Gets aem.
- *
- * @return the aem
- */
-@Override public Aem aem(){return aem;}}
+    /**
+     * Gets aem.
+     *
+     * @return the aem
+     */
+    @Override
+    public Aem aem() {
+        return aem;
+    }
+}
