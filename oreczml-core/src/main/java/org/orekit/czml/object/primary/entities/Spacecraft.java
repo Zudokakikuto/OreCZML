@@ -17,17 +17,14 @@
 
 package org.orekit.czml.object.primary.entities;
 
-import cesiumlanguagewriter.BooleanCesiumWriter;
-import cesiumlanguagewriter.Cartesian;
-import cesiumlanguagewriter.CesiumOutputStream;
-import cesiumlanguagewriter.CesiumStreamWriter;
-import cesiumlanguagewriter.JulianDate;
-import cesiumlanguagewriter.OrientationCesiumWriter;
-import cesiumlanguagewriter.PacketCesiumWriter;
-import cesiumlanguagewriter.PathCesiumWriter;
-import cesiumlanguagewriter.PolylineMaterialCesiumWriter;
-import cesiumlanguagewriter.SolidColorMaterialCesiumWriter;
-import cesiumlanguagewriter.TimeInterval;
+import java.awt.Color;
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.hipparchus.geometry.euclidean.threed.Rotation;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.orekit.attitudes.Attitude;
@@ -38,6 +35,7 @@ import org.orekit.czml.object.nonvisual.CzmlModel;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
 import org.orekit.czml.object.primary.systems.SpacecraftReferenceSystem;
 import org.orekit.czml.object.secondary.Clock;
+import org.orekit.czml.object.secondary.Label;
 import org.orekit.czml.object.secondary.Orientation;
 import org.orekit.czml.object.secondary.Path;
 import org.orekit.czml.object.secondary.TimePosition;
@@ -51,13 +49,17 @@ import org.orekit.propagation.Propagator;
 import org.orekit.propagation.SpacecraftState;
 import org.orekit.time.AbsoluteDate;
 
-import java.awt.Color;
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import cesiumlanguagewriter.BooleanCesiumWriter;
+import cesiumlanguagewriter.Cartesian;
+import cesiumlanguagewriter.CesiumOutputStream;
+import cesiumlanguagewriter.CesiumStreamWriter;
+import cesiumlanguagewriter.JulianDate;
+import cesiumlanguagewriter.OrientationCesiumWriter;
+import cesiumlanguagewriter.PacketCesiumWriter;
+import cesiumlanguagewriter.PathCesiumWriter;
+import cesiumlanguagewriter.PolylineMaterialCesiumWriter;
+import cesiumlanguagewriter.SolidColorMaterialCesiumWriter;
+import cesiumlanguagewriter.TimeInterval;
 
 /**
  * Spacecraft class.
@@ -149,10 +151,19 @@ public class Spacecraft
      */
     private boolean displayReferenceSystem = false;
 
-    /** To display or not the influence sphere changes. */
+    /**
+     * To display the name of the spacecraft or not.
+     */
+    private boolean displayName = false;
+
+    /**
+     * To display or not the influence sphere changes.
+     */
     private boolean displayInfluenceSphereChanges = false;
 
-    /** The dates of changes in the sphere of influence. */
+    /**
+     * The dates of changes in the sphere of influence.
+     */
     private List<TimeInterval> intervalInfluenceSpheres;
 
     /**
@@ -264,7 +275,8 @@ public class Spacecraft
                            propagator.getInitialState().getPVCoordinates()
                                .getVelocity().getY(),
                            propagator.getInitialState().getPVCoordinates()
-                               .getVelocity().getZ()));
+                               .getVelocity().getZ()),
+             SpacecraftBuilder.DEFAULT_NAME);
     }
 
     /**
@@ -276,10 +288,11 @@ public class Spacecraft
      *        propagation and the availability of the Spacecraft.
      * @param finalDateInput : The stop date to consider for the stop the
      *        propagation and the availability of the Spacecraft.
+     * @param clockMultiplier : The clock multiplier
      * @param modelPath : The path to the model to load.
      * @param color : The color of the orbit.
      * @param customID : The custom ID of the Spacecraft.
-     * @param clockMultiplier : The clock multiplier
+     * @param name : The name of the spacecraft.
      * @throws URISyntaxException the uri syntax exception
      * @throws IOException the io exception
      */
@@ -287,12 +300,13 @@ public class Spacecraft
                       final AbsoluteDate startDateInput,
                       final AbsoluteDate finalDateInput,
                       final double clockMultiplier, final String modelPath,
-                      final Color color, final String customID)
+                      final Color color, final String customID,
+                      final String name)
         throws URISyntaxException,
             IOException {
 
         this.setId(customID);
-        this.setName(DEFAULT_NAME);
+        this.setName(name);
         this.clock = new Clock(startDateInput, finalDateInput, clockMultiplier);
         this.setAvailability(new TimeInterval(DateUtils
             .toJulianDate(startDateInput), DateUtils.toJulianDate(finalDateInput)));
@@ -359,6 +373,10 @@ public class Spacecraft
                 packet.writeName(getName());
                 packet.writeAvailability(getAvailability());
                 packet.writeDescriptionProperty(description);
+
+                if (getDisplayName()) {
+                    writeLabel(packet, output);
+                }
 
                 czmlDisplay(packet, stream, output);
 
@@ -444,6 +462,13 @@ public class Spacecraft
      */
     public void displayOnlyOnePeriod() {
         displayOnlyOnePeriod = true;
+    }
+
+    /**
+     * Display name associated with spacecraft.
+     */
+    public void displayName() {
+        displayName = true;
     }
 
     /**
@@ -806,6 +831,15 @@ public class Spacecraft
     }
 
     /**
+     * Gets display name value.
+     *
+     * @return the display name boolean
+     */
+    public boolean getDisplayName() {
+        return displayName;
+    }
+
+    /**
      * Gets display only one period.
      *
      * @return the display only one period
@@ -1145,6 +1179,21 @@ public class Spacecraft
                 output.writeEndObject();
             }
         }
+    }
+
+    /**
+     * This function aims at writing multiple models when several are loaded.
+     * The number of models should be the same as the number of ground stations
+     * wanted.
+     *
+     * @param packet : The packet that will write in the czml file.
+     * @param output : The output stream of cesium that will contain the strings
+     *        to write into the CzmLFile.
+     */
+    private void writeLabel(final PacketCesiumWriter packet,
+                            final CesiumOutputStream output) {
+        final Label label = new Label(getName());
+        label.write(packet, output);
     }
 
     /**

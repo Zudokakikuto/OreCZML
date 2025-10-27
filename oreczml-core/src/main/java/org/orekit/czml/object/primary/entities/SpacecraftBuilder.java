@@ -16,12 +16,6 @@
  */
 package org.orekit.czml.object.primary.entities;
 
-import org.hipparchus.geometry.euclidean.threed.Rotation;
-import org.orekit.czml.object.secondary.Clock;
-import org.orekit.czml.object.secondary.Orientation;
-import org.orekit.propagation.BoundedPropagator;
-import org.orekit.time.AbsoluteDate;
-
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
@@ -29,6 +23,12 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import org.hipparchus.geometry.euclidean.threed.Rotation;
+import org.orekit.czml.object.secondary.Clock;
+import org.orekit.czml.object.secondary.Orientation;
+import org.orekit.propagation.BoundedPropagator;
+import org.orekit.time.AbsoluteDate;
 
 /**
  * Spacecraft builder class
@@ -55,6 +55,11 @@ public class SpacecraftBuilder {
     /** The default format for the ID. */
     public static final String DEFAULT_FORMAT =
         "SPACECRAFT/" + "{P(%1.8e, %2.8e, %3.8e), V(%4.8e, %5.8e, %6.8e)}";
+
+    /**
+     * The default name of the Spacecraft.
+     */
+    public static final String DEFAULT_NAME = "Spacecraft";
 
     // Optional parameters
 
@@ -103,6 +108,14 @@ public class SpacecraftBuilder {
      */
     private boolean displayReferenceSystem = false;
 
+    /** The custom name of the Spacecraft. */
+    private String name;
+
+    /**
+     * To display the name of the spacecraft or not.
+     */
+    private boolean displayName = false;
+
     /**
      * The orientation that can be set up to have a personalized orientation.
      */
@@ -148,6 +161,7 @@ public class SpacecraftBuilder {
                               .getVelocity().getY(),
                           propagator.getInitialState().getPVCoordinates()
                               .getVelocity().getZ());
+        this.name = DEFAULT_NAME;
     }
 
     /**
@@ -173,6 +187,7 @@ public class SpacecraftBuilder {
                               .getVelocity().getY(),
                           propagator.getInitialState().getPVCoordinates()
                               .getVelocity().getZ());
+        this.name = DEFAULT_NAME;
     }
 
     /**
@@ -198,6 +213,17 @@ public class SpacecraftBuilder {
      */
     public SpacecraftBuilder withColor(final Color colorInput) {
         this.color = colorInput;
+        return this;
+    }
+
+    /**
+     * Function to give spacecraft a custom name.
+     *
+     * @param nameInput : The color to set up.
+     * @return : The Spacecraft builder with the given color.
+     */
+    public SpacecraftBuilder withName(final String nameInput) {
+        this.name = nameInput;
         return this;
     }
 
@@ -254,6 +280,17 @@ public class SpacecraftBuilder {
      */
     public SpacecraftBuilder withDisplayAttitude() {
         this.displayAttitude = true;
+        return this;
+    }
+
+    /**
+     * Function to display the name for the Spacecraft.
+     *
+     * @return : The Spacecraft builder with the personalized orientation for
+     *         the Spacecraft.
+     */
+    public SpacecraftBuilder withDisplayName() {
+        this.displayName = true;
         return this;
     }
 
@@ -331,7 +368,7 @@ public class SpacecraftBuilder {
             IOException {
         final Spacecraft tempSpacecraft =
             new Spacecraft(propagator, startDate, finalDate, clockMultiplier,
-                           modelPath, color, customID);
+                           modelPath, color, customID, name);
         tempSpacecraft.getSpacecraftBoundedPropagator().clearStepHandlers();
         tempSpacecraft.getSpacecraftBoundedPropagator().clearEventsDetectors();
         return this.checkAttributes(tempSpacecraft);
@@ -363,6 +400,9 @@ public class SpacecraftBuilder {
         }
         if (displayInfluenceSphere) {
             spacecraft.displayInfluenceSphereChanges(bodies, centralBody);
+        }
+        if (displayName) {
+            spacecraft.displayName();
         }
         return spacecraft;
     }
