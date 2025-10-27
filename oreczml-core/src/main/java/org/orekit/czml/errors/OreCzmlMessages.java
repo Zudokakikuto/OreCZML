@@ -49,7 +49,10 @@ public enum OreCzmlMessages
                  NOT_VALID_SECONDARY_OBJECT_FOR_CLONE("The secondary object you tried to clone does not have all the parameters needed to be cloned"),
 
                  // Date Utils
-                 /** Trigger when a start date is after a stop date or a stop date before a start date on Date Utils. */
+                 /**
+                  * Trigger when a start date is after a stop date or a stop
+                  * date before a start date on Date Utils.
+                  */
                  START_DATE_AFTER_OR_STOP_DATE_BEFORE("The start date is after the stop date or the stop date is before the star date."),
 
                  // Collision

@@ -23,59 +23,49 @@ import org.orekit.time.AbsoluteDate;
 /**
  * Oem adaptor
  * <p>
- * Adaptor for the {@link Oem} class, this helps build satellites from Oems. With all the parameters available in this class a satellite object can be
+ * Adaptor for the {@link Oem} class, this helps build satellites from Oems.
+ * With all the parameters available in this class a satellite object can be
  * built.
  *
  * @param oem The oem Orekit object.
  * @author Julien LEBLOND
  * @since 1.0.0
  */
-public record OemAdaptor(Oem oem) {
+public record OemAdaptor(Oem oem){
 
-    // Constructor
+// Constructor
 
-    /**
-     * The constructor of the adaptor.
-     *
-     * @param oem : The oem Orekit object that will need to be converted.
-     */
-    public OemAdaptor {
-    }
+/**
+ * The constructor of the adaptor.
+ *
+ * @param oem : The oem Orekit object that will need to be converted.
+ */
+public OemAdaptor{}
 
-    /**
-     * This function builds the propagator from the oem.
-     *
-     * @return : A propagator extracted from the oem.
-     */
-    public Propagator buildPropagator() {
-        return oem.getSegments().get(0).getPropagator();
-    }
+/**
+ * This function builds the propagator from the oem.
+ *
+ * @return : A propagator extracted from the oem.
+ */
+public Propagator buildPropagator(){return oem.getSegments().get(0).getPropagator();}
 
-    /**
-     * This function builds the final date from the oem.
-     *
-     * @return : A final date extracted from the oem.
-     */
-    public AbsoluteDate buildFinalDate() {
-        return oem.getSegments().get(oem.getSegments().size() - 1).getStop();
-    }
+/**
+ * This function builds the final date from the oem.
+ *
+ * @return : A final date extracted from the oem.
+ */
+public AbsoluteDate buildFinalDate(){return oem.getSegments().get(oem.getSegments().size()-1).getStop();}
 
-    /**
-     * This function builds the start date from the oem.
-     *
-     * @return : A start date extracted from the oem.
-     */
-    public AbsoluteDate buildStartDate() {
-        return oem.getSegments().get(0).getStart();
-    }
+/**
+ * This function builds the start date from the oem.
+ *
+ * @return : A start date extracted from the oem.
+ */
+public AbsoluteDate buildStartDate(){return oem.getSegments().get(0).getStart();}
 
-    /**
-     * Getter of the oem.
-     *
-     * @return : The oem used to build the oem adaptor.
-     */
-    @Override
-    public Oem oem() {
-        return oem;
-    }
-}
+/**
+ * Getter of the oem.
+ *
+ * @return : The oem used to build the oem adaptor.
+ */
+@Override public Oem oem(){return oem;}}

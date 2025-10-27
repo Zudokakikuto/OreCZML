@@ -22,7 +22,8 @@ import cesiumlanguagewriter.PacketCesiumWriter;
 /**
  * CZML Secondary Object Interface
  * <p>
- * This interface represents the objects that are not directly displayed on screen,they depends to primary objects.
+ * This interface represents the objects that are not directly displayed on
+ * screen,they depends to primary objects.
  * </p>
  *
  * @author Julien LEBLOND
@@ -34,7 +35,7 @@ public interface CzmlSecondaryObject<T extends CzmlSecondaryObject<T>> {
      * Write the secondary object.
      *
      * @param packetWriter the packet writer
-     * @param output       the output
+     * @param output the output
      */
     void write(PacketCesiumWriter packetWriter, CesiumOutputStream output);
 
