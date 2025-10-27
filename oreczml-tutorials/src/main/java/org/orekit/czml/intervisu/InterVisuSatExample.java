@@ -16,14 +16,16 @@
  */
 package org.orekit.czml.intervisu;
 
-import org.orekit.czml.TutorialUtils;
+import java.awt.Color;
+
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
+import org.orekit.czml.TutorialUtils;
 import org.orekit.czml.file.CzmlFile;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.primary.visu.InterSatVisu;
 import org.orekit.czml.object.primary.entities.Spacecraft;
+import org.orekit.czml.object.primary.visu.InterSatVisu;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.forces.ForceModel;
 import org.orekit.forces.gravity.HolmesFeatherstoneAttractionModel;
@@ -41,8 +43,6 @@ import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.Constants;
 import org.orekit.utils.IERSConventions;
-
-import java.awt.Color;
 
 /**
  * This tutorial provides an example of how to set up an inter-visualization
@@ -163,11 +163,13 @@ public class InterVisuSatExample {
         // Creation of the satellites
         final Spacecraft firstSatellite =
             Spacecraft.builder(firstBoundedPropagator, clock)
-                .withColor(Color.MAGENTA).withOnlyOnePeriod().build();
+                .withColor(Color.MAGENTA).withOnlyOnePeriod()
+                .withName("Satellite 1").withDisplayName().build();
 
         final Spacecraft secondSatellite =
             Spacecraft.builder(secondBoundedPropagator, clock)
-                .withColor(Color.GREEN).withOnlyOnePeriod().build();
+                .withColor(Color.GREEN).withOnlyOnePeriod()
+                .withName("Satellite 2").withDisplayName().build();
 
         // Creation of the inter-sat visualisation
         final InterSatVisu interSatVisu =

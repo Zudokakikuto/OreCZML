@@ -16,6 +16,13 @@
  */
 package org.orekit.czml.object.primary.entities;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.annotation.DefaultDataContext;
@@ -26,13 +33,6 @@ import org.orekit.czml.object.secondary.Clock;
 import org.orekit.czml.object.utils.DateUtils;
 import org.orekit.propagation.BoundedPropagator;
 import org.orekit.time.AbsoluteDate;
-
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The type Satellite test.
@@ -67,6 +67,37 @@ public class SpacecraftTest
 
         final String pathFile =
             loadResources("templateFile/object/primary/entities/SpacecraftTemplate.txt");
+
+        verifyFileOutput(pathFile, spacecraft.toString(), 1e-8);
+    }
+
+    /**
+     * Satellite constructor test.
+     *
+     * @throws IOException the io exception
+     * @throws URISyntaxException the uri syntax exception
+     */
+    @Test
+    void SatelliteLabelTest()
+        throws IOException,
+            URISyntaxException {
+
+        loadOrekitData();
+
+        final Header header = dummyHeader();
+        final AbsoluteDate startDate =
+            DateUtils.toAbsoluteDate(header.getAvailability().getStart());
+        final AbsoluteDate finalDate = startDate.shiftedBy(60.0);
+
+        final BoundedPropagator propagator =
+            dummyPropagator(startDate, finalDate);
+
+        final Spacecraft spacecraft =
+            Spacecraft.builder(propagator, header.getClock().getMultiplier())
+                .withName("Spacecraft").withDisplayName().build();
+
+        final String pathFile =
+            loadResources("templateFile/object/primary/entities/SpacecraftLabelTemplate.txt");
 
         verifyFileOutput(pathFile, spacecraft.toString(), 1e-8);
     }
