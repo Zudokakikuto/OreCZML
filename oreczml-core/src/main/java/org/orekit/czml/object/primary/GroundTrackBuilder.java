@@ -67,7 +67,7 @@ public class GroundTrackBuilder {
     private String customID;
 
     /** The availability to consider. */
-    private Clock clock;
+    private Clock clock = null;
 
     // Constructor
 

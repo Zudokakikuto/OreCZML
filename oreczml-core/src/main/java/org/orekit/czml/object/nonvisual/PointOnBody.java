@@ -174,6 +174,11 @@ public class PointOnBody
         }
     }
 
+    @Override
+    public PointOnBody cloneObject() {
+        return null;
+    }
+
     // Gets
 
     /**

@@ -28,12 +28,14 @@ import cesiumlanguagewriter.Reference;
 import cesiumlanguagewriter.SolidColorMaterialCesiumWriter;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.orekit.bodies.BodyShape;
+import org.orekit.czml.errors.OreCzmlException;
+import org.orekit.czml.errors.OreCzmlMessages;
 import org.orekit.czml.object.CzmlShow;
-import org.orekit.czml.object.Path;
 import org.orekit.czml.object.Polyline;
 import org.orekit.czml.object.primary.entities.Constellation;
 import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.secondary.Clock;
+import org.orekit.czml.object.secondary.Path;
 import org.orekit.czml.object.secondary.TimePosition;
 import org.orekit.propagation.SpacecraftState;
 import org.orekit.time.AbsoluteDate;
@@ -57,7 +59,7 @@ import java.util.List;
  */
 public class GroundTrack
     extends
-    AbstractPrimaryObject {
+    AbstractPrimaryObject<GroundTrack> {
 
     /**
      * The default ID of the ground track object.
@@ -118,6 +120,15 @@ public class GroundTrack
      */
     private Boolean displayLinkSatellite = false;
 
+    /** The body used. */
+    private BodyShape body;
+
+    /** The constellation if one is used. */
+    private Constellation constellation;
+
+    /** The clock of the ground track. */
+    private Clock clock;
+
     // Constructors
 
     /**
@@ -126,13 +137,14 @@ public class GroundTrack
      *
      * @param spacecraft : The satellite object that the ground track will
      *        represent.
-     * @param body : The body in which the ground track must be projected to.
+     * @param bodyInput : The body in which the ground track must be projected
+     *        to.
      * @param clock : The clock considered.
      */
-    GroundTrack(final Spacecraft spacecraft, final BodyShape body,
+    GroundTrack(final Spacecraft spacecraft, final BodyShape bodyInput,
                 final Clock clock) {
-        this(spacecraft, body, DEFAULT_COLOR, DEFAULT_ID + spacecraft.getId(),
-             clock);
+        this(spacecraft, bodyInput, DEFAULT_COLOR,
+             DEFAULT_ID + spacecraft.getId(), clock);
     }
 
     /**
@@ -140,28 +152,31 @@ public class GroundTrack
      * for a satellite.
      *
      * @param spacecraft : The satellite that the ground track will follow.
-     * @param body : The body in which the ground track must be projected to.
+     * @param bodyInput : The body in which the ground track must be projected
+     *        to.
      * @param color : The color of the ground track.
      * @param customID : The custom ID for the ground track
      * @param clock : The clock considered.
      */
-    GroundTrack(final Spacecraft spacecraft, final BodyShape body,
+    GroundTrack(final Spacecraft spacecraft, final BodyShape bodyInput,
                 final Color color, final String customID, final Clock clock) {
 
         this.spacecraft = spacecraft;
         this.setId(customID);
         this.setName(DEFAULT_NAME + spacecraft.getName());
+        this.body = bodyInput;
         this.setAvailability(clock.getAvailability());
         this.color = color;
+        this.clock = clock;
         final List<AbsoluteDate> satelliteDates =
             spacecraft.getAbsoluteDateList();
         this.states = spacecraft.getSpaceCraftStates();
         final List<Cartesian> projectedCartesianList = new ArrayList<>();
         for (int i = 0; i < states.size(); i++) {
             final Vector3D projectedVector3D =
-                body.projectToGround(states.get(i).getPosition(),
-                                     satelliteDates.get(i),
-                                     body.getBodyFrame());
+                bodyInput.projectToGround(states.get(i).getPosition(),
+                                          satelliteDates.get(i),
+                                          body.getBodyFrame());
             projectedCartesianList.add(new Cartesian(projectedVector3D.getX(),
                                                      projectedVector3D.getY(),
                                                      projectedVector3D.getZ()));
@@ -190,19 +205,24 @@ public class GroundTrack
      * The constructor for the ground track object with no default parameters
      * for a constellation.
      *
-     * @param constellation : The constellation object that the ground track
-     *        will represent.
-     * @param body : The body in which the ground track must be projected to.
+     * @param constellationInput : The constellation object that the ground
+     *        track will represent.
+     * @param bodyInput : The body in which the ground track must be projected
+     *        to.
      * @param color : The color of the ground track.
      * @param customID : The custom ID for the ground track
      * @param clock : The clock considered.
      */
-    GroundTrack(final Constellation constellation, final BodyShape body,
-                final Color color, final String customID, final Clock clock) {
+    GroundTrack(final Constellation constellationInput,
+                final BodyShape bodyInput, final Color color,
+                final String customID, final Clock clock) {
 
-        final List<Spacecraft> satellites = constellation.getSatellites();
         this.color = color;
         this.groundTracks = new ArrayList<>();
+        this.constellation = constellationInput;
+        this.body = bodyInput;
+        this.clock = clock;
+        final List<Spacecraft> satellites = constellationInput.getSatellites();
         this.setId(customID);
         this.setName(DEFAULT_NAME +
                      constellation.getTotalOfSatellite() +
@@ -210,7 +230,7 @@ public class GroundTrack
         this.setAvailability(clock.getAvailability());
         for (final Spacecraft currentSat : satellites) {
             final GroundTrack currentGroundTrack =
-                new GroundTrack(currentSat, body, currentSat.getColor(),
+                new GroundTrack(currentSat, bodyInput, currentSat.getColor(),
                                 customID + currentSat.getId(), clock);
             groundTracks.add(currentGroundTrack);
         }
@@ -274,12 +294,11 @@ public class GroundTrack
                             .toArray(new Reference[0]);
                     final Iterable<Reference> referenceIterable =
                         convertToIterable(referenceList);
-                    final CzmlShow show = new CzmlShow(true, getAvailability());
+                    final CzmlShow show = new CzmlShow(true, this.clock);
                     final List<CzmlShow> shows = new ArrayList<>();
                     shows.add(show);
                     final Polyline polylineInput =
-                        Polyline.nonVectorBuilder(getSpacecraft().getClock())
-                            .build();
+                        Polyline.nonVectorBuilder(this.clock).build();
                     polylineInput.writePolylineOfVisibility(packet, output,
                                                             referenceIterable,
                                                             shows);
@@ -315,12 +334,11 @@ public class GroundTrack
                                 .toArray(new Reference[0]);
                         final Iterable<Reference> referenceIterable =
                             convertToIterable(referenceList);
-                        final CzmlShow show =
-                            new CzmlShow(true, getAvailability());
+                        final CzmlShow show = new CzmlShow(true, getClock());
                         final List<CzmlShow> shows = new ArrayList<>();
                         shows.add(show);
                         final Polyline polylineInput =
-                            Polyline.nonVectorBuilder(spacecraft.getClock())
+                            Polyline.nonVectorBuilder(this.clock)
                                 .withColor(currentGroundTrack.getColor())
                                 .build();
                         polylineInput
@@ -333,6 +351,27 @@ public class GroundTrack
         }
     }
 
+    @Override
+    public GroundTrack cloneObject() {
+        final GroundTrack toReturn;
+        if (this.spacecraft != null) {
+            final GroundTrack copy =
+                GroundTrack.builder(this.spacecraft, this.body, this.clock)
+                    .withColor(this.color).withCustomID(getId()).build();
+            copy.setName(getName());
+            toReturn = copy;
+        } else if (this.constellation != null) {
+            final GroundTrack copy =
+                GroundTrack.builder(this.constellation, this.body, this.clock)
+                    .withColor(this.color).withCustomID(getId()).build();
+            copy.setName(getName());
+            toReturn = copy;
+        } else {
+            throw new OreCzmlException(OreCzmlMessages.NOT_VALID_PRIMARY_OBJECT_FOR_CLONE);
+        }
+        return toReturn;
+    }
+
     // Getters
 
     /**
@@ -341,7 +380,7 @@ public class GroundTrack
      * @return the satellite
      */
     public Spacecraft getSpacecraft() {
-        return spacecraft;
+        return spacecraft == null ? null : spacecraft;
     }
 
     /**

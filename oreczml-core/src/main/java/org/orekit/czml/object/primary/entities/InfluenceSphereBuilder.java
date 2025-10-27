@@ -35,9 +35,6 @@ public class InfluenceSphereBuilder {
     /** The customID that can be set up. */
     private String customID;
 
-    /** The name of the body. */
-    private String bodyName;
-
     /**
      * Classic constructor for the builder of the influence sphere.
      *
@@ -45,8 +42,8 @@ public class InfluenceSphereBuilder {
      * @param bodyInput The body used for the influence sphere
      */
     public InfluenceSphereBuilder(final Body bodyInput, final Clock clock) {
-        this.body = bodyInput;
-        this.clock = clock;
+        this.body = bodyInput.cloneObject();
+        this.clock = clock.cloneObject();
         this.customID = DEFAULT_ID + bodyInput.getName();
     }
 
@@ -62,30 +59,6 @@ public class InfluenceSphereBuilder {
     }
 
     /**
-     * This function set up a custom name for the body of the sphere of
-     * influence.
-     *
-     * @param customBodyNameInput : The name to set up
-     * @return : The influence sphere builder with a custom body name.
-     */
-    public InfluenceSphereBuilder
-        withCustomBodyName(final String customBodyNameInput) {
-        this.bodyName = customBodyNameInput;
-        return this;
-    }
-
-    /**
-     * This function set up a custom clock for the sphere of influence.
-     *
-     * @param clockInput : The clock to set up.
-     * @return : The influence sphere builder with a custom clock.
-     */
-    public InfluenceSphereBuilder withClock(final Clock clockInput) {
-        this.clock = clockInput;
-        return this;
-    }
-
-    /**
      * This function builds the sphere of influence with all the parameters
      * given.
      *
@@ -96,9 +69,6 @@ public class InfluenceSphereBuilder {
             new InfluenceSphere(body, clock);
         if (customID != null) {
             influenceSphere.setId(customID);
-        }
-        if (bodyName != null) {
-            influenceSphere.getBody().setName(bodyName);
         }
         if (clock != null) {
             influenceSphere.setClock(clock);

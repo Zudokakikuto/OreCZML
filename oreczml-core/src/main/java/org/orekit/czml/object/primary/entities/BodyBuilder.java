@@ -42,7 +42,7 @@ public class BodyBuilder {
     private String customId;
 
     /** The clock to use. */
-    private Clock clock;
+    private final Clock clock;
 
     /** To know if the orbit must be displayed or not. */
     private boolean noOrbitDisplay;
@@ -84,18 +84,18 @@ public class BodyBuilder {
      * @param pathToModelInput : The model to load
      * @param frameToExpressInput : The model to load
      * @param clock : The clock considered.
-     * @param centralBodyInput : The central body
+     * @param centralBody : The central body considered
      */
     public BodyBuilder(final CelestialBody bodyInput,
                        final String pathToModelInput,
                        final Frame frameToExpressInput, final Clock clock,
-                       final Body centralBodyInput) {
+                       final Body centralBody) {
         this.body = bodyInput;
         this.pathToModel = pathToModelInput;
         this.customId = "BODY/" + bodyInput.getName();
-        this.clock = clock;
+        this.clock = clock.cloneObject();
         this.frameToExpress = frameToExpressInput;
-        this.centralBody = centralBodyInput;
+        this.centralBody = centralBody;
     }
 
     /**
@@ -173,7 +173,7 @@ public class BodyBuilder {
      * @return the body
      */
     public BodyBuilder withOrientation(final Orientation orientationInput) {
-        this.orientation = orientationInput;
+        this.orientation = orientationInput.cloneObject();
         return this;
     }
 
@@ -219,7 +219,7 @@ public class BodyBuilder {
      * @return The builder with a custom central body
      */
     public BodyBuilder withCentralBody(final Body centralBodyInput) {
-        this.centralBody = centralBodyInput;
+        this.centralBody = centralBodyInput.cloneObject();
         return this;
     }
 

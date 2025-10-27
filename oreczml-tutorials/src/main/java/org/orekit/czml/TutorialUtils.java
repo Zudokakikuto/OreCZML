@@ -50,7 +50,7 @@ public class TutorialUtils {
 
     /** The classic duration of the simulation. */
     public static final double CLASSIC_DURATION_OF_SIMULATION = 10 * 3600; // in
-    // seconds;
+                                                                           // seconds;
 
     /** user home. */
     private static final String USER_HOME = "user.home";

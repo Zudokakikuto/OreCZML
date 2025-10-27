@@ -58,7 +58,7 @@ import java.util.List;
  */
 public class AttitudePointing
     extends
-    AbstractPrimaryObject {
+    AbstractPrimaryObject<AttitudePointing> {
 
     /**
      * The default ID of the attitude-pointing object.
@@ -135,6 +135,18 @@ public class AttitudePointing
      */
     private double periodPointingPath = 0.0;
 
+    /** The direction of the pointing. */
+    private Vector3D directionPointing;
+
+    /** The color for the arrow. */
+    private Color color;
+
+    /** To display on the ground or not. */
+    private boolean displayOnGround;
+
+    /** The clock of the attitude pointing. */
+    private Clock clock;
+
     // Constructors
 
     /**
@@ -157,7 +169,7 @@ public class AttitudePointing
      * @param satellite : The satellite that will point to the body.
      * @param body : The body to point to.
      * @param direction : The line of sight in the spacecraft frame.
-     * @param color : The color of the pointing (polyline).
+     * @param colorInput : The color of the pointing (polyline).
      * @param alwaysDisplayOnGround : Director that manages the pointing or not
      *        at objects during the orbit. Put this parameter on if the
      *        satellite is pointing at objects during the orbit. This boolean
@@ -169,11 +181,12 @@ public class AttitudePointing
      * @param clock : The clock of the attitude pointing
      */
     AttitudePointing(final Spacecraft satellite, final OneAxisEllipsoid body,
-                     final Vector3D direction, final Color color,
+                     final Vector3D direction, final Color colorInput,
                      final boolean alwaysDisplayOnGround, final String ID,
                      final Clock clock) {
         this.setId(ID);
         this.satellite = satellite;
+        this.clock = clock;
         this.setName(DEFAULT_NAME + satellite.getName());
         this.setAvailability(clock.getAvailability());
         this.satelliteOrientation = satellite.getOrientation();
@@ -181,6 +194,9 @@ public class AttitudePointing
         this.states = satellite.getSpaceCraftStates();
         this.julianDates = satelliteOrientation.getJulianDates();
         this.body = body;
+        this.directionPointing = direction;
+        this.color = colorInput;
+        this.displayOnGround = alwaysDisplayOnGround;
         final Frame frame = satellite.getFrame();
 
         final List<GeodeticPoint> projectedGeodeticPoints =
@@ -245,6 +261,18 @@ public class AttitudePointing
             packet.writeAvailability(getAvailability());
             attitudePointingPolyline.writeReferencesPolyline(packet, output);
         }
+    }
+
+    @Override
+    public AttitudePointing cloneObject() {
+        final AttitudePointing copy =
+            AttitudePointing
+                .builder(this.satellite, this.body, this.directionPointing,
+                         this.clock)
+                .withColor(this.color).withCustomID(getId())
+                .withDisplayOnGround(this.displayOnGround).build();
+        copy.setName(getName());
+        return copy;
     }
 
     // Display methods

@@ -57,7 +57,7 @@ public class ConstellationBuilder {
     /**
      * Path to the model.
      */
-    private String pathToModel = Constellation.DEFAULT_STRING_MODEL;
+    private List<String> pathToModel = new ArrayList<>();
 
     /**
      * The custom ID for the constellation.
@@ -98,13 +98,15 @@ public class ConstellationBuilder {
     }
 
     /**
-     * Function to set up a custom model.
+     * Function to set up one or several custom models.
      *
-     * @param pathToModelInput : The path to the model.
-     * @return : The constellation builder with a custom model.
+     * @param pathToModelsInput : The list of paths to the models.
+     * @return : The constellation builder with custom models.
      */
-    public ConstellationBuilder withModel(final String pathToModelInput) {
-        this.pathToModel = pathToModelInput;
+    public ConstellationBuilder
+        withModel(final List<String> pathToModelsInput) {
+        this.pathToModel.clear();
+        this.pathToModel = pathToModelsInput;
         return this;
     }
 

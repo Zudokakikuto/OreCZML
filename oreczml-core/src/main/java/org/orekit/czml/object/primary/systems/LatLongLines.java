@@ -51,7 +51,7 @@ import java.util.Objects;
  */
 public class LatLongLines
     extends
-    AbstractPrimaryObject {
+    AbstractPrimaryObject<LatLongLines> {
 
     /**
      * The default id of the lat long display object.
@@ -97,6 +97,15 @@ public class LatLongLines
      */
     private final boolean displayLabels;
 
+    /** The latitude angular step. */
+    private int latitudeAngularStep;
+
+    /** The longitude angular step. */
+    private int longitudeAngularStep;
+
+    /** The clock of the lat long lines. */
+    private Clock clock;
+
     // Constructors
 
     /**
@@ -113,44 +122,48 @@ public class LatLongLines
     /**
      * Constructor using an angular step for the latitude and the longitude.
      *
-     * @param latitudeAngularStep : The angular step between each line of
+     * @param latitudeAngularStepInput : The angular step between each line of
      *        latitude.
-     * @param longitudeAngularStep : The angular step between each line of
+     * @param longitudeAngularStepInput : The angular step between each line of
      *        longitude.
      * @param displayLabelsInput : To display the labels of the lines or not (°
      *        of the parallels or of the meridians)
      * @param customID : The custom ID of the lat long lines object.
-     * @param clock : The clock considered.
+     * @param clock : The availability considered when several are used.
      */
-    LatLongLines(final int latitudeAngularStep, final int longitudeAngularStep,
+    LatLongLines(final int latitudeAngularStepInput,
+                 final int longitudeAngularStepInput,
                  final boolean displayLabelsInput, final String customID,
                  final Clock clock) {
 
         this.setId(customID);
         this.setName(DEFAULT_NAME);
         this.setAvailability(clock.getAvailability());
+        this.clock = clock;
+        this.longitudeAngularStep = longitudeAngularStepInput;
+        this.latitudeAngularStep = latitudeAngularStepInput;
 
         this.displayLabels = displayLabelsInput;
         final List<Integer> divisorsLatitude = findAllDivisors(360);
         final List<Integer> divisorsLongitude = findAllDivisors(360);
 
-        if (latitudeAngularStep > 180) {
+        if (latitudeAngularStepInput > 180) {
             throw new OreCzmlException(OreCzmlMessages.GREATER_ANGULAR_LATITUDE_STEP);
         }
-        if (longitudeAngularStep > 360) {
+        if (longitudeAngularStepInput > 360) {
             throw new OreCzmlException(OreCzmlMessages.GREATER_ANGULAR_LONGITUDE_STEP);
         }
 
-        int divisorLatitudeToUse = latitudeAngularStep;
-        int divisorLongitudeToUse = longitudeAngularStep;
+        int divisorLatitudeToUse = latitudeAngularStepInput;
+        int divisorLongitudeToUse = longitudeAngularStepInput;
 
-        if (!(divisorsLatitude.contains(latitudeAngularStep))) {
+        if (!(divisorsLatitude.contains(latitudeAngularStepInput))) {
             divisorLatitudeToUse =
-                findNearestLowerDivisor(360, latitudeAngularStep);
+                findNearestLowerDivisor(360, latitudeAngularStepInput);
         }
-        if (!divisorsLongitude.contains(longitudeAngularStep)) {
+        if (!divisorsLongitude.contains(longitudeAngularStepInput)) {
             divisorLongitudeToUse =
-                findNearestLowerDivisor(360, longitudeAngularStep);
+                findNearestLowerDivisor(360, longitudeAngularStepInput);
         }
 
         this.numberOfLatitudeLines = 360 / divisorLatitudeToUse;
@@ -202,6 +215,17 @@ public class LatLongLines
         writeLatitudeAndLongitude(cartographicLongitudeByLine,
                                   numberOfLongitudeLines, false, output,
                                   stream);
+    }
+
+    @Override
+    public LatLongLines cloneObject() {
+        final LatLongLines copy =
+            LatLongLines.builder(this.clock).withCustomID(getId())
+                .withDisplay(this.displayLabels)
+                .withLatitudeAngularStep(this.latitudeAngularStep)
+                .withLongitudeAngularStep(longitudeAngularStep).build();
+        copy.setName(getName());
+        return copy;
     }
 
     // Private functions

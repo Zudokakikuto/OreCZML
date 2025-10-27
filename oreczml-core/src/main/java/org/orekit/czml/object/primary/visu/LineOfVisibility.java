@@ -25,7 +25,6 @@ import cesiumlanguagewriter.Reference;
 import cesiumlanguagewriter.TimeInterval;
 import org.hipparchus.ode.events.Action;
 import org.hipparchus.util.FastMath;
-import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.errors.OreCzmlException;
 import org.orekit.czml.errors.OreCzmlMessages;
 import org.orekit.czml.object.CzmlShow;
@@ -39,6 +38,7 @@ import org.orekit.frames.TopocentricFrame;
 import org.orekit.propagation.BoundedPropagator;
 import org.orekit.propagation.SpacecraftState;
 import org.orekit.propagation.events.ElevationDetector;
+import org.orekit.time.AbsoluteDate;
 import org.orekit.utils.TimeSpanMap;
 
 import java.io.IOException;
@@ -60,7 +60,7 @@ import java.util.List;
  */
 public class LineOfVisibility
     extends
-    AbstractPrimaryObject {
+    AbstractPrimaryObject<LineOfVisibility> {
 
     /**
      * The default angle of aperture of the station.
@@ -139,6 +139,15 @@ public class LineOfVisibility
     /** Visibility triangles. */
     private List<VisibilityTriangle> triangles = new ArrayList<>();
 
+    /** The topocentric frame used. */
+    private TopocentricFrame topocentricFrame;
+
+    /** The constellation is one is used. */
+    private Constellation constellation;
+
+    /** The clock of the line of visibility. */
+    private Clock clock;
+
     // Constructors
 
     /**
@@ -181,6 +190,7 @@ public class LineOfVisibility
         this.angleOfAperture = angleOfApertureInput;
         this.setAvailability(clock.getAvailability());
         this.setId(customID);
+        this.clock = clock;
         this.setName(DEFAULT_LINE_BETWEEN +
                      topocentricFrameInput.getName() + DEFAULT_AND +
                      satelliteInput.getName());
@@ -197,6 +207,7 @@ public class LineOfVisibility
         final Reference[] referenceList =
             Arrays.asList(reference1, reference2).toArray(new Reference[0]);
         this.references = convertToIterable(referenceList);
+        this.topocentricFrame = topocentricFrameInput;
 
         this.timeIntervals = new ArrayList<>();
         this.visuList = new ArrayList<>();
@@ -225,6 +236,7 @@ public class LineOfVisibility
                      final Clock clock) {
         this.setId(customID);
         this.setAvailability(clock.getAvailability());
+        this.clock = clock;
         this.satellites = constellation.getSatellites();
         final List<Reference> referenceToConvert = new ArrayList<>();
         for (int i = 0; i < constellation.getTotalOfSatellite(); i++) {
@@ -305,6 +317,55 @@ public class LineOfVisibility
             for (LineOfVisibility line : lines) {
                 writeSingleLine(output, stream, line);
             }
+        }
+    }
+
+    @Override
+    public LineOfVisibility cloneObject() {
+        LineOfVisibility toReturn;
+        try {
+            if (this.spacecraft != null) {
+                if (this.triangle != null) {
+                    toReturn =
+                        LineOfVisibility
+                            .builder(this.topocentricFrame, this.spacecraft,
+                                     this.clock)
+                            .withAngleOfAperture(this.angleOfAperture)
+                            .withCustomID(getId()).withVisibilityTriangle()
+                            .build();
+                } else {
+                    toReturn =
+                        LineOfVisibility
+                            .builder(this.topocentricFrame, this.spacecraft,
+                                     this.clock)
+                            .withAngleOfAperture(this.angleOfAperture)
+                            .withCustomID(getId()).build();
+                }
+                toReturn.setName(getName());
+            } else if (!this.satellites.isEmpty()) {
+                if (!this.triangles.isEmpty()) {
+                    toReturn =
+                        LineOfVisibility
+                            .builder(this.topocentricFrame, this.constellation,
+                                     this.clock)
+                            .withCustomID(getId())
+                            .withAngleOfAperture(this.angleOfAperture)
+                            .withVisibilityTriangle().build();
+                } else {
+                    toReturn =
+                        LineOfVisibility
+                            .builder(this.topocentricFrame, this.constellation,
+                                     this.clock)
+                            .withCustomID(getId())
+                            .withAngleOfAperture(this.angleOfAperture).build();
+                }
+                toReturn.setName(getName());
+            } else {
+                throw new OreCzmlException(OreCzmlMessages.NOT_VALID_PRIMARY_OBJECT_FOR_CLONE);
+            }
+            return toReturn;
+        } catch (URISyntaxException | IOException e) {
+            throw new OreCzmlException(OreCzmlMessages.NOT_VALID_PRIMARY_OBJECT_FOR_CLONE);
         }
     }
 
@@ -440,12 +501,12 @@ public class LineOfVisibility
      *        station must be.
      * @param satellite_input : The satellite that will be observed by the
      *        station.
-     * @param clock : The clock considered.
+     * @param clockInput : The clock considered.
      */
     private void
         buildSingleTimeIntervalsAndVisu(final TopocentricFrame topocentricFrameInput,
                                         final Spacecraft satellite_input,
-                                        final Clock clock) {
+                                        final Clock clockInput) {
 
         final BoundedPropagator propagator =
             (BoundedPropagator) satellite_input.getSpacecraftPropagator();
@@ -479,7 +540,7 @@ public class LineOfVisibility
         for (TimeSpanMap.Span<Boolean> span = visuMap.getFirstNonNullSpan();
              span != null; span = span.next()) {
             if (span.getEnd().isAfter(DateUtils
-                .toAbsoluteDate(clock.getAvailability().getStop()))) {
+                .toAbsoluteDate(clockInput.getAvailability().getStop()))) {
                 if (visuList.get(visuList.size() - 1)) {
                     visuList.add(false);
                 } else {
@@ -487,7 +548,8 @@ public class LineOfVisibility
                 }
                 final JulianDate startDate =
                     DateUtils.toJulianDate(span.getStart());
-                final JulianDate stopDate = clock.getAvailability().getStop();
+                final JulianDate stopDate =
+                    clockInput.getAvailability().getStop();
                 final TimeInterval currentTimeInterval =
                     new TimeInterval(startDate, stopDate);
                 timeIntervals.add(currentTimeInterval);
@@ -527,13 +589,19 @@ public class LineOfVisibility
      * @param topocentricFrameInput : The topocentric frame related to the Czml
      *        show.
      */
-    @DefaultDataContext
     private void buildShowList(final TopocentricFrame topocentricFrameInput) {
         showList = new ArrayList<>();
         for (int i = 0; i < visuList.size(); i++) {
-            final TimeInterval currentInterval = timeIntervals.get(i);
+            final TimeInterval currentTimeInterval = timeIntervals.get(i);
+            final double clockMultiplier = this.clock.getMultiplier();
+            final AbsoluteDate startDate =
+                DateUtils.toAbsoluteDate(currentTimeInterval.getStart());
+            final AbsoluteDate finalDate =
+                DateUtils.toAbsoluteDate(currentTimeInterval.getStop());
+            final Clock currentClock =
+                new Clock(startDate, finalDate, clockMultiplier);
             final CzmlShow showTemp =
-                new CzmlShow(visuList.get(i), currentInterval,
+                new CzmlShow(visuList.get(i), currentClock,
                              topocentricFrameInput);
             showList.add(showTemp);
         }
@@ -549,15 +617,8 @@ public class LineOfVisibility
      */
     private void writePolyline(final PacketCesiumWriter packet,
                                final CesiumOutputStream output) {
-        final Clock clock;
-        if (spacecraft != null) {
-            clock = spacecraft.getClock();
-        } else if (!satellites.isEmpty()) {
-            clock = satellites.get(0).getClock();
-        } else {
-            throw new OreCzmlException(OreCzmlMessages.NO_SPACECRAFT_OR_CONSTELLATION);
-        }
-        final Polyline polylineInput = Polyline.nonVectorBuilder(clock).build();
+        final Polyline polylineInput =
+            Polyline.nonVectorBuilder(this.clock).build();
         polylineInput.writePolylineOfVisibility(packet, output, references,
                                                 showList);
     }

@@ -77,7 +77,7 @@ public class LineOfVisibilityTest
         final AbsoluteDate startDate =
             new AbsoluteDate(2024, 3, 15, 0, 0, 0.0,
                              TimeScalesFactory.getUTC());
-        final AbsoluteDate finalDate = startDate.shiftedBy(10 * 3600);
+        final AbsoluteDate finalDate = startDate.shiftedBy(10.0 * 3600.0);
 
         final KeplerianOrbit initialOrbit =
             new KeplerianOrbit(7878000, 0, FastMath.toRadians(80), 0,

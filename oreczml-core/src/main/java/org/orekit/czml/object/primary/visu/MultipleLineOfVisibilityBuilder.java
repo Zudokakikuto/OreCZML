@@ -56,7 +56,7 @@ public class MultipleLineOfVisibilityBuilder {
 
     // Constructors
 
-    /** The custom availabilities of the lines. */
+    /** The custom clock of the lines. */
     private List<Clock> clocks = new ArrayList<>();
 
     /** Display triangles of all the line of visibility. */
@@ -105,7 +105,7 @@ public class MultipleLineOfVisibilityBuilder {
      * @return The multiple line of visibility builder with custom names
      */
     public MultipleLineOfVisibilityBuilder
-        withCustomAvailabilities(final List<Clock> clocksInput) {
+        withCustomClocks(final List<Clock> clocksInput) {
         this.clocks = clocksInput;
         return this;
     }
@@ -197,8 +197,7 @@ public class MultipleLineOfVisibilityBuilder {
                 final LineOfVisibilityBuilder lineBuilder =
                     LineOfVisibility.builder(topocentricFrame,
                                              constellationInput,
-                                             constellationInput.getSatellites()
-                                                 .get(0).getClock());
+                                             constellationInput.getClock());
                 if (areAvailabilites) {
                     lineBuilder.withClock(clocksInput.get(i));
                 }

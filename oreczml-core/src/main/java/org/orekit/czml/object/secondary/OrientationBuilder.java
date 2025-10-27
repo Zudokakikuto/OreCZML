@@ -87,7 +87,8 @@ public class OrientationBuilder {
      */
     public OrientationBuilder(final List<Attitude> attitudes,
                               final Frame objectFrame) {
-        this.attitudes = new ArrayList<>(attitudes);
+        this.attitudes = new ArrayList<>();
+        this.attitudes.addAll(attitudes);
         this.objectFrame = objectFrame;
         this.singleAttitudeBuilt = false;
     }

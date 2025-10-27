@@ -44,7 +44,7 @@ import java.util.List;
  */
 public class Constellation
     extends
-    AbstractPrimaryObject {
+    AbstractPrimaryObject<Constellation> {
 
     /**
      * The default empty string to represent the model, if this is used,
@@ -106,10 +106,19 @@ public class Constellation
     private final double clockMultiplier;
 
     /** Boolean to enable multi models for satellites or not. */
-    private final boolean multipleModels;
+    private boolean multipleModels;
 
     /** Boolean to display the attitude or not of satellites. */
     private boolean displayAttitude;
+
+    /** The final date of propagation. */
+    private AbsoluteDate finalDate;
+
+    /** The clock used. */
+    private Clock clock;
+
+    /** The path to the models to use. */
+    private List<String> models;
 
     // Constructors
 
@@ -142,8 +151,6 @@ public class Constellation
      * @param customID : The custom ID of the constellation.
      * @param clock : The clock
      * @param clockMultiplier : Interval in seconds between DateTime values
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException the io exception
      */
     Constellation(final List<BoundedPropagator> propagatorsInput,
                   final AbsoluteDate finalDate, final String modelPath,
@@ -162,7 +169,7 @@ public class Constellation
      *
      * @param propagatorsInput : A list of bounded propagator that represents
      *        each a propagator for a given satellite.
-     * @param finalDate : The final date when the propagation must stop.
+     * @param finalDateInput : The final date when the propagation must stop.
      * @param customID : The custom ID of the constellation.
      * @param modelsInput : List of the models for each satellite
      * @param clock : The clock
@@ -171,13 +178,17 @@ public class Constellation
      * @throws IOException the io exception
      */
     Constellation(final List<BoundedPropagator> propagatorsInput,
-                  final AbsoluteDate finalDate, final List<String> modelsInput,
-                  final String customID, final Clock clock,
-                  final double clockMultiplier)
+                  final AbsoluteDate finalDateInput,
+                  final List<String> modelsInput, final String customID,
+                  final Clock clock, final double clockMultiplier)
         throws URISyntaxException,
             IOException {
 
         final List<Color> colorList = colorWheel(propagatorsInput.size());
+        this.models = modelsInput;
+        if (modelsInput.isEmpty()) {
+            models.add(DEFAULT_STRING_MODEL);
+        }
         this.multipleModels = modelsInput.size() > 1;
         this.totalOfSatellite = propagatorsInput.size();
         this.setName(DEFAULT_NAME + totalOfSatellite + DEFAULT_NUMBER_OF_SAT);
@@ -185,7 +196,9 @@ public class Constellation
         this.setAvailability(clock.getAvailability());
         this.clockMultiplier = clockMultiplier;
         this.propagators = new ArrayList<>(propagatorsInput);
-        this.defineMultipleArgument(finalDate, colorList, multipleModels,
+        this.finalDate = finalDateInput;
+        this.clock = clock;
+        this.defineMultipleArgument(finalDateInput, colorList, multipleModels,
                                     modelsInput);
     }
 
@@ -215,6 +228,21 @@ public class Constellation
         throws URISyntaxException,
             IOException {
         iterateOnSatelliteWriting(stream, output);
+    }
+
+    @Override
+    public Constellation cloneObject() {
+        try {
+            final Constellation copy =
+                Constellation
+                    .builder(this.propagators, this.finalDate, this.clock)
+                    .withModel(models).withCustomId(getId()).build();
+            copy.setName(getName());
+            return copy;
+
+        } catch (URISyntaxException | IOException e) {
+            throw new OreCzmlException(OreCzmlMessages.NOT_VALID_PRIMARY_OBJECT_FOR_CLONE);
+        }
     }
 
     // Display methods
@@ -284,17 +312,17 @@ public class Constellation
      * This function aims at defining arguments that represent multiple
      * satellites.
      *
-     * @param finalDate : The final date of the propagation.
-     * @param models : The model of the satellites.
+     * @param finalDateInput : The final date of the propagation.
+     * @param modelsInput : The model of the satellites.
      * @param colorList : The color list of all the color to use for each
      *        satellite.
      * @param multipleModelsInput : The boolean to use or not several models for
      *        satellites.
      */
-    private void defineMultipleArgument(final AbsoluteDate finalDate,
+    private void defineMultipleArgument(final AbsoluteDate finalDateInput,
                                         final List<Color> colorList,
                                         final boolean multipleModelsInput,
-                                        final List<String> models)
+                                        final List<String> modelsInput)
         throws URISyntaxException,
             IOException {
         for (int i = 0; i < propagators.size(); i++) {
@@ -302,16 +330,17 @@ public class Constellation
             if (!multipleModelsInput) {
                 final Spacecraft currentSatellite =
                     Spacecraft.builder(propagator, clockMultiplier)
-                        .withFinalDate(finalDate).withModelPath(models.get(0))
+                        .withFinalDate(finalDateInput)
+                        .withModelPath(modelsInput.get(0))
                         .withColor(colorList.get(i)).build();
                 satellites.add(currentSatellite);
                 Ids.add(currentSatellite.getId());
                 InitialOrbits.add(currentSatellite.getOrbits().get(0));
             } else {
-                if (models.size() != propagators.size()) {
+                if (modelsInput.size() != propagators.size()) {
                     throw new OreCzmlException(OreCzmlMessages.NOT_SAME_NUMBER_SAT_MODELS);
                 }
-                final String currentModel = models.get(i);
+                final String currentModel = modelsInput.get(i);
                 final Spacecraft currentSatellite =
                     Spacecraft.builder(propagator, clockMultiplier)
                         .withFinalDate(finalDate).withModelPath(currentModel)

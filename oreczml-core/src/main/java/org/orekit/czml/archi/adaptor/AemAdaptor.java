@@ -31,23 +31,18 @@ import java.net.URISyntaxException;
  * Adaptor for the {@link Aem} class, this helps build orientation objects from
  * those files.
  *
+ * @param aem The aem to be used to create an orientation.
  * @author Julien LEBLOND
  * @since 1.0.0
  */
-public class AemAdaptor {
-
-    /**
-     * The aem to be used to create an orientation.
-     */
-    private final Aem aem;
+public record AemAdaptor(Aem aem) {
 
     /**
      * The constructor of the adaptor.
      *
-     * @param aemInput : The aem to input.
+     * @param aem : The aem to input.
      */
-    public AemAdaptor(final Aem aemInput) {
-        this.aem = aemInput;
+    public AemAdaptor {
     }
 
     /**
@@ -72,7 +67,8 @@ public class AemAdaptor {
      *
      * @return the aem
      */
-    public Aem getAem() {
+    @Override
+    public Aem aem() {
         return aem;
     }
 }

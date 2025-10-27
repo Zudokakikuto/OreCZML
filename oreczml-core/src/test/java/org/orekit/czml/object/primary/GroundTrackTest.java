@@ -17,11 +17,10 @@
 package org.orekit.czml.object.primary;
 
 import org.junit.jupiter.api.Test;
-import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
-import org.orekit.czml.object.utils.DateUtils;
 import org.orekit.czml.object.primary.entities.Constellation;
 import org.orekit.czml.object.primary.entities.Spacecraft;
+import org.orekit.czml.object.utils.DateUtils;
 import org.orekit.propagation.BoundedPropagator;
 import org.orekit.time.AbsoluteDate;
 
@@ -34,7 +33,6 @@ import java.util.List;
 /**
  * The type Ground track test.
  */
-@DefaultDataContext
 public class GroundTrackTest
     extends
     AbstractTest {
@@ -61,7 +59,7 @@ public class GroundTrackTest
             dummyPropagator(startDate, finalDate);
 
         final Spacecraft satellite =
-            new Spacecraft(propagator, header.getClock());
+            Spacecraft.builder(propagator, header.getClock()).build();
 
         final List<BoundedPropagator> propagators =
             new ArrayList<>(List.of(propagator));

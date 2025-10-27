@@ -88,7 +88,7 @@ public class AbstractTest {
 
     /** The classic duration of the simulation */
     public static final double CLASSIC_DURATION_OF_SIMULATION = 10 * 3600; // in
-    // seconds;
+                                                                           // seconds;
 
     /** user home. */
     private static final String USER_HOME = "user.home";
@@ -130,6 +130,10 @@ public class AbstractTest {
             .getResource(resourcePath).getFile()).toPath().toString();
     }
 
+    public static String loadOutputLocation() {
+        return "Output";
+    }
+
     public static String loadModelFile() {
         return "Default3DModels/ISSModel.glb";
     }
@@ -163,7 +167,6 @@ public class AbstractTest {
      *
      * @return the header
      */
-    @DefaultDataContext
     public static Header dummyHeader() {
         final AbsoluteDate starDate =
             new AbsoluteDate(2024, 1, 1, 0, 0, 0.0, TimeScalesFactory.getUTC());
@@ -178,7 +181,6 @@ public class AbstractTest {
      * @param startDate the start date
      * @return the orbit
      */
-    @DefaultDataContext
     public static Orbit dummyOrbit(final AbsoluteDate startDate) {
         return new KeplerianOrbit(7878000, 0, FastMath.toRadians(10), 0,
                                   FastMath.toRadians(90), FastMath.toRadians(0),

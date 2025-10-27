@@ -103,6 +103,12 @@ import java.util.List;
 
 /**
  * The type Global tests.
+ * <p>
+ * To assess a specific problem when verify file output show an error, and
+ * Assertion can be made with :
+ * Assertions.assertEquals(Files.readString(Path.of(referenceFile)),
+ * object.toString);
+ * </p>
  */
 @DefaultDataContext
 class GlobalTests

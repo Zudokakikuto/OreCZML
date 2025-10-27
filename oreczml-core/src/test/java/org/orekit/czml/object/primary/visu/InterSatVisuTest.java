@@ -21,7 +21,6 @@ import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.Polyline;
 import org.orekit.czml.object.primary.Header;
@@ -65,7 +64,6 @@ public class InterSatVisuTest
      * @throws URISyntaxException the uri syntax exception
      */
     @Test
-    @DefaultDataContext
     void InterSatVisuConstructorTest()
         throws IOException,
             URISyntaxException {
@@ -268,16 +266,17 @@ public class InterSatVisuTest
         // Getters coverage
         Assertions.assertEquals(
                                 secondSat.getSpaceCraftStates().get(0)
-                                    .getPVCoordinates(),
+                                    .getPVCoordinates().toString(),
                                 interSatVisu.getSatellite2()
                                     .getSpaceCraftStates().get(0)
-                                    .getPVCoordinates());
+                                    .getPVCoordinates().toString());
         Assertions.assertEquals(startDate, interSatVisu.getStartDate());
-        Assertions.assertEquals(finalDate, interSatVisu.getStopDate());
-        Assertions
-            .assertEquals(firstSat.getSpaceCraftStates().get(0)
-                .getPVCoordinates(),
-                          interSatVisu.getInitialState().getPVCoordinates());
+        Assertions.assertEquals(finalDate, interSatVisu.getFinalDate());
+        Assertions.assertEquals(
+                                firstSat.getSpaceCraftStates().get(0)
+                                    .getPVCoordinates().toString(),
+                                interSatVisu.getInitialState()
+                                    .getPVCoordinates().toString());
         Assertions.assertEquals(propagators,
                                 interSatVisuPropagators.getPropagators());
         Assertions.assertEquals(

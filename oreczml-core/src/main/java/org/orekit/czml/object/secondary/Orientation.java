@@ -32,8 +32,8 @@ import org.orekit.attitudes.Attitude;
 import org.orekit.attitudes.BoundedAttitudeProvider;
 import org.orekit.czml.errors.OreCzmlException;
 import org.orekit.czml.errors.OreCzmlMessages;
-import org.orekit.czml.object.utils.DateUtils;
 import org.orekit.czml.object.primary.entities.Spacecraft;
+import org.orekit.czml.object.utils.DateUtils;
 import org.orekit.frames.Frame;
 import org.orekit.frames.FramesFactory;
 import org.orekit.propagation.BoundedPropagator;
@@ -58,7 +58,7 @@ import java.util.List;
  */
 public class Orientation
     extends
-    AbstractSecondaryObject {
+    AbstractSecondaryObject<Orientation> {
 
     /**
      * If multiple unit quaternions are necessary, this list will be used.
@@ -92,6 +92,9 @@ public class Orientation
      */
     private final List<Attitude> attitudes;
 
+    /** The frame used. */
+    private Frame frame;
+
     // Constructors
 
     /**
@@ -120,6 +123,8 @@ public class Orientation
             new Spacecraft(propagator, clock).getAbsoluteDateList();
 
         final Frame objectFrame = propagator.getFrame();
+
+        this.frame = objectFrame;
 
         for (final AbsoluteDate currentDate : dateList) {
             attitudesTemp.add(provider.getAttitude(propagator, currentDate,
@@ -279,6 +284,7 @@ public class Orientation
         // usually it is advised to put invertToITRF true for the study of
         // satellites.
         // This way the orientation computed is in the local orbital frame.
+        this.frame = objectFrame;
         if (!invertToITRF) {
             this.attitudes = attitudes;
             final JulianDate startDate =
@@ -414,6 +420,20 @@ public class Orientation
             orientationWriter
                 .writeInterpolationDegree(getInterpolationDegree());
         }
+    }
+
+    @Override
+    public Orientation cloneObject() {
+        final Orientation toReturn;
+        if (this.attitudes.size() == 1) {
+            toReturn =
+                Orientation.builder(attitudes.get(0), this.frame).build();
+        } else if (!attitudes.isEmpty()) {
+            toReturn = Orientation.builder(attitudes, this.frame).build();
+        } else {
+            throw new OreCzmlException(OreCzmlMessages.NOT_VALID_SECONDARY_OBJECT_FOR_CLONE);
+        }
+        return toReturn;
     }
 
     // Getters

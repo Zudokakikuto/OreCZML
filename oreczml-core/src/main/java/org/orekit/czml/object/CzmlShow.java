@@ -21,7 +21,7 @@ import cesiumlanguagewriter.CesiumOutputStream;
 import cesiumlanguagewriter.CesiumStreamWriter;
 import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.PolylineCesiumWriter;
-import cesiumlanguagewriter.TimeInterval;
+import org.orekit.czml.object.secondary.Clock;
 
 import java.io.StringWriter;
 
@@ -46,7 +46,7 @@ public class CzmlShow {
     /**
      * When the object should be displayed or not.
      */
-    private TimeInterval availability;
+    private Clock clock;
 
     /** The second object related to the show. */
     private Object object;
@@ -58,25 +58,25 @@ public class CzmlShow {
      *
      * @param toShow : The boolean that represent if the object is displayed or
      *        not.
-     * @param interval : The availability
+     * @param clock : The clock
      */
-    public CzmlShow(final boolean toShow, final TimeInterval interval) {
+    public CzmlShow(final boolean toShow, final Clock clock) {
         this.toShow = toShow;
-        this.availability = interval;
+        this.clock = clock;
     }
 
     /**
-     * The czml show constructor with two objects related to it.
+     * The czml show constructor with an object related to it.
      *
      * @param toShow : The boolean that represent if the object is displayed or
      *        not.
-     * @param interval : The availability
+     * @param clock : The clock
      * @param objectInput : The second object related to the show.
      */
-    public CzmlShow(final boolean toShow, final TimeInterval interval,
+    public CzmlShow(final boolean toShow, final Clock clock,
                     final Object objectInput) {
         this.toShow = toShow;
-        this.availability = interval;
+        this.clock = clock;
         this.object = objectInput;
     }
 
@@ -98,7 +98,7 @@ public class CzmlShow {
             try (BooleanCesiumWriter showWriter =
                 polylineCesiumWriter.getShowWriter()) {
                 showWriter.open(output);
-                showWriter.writeInterval(availability);
+                showWriter.writeInterval(clock.getAvailability());
                 showWriter.writeBoolean(toShow);
             }
         }
@@ -123,17 +123,17 @@ public class CzmlShow {
      *
      * @return the availability
      */
-    public TimeInterval getAvailability() {
-        return availability;
+    public Clock getClock() {
+        return clock;
     }
 
     /**
      * Sets the clock.
      *
-     * @param interval the availability
+     * @param clock the clock
      */
-    public void setAvailability(final TimeInterval interval) {
-        this.availability = interval;
+    public void setClock(final Clock clock) {
+        this.clock = clock;
     }
 
     /**

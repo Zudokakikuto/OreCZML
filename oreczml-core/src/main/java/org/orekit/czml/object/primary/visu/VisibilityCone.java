@@ -45,7 +45,7 @@ import java.awt.Color;
  */
 public class VisibilityCone
     extends
-    AbstractPrimaryObject {
+    AbstractPrimaryObject<VisibilityCone> {
 
     /**
      * The default angle of aperture of the visibility cone.
@@ -86,7 +86,19 @@ public class VisibilityCone
     /**
      * The satellite that enters the visibility cone.
      */
-    private Spacecraft satellite;
+    private Spacecraft spacecraft;
+
+    /** The ground station if one is used. */
+    private CzmlGroundStation groundStation;
+
+    /** The angle of aperture of the station if used. */
+    private double angleOfAperture = DEFAULT_ANGLE_OF_APERTURE;
+
+    /** The topocentric frame if one is used. */
+    private TopocentricFrame topocentricFrame;
+
+    /** The clock of the visibility cone. */
+    private Clock clock;
 
     // Constructors
 
@@ -109,18 +121,19 @@ public class VisibilityCone
      * @param id : The id of the visibility cone
      * @param name : The name of the visibility cone
      * @param cylinder : The cylinder for the visibility cone
-     * @param satellite : The satellite that will enter the visibility cone
+     * @param spacecraft : The spacecraft that will enter the visibility cone
      * @param clock : The clock
      */
     public VisibilityCone(final String id, final String name,
-                          final Cylinder cylinder, final Spacecraft satellite,
+                          final Cylinder cylinder, final Spacecraft spacecraft,
                           final Clock clock) {
         this.setId(id);
         this.setName(name);
         this.setAvailability(clock.getAvailability());
         this.cylinder = cylinder;
         this.position = cylinder.getPosition();
-        this.satellite = satellite;
+        this.spacecraft = spacecraft;
+        this.clock = clock;
     }
 
     /**
@@ -135,11 +148,13 @@ public class VisibilityCone
 
         this.setId(DEFAULT_ID_VIS + groundStation.getName());
         this.setName(DEFAULT_NAME + groundStation.getName());
+        this.groundStation = groundStation;
         this.setAvailability(clock.getAvailability());
         this.cylinder =
             new Cylinder(groundStation,
                          FastMath.toRadians(DEFAULT_ANGLE_OF_APERTURE), clock);
         this.position = cylinder.getPosition();
+        this.clock = clock;
     }
 
     /**
@@ -164,27 +179,30 @@ public class VisibilityCone
      *
      * @param groundStation : The ground station that will be linked to the
      *        visibility cone
-     * @param satellite : The satellite that will go to the visibility cone, the
-     *        height of the cone will be limited to the altitude of the
+     * @param spacecraft : The satellite that will go to the visibility cone,
+     *        the height of the cone will be limited to the altitude of the
      *        satellite.
      * @param angleOfAperture : The angle of aperture of the ground station.
      * @param clock : The clock
      */
     public VisibilityCone(final CzmlGroundStation groundStation,
-                          final Spacecraft satellite,
+                          final Spacecraft spacecraft,
                           final double angleOfAperture, final Clock clock) {
 
         this.setId(DEFAULT_ID_VIS +
-                   groundStation.getName() + "/" + satellite.getName());
+                   groundStation.getName() + "/" + spacecraft.getName());
         this.setName(DEFAULT_NAME +
                      groundStation.getName() + DEFAULT_LOOKING_AT +
-                     satellite.getName());
+                     spacecraft.getName());
         this.setAvailability(clock.getAvailability());
+        this.groundStation = groundStation;
         this.cylinder =
-            new Cylinder(groundStation.getTopocentricFrame(), satellite,
+            new Cylinder(groundStation.getTopocentricFrame(), spacecraft,
                          angleOfAperture, clock);
         this.position = cylinder.getPosition();
-        this.satellite = satellite;
+        this.angleOfAperture = angleOfAperture;
+        this.spacecraft = spacecraft;
+        this.clock = clock;
     }
 
     /**
@@ -208,25 +226,28 @@ public class VisibilityCone
      *
      * @param topocentricFrame : The topocentric frame where the station must
      *        be.
-     * @param satellite : The satellite that will go through the visibility
+     * @param spacecraft : The satellite that will go through the visibility
      *        cone.
      * @param angleOfAperture : The angle of aperture of the ground station.
      * @param clock : The clock
      */
     public VisibilityCone(final TopocentricFrame topocentricFrame,
-                          final Spacecraft satellite,
+                          final Spacecraft spacecraft,
                           final double angleOfAperture, final Clock clock) {
 
         this.setId(DEFAULT_ID_VIS +
-                   topocentricFrame.getName() + "/" + satellite.getName());
+                   topocentricFrame.getName() + "/" + spacecraft.getName());
         this.setName(DEFAULT_NAME +
                      topocentricFrame.getName() + DEFAULT_LOOKING_AT +
-                     satellite.getName());
+                     spacecraft.getName());
         this.setAvailability(clock.getAvailability());
         this.cylinder =
-            new Cylinder(topocentricFrame, satellite, angleOfAperture, clock);
+            new Cylinder(topocentricFrame, spacecraft, angleOfAperture, clock);
         this.position = cylinder.getPosition();
-        this.satellite = satellite;
+        this.spacecraft = spacecraft;
+        this.topocentricFrame = topocentricFrame;
+        this.angleOfAperture = angleOfAperture;
+        this.clock = clock;
     }
 
     // Overrides
@@ -244,6 +265,55 @@ public class VisibilityCone
 
             position.write(packet, output);
         }
+    }
+
+    @Override
+    public VisibilityCone cloneObject() {
+        final VisibilityCone toReturn;
+        // Two first constructors using the id and the spacecraft
+        if (this.getId() != null) {
+            if (this.spacecraft != null) {
+                toReturn =
+                    new VisibilityCone(this.getId(), this.getName(),
+                                       this.cylinder, this.spacecraft,
+                                       this.clock);
+            } else {
+                toReturn =
+                    new VisibilityCone(this.getId(), this.getName(),
+                                       this.cylinder, this.clock);
+            }
+            // Three other constructors using the ground station, the spacecraft
+            // and the angle of aperture
+        } else if (this.groundStation != null) {
+            if (this.spacecraft != null) {
+                if (this.angleOfAperture != DEFAULT_ANGLE_OF_APERTURE) {
+                    toReturn =
+                        new VisibilityCone(this.groundStation, this.spacecraft,
+                                           this.angleOfAperture, this.clock);
+                } else {
+                    toReturn =
+                        new VisibilityCone(this.groundStation, this.spacecraft,
+                                           this.clock);
+                }
+            } else {
+                toReturn = new VisibilityCone(this.groundStation, this.clock);
+            }
+            // The two last constructors using the topocentric frame and the
+            // angle of aperture
+        } else if (this.topocentricFrame != null) {
+            if (this.angleOfAperture != DEFAULT_ANGLE_OF_APERTURE) {
+                toReturn =
+                    new VisibilityCone(this.topocentricFrame, this.spacecraft,
+                                       this.angleOfAperture, this.clock);
+            } else {
+                toReturn =
+                    new VisibilityCone(this.topocentricFrame, this.spacecraft,
+                                       this.clock);
+            }
+        } else {
+            throw new OreCzmlException(OreCzmlMessages.NOT_VALID_PRIMARY_OBJECT_FOR_CLONE);
+        }
+        return toReturn;
     }
 
     // Getters
@@ -271,11 +341,11 @@ public class VisibilityCone
      *
      * @return the satellite
      */
-    public Spacecraft getSatellite() {
-        if (satellite == null) {
+    public Spacecraft getSpacecraft() {
+        if (spacecraft == null) {
             throw new OreCzmlException(OreCzmlMessages.NO_SAT_VISIBILITY_CONE);
         } else {
-            return satellite;
+            return spacecraft;
         }
     }
 

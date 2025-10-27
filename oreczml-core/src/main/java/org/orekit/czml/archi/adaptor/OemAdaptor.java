@@ -27,25 +27,20 @@ import org.orekit.time.AbsoluteDate;
  * With all the parameters available in this class a satellite object can be
  * built.
  *
+ * @param oem The oem Orekit object.
  * @author Julien LEBLOND
  * @since 1.0.0
  */
-public class OemAdaptor {
-
-    /**
-     * The oem Orekit object.
-     */
-    private final Oem oem;
+public record OemAdaptor(Oem oem) {
 
     // Constructor
 
     /**
      * The constructor of the adaptor.
      *
-     * @param oemInput : The oem Orekit object that will need to be converted.
+     * @param oem : The oem Orekit object that will need to be converted.
      */
-    public OemAdaptor(final Oem oemInput) {
-        this.oem = oemInput;
+    public OemAdaptor {
     }
 
     /**
@@ -80,7 +75,8 @@ public class OemAdaptor {
      *
      * @return : The oem used to build the oem adaptor.
      */
-    public Oem getOem() {
+    @Override
+    public Oem oem() {
         return oem;
     }
 }

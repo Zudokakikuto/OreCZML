@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Spacecraft builder class
@@ -43,8 +44,8 @@ public class SpacecraftBuilder {
      * The default model path of the model for the Spacecraft.
      */
     public static final String DEFAULT_MODEL_PATH =
-        new File(Spacecraft.class.getClassLoader().getResource("satellite.png")
-            .getFile()).toPath().toString();
+        new File(Objects.requireNonNull(Spacecraft.class.getClassLoader()
+            .getResource("satellite.png")).getFile()).toPath().toString();
 
     /**
      * The default color of the orbit of the Spacecraft.
@@ -307,8 +308,7 @@ public class SpacecraftBuilder {
      *
      * @param bodiesInput The list of bodies considered
      * @param centralBodyInput The central body of the problem
-     * @return The spacecraft builder with the sphere of influence changes in
-     *         path displayed
+     * @return : The Spacecraft Builder with a custom influence sphere changes
      */
     public SpacecraftBuilder
         displayInfluenceSphereChanges(final List<Body> bodiesInput,

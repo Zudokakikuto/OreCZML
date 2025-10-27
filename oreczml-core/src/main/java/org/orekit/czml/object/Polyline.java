@@ -294,8 +294,7 @@ public class Polyline {
                                                    iterableReferences,
                                                    new ArrayList<>(List
                                                        .of(new CzmlShow(show,
-                                                                        clock
-                                                                            .getAvailability()))));
+                                                                        clock))));
                 } else {
                     try (PolylineCesiumWriter polylineCesiumWriter =
                         packet.getPolylineWriter()) {
@@ -486,7 +485,7 @@ public class Polyline {
         try (PolylineCesiumWriter polylineWriter = packet.getPolylineWriter()) {
             polylineWriter.open(output);
             polylineWriter.writeWidthProperty(this.getWidth());
-            polylineWriter.writeArcTypeProperty(CesiumArcType.NONE);
+            polylineWriter.writeArcTypeProperty(this.getArcType());
             try (PolylineMaterialCesiumWriter materialWriter =
                 polylineWriter.getMaterialWriter()) {
                 materialWriter.open(output);
@@ -515,7 +514,7 @@ public class Polyline {
         try (PolylineCesiumWriter polylineWriter = packet.getPolylineWriter()) {
             polylineWriter.open(output);
             polylineWriter.writeWidthProperty(this.getWidth());
-            polylineWriter.writeArcTypeProperty(CesiumArcType.NONE);
+            polylineWriter.writeArcTypeProperty(this.getArcType());
             try (PolylineMaterialCesiumWriter materialWriter =
                 polylineWriter.getMaterialWriter()) {
                 materialWriter.open(output);
@@ -593,7 +592,6 @@ public class Polyline {
         writePositionOfVisibility(final PolylineCesiumWriter polylineWriter,
                                   final CesiumOutputStream output,
                                   final Iterable<Reference> references) {
-
         try (PositionListCesiumWriter positionWriter =
             polylineWriter.getPositionsWriter()) {
             positionWriter.open(output);
@@ -621,23 +619,26 @@ public class Polyline {
             output.writeStartSequence();
             if (showList.size() == 1) {
                 final CzmlShow showTemp = showList.get(0);
-                showWriter.writeInterval(showTemp.getAvailability());
+                showWriter.writeInterval(showTemp.getClock().getAvailability());
                 showWriter.writeBoolean(showTemp.getShow());
             } else {
                 for (int i = 0; i < showList.size(); i++) {
                     final CzmlShow showTemp = showList.get(i);
                     if (i == 0) {
-                        showWriter.writeInterval(showTemp.getAvailability());
+                        showWriter.writeInterval(showTemp.getClock()
+                            .getAvailability());
                         showWriter.writeBoolean(showTemp.getShow());
                         output.writeEndObject();
                     } else if (i != showList.size() - 1) {
                         output.writeStartObject();
-                        showWriter.writeInterval(showTemp.getAvailability());
+                        showWriter.writeInterval(showTemp.getClock()
+                            .getAvailability());
                         showWriter.writeBoolean(showTemp.getShow());
                         output.writeEndObject();
                     } else {
                         output.writeStartObject();
-                        showWriter.writeInterval(showTemp.getAvailability());
+                        showWriter.writeInterval(showTemp.getClock()
+                            .getAvailability());
                         showWriter.writeBoolean(showTemp.getShow());
                     }
                 }

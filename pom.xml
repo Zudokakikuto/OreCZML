@@ -39,6 +39,7 @@
 
     <build>
         <plugins>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -48,6 +49,7 @@
                     <target>${project.compiler.target}</target>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
@@ -65,10 +67,12 @@
                     <headerLocation>${basedir}/license-header.txt</headerLocation>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>
                 <version>${oreczml.spotless.version}</version>
+
                 <executions>
                     <execution>
                         <goals>
@@ -77,11 +81,19 @@
                         </goals>
                     </execution>
                 </executions>
+
                 <configuration>
                     <java>
                         <eclipse>
                             <file>${project.basedir}/orekit-eclipse-formatter.xml</file>
                         </eclipse>
+                        <trimTrailingWhitespace/>
+                        <endWithNewline/>
+                        <encoding>UTF-8</encoding>
+                        <lineEndings>UNIX</lineEndings>
+                        <indent>
+                            <spaces>true</spaces>
+                        </indent>
                         <includes>
                             <include>oreczml-core/src/main/java/**/*.java</include>
                             <include>oreczml-core/src/test/java/**/*.java</include>
@@ -90,6 +102,7 @@
                     </java>
                 </configuration>
             </plugin>
+
         </plugins>
     </build>
 

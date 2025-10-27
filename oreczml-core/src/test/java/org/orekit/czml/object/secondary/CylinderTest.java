@@ -19,15 +19,14 @@ package org.orekit.czml.object.secondary;
 import cesiumlanguagewriter.CesiumHeightReference;
 import org.hipparchus.util.FastMath;
 import org.junit.jupiter.api.Test;
-import org.orekit.annotation.DefaultDataContext;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.Position;
 import org.orekit.czml.object.PositionType;
-import org.orekit.czml.object.utils.DateUtils;
-import org.orekit.czml.object.primary.entities.CzmlGroundStation;
 import org.orekit.czml.object.primary.Header;
+import org.orekit.czml.object.primary.entities.CzmlGroundStation;
 import org.orekit.czml.object.primary.entities.Spacecraft;
+import org.orekit.czml.object.utils.DateUtils;
 import org.orekit.frames.TopocentricFrame;
 import org.orekit.propagation.BoundedPropagator;
 import org.orekit.time.AbsoluteDate;
@@ -39,7 +38,6 @@ import java.net.URISyntaxException;
 /**
  * The type Cylinder test.
  */
-@DefaultDataContext
 public class CylinderTest
     extends
     AbstractTest {
@@ -69,11 +67,11 @@ public class CylinderTest
 
         final BoundedPropagator propagator =
             dummyPropagator(startDate, finalDate);
-        final Spacecraft satellite =
+        final Spacecraft spacecraft =
             new Spacecraft(propagator, header.getClock());
 
         final Cylinder cylinder =
-            new Cylinder(topocentricToulouse, satellite, 90.0,
+            new Cylinder(topocentricToulouse, spacecraft, 90.0,
                          header.getClock());
 
         final Cylinder coverageCylinder =

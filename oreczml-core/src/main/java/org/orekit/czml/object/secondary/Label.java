@@ -23,6 +23,8 @@ import cesiumlanguagewriter.CesiumOutputStream;
 import cesiumlanguagewriter.CesiumVerticalOrigin;
 import cesiumlanguagewriter.LabelCesiumWriter;
 import cesiumlanguagewriter.PacketCesiumWriter;
+import org.orekit.czml.errors.OreCzmlException;
+import org.orekit.czml.errors.OreCzmlMessages;
 
 import java.awt.Color;
 
@@ -38,7 +40,7 @@ import java.awt.Color;
  */
 public class Label
     extends
-    AbstractSecondaryObject {
+    AbstractSecondaryObject<Label> {
 
     /**
      * The default police for the labels.
@@ -78,21 +80,25 @@ public class Label
      */
     private final boolean show;
 
+    /** The object used if one is used. */
+    private Object object;
+
     // Constructors
 
     /**
      * The constructor of the label of an object, the text will be the name of
      * the object. This constructor uses default parameters.
      *
-     * @param object : The object that will be references with the label.
+     * @param objectInput : The object that will be references with the label.
      */
-    public Label(final Object object) {
+    public Label(final Object objectInput) {
         this.color = new Color(0, 255, 255, 255);
         this.horizontalOrigin = CesiumHorizontalOrigin.LEFT;
         this.verticalOrigin = CesiumVerticalOrigin.CENTER;
         this.labelStyle = CesiumLabelStyle.FILL_AND_OUTLINE;
-        this.text = object.toString();
+        this.text = objectInput.toString();
         this.show = true;
+        this.object = objectInput;
     }
 
     /**
@@ -146,6 +152,25 @@ public class Label
             labelWriter.writeTextProperty(text);
             labelWriter.writeShowProperty(show);
         }
+    }
+
+    @Override
+    public Label cloneObject() {
+        final Label toReturn;
+        if (object != null) {
+            toReturn = new Label(this.object);
+        } else if (this.text != null && this.color != null) {
+            if (this.horizontalOrigin != null && this.verticalOrigin != null) {
+                toReturn =
+                    new Label(this.text, this.color, this.horizontalOrigin,
+                              this.verticalOrigin, this.labelStyle, this.show);
+            } else {
+                toReturn = new Label(this.text, this.color);
+            }
+        } else {
+            throw new OreCzmlException(OreCzmlMessages.NOT_VALID_SECONDARY_OBJECT_FOR_CLONE);
+        }
+        return toReturn;
     }
 
     // Getters

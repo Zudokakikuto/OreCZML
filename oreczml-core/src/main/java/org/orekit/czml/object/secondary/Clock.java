@@ -25,6 +25,8 @@ import cesiumlanguagewriter.JulianDate;
 import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.TimeInterval;
 import org.orekit.annotation.DefaultDataContext;
+import org.orekit.czml.errors.OreCzmlException;
+import org.orekit.czml.errors.OreCzmlMessages;
 import org.orekit.czml.object.utils.DateUtils;
 import org.orekit.files.ccsds.ndm.odm.oem.Oem;
 import org.orekit.time.AbsoluteDate;
@@ -44,7 +46,10 @@ import java.util.List;
  */
 public class Clock
     extends
-    AbstractSecondaryObject {
+    AbstractSecondaryObject<Clock> {
+
+    /** The default number of second between each step. */
+    public static final double DEFAULT_SECONDS_TIME_STEP = 60.0;
 
     /**
      * The availability of the clock.
@@ -59,7 +64,7 @@ public class Clock
     /**
      * The multiplier, how many seconds between each step.
      */
-    private double multiplier;
+    private double multiplier = DEFAULT_SECONDS_TIME_STEP;
 
     /**
      * The range of the clock: what should the simulation do when it is
@@ -72,10 +77,17 @@ public class Clock
      */
     private final ClockStep step;
 
-    /**
-     * The list of all the julian dates of the simulation.
-     */
-    private List<JulianDate> JulianDateSimulation = new ArrayList<>();
+    /** The oem if one is used. */
+    private Oem oem;
+
+    /** The start date if one is used. */
+    private AbsoluteDate startDate;
+
+    /** The stop date if one is used. */
+    private AbsoluteDate stopDate;
+
+    /** The interval if one is used. */
+    private TimeInterval interval;
 
     // Constructors
 
@@ -96,28 +108,29 @@ public class Clock
         this.multiplier = multiplier;
         this.range = ClockRange.LOOP_STOP;
         this.currentTime = DateUtils.toJulianDate(startDate);
-        this.JulianDateSimulation = computeJulianDates();
+        this.startDate = startDate;
+        this.stopDate = stopDate;
     }
 
     /**
      * The basic constructor for the clock object, with no default parameters.
      *
-     * @param interval : The start date of the simulation.
+     * @param intervalInput : The start date of the simulation.
      * @param currentTime : The stop date of the simulation.
      * @param multiplier : Seconds between each step.
      * @param range : What should the simulation do when it is finished.
      * @param step : How to manage the time between steps.
      */
-    public Clock(final TimeInterval interval, final JulianDate currentTime,
+    public Clock(final TimeInterval intervalInput, final JulianDate currentTime,
                  final double multiplier, final ClockRange range,
                  final ClockStep step) {
+        this.interval = intervalInput;
         this.availability =
-            new TimeInterval(interval.getStart(), interval.getStop());
+            new TimeInterval(intervalInput.getStart(), intervalInput.getStop());
         this.currentTime = currentTime;
         this.multiplier = multiplier;
         this.range = range;
         this.step = step;
-        this.JulianDateSimulation = computeJulianDates();
     }
 
     /**
@@ -126,7 +139,7 @@ public class Clock
      * @param oem : The Oem Orekit object.
      */
     public Clock(final Oem oem) {
-        this(oem, 60.0);
+        this(oem, DEFAULT_SECONDS_TIME_STEP);
     }
 
     /**
@@ -141,6 +154,8 @@ public class Clock
         final AbsoluteDate startTime = oem.getSegments().get(0).getStart();
         final AbsoluteDate stopTime = oem.getSegments().get(0).getStop();
 
+        this.oem = oem;
+
         final JulianDate startJulianDate = DateUtils.toJulianDate(startTime);
         final JulianDate stopJulianDate = DateUtils.toJulianDate(stopTime);
 
@@ -149,7 +164,6 @@ public class Clock
         this.range = ClockRange.LOOP_STOP;
         this.multiplier = multiplier;
         this.currentTime = startJulianDate;
-        this.JulianDateSimulation = computeJulianDates();
     }
 
     // Overrides
@@ -165,6 +179,27 @@ public class Clock
         writer.writeMultiplier(multiplier);
         writer.writeRange(range);
         writer.writeStep(step);
+    }
+
+    @Override
+    public Clock cloneObject() {
+        final Clock toReturn;
+        if (this.oem != null) {
+            if (multiplier != DEFAULT_SECONDS_TIME_STEP) {
+                toReturn = new Clock(oem, multiplier);
+            } else {
+                toReturn = new Clock(oem);
+            }
+        } else if (startDate != null) {
+            toReturn = new Clock(startDate, stopDate, multiplier);
+        } else if (interval != null) {
+            toReturn =
+                new Clock(interval, currentTime, this.multiplier, this.range,
+                          this.step);
+        } else {
+            throw new OreCzmlException(OreCzmlMessages.NOT_VALID_SECONDARY_OBJECT_FOR_CLONE);
+        }
+        return toReturn;
     }
 
     // Getters
@@ -220,18 +255,12 @@ public class Clock
      * @return the julian dates simulation
      */
     public List<JulianDate> getJulianDatesSimulation() {
-        return Collections.unmodifiableList(JulianDateSimulation);
+        final List<JulianDate> julianDateSimulation = computeJulianDates();
+        return Collections.unmodifiableList(julianDateSimulation);
     }
 
-    // Setters
-
-    /**
-     * Sets the multiplier.
-     *
-     * @param multiplierInput : The multiplier to input
-     */
-    public void setMultiplier(final double multiplierInput) {
-        this.multiplier = multiplierInput;
+    public void setMultiplier(final double multiplier) {
+        this.multiplier = multiplier;
     }
 
     // Private functions
@@ -246,12 +275,23 @@ public class Clock
 
         // Initializes JulianDate array and starting point
         final List<JulianDate> toReturn = new ArrayList<>();
-        JulianDate startDate = availability.getStart();
+        AbsoluteDate start = DateUtils.toAbsoluteDate(availability.getStart());
+        final AbsoluteDate stop =
+            DateUtils.toAbsoluteDate(availability.getStop());
+
+        if (stop.isBefore(start) ||
+            start.isAfter(stop) || start.compareTo(stop) > 0) {
+            throw new OreCzmlException(OreCzmlMessages.START_DATE_AFTER_OR_STOP_DATE_BEFORE);
+        }
+        if (start.isBefore(AbsoluteDate.J2000_EPOCH)) {
+            start = AbsoluteDate.J2000_EPOCH;
+        }
 
         // Iterates through time interval until startDate > stopDate
-        while (startDate.compareTo(availability.getStop()) < 1) {
-            toReturn.add(startDate);
-            startDate = startDate.addSeconds(multiplier);
+        while (start
+            .compareTo(DateUtils.toAbsoluteDate(availability.getStop())) < 1) {
+            toReturn.add(DateUtils.toJulianDate(start));
+            start = start.shiftedBy(multiplier);
         }
         return toReturn;
     }

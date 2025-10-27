@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.orekit.czml.object;
+package org.orekit.czml.object.secondary;
 
 import cesiumlanguagewriter.BooleanCesiumWriter;
 import cesiumlanguagewriter.CesiumOutputStream;
@@ -22,7 +22,8 @@ import cesiumlanguagewriter.CesiumStreamWriter;
 import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.PathCesiumWriter;
 import cesiumlanguagewriter.TimeInterval;
-import org.orekit.czml.object.secondary.CzmlSecondaryObject;
+import org.orekit.czml.errors.OreCzmlException;
+import org.orekit.czml.errors.OreCzmlMessages;
 
 import java.io.StringWriter;
 
@@ -36,8 +37,8 @@ import java.io.StringWriter;
  * @since 1.0.0
  */
 public class Path
-    implements
-    CzmlSecondaryObject {
+    extends
+    AbstractSecondaryObject<Path> {
 
     /**
      * The availability of the object.
@@ -47,7 +48,7 @@ public class Path
     /**
      * Whether to show or not the path.
      */
-    private final boolean show;
+    private Boolean show;
 
     // Constructors
 
@@ -98,6 +99,21 @@ public class Path
             this.write(packet, output);
         }
         return writerTemp.toString();
+    }
+
+    @Override
+    public Path cloneObject() {
+        final Path toReturn;
+        if (this.availability != null) {
+            if (this.show != null) {
+                toReturn = new Path(this.availability, this.show);
+            } else {
+                toReturn = new Path(this.availability);
+            }
+        } else {
+            throw new OreCzmlException(OreCzmlMessages.NOT_VALID_SECONDARY_OBJECT_FOR_CLONE);
+        }
+        return toReturn;
     }
 
     // Getters

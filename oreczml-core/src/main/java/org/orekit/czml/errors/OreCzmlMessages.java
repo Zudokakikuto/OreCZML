@@ -34,7 +34,28 @@ public enum OreCzmlMessages
     implements
     Localizable {
 
-                 // collision
+                 // Abstract primary object
+                 /**
+                  * Trigger when a primary object is not valid and lacks some of
+                  * its parameters.
+                  */
+                 NOT_VALID_PRIMARY_OBJECT_FOR_CLONE("The primary object you tried to clone does not have all the parameters needed to be cloned"),
+
+                 // Abstract secondary object
+                 /**
+                  * Trigger when a primary object is not valid and lacks some of
+                  * its parameters.
+                  */
+                 NOT_VALID_SECONDARY_OBJECT_FOR_CLONE("The secondary object you tried to clone does not have all the parameters needed to be cloned"),
+
+                 // Date Utils
+                 /**
+                  * Trigger when a start date is after a stop date or a stop
+                  * date before a start date on Date Utils.
+                  */
+                 START_DATE_AFTER_OR_STOP_DATE_BEFORE("The start date is after the stop date or the stop date is before the star date."),
+
+                 // Collision
                  /**
                   * Trigger when satellites are not close enough to build a
                   * collision object.
@@ -147,12 +168,6 @@ public enum OreCzmlMessages
                   * not built with a keplerian period gettable.
                   */
                  NO_ORBIT_FOR_KEPLERIAN_PERIOD("The initial state of the spacecraft does not have a keplerian period."),
-
-                 /**
-                  * Triggers when the spacecraft is not inside an influence
-                  * sphere.
-                  */
-                 NOT_INSIDE_AN_INFLUENCE_SPHERE("The spacecraft is not inside an influence sphere, or the influence sphere was not defined/inputted in the displayInfluenceSphereChanges() method."),
 
                  /**
                   * Triggers when changes are made in the spacecraft orbit

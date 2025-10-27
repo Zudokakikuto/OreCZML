@@ -3,6 +3,7 @@ package org.orekit.czml.object.secondary;
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.annotation.DefaultDataContext;
 import org.orekit.bodies.GeodeticPoint;
@@ -31,6 +32,9 @@ import org.orekit.utils.Constants;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * Test class for the visibility triangle object.
@@ -56,7 +60,7 @@ public class VisibilityTriangleTest
         final AbsoluteDate startDate =
             new AbsoluteDate(2024, 3, 15, 0, 0, 0.0,
                              TimeScalesFactory.getUTC());
-        final AbsoluteDate finalDate = startDate.shiftedBy(10 * 3600);
+        final AbsoluteDate finalDate = startDate.shiftedBy(10.0 * 3600.0);
 
         final Clock clock =
             new Clock(startDate, finalDate,

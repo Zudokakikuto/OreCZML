@@ -25,6 +25,8 @@ import org.orekit.frames.Frame;
 import org.orekit.frames.FramesFactory;
 import org.orekit.utils.IERSConventions;
 
+import java.util.Objects;
+
 /**
  * Body Factory class
  * <p>
@@ -48,7 +50,9 @@ public class BodyFactory {
      * The default folder where the 3D models of bodies are loaded from.
      */
     public static final String BODIES_SOURCES =
-        Body.class.getClassLoader().getResource("Bodies").getPath();
+        Objects
+            .requireNonNull(Body.class.getClassLoader().getResource("Bodies"))
+            .getPath();
 
     /** The default string for the description. */
     private static final String ID_BODY = "ID : BODY/";

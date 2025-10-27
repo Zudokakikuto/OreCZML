@@ -26,10 +26,10 @@ public class StationVisibilityCircleBuilder {
     public static final double DEFAULT_ANGLE_OF_APERTURE = 90.0;
 
     /** The topocentric frame representing the station. */
-    private TopocentricFrame topocentricFrame;
+    private final TopocentricFrame topocentricFrame;
 
     /** The satellite observed. */
-    private Spacecraft satellite;
+    private final Spacecraft satellite;
 
     /** The angle of aperture of the station. */
     private double angleOfAperture = DEFAULT_ANGLE_OF_APERTURE;

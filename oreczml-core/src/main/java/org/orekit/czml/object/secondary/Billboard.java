@@ -38,7 +38,7 @@ import java.awt.Color;
  */
 public class Billboard
     extends
-    AbstractSecondaryObject {
+    AbstractSecondaryObject<Billboard> {
 
     /**
      * The default scale of the image used by the billboard.
@@ -169,6 +169,14 @@ public class Billboard
         }
     }
 
+    @Override
+    public Billboard cloneObject() {
+        final Billboard copy =
+            new Billboard(this.getImageStr(), this.getScale());
+        copy.setNearFarScalar(this.getNearFarScalar());
+        return copy;
+    }
+
     // Getters
 
     /**
@@ -232,6 +240,12 @@ public class Billboard
      */
     public NearFarScalar getNearFarScalar() {
         return nearFarScalar;
+    }
+
+    // Setters
+
+    public void setNearFarScalar(final NearFarScalar nearFarScalar) {
+        this.nearFarScalar = nearFarScalar;
     }
 
     // Private functions

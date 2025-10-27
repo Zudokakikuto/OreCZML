@@ -26,7 +26,6 @@ import cesiumlanguagewriter.PositionListCesiumWriter;
 import cesiumlanguagewriter.SolidColorMaterialCesiumWriter;
 import cesiumlanguagewriter.TimeInterval;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
-import org.orekit.annotation.DefaultDataContext;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.bodies.OneAxisEllipsoid;
 import org.orekit.czml.object.CzmlShow;
@@ -60,10 +59,9 @@ import java.util.List;
  * @author Julien LEBLOND
  * @since 1.1
  */
-
 public class VisibilityTriangle
     extends
-    AbstractPrimaryObject {
+    AbstractPrimaryObject<VisibilityTriangle> {
 
     /** The default string for the ID of the triangle. */
     public static final String DEFAULT_ID = "TRIANGLE_VIS/";
@@ -77,14 +75,25 @@ public class VisibilityTriangle
     /** List of three points for each triangle. */
     private List<List<Cartesian>> trianglesCartesians = new ArrayList<>();
 
-    VisibilityTriangle(final LineOfVisibility line) {
+    /** The line of visibility used. */
+    private LineOfVisibility line;
+
+    // Constructor
+
+    /**
+     * The classic constructor of the visibility triangle object.
+     *
+     * @param lineInput : The line of visibility used for the visibility
+     *        triangle
+     */
+    VisibilityTriangle(final LineOfVisibility lineInput) {
         /* Availability of the triangles. */
-        final List<CzmlShow> shows = line.getShowList();
-        this.setId(DEFAULT_ID + line.getSpacecraft().getId());
-        this.setName(DEFAULT_NAME + line.getSpacecraft().getName());
-        /* The positions in cartesian of the satellite. */
+        final List<CzmlShow> shows = lineInput.getShowList();
+        this.setId(DEFAULT_ID + lineInput.getSpacecraft().getId());
+        this.setName(DEFAULT_NAME + lineInput.getSpacecraft().getName());
+        this.line = lineInput;
         final List<SpacecraftState> spacecraftStatesSatellite =
-            line.getSpacecraft().getSpaceCraftStates();
+            lineInput.getSpacecraft().getSpaceCraftStates();
         this.trianglesCartesians =
             buildTriangleCartesians(shows, spacecraftStatesSatellite);
         this.availabilityTriangles = buildTrueIntervals(shows);
@@ -129,6 +138,15 @@ public class VisibilityTriangle
         }
     }
 
+    @Override
+    public VisibilityTriangle cloneObject() {
+        final VisibilityTriangle copy = new VisibilityTriangle(this.line);
+        copy.setAvailability(getAvailability());
+        copy.setId(getId());
+        copy.setName(getName());
+        return copy;
+    }
+
     // Private functions
 
     /**
@@ -140,7 +158,6 @@ public class VisibilityTriangle
      * @return : A list of list of cartesians representing a list of triplets of
      *         positions of points for each triangle.
      */
-    @DefaultDataContext
     private List<List<Cartesian>>
         buildTriangleCartesians(final List<CzmlShow> showsInput,
                                 final List<SpacecraftState> statesInput) {
@@ -177,7 +194,7 @@ public class VisibilityTriangle
 
                 // Get the interval and the boundaries of the interval.
                 final TimeInterval currentTimeInterval =
-                    currentShow.getAvailability();
+                    currentShow.getClock().getAvailability();
                 final AbsoluteDate startInterval =
                     DateUtils.toAbsoluteDate(currentTimeInterval.getStart());
                 final AbsoluteDate stopInterval =
@@ -216,7 +233,7 @@ public class VisibilityTriangle
         final List<TimeInterval> toReturn = new ArrayList<>();
         for (CzmlShow czmlShow : showsInput) {
             if (czmlShow.getShow()) {
-                toReturn.add(czmlShow.getAvailability());
+                toReturn.add(czmlShow.getClock().getAvailability());
             }
         }
         return toReturn;

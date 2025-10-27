@@ -47,7 +47,7 @@ import java.util.ListIterator;
  */
 public class MultipleLineOfVisibility
     extends
-    AbstractPrimaryObject
+    AbstractPrimaryObject<MultipleLineOfVisibility>
     implements
     List<LineOfVisibility> {
 
@@ -63,7 +63,13 @@ public class MultipleLineOfVisibility
     private final List<LineOfVisibility> lines;
 
     /** The id of the multiple visibility line object. */
-    private final String id;
+    private String id;
+
+    /** The spacecraft if one is used. */
+    private Spacecraft spacecraft;
+
+    /** The constellation if one is used. */
+    private Constellation constellation;
 
     // Constructor
 
@@ -82,6 +88,7 @@ public class MultipleLineOfVisibility
         this.id =
             DEFAULT_ID +
                   " " + topocentricFrames.size() + " " + spacecraft.getId();
+        this.spacecraft = spacecraft;
     }
 
     /**
@@ -99,6 +106,7 @@ public class MultipleLineOfVisibility
         this.id =
             DEFAULT_ID +
                   " " + topocentricFrames.size() + " " + constellation.getId();
+        this.constellation = constellation;
     }
 
     // Builders
@@ -137,6 +145,27 @@ public class MultipleLineOfVisibility
         return id;
     }
 
+    @Override
+    public MultipleLineOfVisibility cloneObject() {
+        final MultipleLineOfVisibility toReturn;
+        try {
+            if (this.spacecraft != null) {
+                toReturn =
+                    new MultipleLineOfVisibility(this.topocentricFrames,
+                                                 this.spacecraft);
+            } else if (this.constellation != null) {
+                toReturn =
+                    new MultipleLineOfVisibility(this.topocentricFrames,
+                                                 this.constellation);
+            } else {
+                throw new OreCzmlException(OreCzmlMessages.NOT_VALID_PRIMARY_OBJECT_FOR_CLONE);
+            }
+        } catch (URISyntaxException | IOException e) {
+            throw new OreCzmlException(OreCzmlMessages.NOT_VALID_PRIMARY_OBJECT_FOR_CLONE);
+        }
+        return toReturn;
+    }
+
     /**
      * The function build the list of the line of visibility.
      *
@@ -165,8 +194,7 @@ public class MultipleLineOfVisibility
                 final LineOfVisibility currentTopocentricLine =
                     LineOfVisibility
                         .builder(topocentricFrame, constellationInput,
-                                 constellationInput.getSatellites().get(0)
-                                     .getClock())
+                                 constellationInput.getClock())
                         .build();
                 linesBuilt.add(currentTopocentricLine);
             }

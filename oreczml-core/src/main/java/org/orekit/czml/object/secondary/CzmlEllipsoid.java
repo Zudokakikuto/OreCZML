@@ -22,6 +22,8 @@ import cesiumlanguagewriter.EllipsoidCesiumWriter;
 import cesiumlanguagewriter.EllipsoidRadiiCesiumWriter;
 import cesiumlanguagewriter.JulianDate;
 import cesiumlanguagewriter.PacketCesiumWriter;
+import org.orekit.czml.errors.OreCzmlException;
+import org.orekit.czml.errors.OreCzmlMessages;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -38,7 +40,7 @@ import java.util.List;
  */
 public class CzmlEllipsoid
     extends
-    AbstractSecondaryObject {
+    AbstractSecondaryObject<CzmlEllipsoid> {
 
     /**
      * The default color for the ellipsoid.
@@ -234,13 +236,13 @@ public class CzmlEllipsoid
      *
      * @param julianDates the julian dates
      * @param dimensions the dimensions
-     * @param clock the clock
+     * @param clockInput the clock
      * @return the czml ellipsoid builder
      */
     public static CzmlEllipsoidBuilder
         builder(final List<JulianDate> julianDates,
-                final List<Cartesian> dimensions, final Clock clock) {
-        return new CzmlEllipsoidBuilder(julianDates, dimensions, clock);
+                final List<Cartesian> dimensions, final Clock clockInput) {
+        return new CzmlEllipsoidBuilder(julianDates, dimensions, clockInput);
     }
 
     // Overrides
@@ -258,8 +260,7 @@ public class CzmlEllipsoid
                 .writeSlicePartitionsProperty(this.getSlicePartition());
             ellipsoidCesiumWriter
                 .writeStackPartitionsProperty(this.getStackPartition());
-            ellipsoidCesiumWriter
-                .writeInterval(this.getClock().getAvailability());
+            ellipsoidCesiumWriter.writeInterval(this.clock.getAvailability());
 
             if (multipleEllipsoids) {
                 try (EllipsoidRadiiCesiumWriter radiiWriter =
@@ -279,6 +280,31 @@ public class CzmlEllipsoid
                 }
             }
         }
+    }
+
+    @Override
+    public CzmlEllipsoid cloneObject() {
+        final CzmlEllipsoid toReturn;
+        if (this.cartesian != null) {
+            toReturn =
+                CzmlEllipsoid.builder(this.cartesian, this.clock)
+                    .withColor(this.color).withFill(this.fill)
+                    .withOutline(this.outline)
+                    .withSliceStackPartition(this.slicePartition,
+                                             this.stackPartition)
+                    .build();
+        } else if (!this.cartesians.isEmpty()) {
+            toReturn =
+                CzmlEllipsoid.builder(julianDates, cartesians, this.clock)
+                    .withColor(this.color).withFill(this.fill)
+                    .withOutline(this.outline)
+                    .withSliceStackPartition(this.slicePartition,
+                                             this.stackPartition)
+                    .build();
+        } else {
+            throw new OreCzmlException(OreCzmlMessages.NOT_VALID_SECONDARY_OBJECT_FOR_CLONE);
+        }
+        return toReturn;
     }
 
     // Getters
@@ -335,14 +361,5 @@ public class CzmlEllipsoid
      */
     public boolean getOutline() {
         return outline;
-    }
-
-    /**
-     * Gets availability.
-     *
-     * @return the availability
-     */
-    public Clock getClock() {
-        return clock;
     }
 }

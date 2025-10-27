@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Maneuver sequence builder class
@@ -43,8 +44,8 @@ public class ManeuverSequenceBuilder {
      * the thrust or the acceleration.
      */
     public static final String DEFAULT_PATH_MODEL =
-        ManeuverSequence.class.getClassLoader()
-            .getResource("maneuver_model.glb").getPath();
+        Objects.requireNonNull(ManeuverSequence.class.getClassLoader()
+            .getResource("maneuver_model.glb")).getPath();
 
     /**
      * The satellite which performs maneuvers.

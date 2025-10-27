@@ -36,7 +36,7 @@ import java.net.URISyntaxException;
 
 public class InfluenceSphere
     extends
-    AbstractPrimaryObject {
+    AbstractPrimaryObject<InfluenceSphere> {
 
     /** The gravitational constant. */
     public static final double GRAVITATIONAL_CONSTANT = 6.67430 * 1e-11;
@@ -145,13 +145,23 @@ public class InfluenceSphere
         }
     }
 
+    @Override
+    public InfluenceSphere cloneObject() {
+        final InfluenceSphere copy =
+            InfluenceSphere.builder(this.body, this.clock).withCustomID(getId())
+                .build();
+        copy.setName(getName());
+        copy.setAvailability(getAvailability());
+        return copy;
+    }
+
     /**
      * Gets the ellipsoid of the influence sphere.
      *
      * @return The ellipsoid.
      */
     public CzmlEllipsoid getEllipsoid() {
-        return ellipsoid;
+        return ellipsoid.cloneObject();
     }
 
     /**
@@ -160,7 +170,7 @@ public class InfluenceSphere
      * @return The body
      */
     public Body getBody() {
-        return body;
+        return body.cloneObject();
     }
 
     /**
@@ -169,7 +179,7 @@ public class InfluenceSphere
      * @return The clock
      */
     public Clock getClock() {
-        return clock;
+        return clock.cloneObject();
     }
 
     /**
@@ -187,6 +197,6 @@ public class InfluenceSphere
      * @param clockInput The clock to set
      */
     public void setClock(final Clock clockInput) {
-        this.clock = clockInput;
+        this.clock = clockInput.cloneObject();
     }
 }

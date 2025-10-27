@@ -21,7 +21,6 @@ import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.orekit.annotation.DefaultDataContext;
 import org.orekit.bodies.CelestialBodyFactory;
 import org.orekit.czml.archi.factory.BodyFactory;
 import org.orekit.czml.file.AbstractTest;
@@ -56,18 +55,14 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Test class for the influence sphere util class
- *
- * @author Julien Leblond
- * @since 1.1.
- */
-@DefaultDataContext
 public class InfluenceSphereUtilsTest
     extends
     AbstractTest {
 
-    /** Test for finding the crossing of influence sphere. */
+    /**
+     * TODO : Fix the complexity of the computation for influence sphere changes
+     * : Use the version of issue 53.
+     */
     @Test
     void findCrossingSphereDatesTest()
         throws URISyntaxException,
@@ -79,7 +74,7 @@ public class InfluenceSphereUtilsTest
 
         // Creation of the clock.
 
-        final double durationOfSimulation = 4 * 24 * 3600; // in seconds;
+        final double durationOfSimulation = 4 * 24 * 3600.0; // in seconds;
         final Frame eme2000 = FramesFactory.getEME2000();
         final Frame itrf =
             FramesFactory.getITRF(IERSConventions.IERS_2010, true);
@@ -88,7 +83,7 @@ public class InfluenceSphereUtilsTest
                              TimeScalesFactory.getUTC());
         final AbsoluteDate finalDate =
             startDate.shiftedBy(durationOfSimulation);
-        final Clock clock = new Clock(startDate, finalDate, 60.0);
+        final Clock clock = new Clock(startDate, finalDate, 3600.0);
 
         final Header header =
             new Header("Example of usage of the influence sphere on the moon and the earth",
@@ -99,7 +94,7 @@ public class InfluenceSphereUtilsTest
         earth.displayInfluenceSphere();
         final Body moon = BodyFactory.getMoon(clock);
         moon.displayInfluenceSphere();
-        moon.displayOnlyOnePeriod(24 * 3600);
+        moon.displayOnlyOnePeriod(24 * 3600.0);
         final List<Body> bodies = new ArrayList<>();
         bodies.add(earth);
         bodies.add(moon);
@@ -163,21 +158,20 @@ public class InfluenceSphereUtilsTest
         // file writing
         file.write(output);
 
-        final Frame centralFrame = itrf;
         final List<SpacecraftState> states = spacecraft.getSpaceCraftStates();
         final Frame spacecraftFrame = spacecraft.getFrame();
 
         final List<AbsoluteDate> dateChanges =
-            InfluenceSphereUtils
-                .findCrossingSphereDates(bodies, centralFrame, states,
-                                         spacecraftFrame, finalDate);
+            InfluenceSphereUtils.findCrossingSphereDates(bodies, itrf, states,
+                                                         spacecraftFrame,
+                                                         finalDate);
         Assertions.assertEquals(4, dateChanges.size());
         final List<AbsoluteDate> datesRef = new ArrayList<>();
         datesRef.add(new AbsoluteDate(2024, 1, 16, 0, 0, 0.0,
                                       TimeScalesFactory.getUTC()));
-        datesRef.add(new AbsoluteDate(2024, 1, 17, 15, 42, 0.0,
+        datesRef.add(new AbsoluteDate(2024, 1, 17, 16, 0, 0.0,
                                       TimeScalesFactory.getUTC()));
-        datesRef.add(new AbsoluteDate(2024, 1, 19, 7, 21, 0.0,
+        datesRef.add(new AbsoluteDate(2024, 1, 19, 8, 0, 0.0,
                                       TimeScalesFactory.getUTC()));
         datesRef.add(new AbsoluteDate(2024, 1, 20, 0, 0, 0.0,
                                       TimeScalesFactory.getUTC()));

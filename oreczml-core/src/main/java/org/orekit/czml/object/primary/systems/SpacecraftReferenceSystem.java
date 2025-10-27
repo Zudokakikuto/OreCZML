@@ -40,7 +40,7 @@ import java.util.Objects;
  */
 public class SpacecraftReferenceSystem
     extends
-    AbstractPrimaryObject {
+    AbstractPrimaryObject<SpacecraftReferenceSystem> {
 
     /**
      * The default ID for the reference system.
@@ -153,6 +153,16 @@ public class SpacecraftReferenceSystem
         } catch (IOException | URISyntaxException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public SpacecraftReferenceSystem cloneObject() {
+        final SpacecraftReferenceSystem copy =
+            new SpacecraftReferenceSystem(this.spacecraft);
+        copy.setId(getId());
+        copy.setName(getName());
+        copy.setAvailability(getAvailability());
+        return copy;
     }
 
     // Getters

@@ -57,7 +57,7 @@ import java.util.List;
  */
 public class Body
     extends
-    AbstractPrimaryObject {
+    AbstractPrimaryObject<Body> {
 
     /**
      * The default id of the body object.
@@ -77,10 +77,10 @@ public class Body
     /**
      * The body represented.
      */
-    private CelestialBody body;
+    private final CelestialBody body;
 
     /** The central body associated to the body. */
-    private Body centralBody;
+    private final Body centralBody;
 
     /** The 3D model loaded to display the body. */
     private CzmlModel model;
@@ -140,7 +140,10 @@ public class Body
     private boolean displayInfluenceSphere = false;
 
     /** The clock considered. */
-    private Clock clock;
+    private final Clock clock;
+
+    /** The frame to use for the body. */
+    private final Frame frame;
 
     // Constructors
 
@@ -149,7 +152,7 @@ public class Body
      *
      * @param body : The body to display.
      * @param pathToModel : The path to the model to load.
-     * @param frameToExpress : The path to the model to load.
+     * @param frameToExpress : The frame to use.
      * @param clock : The clock
      * @param centralBody : The central Body associated to the body
      */
@@ -165,7 +168,7 @@ public class Body
      *
      * @param body : The body to display.
      * @param pathToModel : The path to the model to load.
-     * @param frameToExpressInput : The path to the model to load.
+     * @param frameToExpressInput : The frame to use
      * @param customID : The custom ID for the body.
      * @param clock : The clock
      * @param centralBody : The central body associated to the body
@@ -178,7 +181,7 @@ public class Body
         this.setName(DEFAULT_NAME + body.getName());
         this.setAvailability(clock.getAvailability());
         this.body = body;
-        /** The frame in which the position of the body is expressed. */
+        this.frame = frameToExpressInput;
         this.description =
             "<!--HTML-->\r\n<p>Id : " +
                            customID + "</p>\r\n<p>Name : " + body.getName() +
@@ -242,6 +245,22 @@ public class Body
         }
     }
 
+    @Override
+    public Body cloneObject() {
+        final Body copy =
+            Body.builder(this.body, this.pathToModel, this.frame, this.clock,
+                         this.centralBody)
+                .withDescription(this.description)
+                .withOrientation(this.orientation)
+                .withModelScale(this.modelScale)
+                .withModelMaximumScale(this.modelMaximumScale)
+                .withCustomID(getId())
+                .withModelMinimumPixelSize(this.modelMinimumPixelSize).build();
+        copy.setName(getName());
+        copy.setAvailability(getAvailability());
+        return copy;
+    }
+
     // Users' methods
 
     /**
@@ -277,7 +296,7 @@ public class Body
         if (influenceSphere == null) {
             throw new OreCzmlException(OreCzmlMessages.INFLUENCE_SPHERE_NOT_DISPLAYED);
         } else {
-            return influenceSphere;
+            return influenceSphere.cloneObject();
         }
     }
 
@@ -296,7 +315,7 @@ public class Body
      * @return The central body
      */
     public Body getCentralBody() {
-        return centralBody;
+        return centralBody.cloneObject();
     }
 
     /**

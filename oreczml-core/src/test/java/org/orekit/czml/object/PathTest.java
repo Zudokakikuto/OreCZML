@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.Header;
+import org.orekit.czml.object.secondary.Path;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

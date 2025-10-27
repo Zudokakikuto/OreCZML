@@ -82,10 +82,10 @@ public class CzmlGroundStationBuilder {
     }
 
     public CzmlGroundStationBuilder
-        displayCircle(final Spacecraft satellite,
+        displayCircle(final Spacecraft spacecraftInput,
                       final double angleOfApertureInput) {
         displayCircle = true;
-        this.spacecraft = satellite;
+        this.spacecraft = spacecraftInput;
         this.angleOfAperture = angleOfApertureInput;
         return this;
     }

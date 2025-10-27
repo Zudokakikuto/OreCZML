@@ -41,6 +41,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.Objects;
 
 /**
  * 3D/2D Models
@@ -122,18 +123,12 @@ public class CzmlModel {
     private Billboard billboard;
 
     /**
-     * The string representing the extension of the file used. This is used to
-     * determine the type of the file.
-     */
-    private String extension;
-
-    /**
      * The duplicated file in local at the relative path.
      */
     private File duplicatedLocalFile;
 
     /** Check if the model is for a satellite. */
-    private boolean isSatellite;
+    private final boolean isSatellite;
 
     /**
      * Builder for the model of the satellite, default parameters entered.
@@ -248,7 +243,7 @@ public class CzmlModel {
      * @return : The billboard used.
      */
     public Billboard getBillboard() {
-        return billboard;
+        return billboard == null ? null : billboard.cloneObject();
     }
 
     /**
@@ -276,6 +271,15 @@ public class CzmlModel {
      */
     public double getMaximumScale() {
         return maximumScale;
+    }
+
+    /**
+     * Get the absolute path of the model.
+     *
+     * @return The absolute path of the model.
+     */
+    public String getAbsolutePath() {
+        return absolutePath;
     }
 
     /**
@@ -335,11 +339,6 @@ public class CzmlModel {
                 this.duplicatedLocalFile = new File(absolutePathInputted);
                 return;
             }
-
-            /**
-             * The relative path of the file. When CesiumJS is used, it will be
-             * the 'public' folder used as a relative one.
-             */
             final String relativePath = Javascript + "/" + nameOfObject;
 
             final File absoluteFile = new File(absolutePath);
@@ -368,7 +367,7 @@ public class CzmlModel {
         final File inputtedFile = new File(absolutePathOfObject);
         final String name = inputtedFile.getName();
         final String[] nameSplitted = name.split("\\.");
-        this.extension = nameSplitted[1];
+        final String extension = nameSplitted[1];
         return checkFromExtension(extension);
     }
 
@@ -412,8 +411,8 @@ public class CzmlModel {
     private static String getSatelliteResourcePath() {
         if (!(CzmlModel.class.getClassLoader()
             .getResource(DEFAULT_MODEL_NAME) == null)) {
-            return CzmlModel.class.getClassLoader()
-                .getResource(DEFAULT_MODEL_NAME).getPath();
+            return Objects.requireNonNull(CzmlModel.class.getClassLoader()
+                .getResource(DEFAULT_MODEL_NAME)).getPath();
         }
         return null;
     }
@@ -443,6 +442,12 @@ public class CzmlModel {
         }
     }
 
+    /**
+     * This function aims at writing a billboard using a 2D model.
+     *
+     * @param packet : The packet where the model will be written.
+     * @param output : The output that will write the strings.
+     */
     private void write2D(final PacketCesiumWriter packet,
                          final CesiumOutputStream output)
         throws IOException,
@@ -459,6 +464,12 @@ public class CzmlModel {
         }
     }
 
+    /**
+     * This function aims at writing a billboard with an empty model.
+     *
+     * @param packet : The packet where the model will be written.
+     * @param output : The output that will write the strings.
+     */
     private void writeEmpty(final PacketCesiumWriter packet,
                             final CesiumOutputStream output) {
         this.billboard = new Billboard(DEFAULT_MODEL_NAME);

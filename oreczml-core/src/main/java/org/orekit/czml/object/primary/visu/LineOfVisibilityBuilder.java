@@ -77,7 +77,7 @@ public class LineOfVisibilityBuilder {
      *
      * @param topocentricFrameInput : The topocentric frame where the ground
      *        station is.
-     * @param spacecraftInput : The satellite observed.
+     * @param spacecraftInput : The spacecraft observed.
      * @param clock : The clock considered.
      */
     public LineOfVisibilityBuilder(final TopocentricFrame topocentricFrameInput,

@@ -25,8 +25,11 @@ import cesiumlanguagewriter.Reference;
 import org.hipparchus.util.FastMath;
 import org.orekit.attitudes.Attitude;
 import org.orekit.attitudes.LofOffset;
+import org.orekit.czml.errors.OreCzmlException;
+import org.orekit.czml.errors.OreCzmlMessages;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
 import org.orekit.czml.object.primary.entities.Spacecraft;
+import org.orekit.czml.object.secondary.Clock;
 import org.orekit.czml.object.secondary.CzmlEllipsoid;
 import org.orekit.czml.object.secondary.Orientation;
 import org.orekit.czml.object.utils.DateUtils;
@@ -36,12 +39,14 @@ import org.orekit.propagation.SpacecraftState;
 import org.orekit.propagation.StateCovariance;
 
 import java.awt.Color;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 /**
- * covariance
+ * Covariance
  * <p>
  * This class builds the covariance as an ellipsoid around a satellite.
  * </p>
@@ -51,28 +56,20 @@ import java.util.List;
  */
 public class Covariance
     extends
-    AbstractPrimaryObject {
+    AbstractPrimaryObject<Covariance> {
 
     // STATICS
 
-    /**
-     * The default string to call the ID of the covariance.
-     */
+    /** The default string to call the ID of the covariance. */
     public static final String DEFAULT_ID = "COV/";
 
-    /**
-     * The default string to call the name of the covariance.
-     */
+    /** The default string to call the name of the covariance. */
     public static final String DEFAULT_NAME = "Covariance of ";
 
-    /**
-     * The default string to call the reference position of an object.
-     */
+    /** The default string to call the reference position of an object. */
     public static final String DEFAULT_H_POSITION = "#position";
 
-    /**
-     * The default color of the ellipsoid.
-     */
+    /** The default color of the ellipsoid. */
     public static final Color DEFAULT_COLOR = new Color(255, 255, 0, 255);
 
     // Parameters
@@ -91,26 +88,18 @@ public class Covariance
 
     // Intrinsic parameters
 
-    /**
-     * The satellite which the ellipsoid will be around.
-     */
+    /** The satellite which the ellipsoid will be around. */
     private final Spacecraft spacecraft;
 
     // Other arguments
 
-    /**
-     * The list of all the spacecraft states of the satellite.
-     */
+    /** The list of all the spacecraft states of the satellite. */
     private final List<SpacecraftState> spaceCraftStates;
 
-    /**
-     * All the julian dates of each step of computation in a list.
-     */
+    /** All the julian dates of each step of computation in a list. */
     private final List<JulianDate> julianDates;
 
-    /**
-     * The dimensions of the ellipsoids in time in cartesian.
-     */
+    /** The dimensions of the ellipsoids in time in cartesian. */
     private final List<Cartesian> dimensionsOfEllipsoids = new ArrayList<>();
 
     /**
@@ -119,10 +108,17 @@ public class Covariance
      */
     private final List<Attitude> attitudes = new ArrayList<>();
 
-    /**
-     * When a single ellipsoid is computed, this argument will be used.
-     */
+    /** When a single ellipsoid is computed, this argument will be used. */
     private CzmlEllipsoid uniqueEllipsoid;
+
+    /** The local orbital frame of the satellite. */
+    private LOF lof;
+
+    /** The color to use. */
+    private Color color;
+
+    /** The clock of the covariance. */
+    private Clock clock;
 
     // Constructors
 
@@ -149,16 +145,19 @@ public class Covariance
      *
      * @param spacecraft : The spacecraft used to build the covariance around.
      * @param covariances : The initial covariance.
-     * @param lof : The lof of the satellite
-     * @param color : The color of the ellipsoid.
+     * @param lofInput : The local orbital frame of the satellite
+     * @param colorInput : The color of the ellipsoid.
      * @param customID : The custom ID of the covariance object
      */
     Covariance(final Spacecraft spacecraft,
-               final List<StateCovariance> covariances, final LOF lof,
-               final Color color, final String customID) {
+               final List<StateCovariance> covariances, final LOF lofInput,
+               final Color colorInput, final String customID) {
 
         this.spacecraft = spacecraft;
         this.spaceCraftStates = spacecraft.getSpaceCraftStates();
+        this.lof = lofInput;
+        this.color = colorInput;
+        this.clock = spacecraft.getClock();
         this.setId(customID);
         this.setName(DEFAULT_NAME + spacecraft.getName());
         this.setAvailability(spacecraft.getAvailability());
@@ -168,7 +167,7 @@ public class Covariance
         this.positionReference =
             new Reference(spacecraft.getId() + DEFAULT_H_POSITION);
         this.covarianceList = new ArrayList<>(covariances);
-        this.postComputation(color, lof);
+        this.postComputation(colorInput, lofInput);
     }
 
     // Builders
@@ -214,6 +213,22 @@ public class Covariance
         }
     }
 
+    @Override
+    public Covariance cloneObject() {
+        try {
+            final Covariance copy =
+                Covariance
+                    .builder(this.spacecraft, this.covarianceList, this.lof)
+                    .withColor(this.color).build();
+            copy.setAvailability(this.getAvailability());
+            copy.setId(getId());
+            copy.setName(getName());
+            return copy;
+        } catch (URISyntaxException | IOException e) {
+            throw new OreCzmlException(OreCzmlMessages.NOT_VALID_PRIMARY_OBJECT_FOR_CLONE);
+        }
+    }
+
     // Getters
 
     /**
@@ -249,20 +264,20 @@ public class Covariance
      * @return : The list of julian date used.
      */
     public List<JulianDate> getJulianDates() {
-        return Collections.unmodifiableList(julianDates);
+        return julianDates;
     }
 
     // Private functions
 
     /**
-     * This function aims at compute all the arguments after the propagation.
+     * This function aims at computing all the arguments after the propagation.
      * The diagonal of the covariance is extracted in LOF to get the dimension
      * of the ellipsoid.
      *
-     * @param color : The color of the ellipsoid
+     * @param colorInput : The color of the ellipsoid
      * @param lofInput : The local orbital frame of the satellite
      */
-    private void postComputation(final Color color, final LOF lofInput) {
+    private void postComputation(final Color colorInput, final LOF lofInput) {
 
         final Frame initialFrame = spaceCraftStates.get(0).getFrame();
         final LofOffset offsetProvider = new LofOffset(initialFrame, lofInput);
@@ -293,8 +308,8 @@ public class Covariance
         }
 
         this.uniqueEllipsoid =
-            CzmlEllipsoid.builder(julianDates, dimensionsOfEllipsoids,
-                                  spacecraft.getClock())
-                .withColor(color).build();
+            CzmlEllipsoid
+                .builder(julianDates, dimensionsOfEllipsoids, this.clock)
+                .withColor(colorInput).build();
     }
 }
