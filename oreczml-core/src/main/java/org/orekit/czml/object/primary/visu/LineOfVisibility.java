@@ -325,9 +325,8 @@ public class LineOfVisibility
         final LineOfVisibility toReturn;
         try {
             if (this.spacecraft != null) {
-                final LineOfVisibility copy;
                 if (this.triangle != null) {
-                    copy =
+                    toReturn =
                         LineOfVisibility
                             .builder(this.topocentricFrame, this.spacecraft,
                                      this.clock)
@@ -335,19 +334,17 @@ public class LineOfVisibility
                             .withCustomID(getId()).withVisibilityTriangle()
                             .build();
                 } else {
-                    copy =
+                    toReturn =
                         LineOfVisibility
                             .builder(this.topocentricFrame, this.spacecraft,
                                      this.clock)
                             .withAngleOfAperture(this.angleOfAperture)
                             .withCustomID(getId()).build();
                 }
-                copy.setName(getName());
-                toReturn = copy;
+                toReturn.setName(getName());
             } else if (!this.satellites.isEmpty()) {
-                final LineOfVisibility copy;
                 if (!this.triangles.isEmpty()) {
-                    copy =
+                    toReturn =
                         LineOfVisibility
                             .builder(this.topocentricFrame, this.constellation,
                                      this.clock)
@@ -355,15 +352,14 @@ public class LineOfVisibility
                             .withAngleOfAperture(this.angleOfAperture)
                             .withVisibilityTriangle().build();
                 } else {
-                    copy =
+                    toReturn =
                         LineOfVisibility
                             .builder(this.topocentricFrame, this.constellation,
                                      this.clock)
                             .withCustomID(getId())
                             .withAngleOfAperture(this.angleOfAperture).build();
                 }
-                copy.setName(getName());
-                toReturn = copy;
+                toReturn.setName(getName());
             } else {
                 throw new OreCzmlException(OreCzmlMessages.NOT_VALID_PRIMARY_OBJECT_FOR_CLONE);
             }
