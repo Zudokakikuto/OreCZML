@@ -322,7 +322,7 @@ public class LineOfVisibility
 
     @Override
     public LineOfVisibility cloneObject() {
-        final LineOfVisibility toReturn;
+        LineOfVisibility toReturn;
         try {
             if (this.spacecraft != null) {
                 if (this.triangle != null) {
