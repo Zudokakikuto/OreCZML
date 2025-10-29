@@ -90,7 +90,7 @@ public class SpacecraftTest
         final AbsoluteDate finalDate = startDate.shiftedBy(60.0);
 
         final BoundedPropagator propagator =
-            dummyPropagator(startDate, finalDate);
+            dummyPropagator(startDate, finalDate, dummyOrbit(startDate));
 
         final Spacecraft spacecraft =
             Spacecraft.builder(propagator, header.getClock().getMultiplier())
