@@ -66,7 +66,7 @@ public class CylinderTest
             new TopocentricFrame(getEarth(), toulouseFrame, "Toulouse Frame");
 
         final BoundedPropagator propagator =
-            dummyPropagator(startDate, finalDate);
+            dummyPropagator(startDate, finalDate, dummyOrbit(startDate));
         final Spacecraft spacecraft =
             new Spacecraft(propagator, header.getClock());
 

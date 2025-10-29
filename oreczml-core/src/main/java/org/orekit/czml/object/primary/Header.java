@@ -126,7 +126,7 @@ public class Header
         this.setId(DEFAULT_ID);
         this.setName(name);
         this.version = version;
-        this.clock = clock.cloneObject();
+        this.clock = clock;
     }
 
     /**
@@ -144,7 +144,7 @@ public class Header
         this.setId(DEFAULT_ID);
         this.setName(name);
         this.version = version;
-        this.clock = clock.cloneObject();
+        this.clock = clock;
         Header.pathToExternalResourceFolder = pathToExternalResourceFolder;
         this.pathToExternalResources = pathToExternalResourceFolder;
     }

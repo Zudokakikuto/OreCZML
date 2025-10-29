@@ -42,8 +42,8 @@ public class InfluenceSphereBuilder {
      * @param bodyInput The body used for the influence sphere
      */
     public InfluenceSphereBuilder(final Body bodyInput, final Clock clock) {
-        this.body = bodyInput.cloneObject();
-        this.clock = clock.cloneObject();
+        this.body = bodyInput;
+        this.clock = clock;
         this.customID = DEFAULT_ID + bodyInput.getName();
     }
 

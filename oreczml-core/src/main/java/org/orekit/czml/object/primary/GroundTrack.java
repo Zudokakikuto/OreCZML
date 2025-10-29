@@ -241,15 +241,15 @@ public class GroundTrack
     /**
      * Builder ground track builder.
      *
-     * @param satellite : The satellite
+     * @param spacecraft : The satellite
      * @param body : The body
      * @param clock : The clock
      * @return the ground track builder
      */
-    public static GroundTrackBuilder builder(final Spacecraft satellite,
+    public static GroundTrackBuilder builder(final Spacecraft spacecraft,
                                              final BodyShape body,
                                              final Clock clock) {
-        return new GroundTrackBuilder(satellite, body, clock);
+        return new GroundTrackBuilder(spacecraft, body, clock);
     }
 
     /**

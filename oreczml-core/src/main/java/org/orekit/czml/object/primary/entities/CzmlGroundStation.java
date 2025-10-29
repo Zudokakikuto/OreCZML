@@ -167,8 +167,8 @@ public class CzmlGroundStation
                            "</p>\r\n<p>Simulated from : " +
                            getAvailability().getStart() + " to " +
                            getAvailability().getStop() + "</p>";
-        this.billboard = new Billboard(DEFAULT_IMAGE);
         this.positionsOnEarth.add(topocentricFrame.getCartesianPoint());
+        this.billboard = new Billboard(DEFAULT_IMAGE);
 
         if (modelPath.isEmpty()) {
             this.model = null;
@@ -221,9 +221,16 @@ public class CzmlGroundStation
     @Override
     public CzmlGroundStation cloneObject() {
         try {
-            final CzmlGroundStation copy =
-                CzmlGroundStation.builder(this.topocentricFrame, this.clock)
-                    .withModel(String.valueOf(this.model)).build();
+            final CzmlGroundStation copy;
+            if (model != null) {
+                copy =
+                    CzmlGroundStation.builder(this.topocentricFrame, this.clock)
+                        .withModel(String.valueOf(this.model)).build();
+            } else {
+                copy =
+                    CzmlGroundStation.builder(this.topocentricFrame, this.clock)
+                        .build();
+            }
             copy.setId(getId());
             copy.setName(getName());
             return copy;

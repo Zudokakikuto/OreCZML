@@ -544,6 +544,7 @@ public class InterSatVisu
                         .builder(this.propagators, this.finalDate, this.clock)
                         .withCustomId(getId()).build();
                 copy.setName(getName());
+                return copy;
             } else if (this.constellation != null) {
                 final InterSatVisu copy =
                     InterSatVisu
@@ -557,7 +558,6 @@ public class InterSatVisu
         } catch (URISyntaxException | IOException e) {
             throw new OreCzmlException(OreCzmlMessages.NOT_VALID_PRIMARY_OBJECT_FOR_CLONE);
         }
-        return null;
     }
 
     /**

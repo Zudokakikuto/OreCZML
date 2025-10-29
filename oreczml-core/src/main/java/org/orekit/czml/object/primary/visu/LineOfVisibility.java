@@ -238,6 +238,9 @@ public class LineOfVisibility
         this.setAvailability(clock.getAvailability());
         this.clock = clock;
         this.satellites = constellation.getSatellites();
+        this.topocentricFrame = topocentricFrame;
+        this.constellation = constellation;
+        this.angleOfAperture = angleOfAperture;
         final List<Reference> referenceToConvert = new ArrayList<>();
         for (int i = 0; i < constellation.getTotalOfSatellite(); i++) {
             final Spacecraft currentSatellite =
@@ -322,7 +325,7 @@ public class LineOfVisibility
 
     @Override
     public LineOfVisibility cloneObject() {
-        LineOfVisibility toReturn;
+        final LineOfVisibility toReturn;
         try {
             if (this.spacecraft != null) {
                 if (this.triangle != null) {

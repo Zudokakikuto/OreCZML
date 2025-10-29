@@ -71,14 +71,14 @@ public class InterSatVisuBuilder {
                                final Spacecraft spacecraft2Input,
                                final AbsoluteDate finalDateInput,
                                final Clock clock) {
-        this.spacecraft1 = spacecraft1Input.cloneObject();
-        this.spacecraft2 = spacecraft2Input.cloneObject();
+        this.spacecraft1 = spacecraft1Input;
+        this.spacecraft2 = spacecraft2Input;
         this.finalDate = finalDateInput;
         this.customId =
             DEFAULT_ID +
                         spacecraft1Input.getId() + "/" +
                         spacecraft2Input.getId();
-        this.clock = clock.cloneObject();
+        this.clock = clock;
     }
 
     /**
@@ -133,7 +133,7 @@ public class InterSatVisuBuilder {
      * @return : An inter sat visu builder with the given clock.
      */
     public InterSatVisuBuilder withClock(final Clock clockInput) {
-        this.clock = clockInput.cloneObject();
+        this.clock = clockInput;
         return this;
     }
 
