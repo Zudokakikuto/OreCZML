@@ -161,7 +161,7 @@ public class InfluenceSphere
      * @return The ellipsoid.
      */
     public CzmlEllipsoid getEllipsoid() {
-        return ellipsoid.cloneObject();
+        return ellipsoid;
     }
 
     /**
@@ -170,7 +170,7 @@ public class InfluenceSphere
      * @return The body
      */
     public Body getBody() {
-        return body.cloneObject();
+        return body;
     }
 
     /**
@@ -179,7 +179,7 @@ public class InfluenceSphere
      * @return The clock
      */
     public Clock getClock() {
-        return clock.cloneObject();
+        return clock;
     }
 
     /**
@@ -197,6 +197,6 @@ public class InfluenceSphere
      * @param clockInput The clock to set
      */
     public void setClock(final Clock clockInput) {
-        this.clock = clockInput.cloneObject();
+        this.clock = clockInput;
     }
 }

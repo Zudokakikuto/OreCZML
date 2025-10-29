@@ -93,7 +93,7 @@ public class BodyBuilder {
         this.body = bodyInput;
         this.pathToModel = pathToModelInput;
         this.customId = "BODY/" + bodyInput.getName();
-        this.clock = clock.cloneObject();
+        this.clock = clock;
         this.frameToExpress = frameToExpressInput;
         this.centralBody = centralBody;
     }
@@ -173,7 +173,7 @@ public class BodyBuilder {
      * @return the body
      */
     public BodyBuilder withOrientation(final Orientation orientationInput) {
-        this.orientation = orientationInput.cloneObject();
+        this.orientation = orientationInput;
         return this;
     }
 
@@ -219,7 +219,7 @@ public class BodyBuilder {
      * @return The builder with a custom central body
      */
     public BodyBuilder withCentralBody(final Body centralBodyInput) {
-        this.centralBody = centralBodyInput.cloneObject();
+        this.centralBody = centralBodyInput;
         return this;
     }
 

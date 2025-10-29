@@ -153,9 +153,6 @@ public class ManeuverSequence
      */
     private final boolean showTrust;
 
-    /** The attitude sequence used. */
-    private AttitudesSequence attitudesSequence;
-
     /** The spacecraft concerned. */
     private Spacecraft spacecraft;
 
@@ -196,7 +193,6 @@ public class ManeuverSequence
 
         this.maneuvers = maneuversTemp;
         this.clock = clock;
-        this.attitudesSequence = sequenceInput;
         this.propagator =
             (BoundedPropagator) spacecraftInput.getSpacecraftPropagator();
         this.spacecraft = spacecraftInput;
@@ -220,7 +216,8 @@ public class ManeuverSequence
             new Reference(spacecraftInput.getId() + DEFAULT_H_POSITION);
 
         this.attitudesWithManeuver =
-            generateAttitudesManeuvers(states, maneuversTemp, arrowsDirection);
+            generateAttitudesManeuvers(states, maneuversTemp, arrowsDirection,
+                                       sequenceInput);
         this.model =
             new CzmlModel(pathModelInput, 500000, 40, 5E-05, false, clock);
         this.availabilitiesManeuvers =
@@ -316,6 +313,8 @@ public class ManeuverSequence
 
         this.clock = clock;
         this.maneuvers = maneuversInput;
+        this.spacecraft = spacecraftInput;
+        this.sequence = sequenceInput;
         this.propagator = spacecraftInput.getSpacecraftBoundedPropagator();
         this.states = spacecraftInput.getSpaceCraftStates();
         setAvailability(clock.getAvailability());
@@ -329,7 +328,6 @@ public class ManeuverSequence
         }
 
         this.lof = lofInput;
-        this.sequence = sequenceInput;
         this.showTrust = showTrustInput;
         int length = maneuversInput.size();
         if (length > 10) {
@@ -347,7 +345,8 @@ public class ManeuverSequence
             new Reference(spacecraftInput.getId() + DEFAULT_H_POSITION);
 
         this.attitudesWithManeuver =
-            generateAttitudesManeuvers(states, maneuversInput, arrowsDirection);
+            generateAttitudesManeuvers(states, maneuversInput, arrowsDirection,
+                                       sequenceInput);
 
         this.model = new CzmlModel(pathModel, 500000, 40, 5E-05, false, clock);
 
@@ -462,7 +461,7 @@ public class ManeuverSequence
             if (maneuvers.size() == 1) {
                 toReturn =
                     ManeuverSequence
-                        .builder(this.attitudesSequence, this.maneuvers.get(0),
+                        .builder(this.sequence, this.maneuvers.get(0),
                                  this.spacecraft, this.arrowsDirection.get(0),
                                  this.lof, this.clock)
                         .withCustomID(getId())
@@ -472,7 +471,7 @@ public class ManeuverSequence
                 if (arrowsDirection.size() == 1) {
                     toReturn =
                         ManeuverSequence
-                            .builder(this.attitudesSequence, this.maneuvers,
+                            .builder(this.sequence, this.maneuvers,
                                      this.spacecraft,
                                      this.arrowsDirection.get(0), this.lof,
                                      this.clock)
@@ -482,7 +481,7 @@ public class ManeuverSequence
                 } else {
                     toReturn =
                         ManeuverSequence
-                            .builder(this.attitudesSequence, this.maneuvers,
+                            .builder(this.sequence, this.maneuvers,
                                      this.spacecraft, this.arrowsDirection,
                                      this.lof, this.clock)
                             .withCustomID(getId())
@@ -571,20 +570,23 @@ public class ManeuverSequence
      * @param statesInput : The list of the spacecraft states of the satellite.
      * @param maneuversInput : The list of the maneuvers to perform.
      * @param directions : The direction of the propulsion of the maneuver.
+     * @param sequenceInput : The sequence considered
      * @return : A list of the attitudes organized by maneuver.
      */
     private List<List<Attitude>>
         generateAttitudesManeuvers(final List<SpacecraftState> statesInput,
                                    final List<Maneuver> maneuversInput,
-                                   final List<Vector3D> directions) {
+                                   final List<Vector3D> directions,
+                                   final AttitudesSequence sequenceInput) {
         final List<List<Attitude>> toReturn = new ArrayList<>();
 
         // Iteration for each maneuver
         for (int i = 0; i < maneuversInput.size(); i++) {
             final Maneuver maneuver = maneuversInput.get(i);
             final Vector3D direction = directions.get(i);
-            toReturn.add(generateAttitudeForOneManeuver(statesInput, maneuver,
-                                                        direction));
+            toReturn
+                .add(generateAttitudeForOneManeuver(statesInput, maneuver,
+                                                    direction, sequenceInput));
         }
         return toReturn;
     }
@@ -643,12 +645,14 @@ public class ManeuverSequence
      *        maneuvers.
      * @param statesInput : The list of the spacecraft states of the satellite.
      * @param currentManeuver : The maneuver to perform.
+     * @param sequenceInput : The sequence to consider
      * @return : A list of the attitudes during the maneuver.
      */
     private List<Attitude>
         generateAttitudeForOneManeuver(final List<SpacecraftState> statesInput,
                                        final Maneuver currentManeuver,
-                                       final Vector3D direction) {
+                                       final Vector3D direction,
+                                       final AttitudesSequence sequenceInput) {
 
         final ManeuverTriggers currentTrigger =
             currentManeuver.getManeuverTriggers();
@@ -680,7 +684,8 @@ public class ManeuverSequence
                     firstFiringDate = state.getDate();
                     dateFinalTime = firstFiringDate.shiftedBy(finalLocalTime);
                 }
-                definitionOfAttitudes(direction, state, toReturn);
+                definitionOfAttitudes(direction, state, toReturn,
+                                      sequenceInput);
             }
 
             // If we already found the first date, and that the previous state
@@ -690,8 +695,7 @@ public class ManeuverSequence
             // is firing. This way the maneuver is entirely covered in display.
             // Else way, the arrow maneuver stopped being
             // displayed before the end of the maneuver.
-            if (firstFiringDateFound) {
-                assert previousState != null;
+            if (firstFiringDateFound && previousState != null) {
                 if (currentTrigger.isFiring(previousState.getDate(),
                                             currentManeuver.getParameters()) &&
                     !(currentTrigger
@@ -700,7 +704,8 @@ public class ManeuverSequence
                     assert dateFinalTime != null;
                     if (previousState.getDate().isBefore(dateFinalTime)) {
 
-                        definitionOfAttitudes(direction, state, toReturn);
+                        definitionOfAttitudes(direction, state, toReturn,
+                                              sequenceInput);
                     }
                 }
             }
@@ -737,10 +742,12 @@ public class ManeuverSequence
      * @param direction : The direction of the maneuver to consider.
      * @param state : The state to consider.
      * @param toReturn : The list to add attitudes into.
+     * @param sequenceInput : The sequence to consider
      */
     private void definitionOfAttitudes(final Vector3D direction,
                                        final SpacecraftState state,
-                                       final List<Attitude> toReturn) {
+                                       final List<Attitude> toReturn,
+                                       final AttitudesSequence sequenceInput) {
 
         // The default direction of thrust of the 3D model is PLUS_J, so we will
         // need to make sure when the
@@ -749,8 +756,8 @@ public class ManeuverSequence
         // attitude from the sequence.
 
         final Attitude currentAttitude =
-            sequence.getAttitude(state.getOrbit(), state.getDate(),
-                                 state.getFrame());
+            sequenceInput.getAttitude(state.getOrbit(), state.getDate(),
+                                      state.getFrame());
         final Rotation currentRotation = currentAttitude.getRotation();
         if (direction != Vector3D.PLUS_J) {
 

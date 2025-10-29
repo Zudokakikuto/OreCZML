@@ -34,16 +34,12 @@ import org.orekit.forces.gravity.potential.NormalizedSphericalHarmonicsProvider;
 import org.orekit.frames.FramesFactory;
 import org.orekit.frames.LOFType;
 import org.orekit.orbits.KeplerianOrbit;
-import org.orekit.orbits.Orbit;
 import org.orekit.orbits.OrbitType;
 import org.orekit.orbits.PositionAngleType;
 import org.orekit.propagation.BoundedPropagator;
 import org.orekit.propagation.EphemerisGenerator;
-import org.orekit.propagation.MatricesHarvester;
-import org.orekit.propagation.Propagator;
 import org.orekit.propagation.SpacecraftState;
 import org.orekit.propagation.StateCovariance;
-import org.orekit.propagation.StateCovarianceMatrixProvider;
 import org.orekit.propagation.numerical.NumericalPropagator;
 import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScalesFactory;
@@ -51,7 +47,6 @@ import org.orekit.utils.Constants;
 import org.orekit.utils.IERSConventions;
 
 import java.awt.Color;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -191,11 +186,11 @@ public class CollisionExample {
                                 FramesFactory.getEME2000(),
                                 OrbitType.EQUINOCTIAL, PositionAngleType.MEAN);
         final List<StateCovariance> covariances1 =
-            covariancePropagation(satellite1, propagator1, stateCovariance,
-                                  clock);
+            TutorialUtils.covariancePropagation(satellite1, propagator1,
+                                                stateCovariance, clock);
         final List<StateCovariance> covariances2 =
-            covariancePropagation(satellite2, propagator2, stateCovariance,
-                                  clock);
+            TutorialUtils.covariancePropagation(satellite2, propagator2,
+                                                stateCovariance, clock);
 
         final Collision collision =
             Collision.builder(satellite1, satellite2, covariances1,
@@ -209,49 +204,5 @@ public class CollisionExample {
 
         // Writing in the file
         file.write(output);
-    }
-
-    /**
-     * Covariance propagation list.
-     *
-     * @param satellite the satellite
-     * @param propagator the propagator
-     * @param initCovariance the init covariance
-     * @param clock the clock
-     * @return the list
-     */
-    public static List<StateCovariance>
-        covariancePropagation(final Spacecraft satellite,
-                              final Propagator propagator,
-                              final StateCovariance initCovariance,
-                              final Clock clock) {
-
-        final List<StateCovariance> covarianceListTemp = new ArrayList<>();
-        satellite.setAttitudes(new ArrayList<>());
-
-        final List<Orbit> orbits = satellite.getOrbits();
-
-        final String stm = "stm";
-
-        final MatricesHarvester harvester =
-            propagator.setupMatricesComputation(stm, null, null);
-
-        final StateCovarianceMatrixProvider provider =
-            new StateCovarianceMatrixProvider("covariance", stm, harvester,
-                                              initCovariance);
-
-        propagator.addAdditionalStateProvider(provider);
-
-        propagator.getMultiplexer().add(clock.getMultiplier(),
-                                        spacecraftState -> {
-                                            final StateCovariance covariance =
-                                                provider
-                                                    .getStateCovariance(spacecraftState);
-                                            covarianceListTemp.add(covariance);
-                                        });
-
-        propagator.propagate(orbits.get(0).getDate(),
-                             orbits.get(orbits.size() - 1).getDate());
-        return covarianceListTemp;
     }
 }

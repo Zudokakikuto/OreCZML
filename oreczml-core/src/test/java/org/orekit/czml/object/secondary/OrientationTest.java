@@ -60,7 +60,7 @@ public class OrientationTest
         final AbsoluteDate stopDate = startDate.shiftedBy(60.0);
 
         final BoundedPropagator propagator =
-            dummyPropagator(startDate, stopDate);
+            dummyPropagator(startDate, stopDate, dummyOrbit(startDate));
         final Spacecraft satellite =
             new Spacecraft(propagator, header.getClock());
 

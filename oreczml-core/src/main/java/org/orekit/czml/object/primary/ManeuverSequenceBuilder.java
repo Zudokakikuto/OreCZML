@@ -50,7 +50,7 @@ public class ManeuverSequenceBuilder {
     /**
      * The satellite which performs maneuvers.
      */
-    private final Spacecraft satellite;
+    private final Spacecraft spacecraft;
 
     /**
      * The attitude sequence used during the mission.
@@ -113,7 +113,7 @@ public class ManeuverSequenceBuilder {
      *
      * @param sequenceInput : The sequence of attitude used during the mission.
      * @param maneuversInput : The list of maneuvers to be done for the mission.
-     * @param satelliteInput : The satellite which performs maneuvers.
+     * @param spacecraftInput : The spacecraft which performs maneuvers.
      * @param directionInput : Direction of the maneuvers. (multiple directions
      *        will soon be added)
      * @param lofInput : The local orbital frame of the satellite.
@@ -121,11 +121,11 @@ public class ManeuverSequenceBuilder {
      */
     public ManeuverSequenceBuilder(final AttitudesSequence sequenceInput,
                                    final List<Maneuver> maneuversInput,
-                                   final Spacecraft satelliteInput,
+                                   final Spacecraft spacecraftInput,
                                    final Vector3D directionInput,
                                    final LOF lofInput, final Clock clock) {
         this.sequence = sequenceInput;
-        this.satellite = satelliteInput;
+        this.spacecraft = spacecraftInput;
         this.maneuvers = new ArrayList<>(maneuversInput);
         this.direction = directionInput;
         this.lof = lofInput;
@@ -141,19 +141,19 @@ public class ManeuverSequenceBuilder {
      *
      * @param sequenceInput : The sequence of attitude used during the mission.
      * @param maneuverInput : The maneuver to be done for the mission.
-     * @param satelliteInput : The satellite which performs the maneuver.
+     * @param spacecraftInput : The spacecraft which performs the maneuver.
      * @param directionInput : Direction of the maneuver.
      * @param lofInput : The local orbital frame iof the satellite.
      * @param clock : The clock considered.
      */
     public ManeuverSequenceBuilder(final AttitudesSequence sequenceInput,
                                    final Maneuver maneuverInput,
-                                   final Spacecraft satelliteInput,
+                                   final Spacecraft spacecraftInput,
                                    final Vector3D directionInput,
                                    final LOF lofInput, final Clock clock) {
         this.sequence = sequenceInput;
         this.singleManeuver = maneuverInput;
-        this.satellite = satelliteInput;
+        this.spacecraft = spacecraftInput;
         this.direction = directionInput;
         this.lof = lofInput;
         this.customID = ManeuverSequence.DEFAULT_ID + singleManeuver.getName();
@@ -166,19 +166,19 @@ public class ManeuverSequenceBuilder {
      *
      * @param sequenceInput : The sequence of attitude used during the mission.
      * @param maneuversInput : The list of maneuver to be done for the mission.
-     * @param satelliteInput : The satellite which performs the maneuver.
+     * @param spacecraftInput : The spacecraft which performs the maneuver.
      * @param directionsInput : The list of directions of the maneuvers.
      * @param lofInput : The local orbital frame iof the satellite.
      * @param clock : The clock considered.
      */
     public ManeuverSequenceBuilder(final AttitudesSequence sequenceInput,
                                    final List<Maneuver> maneuversInput,
-                                   final Spacecraft satelliteInput,
+                                   final Spacecraft spacecraftInput,
                                    final List<Vector3D> directionsInput,
                                    final LOF lofInput, final Clock clock) {
         this.sequence = sequenceInput;
         this.maneuvers = new ArrayList<>(maneuversInput);
-        this.satellite = satelliteInput;
+        this.spacecraft = spacecraftInput;
         this.directions = new ArrayList<>(directionsInput);
         this.lof = lofInput;
         this.customID =
@@ -245,16 +245,16 @@ public class ManeuverSequenceBuilder {
             IOException {
         if (!(maneuvers == null)) {
             if (direction == null) {
-                return new ManeuverSequence(sequence, maneuvers, satellite,
+                return new ManeuverSequence(sequence, maneuvers, spacecraft,
                                             directions, lof, showTrust,
                                             pathModel, customID, clock);
             } else {
-                return new ManeuverSequence(sequence, maneuvers, satellite,
+                return new ManeuverSequence(sequence, maneuvers, spacecraft,
                                             direction, lof, showTrust,
                                             pathModel, customID, clock);
             }
         } else {
-            return new ManeuverSequence(sequence, singleManeuver, satellite,
+            return new ManeuverSequence(sequence, singleManeuver, spacecraft,
                                         direction, lof, showTrust, pathModel,
                                         customID, clock);
         }

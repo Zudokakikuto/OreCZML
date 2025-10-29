@@ -52,7 +52,7 @@ public class StationVisibilityCircleTest
 
         // Creation of the spacecraft
         final BoundedPropagator boundedPropagator =
-            dummyPropagator(startDate, endDate);
+            dummyPropagator(startDate, endDate, dummyOrbit(startDate));
         final Spacecraft spacecraft =
             Spacecraft.builder(boundedPropagator, clock).build();
 

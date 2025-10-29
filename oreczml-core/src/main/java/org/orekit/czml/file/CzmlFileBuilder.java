@@ -652,7 +652,7 @@ public class CzmlFileBuilder {
      */
     public CzmlFileBuilder
         withCentralBodyReferenceSystem(final CentralBodyReferenceSystem systemInput) {
-        this.system = systemInput.cloneObject();
+        this.system = systemInput;
         return this;
     }
 

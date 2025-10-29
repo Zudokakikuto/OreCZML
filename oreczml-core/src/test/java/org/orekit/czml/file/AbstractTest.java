@@ -17,15 +17,25 @@
 package org.orekit.czml.file;
 
 import cesiumlanguagewriter.Cartesian;
+import org.hipparchus.geometry.euclidean.threed.Rotation;
+import org.hipparchus.geometry.euclidean.threed.RotationConvention;
+import org.hipparchus.geometry.euclidean.threed.RotationOrder;
+import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
 import org.junit.jupiter.api.Assertions;
 import org.orekit.annotation.DefaultDataContext;
+import org.orekit.attitudes.Attitude;
+import org.orekit.attitudes.AttitudesSequence;
+import org.orekit.attitudes.CelestialBodyPointed;
+import org.orekit.attitudes.LofOffset;
+import org.orekit.bodies.CelestialBodyFactory;
 import org.orekit.bodies.OneAxisEllipsoid;
 import org.orekit.czml.errors.OreCzmlException;
 import org.orekit.czml.errors.OreCzmlMessages;
 import org.orekit.czml.object.primary.Header;
+import org.orekit.czml.object.primary.ManeuverSequence;
 import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.data.DataContext;
@@ -36,8 +46,15 @@ import org.orekit.forces.ForceModel;
 import org.orekit.forces.gravity.HolmesFeatherstoneAttractionModel;
 import org.orekit.forces.gravity.potential.GravityFieldFactory;
 import org.orekit.forces.gravity.potential.NormalizedSphericalHarmonicsProvider;
+import org.orekit.forces.maneuvers.Maneuver;
+import org.orekit.forces.maneuvers.propulsion.BasicConstantThrustPropulsionModel;
+import org.orekit.forces.maneuvers.propulsion.PropulsionModel;
+import org.orekit.forces.maneuvers.trigger.DateBasedManeuverTriggers;
+import org.orekit.forces.maneuvers.trigger.ManeuverTriggers;
 import org.orekit.frames.Frame;
 import org.orekit.frames.FramesFactory;
+import org.orekit.frames.LOF;
+import org.orekit.frames.LOFType;
 import org.orekit.orbits.KeplerianOrbit;
 import org.orekit.orbits.Orbit;
 import org.orekit.orbits.OrbitType;
@@ -49,11 +66,17 @@ import org.orekit.propagation.Propagator;
 import org.orekit.propagation.SpacecraftState;
 import org.orekit.propagation.StateCovariance;
 import org.orekit.propagation.StateCovarianceMatrixProvider;
+import org.orekit.propagation.events.DateDetector;
+import org.orekit.propagation.events.EventDetector;
+import org.orekit.propagation.events.handlers.ContinueOnEvent;
 import org.orekit.propagation.numerical.NumericalPropagator;
 import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScalesFactory;
+import org.orekit.utils.AngularCoordinates;
+import org.orekit.utils.AngularDerivativesFilter;
 import org.orekit.utils.Constants;
 import org.orekit.utils.IERSConventions;
+import org.orekit.utils.PVCoordinatesProvider;
 
 import java.io.File;
 import java.io.IOException;
@@ -88,7 +111,7 @@ public class AbstractTest {
 
     /** The classic duration of the simulation */
     public static final double CLASSIC_DURATION_OF_SIMULATION = 10 * 3600; // in
-                                                                           // seconds;
+    // seconds;
 
     /** user home. */
     private static final String USER_HOME = "user.home";
@@ -190,6 +213,29 @@ public class AbstractTest {
     }
 
     /**
+     * Dummy orbit from all keplerian parameters
+     *
+     * @param startDate the start date
+     * @param sma the semi major orbit
+     * @param ecc the eccentricity
+     * @param incl the inclination
+     * @param pa the periapsis argument
+     * @param raan the right ascension of the ascending node
+     * @param m the mean anomaly
+     * @return the orbit
+     */
+    public static Orbit dummyOrbit(final AbsoluteDate startDate,
+                                   final double sma, final double ecc,
+                                   final double incl, final double pa,
+                                   final double raan, final double m) {
+        return new KeplerianOrbit(sma, ecc, FastMath.toRadians(incl), pa,
+                                  FastMath.toRadians(raan),
+                                  FastMath.toRadians(m), PositionAngleType.MEAN,
+                                  FramesFactory.getEME2000(), startDate,
+                                  Constants.WGS84_EARTH_MU);
+    }
+
+    /**
      * Dummy propagator bounded propagator.
      *
      * @param startDate the start date
@@ -199,7 +245,7 @@ public class AbstractTest {
     @DefaultDataContext
     public static BoundedPropagator
         dummyPropagator(final AbsoluteDate startDate,
-                        final AbsoluteDate finalDate) {
+                        final AbsoluteDate finalDate, final Orbit orbit) {
         final double[][] tolerances =
             NumericalPropagator.tolerances(POSITION_TOLERANCE,
                                            dummyOrbit(startDate),
@@ -219,8 +265,7 @@ public class AbstractTest {
 
         final EphemerisGenerator generator = propagator.getEphemerisGenerator();
 
-        final SpacecraftState initialState =
-            new SpacecraftState(dummyOrbit(startDate));
+        final SpacecraftState initialState = new SpacecraftState(orbit);
 
         propagator.setOrbitType(OrbitType.CARTESIAN);
         propagator.addForceModel(holmesFeatherstone);
@@ -228,6 +273,54 @@ public class AbstractTest {
 
         propagator.propagate(startDate, finalDate);
         return generator.getGeneratedEphemeris();
+    }
+
+    /**
+     * Builds a NumericalPropagator and returns both it and its generated
+     * ephemeris after propagation.
+     *
+     * @param startDate start date of propagation
+     * @param finalDate end date of propagation
+     * @param orbit initial orbit
+     * @return a container holding the propagator and its generated ephemeris
+     */
+    @DefaultDataContext
+    public static PropagatorWithEphemeris
+        dummyNumericalPropagatorWithEphemeris(final AbsoluteDate startDate,
+                                              final AbsoluteDate finalDate,
+                                              final Orbit orbit) {
+        // Build integrator and propagator
+        final double[][] tol =
+            NumericalPropagator.tolerances(POSITION_TOLERANCE, orbit,
+                                           OrbitType.CARTESIAN);
+        final AdaptiveStepsizeIntegrator integrator =
+            new DormandPrince853Integrator(MIN_STEP, MAX_STEP, tol[0], tol[1]);
+
+        final NumericalPropagator propagator =
+            new NumericalPropagator(integrator);
+        propagator.setOrbitType(OrbitType.CARTESIAN);
+
+        // Add a gravity model
+        final NormalizedSphericalHarmonicsProvider provider =
+            GravityFieldFactory.getNormalizedProvider(10, 10);
+        final ForceModel holmesFeatherstone =
+            new HolmesFeatherstoneAttractionModel(FramesFactory.getEME2000(),
+                                                  provider);
+        propagator.addForceModel(holmesFeatherstone);
+
+        // Set the initial state
+        propagator.setInitialState(new SpacecraftState(orbit));
+
+        // Create generator *before* propagation
+        final EphemerisGenerator generator = propagator.getEphemerisGenerator();
+
+        // Do the propagation
+        propagator.propagate(startDate, finalDate);
+
+        // Generate the ephemeris
+        final BoundedPropagator ephemeris = generator.getGeneratedEphemeris();
+
+        return new PropagatorWithEphemeris(propagator, ephemeris);
     }
 
     /**
@@ -297,6 +390,123 @@ public class AbstractTest {
         propagator.propagate(orbits.get(0).getDate(),
                              orbits.get(orbits.size() - 1).getDate());
         return covarianceListTemp;
+    }
+
+    public static ManeuverSequence
+        dummyManeuverSequence(final AbsoluteDate startDate,
+                              final AbsoluteDate finalDate,
+                              final Spacecraft spacecraft)
+            throws URISyntaxException,
+                IOException {
+
+        final List<Maneuver> maneuvers = new ArrayList<>();
+
+        final NumericalPropagator propagator =
+            dummyNumericalPropagatorWithEphemeris(startDate, finalDate,
+                                                  spacecraft.getOrbits().get(0))
+                .getPropagator();
+        final SpacecraftState initialState =
+            spacecraft.getSpacecraftBoundedPropagator().getInitialState();
+
+        propagator.resetInitialState(initialState);
+
+        final CelestialBodyPointed bodyPointed =
+            new CelestialBodyPointed(CelestialBodyFactory.getEarth()
+                .getBodyOrientedFrame(), CelestialBodyFactory.getSun(),
+                                     Vector3D.PLUS_J, Vector3D.PLUS_I,
+                                     Vector3D.PLUS_K);
+
+        final AttitudesSequence sequence = new AttitudesSequence();
+
+        final double duration = finalDate.durationFrom(startDate) / 2.0;
+        final LofOffset lofTNW =
+            new LofOffset(FramesFactory.getEME2000(), LOFType.TNW);
+
+        // Event detector for the attitude sequence
+        final EventDetector detectorFiringDate =
+            new DateDetector(startDate).withHandler(new ContinueOnEvent());
+        final EventDetector detectorStopFiringDate =
+            new DateDetector(startDate.shiftedBy(duration))
+                .withHandler(new ContinueOnEvent());
+
+        final EventDetector secondFiringDate =
+            new DateDetector(startDate.shiftedBy(duration))
+                .withHandler(new ContinueOnEvent());
+        final EventDetector secondStopFiringDate =
+            new DateDetector(startDate.shiftedBy(duration + duration / 2.0))
+                .withHandler(new ContinueOnEvent());
+
+        // Switches for attitude sequence
+        sequence.addSwitchingCondition(bodyPointed, lofTNW, detectorFiringDate,
+                                       true, false, duration / 10.0,
+                                       AngularDerivativesFilter.USE_R, null);
+        sequence.addSwitchingCondition(lofTNW, bodyPointed,
+                                       detectorStopFiringDate, true, false,
+                                       duration / 10.0,
+                                       AngularDerivativesFilter.USE_R, null);
+
+        sequence.addSwitchingCondition(bodyPointed, lofTNW, secondFiringDate,
+                                       true, false, duration / 10.0,
+                                       AngularDerivativesFilter.USE_R, null);
+        sequence.addSwitchingCondition(lofTNW, bodyPointed,
+                                       secondStopFiringDate, true, false,
+                                       duration / 10.0,
+                                       AngularDerivativesFilter.USE_R, null);
+
+        sequence.resetActiveProvider(bodyPointed);
+
+        propagator.setAttitudeProvider(sequence);
+
+        sequence.registerSwitchEvents(propagator);
+
+        // Trigger for the maneuver
+        final ManeuverTriggers firstTriggers =
+            new DateBasedManeuverTriggers(startDate, duration);
+        final ManeuverTriggers secondTriggers =
+            new DateBasedManeuverTriggers(startDate.shiftedBy(duration),
+                                          duration);
+
+        // Propulsion model
+        final double thrust = 400;
+        final double isp = 380;
+        final Vector3D accelerationDirection = Vector3D.PLUS_I;
+        final PropulsionModel firstPropulsionModel =
+            new BasicConstantThrustPropulsionModel(thrust, isp,
+                                                   accelerationDirection,
+                                                   "first thrust");
+        final PropulsionModel secondPropulsionModel =
+            new BasicConstantThrustPropulsionModel(thrust, isp,
+                                                   accelerationDirection,
+                                                   "second thrust");
+
+        // Maneuver
+        final Maneuver firstManeuver =
+            new Maneuver(sequence, firstTriggers, firstPropulsionModel);
+        final Maneuver secondManeuver =
+            new Maneuver(sequence, secondTriggers, secondPropulsionModel);
+        maneuvers.add(firstManeuver);
+        maneuvers.add(secondManeuver);
+
+        // Setup propagator
+        propagator.setOrbitType(OrbitType.CARTESIAN);
+        propagator.addForceModel(firstManeuver);
+        propagator.addForceModel(secondManeuver);
+        propagator.setInitialState(initialState);
+
+        final EphemerisGenerator generator = propagator.getEphemerisGenerator();
+
+        propagator.propagate(startDate, finalDate);
+        final BoundedPropagator boundedPropagator =
+            generator.getGeneratedEphemeris();
+
+        final Spacecraft spacecraftManeuvers =
+            Spacecraft.builder(boundedPropagator, spacecraft.getClock())
+                .build();
+
+        return ManeuverSequence
+            .builder(sequence, maneuvers, spacecraftManeuvers,
+                     accelerationDirection, LOFType.TNW, spacecraft.getClock())
+            .build();
     }
 
     /**
@@ -593,4 +803,182 @@ public class AbstractTest {
         return lineStartValues.headSet(lineStartCharValue).size() + 1;
     }
 
+    /**
+     * Covariance propagation list.
+     *
+     * @param satellite the satellite
+     * @param propagator the propagator
+     * @param initCovariance the init covariance
+     * @param clock the clock
+     * @return the list
+     */
+    public static List<StateCovariance>
+        covariancePropagation(final Spacecraft satellite,
+                              final Propagator propagator,
+                              final StateCovariance initCovariance,
+                              final Clock clock) {
+
+        final List<StateCovariance> covarianceListTemp = new ArrayList<>();
+        satellite.resetAttitudes();
+
+        final List<Orbit> orbits = satellite.getOrbits();
+
+        final String stm = "stm";
+
+        final MatricesHarvester harvester =
+            propagator.setupMatricesComputation(stm, null, null);
+
+        final StateCovarianceMatrixProvider provider =
+            new StateCovarianceMatrixProvider("covariance", stm, harvester,
+                                              initCovariance);
+
+        propagator.addAdditionalStateProvider(provider);
+
+        propagator.getMultiplexer().add(clock.getMultiplier(),
+                                        spacecraftState -> {
+                                            final StateCovariance covariance =
+                                                provider
+                                                    .getStateCovariance(spacecraftState);
+                                            covarianceListTemp.add(covariance);
+                                        });
+
+        propagator.propagate(orbits.get(0).getDate(),
+                             orbits.get(orbits.size() - 1).getDate());
+        return covarianceListTemp;
+    }
+
+    /**
+     * Container holding both a NumericalPropagator and its generated ephemeris.
+     */
+    public static class PropagatorWithEphemeris {
+
+        private final NumericalPropagator propagator;
+
+        private final BoundedPropagator ephemeris;
+
+        public PropagatorWithEphemeris(NumericalPropagator propagator,
+                                       BoundedPropagator ephemeris) {
+            this.propagator = propagator;
+            this.ephemeris = ephemeris;
+        }
+
+        public NumericalPropagator getPropagator() {
+            return propagator;
+        }
+
+        public BoundedPropagator getEphemeris() {
+            return ephemeris;
+        }
+    }
+
+    /**
+     * The type Sinusoidal lof.
+     */
+    public static class SinusoidalLof
+        extends
+        LofOffset {
+
+        /**
+         * .
+         */
+        private final Frame inertialFrame;
+
+        /**
+         * .
+         */
+
+        private final double period;
+
+        /**
+         * .
+         */
+
+        private final AbsoluteDate initialDate;
+
+        /**
+         * .
+         */
+
+        private final Vector3D axis;
+
+        /**
+         * .
+         */
+
+        private final double maxAngle;
+
+        /**
+         * Instantiates a new Sinusoidal lof.
+         *
+         * @param inertialFrame the inertial frame
+         * @param lof the lof
+         * @param axis the axis
+         * @param period the period
+         * @param maxAngle the max angle
+         * @param initialDate the initial date
+         */
+        public SinusoidalLof(final Frame inertialFrame, final LOF lof,
+                             final Vector3D axis, final double period,
+                             final double maxAngle,
+                             final AbsoluteDate initialDate) {
+            super(inertialFrame, lof);
+            this.period = period;
+            this.inertialFrame = inertialFrame;
+            this.initialDate = initialDate;
+            this.maxAngle = maxAngle;
+            this.axis = axis;
+        }
+
+        /**
+         * Instantiates a new Sinusoidal lof.
+         *
+         * @param inertialFrame the inertial frame
+         * @param lof the lof
+         * @param axis the axis
+         * @param period the period
+         * @param maxAngle the max angle
+         * @param initialDate the initial date
+         * @param order the order
+         * @param alpha1 the alpha 1
+         * @param alpha2 the alpha 2
+         * @param alpha3 the alpha 3
+         */
+        public SinusoidalLof(final Frame inertialFrame, final LOF lof,
+                             final Vector3D axis, final double period,
+                             final double maxAngle,
+                             final AbsoluteDate initialDate,
+                             final RotationOrder order, final double alpha1,
+                             final double alpha2, final double alpha3) {
+            super(inertialFrame, lof, order, alpha1, alpha2, alpha3);
+            this.inertialFrame = inertialFrame;
+            this.period = period;
+            this.initialDate = initialDate;
+            this.maxAngle = maxAngle;
+            this.axis = axis;
+        }
+
+        @Override
+        public Attitude getAttitude(final PVCoordinatesProvider pvProv,
+                                    final AbsoluteDate date,
+                                    final Frame frame) {
+            final double deltaT = date.durationFrom(initialDate);
+            final double alpha =
+                maxAngle * FastMath.sin(2 * FastMath.PI / period * deltaT);
+
+            final Attitude lofAttitude =
+                super.getAttitude(pvProv, date, inertialFrame);
+
+            final Rotation rotationLof = lofAttitude.getRotation();
+            final Rotation additionnalRotation =
+                new Rotation(axis, alpha, RotationConvention.VECTOR_OPERATOR);
+
+            final Rotation finalRotation =
+                additionnalRotation.compose(rotationLof,
+                                            RotationConvention.VECTOR_OPERATOR);
+            final AngularCoordinates angularCoordinates =
+                new AngularCoordinates(finalRotation);
+
+            return new Attitude(date, inertialFrame, angularCoordinates);
+        }
+    }
 }

@@ -240,7 +240,7 @@ public abstract class AbstractPrimaryObject<T extends CzmlPrimaryObject<T>>
         cloneList(final List<T> primaryObjects) {
         final List<T> listToReturn = new ArrayList<>();
         for (final T currentObject : primaryObjects) {
-            listToReturn.add(currentObject.cloneObject());
+            listToReturn.add(currentObject);
         }
         return listToReturn;
     }

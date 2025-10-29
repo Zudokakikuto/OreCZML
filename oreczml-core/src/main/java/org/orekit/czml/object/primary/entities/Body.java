@@ -296,7 +296,7 @@ public class Body
         if (influenceSphere == null) {
             throw new OreCzmlException(OreCzmlMessages.INFLUENCE_SPHERE_NOT_DISPLAYED);
         } else {
-            return influenceSphere.cloneObject();
+            return influenceSphere;
         }
     }
 
@@ -315,7 +315,7 @@ public class Body
      * @return The central body
      */
     public Body getCentralBody() {
-        return centralBody.cloneObject();
+        return centralBody;
     }
 
     /**

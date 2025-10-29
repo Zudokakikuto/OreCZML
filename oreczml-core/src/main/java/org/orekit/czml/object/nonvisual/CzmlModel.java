@@ -243,7 +243,7 @@ public class CzmlModel {
      * @return : The billboard used.
      */
     public Billboard getBillboard() {
-        return billboard == null ? null : billboard.cloneObject();
+        return billboard == null ? null : billboard;
     }
 
     /**

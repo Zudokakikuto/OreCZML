@@ -427,7 +427,11 @@ public class Spacecraft
             final Spacecraft copy =
                 new Spacecraft(this.getSpacecraftBoundedPropagator(),
                                this.getClock());
-            copy.setAttitudes(this.attitudes);
+            if (!this.attitudes.isEmpty()) {
+                copy.setAttitudes(this.attitudes);
+            } else {
+                copy.resetAttitudes();
+            }
             copy.setAvailability(this.getAvailability());
             copy.setClock(this.clock);
             copy.setColor(this.color);
@@ -559,7 +563,7 @@ public class Spacecraft
      * @return The clock
      */
     public Clock getClock() {
-        return clock.cloneObject();
+        return clock;
     }
 
     /**
@@ -818,7 +822,7 @@ public class Spacecraft
      * @return the Spacecraft reference system
      */
     public SpacecraftReferenceSystem getSpacecraftReferenceSystem() {
-        return spacecraftReferenceSystem.cloneObject();
+        return spacecraftReferenceSystem;
     }
 
     /**
