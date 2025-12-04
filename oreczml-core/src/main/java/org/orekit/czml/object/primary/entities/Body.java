@@ -164,7 +164,7 @@ public class Body
     }
 
     /**
-     * The body with custom ID argument.
+     * The body with custom ID argument and default model from path.
      *
      * @param body : The body to display.
      * @param pathToModel : The path to the model to load.
@@ -174,6 +174,23 @@ public class Body
      * @param centralBody : The central body associated to the body
      */
     Body(final CelestialBody body, final String pathToModel,
+         final Frame frameToExpressInput, final String customID,
+         final Clock clock, final Body centralBody) {
+        this(body, new CzmlModel(pathToModel, false, clock),
+             frameToExpressInput, customID, clock, centralBody);
+    }
+
+    /**
+     * The body with custom model.
+     *
+     * @param body : The body to display.
+     * @param model : The model to load.
+     * @param frameToExpressInput : The frame to use
+     * @param customID : The custom ID for the body.
+     * @param clock : The clock
+     * @param centralBody : The central body associated to the body
+     */
+    Body(final CelestialBody body, final CzmlModel model,
          final Frame frameToExpressInput, final String customID,
          final Clock clock, final Body centralBody) {
 
@@ -188,8 +205,8 @@ public class Body
                            "</p>\r\n<p>Simulated from : " +
                            getAvailability().getStart() + " to " +
                            getAvailability().getStop() + "</p>";
-        this.pathToModel = pathToModel;
-        this.model = new CzmlModel(pathToModel, false, clock);
+        this.pathToModel = model.getAbsolutePath();
+        this.model = model;
         this.julianDatesSimulation = clock.getJulianDatesSimulation();
         this.clock = clock;
         this.centralBody = centralBody;
@@ -204,19 +221,27 @@ public class Body
     /**
      * Builder body builder.
      *
-     * @param body the body
-     * @param pathToModel the path to model
+     * @param bodyInput the body
+     * @param pathToModelInput the path to model
      * @param frameToExpressInput the path to model
-     * @param clock the clock
+     * @param clockInput the clock
      * @param centralBody the central body
      * @return the body builder
      */
     public static BodyBuilder
-        builder(final CelestialBody body, final String pathToModel,
-                final Frame frameToExpressInput, final Clock clock,
+        builder(final CelestialBody bodyInput, final String pathToModelInput,
+                final Frame frameToExpressInput, final Clock clockInput,
                 final Body centralBody) {
-        return new BodyBuilder(body, pathToModel, frameToExpressInput, clock,
-                               centralBody);
+        return new BodyBuilder(bodyInput, pathToModelInput, frameToExpressInput,
+                               clockInput, centralBody);
+    }
+
+    public static BodyBuilder
+        builder(final CelestialBody bodyInput, final CzmlModel model,
+                final Frame frameInput, final Clock clockInput,
+                final Body centralBodyInput) {
+        return new BodyBuilder(bodyInput, model, frameInput, clockInput,
+                               centralBodyInput);
     }
 
     // Overrides
@@ -248,14 +273,11 @@ public class Body
     @Override
     public Body cloneObject() {
         final Body copy =
-            Body.builder(this.body, this.pathToModel, this.frame, this.clock,
+            Body.builder(this.body, this.model, this.frame, this.clock,
                          this.centralBody)
                 .withDescription(this.description)
-                .withOrientation(this.orientation)
-                .withModelScale(this.modelScale)
-                .withModelMaximumScale(this.modelMaximumScale)
-                .withCustomID(getId())
-                .withModelMinimumPixelSize(this.modelMinimumPixelSize).build();
+                .withOrientation(this.orientation).withCustomID(getId())
+                .build();
         copy.setName(getName());
         copy.setAvailability(getAvailability());
         return copy;
@@ -357,62 +379,22 @@ public class Body
         }
     }
 
-    // Setters (looks like a builder to make it easier for the BodyFactory).
-
-    /**
-     * With model maximum scale body.
-     *
-     * @param modelMaximumScaleInput the model maximum scale input
-     * @return the body
-     */
-    public Body withModelMaximumScale(final double modelMaximumScaleInput) {
-        this.modelMaximumScale = modelMaximumScaleInput;
-        return this;
-    }
-
-    /**
-     * With model minimum pixel size body.
-     *
-     * @param modelMinimumPixelSizeInput the model minimum pixel size input
-     * @return the body
-     */
-    public Body
-        withModelMinimumPixelSize(final double modelMinimumPixelSizeInput) {
-        this.modelMinimumPixelSize = modelMinimumPixelSizeInput;
-        return this;
-    }
-
-    /**
-     * With model scale body.
-     *
-     * @param modelScaleInput the model scale input
-     * @return the body
-     */
-    public Body withModelScale(final double modelScaleInput) {
-        this.modelScale = modelScaleInput;
-        return this;
-    }
-
     /**
      * With orientation body.
      *
      * @param orientationInput the orientation input
-     * @return the body
      */
-    public Body withOrientation(final Orientation orientationInput) {
+    public void setOrientation(final Orientation orientationInput) {
         this.orientation = orientationInput;
-        return this;
     }
 
     /**
-     * With description body.
+     * Sets the description of the body.
      *
      * @param descriptionInput : The description input
-     * @return the body
      */
-    public Body withDescription(final String descriptionInput) {
+    public void setDescription(final String descriptionInput) {
         this.description = descriptionInput;
-        return this;
     }
 
     // Private functions

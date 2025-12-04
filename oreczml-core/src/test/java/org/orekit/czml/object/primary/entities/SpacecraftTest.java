@@ -23,11 +23,13 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hipparchus.geometry.Space;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.archi.factory.BodyFactory;
 import org.orekit.czml.file.AbstractTest;
+import org.orekit.czml.object.nonvisual.CzmlModel;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.czml.object.utils.DateUtils;
@@ -65,9 +67,21 @@ public class SpacecraftTest
         final Spacecraft spacecraft =
             new Spacecraft(propagator, header.getClock());
 
+        final String IssModel = loadResources("Default3DModels/ISSModel.glb");
+        final CzmlModel model =
+            CzmlModel.builder(IssModel, true, header.getClock()).build();
+
+        final Spacecraft spacecraftWithModel =
+            Spacecraft.builder(propagator, header.getClock()).withModel(model)
+                .build();
+
         final String pathFile =
             loadResources("templateFile/object/primary/entities/SpacecraftTemplate.txt");
+        final String pathFileWithModel =
+            loadResources("templateFile/object/primary/entities/SpacecraftBuilderWithModelTemplate.txt");
 
+        verifyFileOutput(pathFileWithModel, spacecraftWithModel.toString(),
+                         1e-8);
         verifyFileOutput(pathFile, spacecraft.toString(), 1e-8);
     }
 
