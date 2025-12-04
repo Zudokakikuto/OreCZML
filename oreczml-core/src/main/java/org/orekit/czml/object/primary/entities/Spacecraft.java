@@ -17,14 +17,17 @@
 
 package org.orekit.czml.object.primary.entities;
 
-import java.awt.Color;
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
+import cesiumlanguagewriter.BooleanCesiumWriter;
+import cesiumlanguagewriter.Cartesian;
+import cesiumlanguagewriter.CesiumOutputStream;
+import cesiumlanguagewriter.CesiumStreamWriter;
+import cesiumlanguagewriter.JulianDate;
+import cesiumlanguagewriter.OrientationCesiumWriter;
+import cesiumlanguagewriter.PacketCesiumWriter;
+import cesiumlanguagewriter.PathCesiumWriter;
+import cesiumlanguagewriter.PolylineMaterialCesiumWriter;
+import cesiumlanguagewriter.SolidColorMaterialCesiumWriter;
+import cesiumlanguagewriter.TimeInterval;
 import org.hipparchus.geometry.euclidean.threed.Rotation;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.orekit.attitudes.Attitude;
@@ -49,17 +52,13 @@ import org.orekit.propagation.Propagator;
 import org.orekit.propagation.SpacecraftState;
 import org.orekit.time.AbsoluteDate;
 
-import cesiumlanguagewriter.BooleanCesiumWriter;
-import cesiumlanguagewriter.Cartesian;
-import cesiumlanguagewriter.CesiumOutputStream;
-import cesiumlanguagewriter.CesiumStreamWriter;
-import cesiumlanguagewriter.JulianDate;
-import cesiumlanguagewriter.OrientationCesiumWriter;
-import cesiumlanguagewriter.PacketCesiumWriter;
-import cesiumlanguagewriter.PathCesiumWriter;
-import cesiumlanguagewriter.PolylineMaterialCesiumWriter;
-import cesiumlanguagewriter.SolidColorMaterialCesiumWriter;
-import cesiumlanguagewriter.TimeInterval;
+import java.awt.Color;
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Spacecraft class.
@@ -230,7 +229,7 @@ public class Spacecraft
     /**
      * The CzmlModel for the display of the model.
      */
-    private final CzmlModel model;
+    private CzmlModel model;
 
     /** The type of the model. */
     private final ModelType modelType;
@@ -450,6 +449,7 @@ public class Spacecraft
             copy.setPeriod(this.period);
             copy.setPositionInsideInfluenceSphere(this.positionInsideInfluenceSphere);
             copy.setPropagator(this.getSpacecraftBoundedPropagator());
+            copy.setModel(model);
             copy.setSpacecraftPropagator(this.spacecraftPropagator);
             copy.setSpacecraftReferenceSystem(this.spacecraftReferenceSystem);
             copy.setTimeInsideInfluenceSphere(this.timeInsideInfluenceSphere);
@@ -1049,6 +1049,15 @@ public class Spacecraft
      */
     public void setDescription(final String descriptionInput) {
         this.description = descriptionInput;
+    }
+
+    /**
+     * Sets the model.
+     *
+     * @param modelInput : The model to set
+     */
+    public void setModel(final CzmlModel modelInput) {
+        this.model = modelInput;
     }
 
     /**

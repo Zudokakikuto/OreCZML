@@ -16,6 +16,7 @@
  */
 package org.orekit.czml.object.primary.entities;
 
+import org.orekit.czml.object.nonvisual.CzmlModel;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.frames.TopocentricFrame;
 
@@ -41,10 +42,11 @@ public class CzmlGroundStationBuilder {
 
     // Optional arguments
 
-    /**
-     * The path of the model (if used) of the ground station.
-     */
-    private String modelPath = "";
+    /** The path of the model (if used) of the ground station. */
+    private CzmlModel model;
+
+    /** The path of the model (if used) of the ground station. */
+    private String modelPath;
 
     /**
      * The paths of the models when multiple models are used.
@@ -93,10 +95,21 @@ public class CzmlGroundStationBuilder {
     /**
      * Function to set up a model for the ground station.
      *
-     * @param modelPathInput : The model path(s) to set up.
+     * @param modelInput : The model to set up.
      * @return : The czml ground station builder with the given model.
      */
-    public CzmlGroundStationBuilder withModel(final String modelPathInput) {
+    public CzmlGroundStationBuilder withModel(final CzmlModel modelInput) {
+        this.model = modelInput;
+        return this;
+    }
+
+    /**
+     * Function to set up a model path for the ground station.
+     *
+     * @param modelPathInput : The model path(s) to set up.
+     * @return : The czml ground station builder with the given model path.
+     */
+    public CzmlGroundStationBuilder withModelPath(final String modelPathInput) {
         this.modelPath = modelPathInput;
         return this;
     }
@@ -124,11 +137,30 @@ public class CzmlGroundStationBuilder {
         throws URISyntaxException,
             IOException {
         final CzmlGroundStation toReturn;
-        toReturn = new CzmlGroundStation(topocentricFrame, modelPath, clock);
-        if (displayCircle) {
-            toReturn.displayCircle(spacecraft, angleOfAperture);
+        if (model != null) {
+            toReturn =
+                new CzmlGroundStation(topocentricFrame, model.getAbsolutePath(),
+                                      clock);
+            toReturn.setModel(model);
+        } else if (modelPath != null) {
+            toReturn =
+                new CzmlGroundStation(topocentricFrame, modelPath, clock);
+        } else {
+            toReturn = new CzmlGroundStation(topocentricFrame, clock);
         }
+        checkAttributes(toReturn);
         return toReturn;
+    }
+
+    /**
+     * This function checks the intrinsics parameters of the ground station.
+     *
+     * @param station : The station considered
+     */
+    private void checkAttributes(final CzmlGroundStation station) {
+        if (displayCircle) {
+            station.displayCircle(spacecraft, angleOfAperture);
+        }
     }
 
 }

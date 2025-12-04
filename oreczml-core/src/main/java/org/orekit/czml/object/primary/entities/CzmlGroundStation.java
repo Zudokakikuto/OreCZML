@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.orekit.czml.object.primary.entities;
 
 import cesiumlanguagewriter.BillboardCesiumWriter;
@@ -45,7 +46,7 @@ import java.util.List;
  * <p>
  * This class groups all the characteristics of a ground station. The ground
  * station will be represented at the surface of the central body with precise
- * cartographic parameters. It can be build from the orekit ground station
+ * cartographic parameters. It can be built from the orekit ground station
  * {@link org.orekit.estimation.measurements.GroundStation}, or from the orekit
  * topocentric frame {@link org.orekit.frames.TopocentricFrame}.
  * </p>
@@ -57,25 +58,17 @@ public class CzmlGroundStation
     extends
     AbstractPrimaryObject<CzmlGroundStation> {
 
-    /**
-     * The default image used when no image/model is used for the station.
-     */
+    /** The default image used when no image/model is used for the station. */
     public static final String DEFAULT_IMAGE =
         "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACvSURBVDhPrZDRDcMgDAU9GqN0lIzijw6SUbJJygUeNQgSqepJTyHG91LVVpwDdfxM3T9TSl1EXZvDwii471fivK73cBFFQNTT/d2KoGpfGOpSIkhUpgUMxq9DFEsWv4IXhlyCnhBFnZcFEEuYqbiUlNwWgMTdrZ3JbQFoEVG53rd8ztG9aPJMnBUQf/VFraBJeWnLS0RfjbKyLJA8FkT5seDYS1Qwyv8t0B/5C2ZmH2/eTGNNBgMmAAAAAElFTkSuQmCC";
 
-    /**
-     * The default id for ground stations.
-     */
+    /** The default id for ground stations. */
     public static final String DEFAULT_ID = "GROUND_STATION/";
 
-    /**
-     * The default name for ground stations.
-     */
+    /** The default name for ground stations. */
     public static final String DEFAULT_NAME = "Ground station : ";
 
-    /**
-     * The default 3d model: empty.
-     */
+    /** The default 3d model: empty. */
     public static final String DEFAULT_3D_MODEL = "";
 
     /**
@@ -84,14 +77,10 @@ public class CzmlGroundStation
      */
     private Vector3D positionOnEarth;
 
-    /**
-     * The list of all the position on earth of all the stations.
-     */
+    /** The list of all the position on earth of all the stations. */
     private final List<Vector3D> positionsOnEarth = new ArrayList<>();
 
-    /**
-     * The billboard that will display the image of the station.
-     */
+    /** The billboard that will display the image of the station. */
     private final Billboard billboard;
 
     /** The topocentric frame of the station. */
@@ -100,10 +89,8 @@ public class CzmlGroundStation
     /** The description of the station. */
     private final String description;
 
-    /**
-     * The model used to define the station if only one model is used.
-     */
-    private final CzmlModel model;
+    /** The model used to define the station if only one model is used. */
+    private CzmlModel model;
 
     // Intrinsic parameters
 
@@ -225,7 +212,7 @@ public class CzmlGroundStation
             if (model != null) {
                 copy =
                     CzmlGroundStation.builder(this.topocentricFrame, this.clock)
-                        .withModel(String.valueOf(this.model)).build();
+                        .withModel(this.model).build();
             } else {
                 copy =
                     CzmlGroundStation.builder(this.topocentricFrame, this.clock)
@@ -295,6 +282,17 @@ public class CzmlGroundStation
      */
     public CzmlModel getModel() {
         return model;
+    }
+
+    // Setters
+
+    /**
+     * Sets the model of the ground station.
+     *
+     * @param model : The model to set
+     */
+    public void setModel(final CzmlModel model) {
+        this.model = model;
     }
 
     // Private functions

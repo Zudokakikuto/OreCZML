@@ -18,6 +18,8 @@
 package org.orekit.czml.object.primary.entities;
 
 import org.orekit.bodies.CelestialBody;
+import org.orekit.czml.object.nonvisual.CzmlModel;
+import org.orekit.czml.object.nonvisual.CzmlModelBuilder;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.czml.object.secondary.Orientation;
 import org.orekit.frames.Frame;
@@ -32,7 +34,10 @@ import org.orekit.frames.Frame;
  */
 public class BodyBuilder {
 
-    /** . */
+    /** String for the name. */
+    public static final String BODYSTR = "BODY/";
+
+    /** The body considered. */
     private final CelestialBody body;
 
     /** The path to the model to load. */
@@ -77,12 +82,18 @@ public class BodyBuilder {
     /** The central body associated to the body. */
     private Body centralBody;
 
+    /** The modelbuilder for the body. */
+    private CzmlModelBuilder modelBuilder;
+
+    /** The model to load. */
+    private CzmlModel model;
+
     /**
      * The body builder constructor.
      *
      * @param bodyInput : The body to consider
-     * @param pathToModelInput : The model to load
-     * @param frameToExpressInput : The model to load
+     * @param pathToModelInput : The path to the model to load
+     * @param frameToExpressInput : The frame in which is expressed
      * @param clock : The clock considered.
      * @param centralBody : The central body considered
      */
@@ -92,10 +103,32 @@ public class BodyBuilder {
                        final Body centralBody) {
         this.body = bodyInput;
         this.pathToModel = pathToModelInput;
-        this.customId = "BODY/" + bodyInput.getName();
+        modelBuilder = CzmlModel.builder(pathToModelInput, false, clock);
+        this.customId = BODYSTR + bodyInput.getName();
         this.clock = clock;
         this.frameToExpress = frameToExpressInput;
         this.centralBody = centralBody;
+    }
+
+    /**
+     * The body builder constructor.
+     *
+     * @param bodyInput : The body to consider
+     * @param model : The model to load
+     * @param frameToExpresInput : The frame in which the body is expressed
+     * @param clock : The clock considered.
+     * @param centralBodyInput : The central body considered
+     */
+    public BodyBuilder(final CelestialBody bodyInput, final CzmlModel model,
+                       final Frame frameToExpresInput, final Clock clock,
+                       final Body centralBodyInput) {
+        this.body = bodyInput;
+        this.model = model;
+        this.pathToModel = model.getAbsolutePath();
+        this.customId = BODYSTR + bodyInput.getName();
+        this.clock = clock;
+        this.frameToExpress = frameToExpresInput;
+        this.centralBody = centralBodyInput;
     }
 
     /**
@@ -128,6 +161,17 @@ public class BodyBuilder {
     public BodyBuilder displayOnlyOnePeriod(final double periodInput) {
         displayOnlyOnePeriod = true;
         this.period = periodInput;
+        return this;
+    }
+
+    /**
+     * Function to display only one period.
+     *
+     * @param modelInput : The model of the body
+     * @return : The builder with the model to display
+     */
+    public BodyBuilder withCzmlModel(final CzmlModel modelInput) {
+        this.model = modelInput;
         return this;
     }
 
@@ -229,27 +273,40 @@ public class BodyBuilder {
      * @return : A body object with the given parameters of the builder.
      */
     public Body build() {
+        checkModel();
         final Body tempBody =
-            new Body(body, pathToModel, frameToExpress, customId, clock,
-                     centralBody);
+            new Body(body, model, frameToExpress, customId, clock, centralBody);
         return checkAttributes(tempBody);
     }
 
+    /** This function checks the model before using it in the Body. */
+    private void checkModel() {
+        if (modelBuilder != null && model == null) {
+            if (modelScale != 0.0) {
+                modelBuilder.withScale(modelScale);
+            }
+            if (modelMaximumScale != 0.0) {
+                modelBuilder.withMaximumScale(modelMaximumScale);
+            }
+            if (modelMinimumPixelSize != 0.0) {
+                modelBuilder.withMinimumPixelSize(modelMinimumPixelSize);
+            }
+            model = modelBuilder.build();
+        }
+    }
+
+    /**
+     * This function aims at applying the intrinsic parameters of the body.
+     *
+     * @param bodyInput : The body considered.
+     * @return : The body with all the intrinsic parameters
+     */
     private Body checkAttributes(final Body bodyInput) {
         if (orientation != null) {
-            bodyInput.withOrientation(orientation);
-        }
-        if (modelScale != 0.0) {
-            bodyInput.withModelScale(modelScale);
-        }
-        if (modelMaximumScale != 0.0) {
-            bodyInput.withModelMaximumScale(modelMaximumScale);
-        }
-        if (modelMinimumPixelSize != 0.0) {
-            bodyInput.withModelMinimumPixelSize(modelMinimumPixelSize);
+            bodyInput.setOrientation(orientation);
         }
         if (!(description == null)) {
-            bodyInput.withDescription(description);
+            bodyInput.setDescription(description);
         }
         if (noOrbitDisplay) {
             bodyInput.noOrbitDisplay();

@@ -74,7 +74,7 @@ public class CzmlModel {
     /**
      * A boolean to show or not the model.
      */
-    private final boolean show;
+    private boolean show;
 
     /**
      * The URI of the model.
@@ -133,21 +133,21 @@ public class CzmlModel {
     /**
      * Builder for the model of the satellite, default parameters entered.
      *
-     * @param absolutePathToObject : The string leading to the absolute path of
+     * @param absolutePathToModel : The string leading to the absolute path of
      *        the object
      * @param isSatelliteInput : Is the mode loaded for a satellite?
      * @param clock : The availability of the model
      */
-    public CzmlModel(final String absolutePathToObject,
+    public CzmlModel(final String absolutePathToModel,
                      final boolean isSatelliteInput, final Clock clock) {
-        this(absolutePathToObject, 5000000, 400, 1, isSatelliteInput, clock);
+        this(absolutePathToModel, 5000000, 400, 1, isSatelliteInput, clock);
     }
 
     /**
      * This builder builds the model object with the absolute path of the file
      * given by the user.
      *
-     * @param absolutePathToObject : The string leading to the absolute path of
+     * @param absolutePathToModel : The string leading to the absolute path of
      *        the object
      * @param maximumScale : The minimum scale for the object
      * @param minimumPixelSizeInput : The minimum of pixel displayed for the
@@ -156,23 +156,23 @@ public class CzmlModel {
      * @param isSatelliteInput : Is the model loaded for a satellite
      * @param clockInput : The clock for the model
      */
-    public CzmlModel(final String absolutePathToObject,
+    public CzmlModel(final String absolutePathToModel,
                      final double maximumScale,
                      final double minimumPixelSizeInput, final double scale,
                      final boolean isSatelliteInput, final Clock clockInput) {
 
         this.isSatellite = isSatelliteInput;
-        this.modelType = getModelTypeFromString(absolutePathToObject);
+        this.modelType = getModelTypeFromString(absolutePathToModel);
 
         if (this.modelType == ModelType.MODEL_3D) {
-            this.absolutePath = absolutePathToObject;
+            this.absolutePath = absolutePathToModel;
             this.clock = clockInput;
             this.show = true;
             this.minimumPixelSize = minimumPixelSizeInput;
             this.maximumScale = maximumScale;
             this.scale = scale;
         } else if (this.modelType == ModelType.MODEL_2D) {
-            this.absolutePath = absolutePathToObject;
+            this.absolutePath = absolutePathToModel;
             this.clock = clockInput;
             this.show = true;
         } else {
@@ -186,6 +186,23 @@ public class CzmlModel {
                 this.show = false;
             }
         }
+    }
+
+    // Static Builders
+
+    /**
+     * The builder of the Czml Model.
+     *
+     * @param pathToModelInput : The path to the czml model
+     * @param isSpacecraftInput : Is the model representing a spacecraft
+     * @param clockInput : The clock considered
+     * @return : The Czml model builder
+     */
+    public static CzmlModelBuilder builder(final String pathToModelInput,
+                                           final boolean isSpacecraftInput,
+                                           final Clock clockInput) {
+        return new CzmlModelBuilder(pathToModelInput, isSpacecraftInput,
+                                    clockInput);
     }
 
     /**
@@ -236,6 +253,8 @@ public class CzmlModel {
         }
         return writer.toString();
     }
+
+    // Getters
 
     /**
      * This getter returns the billboard of the model if one exists.
@@ -316,6 +335,53 @@ public class CzmlModel {
      */
     public boolean isShow() {
         return show;
+    }
+
+    // Setters
+
+    /**
+     * Sets the show.
+     *
+     * @param show To show or not the model
+     */
+    public void setShow(final boolean show) {
+        this.show = show;
+    }
+
+    /**
+     * Sets the scale.
+     *
+     * @param scale : The scale to set.
+     */
+    public void setScale(final double scale) {
+        this.scale = scale;
+    }
+
+    /**
+     * Sets the minimum pixel size.
+     *
+     * @param minimumPixelSize : The minimum pixel size to set.
+     */
+    public void setMinimumPixelSize(final double minimumPixelSize) {
+        this.minimumPixelSize = minimumPixelSize;
+    }
+
+    /**
+     * Sets the maximum scale.
+     *
+     * @param maximumScale : The maximum scale to set.
+     */
+    public void setMaximumScale(final double maximumScale) {
+        this.maximumScale = maximumScale;
+    }
+
+    /**
+     * Sets the name of the object.
+     *
+     * @param nameOfObject : The name of the object.
+     */
+    public void setNameOfObject(final String nameOfObject) {
+        this.nameOfObject = nameOfObject;
     }
 
     /**

@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.orekit.annotation.DefaultDataContext;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.czml.file.AbstractTest;
+import org.orekit.czml.object.nonvisual.CzmlModel;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.frames.TopocentricFrame;
 
@@ -80,16 +81,27 @@ public class CzmlGroundStationTest
         final CzmlGroundStation station =
             new CzmlGroundStation(topocentricToulouse, header.getClock());
 
+        final CzmlModel model =
+            CzmlModel.builder(modelJuno, false, header.getClock()).build();
+
+        final CzmlGroundStation stationWithModel =
+            CzmlGroundStation.builder(topocentricToulouse, header.getClock())
+                .withModel(model).build();
+
         final CzmlGroundStation stationBuilder =
             CzmlGroundStation.builder(topocentricToulouse, header.getClock())
-                .withModel(modelISS).build();
+                .withModelPath(modelISS).build();
 
         final String pathFile =
             loadResources("templateFile/object/primary/entities/CzmlGroundStationTemplate.txt");
         final String builderPathFile =
             loadResources("templateFile/object/primary/entities/CzmlGroundStationWithBuilderTemplate.txt");
+        final String builderWithModelPathFile =
+            loadResources("templateFile/object/primary/entities/CzmlGroundStationBuilderWithModelTemplate.txt");
 
         verifyFileOutput(pathFile, station.toString(), 1e-8);
+        verifyFileOutput(builderWithModelPathFile, stationWithModel.toString(),
+                         1e-8);
         verifyFileOutput(builderPathFile, stationBuilder.toString(), 1e-8);
     }
 }

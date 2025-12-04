@@ -23,6 +23,7 @@ import org.orekit.bodies.CelestialBodyFactory;
 import org.orekit.czml.archi.factory.BodyFactory;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.file.CzmlFile;
+import org.orekit.czml.object.nonvisual.CzmlModel;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.czml.object.utils.DateUtils;
@@ -63,6 +64,9 @@ public class BodyTest
             DateUtils.toAbsoluteDate(header.getAvailability().getStop());
         final Clock clock = new Clock(startDate, stopDate, 10.0);
 
+        final CzmlModel modelMars =
+            CzmlModel.builder(pathToModel, false, clock).build();
+
         final Body sun = BodyFactory.getSun(clock);
         final Frame sunFrame = sun.getCelestialBody().getBodyOrientedFrame();
 
@@ -90,6 +94,11 @@ public class BodyTest
 
         sun.noOrbitDisplay();
 
+        final Body bodyWithModel =
+            Body.builder(CelestialBodyFactory.getMars(), modelMars, sunFrame,
+                         clock, sun)
+                .build();
+
         final String bodyPathFile =
             loadResources("templateFile/object/primary/entities/BodyTemplate.txt");
         final CzmlFile file =
@@ -102,10 +111,13 @@ public class BodyTest
             loadResources("templateFile/object/primary/entities/BodiesTemplate.txt");
         final String builderPathFiles =
             loadResources("templateFile/object/primary/entities/BodyWithBuilderTemplate.txt");
+        final String bodyWithModelFiles =
+            loadResources("templateFile/object/primary/entities/BodyWithModelTemplate.txt");
 
         verifyFileOutput(bodyPathFile, body.toString(), 1e-8);
         verifyFileOutput(builderPathFiles, bodyBuilder.toString(), 1e-8);
         verifyFileOutput(bodiesPathFiles, file.toString(), 1e-8);
+        verifyFileOutput(bodyWithModelFiles, bodyWithModel.toString(), 1e-8);
         Assertions.assertEquals(CelestialBodyFactory.getMars(),
                                 bodyBuilder.getCelestialBody());
         Assertions.assertTrue(bodyBuilder.isDisplayOrbit());
