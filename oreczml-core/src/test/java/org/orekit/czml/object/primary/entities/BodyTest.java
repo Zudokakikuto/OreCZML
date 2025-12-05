@@ -17,6 +17,7 @@
 package org.orekit.czml.object.primary.entities;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.orekit.annotation.DefaultDataContext;
 import org.orekit.bodies.CelestialBodyFactory;
@@ -41,6 +42,26 @@ public class BodyTest
     extends
     AbstractTest {
 
+    /** Initialise orekit data. */
+    private final double data = initializeOrekitData();
+
+    /** Header. */
+    private final Header header = dummyHeader();
+
+    /** The model of Mars to use. */
+    private final String pathToModel = loadResources("Bodies/mars.glb");
+
+    /** Start Date. */
+    private final AbsoluteDate startDate =
+        DateUtils.toAbsoluteDate(header.getAvailability().getStart());
+
+    /** Stop Date. */
+    private final AbsoluteDate stopDate =
+        DateUtils.toAbsoluteDate(header.getAvailability().getStop());
+
+    /** Clock. */
+    private final Clock clock = new Clock(startDate, stopDate, 10.0);
+
     /**
      * Body constructor test.
      *
@@ -52,37 +73,86 @@ public class BodyTest
         throws URISyntaxException,
             IOException {
 
-        loadOrekitData();
-
-        final Header header = dummyHeader();
-
-        final String pathToModel = loadResources("Bodies/mars.glb");
-
-        final AbsoluteDate startDate =
-            DateUtils.toAbsoluteDate(header.getAvailability().getStart());
-        final AbsoluteDate stopDate =
-            DateUtils.toAbsoluteDate(header.getAvailability().getStop());
-        final Clock clock = new Clock(startDate, stopDate, 10.0);
-
-        final CzmlModel modelMars =
-            CzmlModel.builder(pathToModel, false, clock).build();
-
+        // Build the sun frame
         final Body sun = BodyFactory.getSun(clock);
         final Frame sunFrame = sun.getCelestialBody().getBodyOrientedFrame();
 
+        // Build the body
         final Body body =
             Body.builder(CelestialBodyFactory.getMars(), pathToModel, sunFrame,
                          clock, sun)
                 .build();
+        sun.noOrbitDisplay();
 
+        // Reference file
+        final String bodyPathFile =
+            loadResources("templateFile/object/primary/entities/BodyTemplate.txt");
+
+        verifyFileOutput(bodyPathFile, body.toString(), 1e-8);
+    }
+
+    @Test
+    @DisplayName("Test Body Builder constructor")
+    public void BodyBuilderConstructorTest()
+        throws URISyntaxException,
+            IOException {
+
+        // Build the sun frame
+        final Body sun = BodyFactory.getSun(clock);
+        final Frame sunFrame = sun.getCelestialBody().getBodyOrientedFrame();
+
+        // Build the body
         final double marsOrbitalPeriod = 686.96 * 24 * 3600; // in sec
-
         final Body bodyBuilder =
             Body.builder(CelestialBodyFactory.getMars(), pathToModel, sunFrame,
                          clock, sun)
                 .withCustomID("CustomID")
                 .displayOnlyOnePeriod(marsOrbitalPeriod).build();
 
+        // Reference file
+        final String builderPathFiles =
+            loadResources("templateFile/object/primary/entities/BodyWithBuilderTemplate.txt");
+
+        verifyFileOutput(builderPathFiles, bodyBuilder.toString(), 1e-8);
+        Assertions.assertEquals(CelestialBodyFactory.getMars(),
+                                bodyBuilder.getCelestialBody());
+        Assertions.assertTrue(bodyBuilder.isDisplayOrbit());
+        Assertions.assertTrue(bodyBuilder.isDisplayOnlyOnePeriod());
+    }
+
+    @Test
+    @DisplayName("Test body with model constructor")
+    public void BodyWithModelConstructorTest()
+        throws URISyntaxException,
+            IOException {
+
+        // Build the sun frame
+        final Body sun = BodyFactory.getSun(clock);
+        final Frame sunFrame = sun.getCelestialBody().getBodyOrientedFrame();
+
+        // Build the body with the model
+        final CzmlModel modelMars =
+            CzmlModel.builder(pathToModel, false, clock).build();
+        final Body bodyWithModel =
+            Body.builder(CelestialBodyFactory.getMars(), modelMars, sunFrame,
+                         clock, sun)
+                .build();
+
+        // Reference file
+        final String bodyWithModelFiles =
+            loadResources("templateFile/object/primary/entities/BodyWithModelTemplate.txt");
+
+        verifyFileOutput(bodyWithModelFiles, bodyWithModel.toString(), 1e-8);
+    }
+
+    @Test
+    @DisplayName("Test several bodies czml file constructor")
+    public void SeveralBodiesCzmlFileConstructorTest()
+        throws URISyntaxException,
+            IOException {
+
+        // Build all the bodies
+        final Body sun = BodyFactory.getSun(clock);
         final Body mercury = BodyFactory.getMercury(clock);
         final Body earth = BodyFactory.getEarth(clock);
         final Body venus = BodyFactory.getVenus(clock);
@@ -92,35 +162,17 @@ public class BodyTest
         final Body neptune = BodyFactory.getNeptune(clock);
         final Body pluto = BodyFactory.getPluto(clock);
 
-        sun.noOrbitDisplay();
-
-        final Body bodyWithModel =
-            Body.builder(CelestialBodyFactory.getMars(), modelMars, sunFrame,
-                         clock, sun)
-                .build();
-
-        final String bodyPathFile =
-            loadResources("templateFile/object/primary/entities/BodyTemplate.txt");
+        // Build the czml file
         final CzmlFile file =
             CzmlFile
                 .builder(header).withBody(mercury, earth, venus, jupiter,
                                           saturn, uranus, neptune, pluto, sun)
                 .build();
 
+        // Reference file
         final String bodiesPathFiles =
             loadResources("templateFile/object/primary/entities/BodiesTemplate.txt");
-        final String builderPathFiles =
-            loadResources("templateFile/object/primary/entities/BodyWithBuilderTemplate.txt");
-        final String bodyWithModelFiles =
-            loadResources("templateFile/object/primary/entities/BodyWithModelTemplate.txt");
 
-        verifyFileOutput(bodyPathFile, body.toString(), 1e-8);
-        verifyFileOutput(builderPathFiles, bodyBuilder.toString(), 1e-8);
         verifyFileOutput(bodiesPathFiles, file.toString(), 1e-8);
-        verifyFileOutput(bodyWithModelFiles, bodyWithModel.toString(), 1e-8);
-        Assertions.assertEquals(CelestialBodyFactory.getMars(),
-                                bodyBuilder.getCelestialBody());
-        Assertions.assertTrue(bodyBuilder.isDisplayOrbit());
-        Assertions.assertTrue(bodyBuilder.isDisplayOnlyOnePeriod());
     }
 }

@@ -18,6 +18,7 @@ package org.orekit.czml.object;
 
 import cesiumlanguagewriter.CesiumArcType;
 import cesiumlanguagewriter.Reference;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
@@ -34,8 +35,14 @@ public class PolylineTest
     extends
     AbstractTest {
 
+    /** Initialise orekit data. */
+    private final double data = initializeOrekitData();
+
+    /** Header. */
+    private final Header header = dummyHeader();
+
     /**
-     * Polylinec constructor test.
+     * Polyline constructor test.
      *
      * @throws IOException the io exception
      */
@@ -45,12 +52,20 @@ public class PolylineTest
         throws IOException,
             URISyntaxException {
 
-        loadOrekitData();
-
-        final Header header = dummyHeader();
-
         final Polyline polyline =
             Polyline.nonVectorBuilder(header.getClock()).build();
+
+        final String pathFile =
+            loadResources("templateFile/PolylineTemplate.txt");
+
+        verifyFileOutput(pathFile, polyline.toString(), 1e-8);
+    }
+
+    @Test
+    @DisplayName("Polyline non vector constructor test")
+    public void PolylineNonVectorConstructorTest()
+        throws URISyntaxException,
+            IOException {
 
         final Polyline polylineNonVector =
             Polyline.nonVectorBuilder(header.getClock()).withColor(Color.ORANGE)
@@ -60,12 +75,10 @@ public class PolylineTest
                 .withSecondReference(new Reference("groundstation#position"))
                 .build();
 
-        final String pathFile =
-            loadResources("templateFile/PolylineTemplate.txt");
+        // Reference file
         final String nonVectorPathFile =
             loadResources("templateFile/PolylineNonVectorTemplate.txt");
 
-        verifyFileOutput(pathFile, polyline.toString(), 1e-8);
         verifyFileOutput(nonVectorPathFile, polylineNonVector.toString(), 1e-8);
     }
 }

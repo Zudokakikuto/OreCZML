@@ -21,6 +21,7 @@ import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.orekit.annotation.DefaultDataContext;
 import org.orekit.attitudes.AttitudesSequence;
@@ -58,7 +59,10 @@ import org.orekit.utils.Constants;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * The type Maneuver sequence test.
@@ -66,6 +70,38 @@ import java.util.List;
 public class ManeuverSequenceTest
     extends
     AbstractTest {
+
+    /** Initialise orekit data. */
+    private final double data = initializeOrekitData();
+
+    /** Header. */
+    private final Header header = dummyHeader();
+
+    // Dates
+    final AbsoluteDate startDate =
+        new AbsoluteDate(2024, 3, 15, 0, 0, 0.0, TimeScalesFactory.getUTC());
+
+    final AbsoluteDate finalDate = startDate.shiftedBy(36 * 3600);
+
+    // Firing dates
+    final AbsoluteDate firingDateLOF =
+        new AbsoluteDate(2024, 3, 15, 5, 0, 0.0, TimeScalesFactory.getUTC());
+
+    final double duration = 3600;
+
+    // Maneuver characteristics
+    final double thrust = 400;
+
+    final double isp = 380;
+
+    final Vector3D accelerationDirection = Vector3D.PLUS_I;
+
+    // Orbit
+    final KeplerianOrbit initialOrbit =
+        new KeplerianOrbit(7878000, 0, FastMath.toRadians(20), 0,
+                           FastMath.toRadians(90), FastMath.toRadians(0),
+                           PositionAngleType.MEAN, FramesFactory.getEME2000(),
+                           startDate, Constants.WGS84_EARTH_MU);
 
     /**
      * Maneuver sequence constructor test.
@@ -75,33 +111,67 @@ public class ManeuverSequenceTest
      */
     @Test
     @DefaultDataContext
+    @DisplayName("Maneuver sequence constructor test")
     void ManeuverSequenceConstructorTest()
         throws IOException,
             URISyntaxException {
 
-        loadOrekitData();
+        // Creation of the list of maneuvers
+        final List<Maneuver> maneuvers = new ArrayList<>();
 
-        final Header header = dummyHeader();
-        final AbsoluteDate startDate =
-            new AbsoluteDate(2024, 3, 15, 0, 0, 0.0,
-                             TimeScalesFactory.getUTC());
-        final AbsoluteDate finalDate = startDate.shiftedBy(36 * 3600);
+        // Creation of the attitude sequence and the propagator
+        final Map<AttitudesSequence, BoundedPropagator> map =
+            buildMapFromOrbit(startDate, finalDate, initialOrbit, maneuvers);
+
+        final Optional<AttitudesSequence> sequenceOptional =
+            map.keySet().stream().findFirst();
+
+        AttitudesSequence sequence = null;
+        if (sequenceOptional.isPresent()) {
+            sequence = sequenceOptional.get();
+        }
+
+        final BoundedPropagator boundedPropagator = map.get(sequence);
+
+        final Spacecraft satellite =
+            new Spacecraft(boundedPropagator, header.getClock());
+
+        final ManeuverSequence maneuverSequence =
+            ManeuverSequence
+                .builder(sequence, maneuvers, satellite, Vector3D.PLUS_I,
+                         LOFType.TNW, header.getClock())
+                .build();
+
+        final String maneuversPathFile =
+            loadResources("templateFile/object/primary/ManeuverSequenceTemplate.txt");
+
+        // Verify file output
+        verifyFileOutput(maneuversPathFile, maneuverSequence.toString(), 1e-3);
+
+        // Getters coverage
+        Assertions.assertEquals(maneuvers, maneuverSequence.getManeuvers());
+        Assertions.assertEquals(
+                                boundedPropagator.getInitialState()
+                                    .getPVCoordinates().toString(),
+                                maneuverSequence.getPropagator()
+                                    .getInitialState().getPVCoordinates()
+                                    .toString());
+
+        Assertions.assertEquals(sequence, maneuverSequence.getSequence());
+        Assertions.assertEquals(LOFType.TNW, maneuverSequence.getLof());
+        Assertions.assertFalse(maneuverSequence.isShowTrust());
+    }
+
+    @Test
+    @DisplayName("Maneuver sequence constructor test with one simple maneuver")
+    public void ManeuverSequenceSimpleConstructorTest()
+        throws URISyntaxException,
+            IOException {
 
         // Creation of the list of maneuvers
         final List<Maneuver> maneuvers = new ArrayList<>();
 
-        //// Creation of the satellite
-        // build of the propagator
-
-        final KeplerianOrbit initialOrbit =
-            new KeplerianOrbit(7878000, 0, FastMath.toRadians(20), 0,
-                               FastMath.toRadians(90), FastMath.toRadians(0),
-                               PositionAngleType.MEAN,
-                               FramesFactory.getEME2000(), startDate,
-                               Constants.WGS84_EARTH_MU);
-
         final SpacecraftState initialState = new SpacecraftState(initialOrbit);
-
         final NormalizedSphericalHarmonicsProvider provider =
             GravityFieldFactory.getNormalizedProvider(10, 10);
         final ForceModel holmesFeatherstone =
@@ -128,12 +198,6 @@ public class ManeuverSequenceTest
                 .getBodyOrientedFrame(), CelestialBodyFactory.getSun(),
                                      Vector3D.PLUS_J, Vector3D.PLUS_I,
                                      Vector3D.PLUS_K);
-
-        // Firing dates
-        final AbsoluteDate firingDateLOF =
-            new AbsoluteDate(2024, 3, 15, 5, 0, 0.0,
-                             TimeScalesFactory.getUTC());
-        final double duration = 3600;
 
         //// Attitude sequence to modelize the maneuver
         final AttitudesSequence sequence = new AttitudesSequence();
@@ -182,9 +246,6 @@ public class ManeuverSequenceTest
                                           duration);
 
         // Propulsion model
-        final double thrust = 400;
-        final double isp = 380;
-        final Vector3D accelerationDirection = Vector3D.PLUS_I;
         final PropulsionModel firstPropulsionModel =
             new BasicConstantThrustPropulsionModel(thrust, isp,
                                                    accelerationDirection,
@@ -215,60 +276,184 @@ public class ManeuverSequenceTest
         final BoundedPropagator boundedPropagator =
             generator.getGeneratedEphemeris();
 
-        final Spacecraft satellite =
-            new Spacecraft(boundedPropagator, header.getClock());
+        // Build the spacecraft
+        final Spacecraft spacecraft =
+            Spacecraft.builder(boundedPropagator, header.getClock()).build();
 
+        // Build the maneuver sequence with one simple maneuver
+        final ManeuverSequence maneuverSequenceSimple =
+            ManeuverSequence
+                .builder(sequence, firstManeuver, spacecraft, Vector3D.PLUS_I,
+                         LOFType.TNW, header.getClock())
+                .build();
+
+        // Reference file
+        final String maneuverSimplePathFile =
+            loadResources("templateFile/object/primary/ManeuverSequenceSimpleTemplate.txt");
+
+        verifyFileOutput(maneuverSimplePathFile,
+                         maneuverSequenceSimple.toString(), 1e-3);
+    }
+
+    @Test
+    @DisplayName("Maneuver sequence constructor test with multiple maneuvers")
+    public void ManeuverSequenceMultipleManeuversConstructorTest()
+        throws URISyntaxException,
+            IOException {
+
+        // Creation of the list of maneuvers
+        final List<Maneuver> maneuvers = new ArrayList<>();
+
+        // List of acceleration directions
         final List<Vector3D> accelerations = new ArrayList<>();
         accelerations.add(Vector3D.PLUS_I);
         accelerations.add(Vector3D.PLUS_J);
 
-        final ManeuverSequence maneuverSequence =
-            ManeuverSequence
-                .builder(sequence, maneuvers, satellite, Vector3D.PLUS_I,
-                         LOFType.TNW, header.getClock())
-                .build();
+        // Creation of the attitude sequence and the propagator
+        final Map<AttitudesSequence, BoundedPropagator> map =
+            buildMapFromOrbit(startDate, finalDate, initialOrbit, maneuvers);
+        final Optional<AttitudesSequence> sequenceOptional =
+            map.keySet().stream().findFirst();
 
-        final ManeuverSequence maneuverSequenceSimple =
-            ManeuverSequence
-                .builder(sequence, firstManeuver, satellite, Vector3D.PLUS_I,
-                         LOFType.TNW, header.getClock())
-                .build();
+        AttitudesSequence sequence = null;
+        if (sequenceOptional.isPresent()) {
+            sequence = sequenceOptional.get();
+        }
+
+        // Build the spacecraft
+        final BoundedPropagator boundedPropagator = map.get(sequence);
+        final Spacecraft spacecraft =
+            new Spacecraft(boundedPropagator, header.getClock());
 
         final ManeuverSequence maneuverSequenceMultiple =
             ManeuverSequence
-                .builder(sequence, maneuvers, satellite, accelerations,
+                .builder(sequence, maneuvers, spacecraft, accelerations,
                          LOFType.TNW, header.getClock())
                 .build();
 
-        final String maneuversPathFile =
-            loadResources("templateFile/object/primary/ManeuverSequenceTemplate.txt");
-
-        final String maneuverSimplePathFile =
-            loadResources("templateFile/object/primary/ManeuverSequenceSimpleTemplate.txt");
-
+        // Reference file
         final String maneuverMultiplePathFile =
             loadResources("templateFile/object/primary/ManeuverSequenceMultipleTemplate.txt");
 
-        // Verify file output
-        verifyFileOutput(maneuversPathFile, maneuverSequence.toString(), 1e-3);
-        verifyFileOutput(maneuverSimplePathFile,
-                         maneuverSequenceSimple.toString(), 1e-3);
         verifyFileOutput(maneuverMultiplePathFile,
                          maneuverSequenceMultiple.toString(), 1e-3);
-
-        // Getters coverage
-        Assertions.assertEquals(maneuvers, maneuverSequence.getManeuvers());
-        Assertions.assertEquals(
-                                boundedPropagator.getInitialState()
-                                    .getPVCoordinates().toString(),
-                                maneuverSequence.getPropagator()
-                                    .getInitialState().getPVCoordinates()
-                                    .toString());
-
         Assertions.assertEquals(accelerations,
                                 maneuverSequenceMultiple.getArrowsDirection());
-        Assertions.assertEquals(sequence, maneuverSequence.getSequence());
-        Assertions.assertEquals(LOFType.TNW, maneuverSequence.getLof());
-        Assertions.assertFalse(maneuverSequence.isShowTrust());
+    }
+
+    private Map<AttitudesSequence, BoundedPropagator>
+        buildMapFromOrbit(final AbsoluteDate startDate,
+                          final AbsoluteDate finalDate,
+                          final KeplerianOrbit orbit,
+                          final List<Maneuver> emptyManeuverList) {
+
+        final SpacecraftState initialState = new SpacecraftState(orbit);
+        final NormalizedSphericalHarmonicsProvider provider =
+            GravityFieldFactory.getNormalizedProvider(10, 10);
+        final ForceModel holmesFeatherstone =
+            new HolmesFeatherstoneAttractionModel(FramesFactory.getEME2000(),
+                                                  provider);
+
+        final double[][] tolerances =
+            NumericalPropagator.tolerances(10, orbit, OrbitType.CARTESIAN);
+        final AdaptiveStepsizeIntegrator integrator =
+            new DormandPrince853Integrator(0.001, 1000.0, tolerances[0],
+                                           tolerances[1]);
+
+        final NumericalPropagator propagator =
+            new NumericalPropagator(integrator);
+
+        ////// Add the maneuvers (MANEUVERS ABSOLUTELY NEED ATTITUDE OVERRIDES
+        ////// ARGUMENTS !)
+        // Attitude providers
+        final LofOffset lofTNW =
+            new LofOffset(FramesFactory.getEME2000(), LOFType.TNW);
+        final CelestialBodyPointed bodyPointed =
+            new CelestialBodyPointed(CelestialBodyFactory.getEarth()
+                .getBodyOrientedFrame(), CelestialBodyFactory.getSun(),
+                                     Vector3D.PLUS_J, Vector3D.PLUS_I,
+                                     Vector3D.PLUS_K);
+
+        //// Attitude sequence to modelize the maneuver
+        final AttitudesSequence sequence = new AttitudesSequence();
+
+        // Event detector for the attitude sequence
+        final EventDetector detectorFiringDate =
+            new DateDetector(firingDateLOF).withHandler(new ContinueOnEvent());
+        final EventDetector detectorStopFiringDate =
+            new DateDetector(firingDateLOF.shiftedBy(duration))
+                .withHandler(new ContinueOnEvent());
+
+        final EventDetector secondFiringDate =
+            new DateDetector(startDate.shiftedBy(17 * 3600.0))
+                .withHandler(new ContinueOnEvent());
+        final EventDetector secondStopFiringDate =
+            new DateDetector(startDate.shiftedBy(18 * 3600))
+                .withHandler(new ContinueOnEvent());
+
+        // Switches for attitude sequence
+        sequence.addSwitchingCondition(bodyPointed, lofTNW, detectorFiringDate,
+                                       true, false, 200.0,
+                                       AngularDerivativesFilter.USE_R, null);
+        sequence.addSwitchingCondition(lofTNW, bodyPointed,
+                                       detectorStopFiringDate, true, false,
+                                       200.0, AngularDerivativesFilter.USE_R,
+                                       null);
+
+        sequence.addSwitchingCondition(bodyPointed, lofTNW, secondFiringDate,
+                                       true, false, 200.0,
+                                       AngularDerivativesFilter.USE_R, null);
+        sequence.addSwitchingCondition(lofTNW, bodyPointed,
+                                       secondStopFiringDate, true, false, 200.0,
+                                       AngularDerivativesFilter.USE_R, null);
+
+        sequence.resetActiveProvider(bodyPointed);
+
+        propagator.setAttitudeProvider(sequence);
+
+        sequence.registerSwitchEvents(propagator);
+
+        // Trigger for the maneuver
+        final ManeuverTriggers firstTriggers =
+            new DateBasedManeuverTriggers(firingDateLOF, duration);
+        final ManeuverTriggers secondTriggers =
+            new DateBasedManeuverTriggers(startDate.shiftedBy(17 * 3600.0),
+                                          duration);
+
+        // Propulsion model
+        final PropulsionModel firstPropulsionModel =
+            new BasicConstantThrustPropulsionModel(thrust, isp,
+                                                   accelerationDirection,
+                                                   "first thrust");
+        final PropulsionModel secondPropulsionModel =
+            new BasicConstantThrustPropulsionModel(thrust, isp,
+                                                   accelerationDirection,
+                                                   "second thrust");
+
+        // Maneuver
+        final Maneuver firstManeuver =
+            new Maneuver(sequence, firstTriggers, firstPropulsionModel);
+        final Maneuver secondManeuver =
+            new Maneuver(sequence, secondTriggers, secondPropulsionModel);
+        emptyManeuverList.add(firstManeuver);
+        emptyManeuverList.add(secondManeuver);
+
+        // Setup propagator
+        propagator.setOrbitType(OrbitType.CARTESIAN);
+        propagator.addForceModel(holmesFeatherstone);
+        propagator.addForceModel(firstManeuver);
+        propagator.addForceModel(secondManeuver);
+        propagator.setInitialState(initialState);
+
+        final EphemerisGenerator generator = propagator.getEphemerisGenerator();
+
+        propagator.propagate(startDate, finalDate);
+        final BoundedPropagator boundedPropagator =
+            generator.getGeneratedEphemeris();
+
+        final HashMap<AttitudesSequence, BoundedPropagator> map =
+            new HashMap<>();
+        map.put(sequence, boundedPropagator);
+        return map;
     }
 }

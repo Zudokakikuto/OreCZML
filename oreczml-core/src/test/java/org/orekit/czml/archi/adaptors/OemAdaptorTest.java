@@ -38,6 +38,9 @@ public class OemAdaptorTest
     extends
     AbstractTest {
 
+    /** Initialise orekit data. */
+    private final double data = initializeOrekitData();
+
     /**
      * Oem constructor test.
      *
@@ -47,8 +50,6 @@ public class OemAdaptorTest
     @Test
     @DefaultDataContext
     void oemConstructorTest() {
-
-        loadOrekitData();
 
         final String OemPath = loadResources("oemForOemTuto.xml");
         final DataSource dataSource = new DataSource(OemPath);

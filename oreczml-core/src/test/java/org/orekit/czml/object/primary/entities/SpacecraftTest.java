@@ -16,14 +16,6 @@
  */
 package org.orekit.czml.object.primary.entities;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.hipparchus.geometry.Space;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.annotation.DefaultDataContext;
@@ -36,6 +28,13 @@ import org.orekit.czml.object.utils.DateUtils;
 import org.orekit.propagation.BoundedPropagator;
 import org.orekit.time.AbsoluteDate;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * The type Satellite test.
  */
@@ -43,6 +42,18 @@ import org.orekit.time.AbsoluteDate;
 public class SpacecraftTest
     extends
     AbstractTest {
+
+    /** Initialise orekit data. */
+    private final double data = initializeOrekitData();
+
+    /** Header. */
+    final Header header = dummyHeader();
+
+    /** Start Date. */
+    final AbsoluteDate startDate =
+        DateUtils.toAbsoluteDate(header.getAvailability().getStart());
+
+    final AbsoluteDate finalDate = startDate.shiftedBy(60.0);
 
     /**
      * Satellite constructor test.
@@ -54,13 +65,6 @@ public class SpacecraftTest
     void SatelliteConstructorTest()
         throws IOException,
             URISyntaxException {
-
-        loadOrekitData();
-
-        final Header header = dummyHeader();
-        final AbsoluteDate startDate =
-            DateUtils.toAbsoluteDate(header.getAvailability().getStart());
-        final AbsoluteDate finalDate = startDate.shiftedBy(60.0);
 
         final BoundedPropagator propagator =
             dummyPropagator(startDate, finalDate, dummyOrbit(startDate));
@@ -96,13 +100,6 @@ public class SpacecraftTest
         throws IOException,
             URISyntaxException {
 
-        loadOrekitData();
-
-        final Header header = dummyHeader();
-        final AbsoluteDate startDate =
-            DateUtils.toAbsoluteDate(header.getAvailability().getStart());
-        final AbsoluteDate finalDate = startDate.shiftedBy(60.0);
-
         final BoundedPropagator propagator =
             dummyPropagator(startDate, finalDate, dummyOrbit(startDate));
 
@@ -128,14 +125,6 @@ public class SpacecraftTest
         throws URISyntaxException,
             IOException {
 
-        loadOrekitData();
-
-        final Header header = dummyHeader();
-
-        final AbsoluteDate startDate =
-            DateUtils.toAbsoluteDate(header.getAvailability().getStart());
-        final AbsoluteDate finalDate = startDate.shiftedBy(60.0);
-
         final BoundedPropagator propagator =
             dummyPropagator(startDate, finalDate, dummyOrbit(startDate));
 
@@ -158,15 +147,6 @@ public class SpacecraftTest
         throws URISyntaxException,
             IOException {
 
-        // Load of the orekit data
-        loadOrekitData();
-
-        // Header
-        final Header header = dummyHeader();
-
-        // Build of the clock
-        final AbsoluteDate startDate =
-            DateUtils.toAbsoluteDate(header.getAvailability().getStart());
         final AbsoluteDate finalDate = startDate.shiftedBy(60.0);
 
         final Clock clock = new Clock(startDate, finalDate, 1.0);

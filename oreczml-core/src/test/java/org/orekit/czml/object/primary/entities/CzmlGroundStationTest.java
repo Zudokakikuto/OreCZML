@@ -17,6 +17,7 @@
 package org.orekit.czml.object.primary.entities;
 
 import org.hipparchus.util.FastMath;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.orekit.annotation.DefaultDataContext;
 import org.orekit.bodies.GeodeticPoint;
@@ -27,8 +28,6 @@ import org.orekit.frames.TopocentricFrame;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The type Czml ground station test.
@@ -36,6 +35,28 @@ import java.util.List;
 public class CzmlGroundStationTest
     extends
     AbstractTest {
+
+    /** Initialise orekit data. */
+    private final double data = initializeOrekitData();
+
+    /** Header. */
+    final Header header = dummyHeader();
+
+    /** Toulouse station name. */
+    final String toulouseName = "Toulouse Frame";
+
+    /** Topocentric frame of Toulouse. */
+    final TopocentricFrame topocentricToulouse =
+        buildTopocentric(toulouseName, 43.6047, 1.4442, 10);
+
+    // Models
+
+    /** ISS Model. */
+    final String modelISS = loadResources("Default3DModels/ISSModel.glb");
+
+    /** Juno Model. */
+    final String modelJuno =
+        loadResources("Default3DModels/ground_Station.glb");
 
     /**
      * Czml ground station constructor test.
@@ -49,59 +70,65 @@ public class CzmlGroundStationTest
         throws URISyntaxException,
             IOException {
 
-        loadOrekitData();
-
-        final Header header = dummyHeader();
-
-        final String frameName = "Toulouse Frame";
-        final GeodeticPoint toulouseFrame =
-            new GeodeticPoint(FastMath.toRadians(43.6047),
-                              FastMath.toRadians(1.4442), 10);
-        final TopocentricFrame topocentricToulouse =
-            new TopocentricFrame(getEarth(), toulouseFrame, frameName);
-
-        final GeodeticPoint randomPoint =
-            new GeodeticPoint(FastMath.toRadians(1.6047),
-                              FastMath.toRadians(10.4442), 10);
-        final TopocentricFrame topocentricRandom =
-            new TopocentricFrame(getEarth(), randomPoint, frameName);
-
-        final List<TopocentricFrame> topocentrics = new ArrayList<>();
-        topocentrics.add(topocentricToulouse);
-        topocentrics.add(topocentricRandom);
-
-        final String modelISS = loadResources("Default3DModels/ISSModel.glb");
-        final String modelJuno =
-            loadResources("Default3DModels/ground_Station.glb");
-
-        final List<String> strings = new ArrayList<>();
-        strings.add(modelISS);
-        strings.add(modelJuno);
-
         final CzmlGroundStation station =
             new CzmlGroundStation(topocentricToulouse, header.getClock());
 
-        final CzmlModel model =
-            CzmlModel.builder(modelJuno, false, header.getClock()).build();
+        final String pathFile =
+            loadResources("templateFile/object/primary/entities/CzmlGroundStationTemplate.txt");
 
-        final CzmlGroundStation stationWithModel =
-            CzmlGroundStation.builder(topocentricToulouse, header.getClock())
-                .withModel(model).build();
+        verifyFileOutput(pathFile, station.toString(), 1e-8);
+    }
 
+    @Test
+    @DisplayName("Czml Ground Station with Builder constructor")
+    public void CzmlGroundStationBuilderConstructorTest()
+        throws URISyntaxException,
+            IOException {
+
+        // Build of the topocentric frame
+        final TopocentricFrame topocentricToulouse =
+            buildTopocentric(toulouseName, 43.6047, 1.4442, 10);
+
+        // Build of the ground station with the builder
         final CzmlGroundStation stationBuilder =
             CzmlGroundStation.builder(topocentricToulouse, header.getClock())
                 .withModelPath(modelISS).build();
 
-        final String pathFile =
-            loadResources("templateFile/object/primary/entities/CzmlGroundStationTemplate.txt");
+        // Reference file
         final String builderPathFile =
             loadResources("templateFile/object/primary/entities/CzmlGroundStationWithBuilderTemplate.txt");
+        verifyFileOutput(builderPathFile, stationBuilder.toString(), 1e-8);
+    }
+
+    @Test
+    @DisplayName("Test of Czml Ground Station with a model")
+    public void CzmlGroundStationWithModelConstructorTest()
+        throws URISyntaxException,
+            IOException {
+
+        // Build of the model
+        final CzmlModel model =
+            CzmlModel.builder(modelJuno, false, header.getClock()).build();
+
+        // Build of the ground station with a model
+        final CzmlGroundStation stationWithModel =
+            CzmlGroundStation.builder(topocentricToulouse, header.getClock())
+                .withModel(model).build();
+
+        // Reference file
         final String builderWithModelPathFile =
             loadResources("templateFile/object/primary/entities/CzmlGroundStationBuilderWithModelTemplate.txt");
 
-        verifyFileOutput(pathFile, station.toString(), 1e-8);
         verifyFileOutput(builderWithModelPathFile, stationWithModel.toString(),
                          1e-8);
-        verifyFileOutput(builderPathFile, stationBuilder.toString(), 1e-8);
+    }
+
+    final TopocentricFrame
+        buildTopocentric(final String stationName, final double latitude,
+                         final double longitude, final double altitude) {
+        final GeodeticPoint frame =
+            new GeodeticPoint(FastMath.toRadians(latitude),
+                              FastMath.toRadians(longitude), altitude);
+        return new TopocentricFrame(getEarth(), frame, stationName);
     }
 }

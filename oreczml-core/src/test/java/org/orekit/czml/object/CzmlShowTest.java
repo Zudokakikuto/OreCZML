@@ -31,6 +31,12 @@ public class CzmlShowTest
     extends
     AbstractTest {
 
+    /** Initialise orekit data. */
+    private final double data = initializeOrekitData();
+
+    /** Header. */
+    final Header header = dummyHeader();
+
     /**
      * Czml show constructor test.
      *
@@ -41,10 +47,6 @@ public class CzmlShowTest
     void CzmlShowConstructorTest()
         throws IOException,
             URISyntaxException {
-
-        loadOrekitData();
-
-        final Header header = dummyHeader();
 
         final CzmlShow show = new CzmlShow(true, header.getClock());
 

@@ -18,6 +18,7 @@ package org.orekit.czml.object;
 
 import cesiumlanguagewriter.TimeInterval;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
@@ -34,6 +35,15 @@ public class PathTest
     extends
     AbstractTest {
 
+    /** Initialise orekit data. */
+    private final double data = initializeOrekitData();
+
+    /** Header. */
+    final Header header = dummyHeader();
+
+    /** Availability. */
+    final TimeInterval availability = header.getAvailability();
+
     /**
      * Path constructor test.
      *
@@ -41,27 +51,31 @@ public class PathTest
      */
     @Test
     @DefaultDataContext
+    @DisplayName("Path constructor test")
     void PathConstructorTest()
         throws IOException,
             URISyntaxException {
 
-        loadOrekitData();
-
-        final Header header = dummyHeader();
-
-        final TimeInterval availability = header.getAvailability();
-
         final Path path = new Path(availability);
+
+        final String pathFile = loadResources("templateFile/PathTemplate.txt");
+
+        verifyFileOutput(pathFile, path.toString(), 1e-8);
+    }
+
+    @Test
+    @DisplayName("Path coverage constructor test")
+    public void PathCoverageConstructorTest()
+        throws URISyntaxException,
+            IOException {
 
         final Path pathCoverage = new Path(availability, true);
 
-        final String pathFile = loadResources("templateFile/PathTemplate.txt");
+        // Reference file
         final String pathCoverageFile =
             loadResources("templateFile/PathCoverageTemplate.txt");
 
-        verifyFileOutput(pathFile, path.toString(), 1e-8);
         verifyFileOutput(pathCoverageFile, pathCoverage.toString(), 1e-8);
-
         Assertions.assertTrue(pathCoverage.isShow());
         Assertions.assertEquals(availability, pathCoverage.getAvailability());
     }

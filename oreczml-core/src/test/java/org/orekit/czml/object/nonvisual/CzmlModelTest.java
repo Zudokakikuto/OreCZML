@@ -33,6 +33,11 @@ public class CzmlModelTest
     extends
     AbstractTest {
 
+    /** Initialise orekit data. */
+    private final double data = initializeOrekitData();
+
+    private final Header header = dummyHeader();
+
     /**
      * Czml model constructor test.
      *
@@ -42,10 +47,6 @@ public class CzmlModelTest
     @DefaultDataContext
     void CzmlModelConstructorTest()
         throws IOException {
-
-        loadOrekitData();
-
-        final Header header = dummyHeader();
 
         final CzmlModel modelToTest =
             new CzmlModel(loadResources("Default3DModels/ISSModel.glb"), false,

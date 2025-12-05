@@ -19,6 +19,7 @@ package org.orekit.czml.object.secondary;
 import cesiumlanguagewriter.CesiumHorizontalOrigin;
 import cesiumlanguagewriter.CesiumLabelStyle;
 import cesiumlanguagewriter.CesiumVerticalOrigin;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
@@ -34,6 +35,9 @@ public class LabelTest
     extends
     AbstractTest {
 
+    /** Initialise orekit data. */
+    private final double data = initializeOrekitData();
+
     /**
      * Label constructor test.
      *
@@ -41,30 +45,48 @@ public class LabelTest
      */
     @Test
     @DefaultDataContext
+    @DisplayName("Label constructor test")
     void LabelConstructorTest()
         throws IOException,
             URISyntaxException {
 
-        loadOrekitData();
-
         final Label label = new Label("header");
+
+        final String pathFile =
+            loadResources("templateFile/object/secondary/LabelTemplate.txt");
+
+        verifyFileOutput(pathFile, label.toString(), 1e-8);
+    }
+
+    @Test
+    @DisplayName("Label coverage constructor test")
+    public void LabelCoverageConstructorTest()
+        throws URISyntaxException,
+            IOException {
 
         final Label coverageLabel = new Label("A text", Color.RED);
 
+        // Reference file
+        final String coveragePathFile =
+            loadResources("templateFile/object/secondary/LabelCoverageTemplate.txt");
+
+        verifyFileOutput(coveragePathFile, coverageLabel.toString(), 1e-8);
+    }
+
+    @Test
+    @DisplayName("Label complete constructor test")
+    public void LabelCompleteConstructorTest()
+        throws URISyntaxException,
+            IOException {
         final Label completeLabel =
             new Label("A text", Color.RED, CesiumHorizontalOrigin.CENTER,
                       CesiumVerticalOrigin.BASELINE, CesiumLabelStyle.FILL,
                       true);
 
-        final String pathFile =
-            loadResources("templateFile/object/secondary/LabelTemplate.txt");
-        final String coveragePathFile =
-            loadResources("templateFile/object/secondary/LabelCoverageTemplate.txt");
+        // Reference file
         final String completePathFile =
             loadResources("templateFile/object/secondary/LabelCompleteTemplate.txt");
 
-        verifyFileOutput(pathFile, label.toString(), 1e-8);
-        verifyFileOutput(coveragePathFile, coverageLabel.toString(), 1e-8);
         verifyFileOutput(completePathFile, completeLabel.toString(), 1e-8);
     }
 }

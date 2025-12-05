@@ -53,6 +53,25 @@ public class TimePositionTest
     extends
     AbstractTest {
 
+    /** Initialise orekit data. */
+    private final double data = initializeOrekitData();
+
+    /** Header. */
+    final Header header = dummyHeader();
+
+    // Dates
+    final AbsoluteDate startDate =
+        new AbsoluteDate(2024, 3, 15, 0, 0, 0.0, TimeScalesFactory.getUTC());
+
+    final AbsoluteDate finalDate = startDate.shiftedBy(5 * 3600);
+
+    // Orbit
+    final KeplerianOrbit initialOrbit =
+        new KeplerianOrbit(7878000, 0, FastMath.toRadians(10), 0,
+                           FastMath.toRadians(90), FastMath.toRadians(0),
+                           PositionAngleType.MEAN, FramesFactory.getEME2000(),
+                           startDate, Constants.WGS84_EARTH_MU);
+
     /**
      * Time position constructor test.
      *
@@ -65,29 +84,33 @@ public class TimePositionTest
         throws IOException,
             URISyntaxException {
 
-        loadOrekitData();
-
-        final Header header = dummyHeader();
-
-        final AbsoluteDate startDate =
-            new AbsoluteDate(2024, 3, 15, 0, 0, 0.0,
-                             TimeScalesFactory.getUTC());
-        final AbsoluteDate finalDate = startDate.shiftedBy(5 * 3600);
-
-        final KeplerianOrbit initialOrbit =
-            new KeplerianOrbit(7878000, 0, FastMath.toRadians(10), 0,
-                               FastMath.toRadians(90), FastMath.toRadians(0),
-                               PositionAngleType.MEAN,
-                               FramesFactory.getEME2000(), startDate,
-                               Constants.WGS84_EARTH_MU);
-
-        final SpacecraftState initialState = new SpacecraftState(initialOrbit);
-
         // Build of the propagator
+        final BoundedPropagator boundedPropagator =
+            propagatorFromOrbit(startDate, finalDate, initialOrbit);
+        final Spacecraft satellite =
+            new Spacecraft(boundedPropagator, header.getClock());
+
+        final List<JulianDate> julianDates = satellite.getJulianDates();
+        final List<Cartesian> randomCartesians =
+            computeRandomCartesians(julianDates.size());
+
+        final TimePosition timePosition =
+            new TimePosition(randomCartesians, julianDates);
+
+        final String pathFile =
+            loadResources("templateFile/object/secondary/TimePositionTemplate.txt");
+
+        verifyFileOutput(pathFile, timePosition.toString(), 1e-8);
+    }
+
+    private BoundedPropagator propagatorFromOrbit(final AbsoluteDate startDate,
+                                                  final AbsoluteDate finalDate,
+                                                  final KeplerianOrbit orbit) {
+
+        final SpacecraftState initialState = new SpacecraftState(orbit);
 
         final double[][] tolerances =
-            NumericalPropagator.tolerances(10, initialOrbit,
-                                           OrbitType.CARTESIAN);
+            NumericalPropagator.tolerances(10, orbit, OrbitType.CARTESIAN);
         final AdaptiveStepsizeIntegrator integrator =
             new DormandPrince853Integrator(0.001, 1000.0, tolerances[0],
                                            tolerances[1]);
@@ -108,23 +131,6 @@ public class TimePositionTest
         propagator.setInitialState(initialState);
 
         propagator.propagate(startDate, finalDate);
-        final BoundedPropagator boundedPropagator =
-            generator.getGeneratedEphemeris();
-
-        final Spacecraft satellite =
-            new Spacecraft(boundedPropagator, header.getClock());
-
-        final List<JulianDate> julianDates = satellite.getJulianDates();
-
-        final List<Cartesian> randomCartesians =
-            computeRandomCartesians(julianDates.size());
-
-        final TimePosition timePosition =
-            new TimePosition(randomCartesians, julianDates);
-
-        final String pathFile =
-            loadResources("templateFile/object/secondary/TimePositionTemplate.txt");
-
-        verifyFileOutput(pathFile, timePosition.toString(), 1e-8);
+        return generator.getGeneratedEphemeris();
     }
 }

@@ -36,6 +36,12 @@ public class SpacecraftReferenceSystemTest
     extends
     AbstractTest {
 
+    /** Initialise orekit data. */
+    private final double data = initializeOrekitData();
+
+    /** Header. */
+    final Header header = dummyHeader();
+
     /**
      * Satellite reference systemc constructor test.
      *
@@ -47,9 +53,6 @@ public class SpacecraftReferenceSystemTest
         throws IOException,
             URISyntaxException {
 
-        loadOrekitData();
-
-        final Header header = dummyHeader();
         final AbsoluteDate startDate =
             DateUtils.toAbsoluteDate(header.getAvailability().getStart());
         final AbsoluteDate finalDate = startDate.shiftedBy(60.0);

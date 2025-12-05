@@ -16,6 +16,7 @@
  */
 package org.orekit.czml.object.primary.systems;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
@@ -32,6 +33,12 @@ public class CentralBodyReferenceSystemTest
     extends
     AbstractTest {
 
+    /** Initialise orekit data. */
+    private final double data = initializeOrekitData();
+
+    /** Header. */
+    final Header header = dummyHeader();
+
     /**
      * Central body reference system constructor test.
      *
@@ -40,16 +47,25 @@ public class CentralBodyReferenceSystemTest
      */
     @Test
     @DefaultDataContext
+    @DisplayName("Central body reference system constructor test")
     void CentralBodyReferenceSystemConstructorTest()
         throws URISyntaxException,
             IOException {
 
-        loadOrekitData();
-
-        final Header header = dummyHeader();
-
         final CentralBodyReferenceSystem system =
             CentralBodyReferenceSystem.builder(header.getClock()).build();
+
+        final String pathFile =
+            loadResources("templateFile/object/primary/systems/CentralBodyReferenceSystemTemplate.txt");
+
+        verifyFileOutput(pathFile, system.toString(), 1e-8);
+    }
+
+    @Test
+    @DisplayName("Central body reference system with builder constructor test")
+    public void CentralBodyReferenceSystemBuilderConstructorTest()
+        throws URISyntaxException,
+            IOException {
 
         final CentralBodyReferenceSystem systemBuilder =
             CentralBodyReferenceSystem.builder(header.getClock())
@@ -57,12 +73,10 @@ public class CentralBodyReferenceSystemTest
                 .withColors(Color.BLUE, Color.GREEN, Color.RED)
                 .withName("A name").withCustomId("CustomID").build();
 
-        final String pathFile =
-            loadResources("templateFile/object/primary/systems/CentralBodyReferenceSystemTemplate.txt");
+        // Reference file
         final String builderPathFile =
             loadResources("templateFile/object/primary/systems/CentralBodyReferenceSystemWithBuilderTemplate.txt");
 
-        verifyFileOutput(pathFile, system.toString(), 1e-8);
         verifyFileOutput(builderPathFile, systemBuilder.toString(), 1e-8);
     }
 

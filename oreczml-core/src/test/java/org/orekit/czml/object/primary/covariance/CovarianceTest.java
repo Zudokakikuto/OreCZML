@@ -21,6 +21,7 @@ import org.hipparchus.linear.RealMatrix;
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
@@ -37,6 +38,7 @@ import org.orekit.orbits.OrbitType;
 import org.orekit.orbits.PositionAngleType;
 import org.orekit.propagation.BoundedPropagator;
 import org.orekit.propagation.EphemerisGenerator;
+import org.orekit.propagation.Propagator;
 import org.orekit.propagation.SpacecraftState;
 import org.orekit.propagation.StateCovariance;
 import org.orekit.propagation.numerical.NumericalPropagator;
@@ -47,7 +49,10 @@ import org.orekit.utils.Constants;
 import java.awt.Color;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * The type Covariance test.
@@ -55,6 +60,30 @@ import java.util.List;
 public class CovarianceTest
     extends
     AbstractTest {
+
+    /** Initialise orekit data. */
+    private final double data = initializeOrekitData();
+
+    final Header header = dummyHeader();
+
+    // Dates
+
+    /** Start date. */
+    private final AbsoluteDate startDate =
+        new AbsoluteDate(2024, 3, 15, 0, 0, 0.0, TimeScalesFactory.getUTC());
+
+    /** Final date. */
+    private final AbsoluteDate finalDate = startDate.shiftedBy(5 * 3600);
+
+    /** Orbit. */
+    final KeplerianOrbit initialOrbit =
+        new KeplerianOrbit(7878000, 0, FastMath.toRadians(20), 0,
+                           FastMath.toRadians(0), FastMath.toRadians(0),
+                           PositionAngleType.MEAN, FramesFactory.getEME2000(),
+                           startDate, Constants.WGS84_EARTH_MU);
+
+    /** Initial State. */
+    final SpacecraftState initialState = new SpacecraftState(initialOrbit);
 
     /**
      * Covariance constructor test.
@@ -68,23 +97,42 @@ public class CovarianceTest
         throws IOException,
             URISyntaxException {
 
-        loadOrekitData();
+        final Map<Propagator, Spacecraft> mapPropSpacecraft =
+            spacecraftBuild(header);
 
-        final Header header = dummyHeader();
-        final AbsoluteDate startDate =
-            new AbsoluteDate(2024, 3, 15, 0, 0, 0.0,
-                             TimeScalesFactory.getUTC());
-        final AbsoluteDate finalDate = startDate.shiftedBy(5 * 3600);
+        final Optional<Propagator> propagatorOptional =
+            mapPropSpacecraft.keySet().stream().findFirst();
+        Propagator propagator = null;
+        if (propagatorOptional.isPresent()) {
+            propagator = propagatorOptional.get();
+        }
+        final Spacecraft spacecraft = mapPropSpacecraft.get(propagator);
 
-        final KeplerianOrbit initialOrbit =
-            new KeplerianOrbit(7878000, 0, FastMath.toRadians(20), 0,
-                               FastMath.toRadians(0), FastMath.toRadians(0),
-                               PositionAngleType.MEAN,
-                               FramesFactory.getEME2000(), startDate,
-                               Constants.WGS84_EARTH_MU);
-        final SpacecraftState initialState = new SpacecraftState(initialOrbit);
+        final RealMatrix realMatrix =
+            MatrixUtils.createRealDiagonalMatrix(new double[] {
+                1e-4, 1e-4, 2e-4, 1e-6, 1e-6, (36 * 4.848e-6) * (36 * 4.848e-6)
+            });
+        final StateCovariance stateCovariance =
+            new StateCovariance(realMatrix, startDate,
+                                FramesFactory.getEME2000(),
+                                OrbitType.EQUINOCTIAL, PositionAngleType.MEAN);
+        Assertions.assertNotNull(propagator);
+        final List<StateCovariance> covariances =
+            covariancePropagation(spacecraft, propagator, stateCovariance,
+                                  header.getClock().getMultiplier());
 
-        // Build of the propagator
+        final Covariance covariance =
+            Covariance.builder(spacecraft, covariances, LOFType.TNW)
+                .withColor(Color.ORANGE).withCustomID("CustomID").build();
+
+        final String pathFile =
+            loadResources("templateFile/object/primary/covariance/CovarianceTemplate.txt");
+        verifyFileOutput(pathFile, covariance.toString(), 1e-4);
+    }
+
+    private Map<Propagator, Spacecraft> spacecraftBuild(final Header header)
+        throws URISyntaxException,
+            IOException {
 
         final double[][] tolerances =
             NumericalPropagator.tolerances(10, initialOrbit,
@@ -112,27 +160,11 @@ public class CovarianceTest
         final BoundedPropagator boundedPropagator =
             generator.getGeneratedEphemeris();
 
-        final Spacecraft satellite =
+        final Spacecraft spacecraft =
             new Spacecraft(boundedPropagator, header.getClock());
 
-        final RealMatrix realMatrix =
-            MatrixUtils.createRealDiagonalMatrix(new double[] {
-                1e-4, 1e-4, 2e-4, 1e-6, 1e-6, (36 * 4.848e-6) * (36 * 4.848e-6)
-            });
-        final StateCovariance stateCovariance =
-            new StateCovariance(realMatrix, startDate,
-                                FramesFactory.getEME2000(),
-                                OrbitType.EQUINOCTIAL, PositionAngleType.MEAN);
-        final List<StateCovariance> covariances =
-            covariancePropagation(satellite, propagator, stateCovariance,
-                                  header.getClock().getMultiplier());
-
-        final Covariance covariance =
-            Covariance.builder(satellite, covariances, LOFType.TNW)
-                .withColor(Color.ORANGE).withCustomID("CustomID").build();
-
-        final String pathFile =
-            loadResources("templateFile/object/primary/covariance/CovarianceTemplate.txt");
-        verifyFileOutput(pathFile, covariance.toString(), 1e-4);
+        final Map<Propagator, Spacecraft> mapToReturn = new HashMap<>();
+        mapToReturn.put(propagator, spacecraft);
+        return mapToReturn;
     }
 }

@@ -41,6 +41,11 @@ public class PointOnBodyTest
     extends
     AbstractTest {
 
+    /** Initialise orekit data. */
+    private final double data = initializeOrekitData();
+
+    private final Header header = dummyHeader();
+
     /**
      * Point on body constructor test.
      *
@@ -50,10 +55,6 @@ public class PointOnBodyTest
     void PointOnBodyConstructorTest()
         throws IOException,
             URISyntaxException {
-
-        loadOrekitData();
-
-        final Header header = dummyHeader();
 
         final TimeInterval availability1 = header.getAvailability();
         final TimeInterval availability2 =

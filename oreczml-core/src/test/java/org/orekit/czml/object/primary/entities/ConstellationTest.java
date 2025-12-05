@@ -19,6 +19,7 @@ package org.orekit.czml.object.primary.entities;
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
@@ -53,6 +54,25 @@ public class ConstellationTest
     extends
     AbstractTest {
 
+    /** Initialise orekit data. */
+    private final double data = initializeOrekitData();
+
+    // Header
+    /** The header. */
+    final Header header = dummyHeader();
+
+    // Dates
+
+    /** Start date. */
+    final AbsoluteDate startDate =
+        DateUtils.toAbsoluteDate(header.getAvailability().getStart());
+
+    /** Final Date. */
+    final AbsoluteDate finalDate = startDate.shiftedBy(60.0);
+
+    /** ISS Model. */
+    final String ISSModel = loadResources("Default3DModels/ISSModel.glb");
+
     /**
      * Constellation constructor test.
      *
@@ -60,18 +80,10 @@ public class ConstellationTest
      * @throws URISyntaxException the uri syntax exception
      */
     @Test
+    @DisplayName("Constellation constructor test with 5 spacecrafts")
     void ConstellationConstructorTest()
         throws IOException,
             URISyntaxException {
-
-        loadOrekitData();
-
-        final Header header = dummyHeader();
-        final AbsoluteDate startDate =
-            DateUtils.toAbsoluteDate(header.getAvailability().getStart());
-        final AbsoluteDate finalDate = startDate.shiftedBy(60.0);
-
-        final String ISSModel = loadResources("Default3DModels/ISSModel.glb");
 
         final List<BoundedPropagator> propagators = new ArrayList<>();
 
@@ -106,110 +118,22 @@ public class ConstellationTest
                                FramesFactory.getEME2000(), startDate,
                                Constants.WGS84_EARTH_MU);
 
-        final SpacecraftState firstState = new SpacecraftState(firstOrbit);
-        final SpacecraftState secondState = new SpacecraftState(secondOrbit);
-        final SpacecraftState thirdState = new SpacecraftState(thirdOrbit);
-        final SpacecraftState fourthState = new SpacecraftState(fourthOrbit);
-        final SpacecraftState fifthState = new SpacecraftState(fifthOrbit);
+        final BoundedPropagator boundedPropagator1 =
+            propagatorFromOrbit(startDate, finalDate, firstOrbit);
+        final BoundedPropagator boundedPropagator2 =
+            propagatorFromOrbit(startDate, finalDate, secondOrbit);
+        final BoundedPropagator boundedPropagator3 =
+            propagatorFromOrbit(startDate, finalDate, thirdOrbit);
+        final BoundedPropagator boundedPropagator4 =
+            propagatorFromOrbit(startDate, finalDate, fourthOrbit);
+        final BoundedPropagator boundedPropagator5 =
+            propagatorFromOrbit(startDate, finalDate, fifthOrbit);
 
-        // Build of the propagator
-
-        final double[][] tolerances1 =
-            NumericalPropagator.tolerances(10, firstOrbit, OrbitType.CARTESIAN);
-        final double[][] tolerances2 =
-            NumericalPropagator.tolerances(10, secondOrbit,
-                                           OrbitType.CARTESIAN);
-        final double[][] tolerances3 =
-            NumericalPropagator.tolerances(10, thirdOrbit, OrbitType.CARTESIAN);
-        final double[][] tolerances4 =
-            NumericalPropagator.tolerances(10, fourthOrbit,
-                                           OrbitType.CARTESIAN);
-        final double[][] tolerances5 =
-            NumericalPropagator.tolerances(10, fifthOrbit, OrbitType.CARTESIAN);
-
-        final AdaptiveStepsizeIntegrator firstIntegrator =
-            new DormandPrince853Integrator(0.001, 1000.0, tolerances1[0],
-                                           tolerances1[1]);
-        final AdaptiveStepsizeIntegrator secondIntegrator =
-            new DormandPrince853Integrator(0.001, 1000.0, tolerances2[0],
-                                           tolerances2[1]);
-        final AdaptiveStepsizeIntegrator thirdIntegrator =
-            new DormandPrince853Integrator(0.001, 1000.0, tolerances3[0],
-                                           tolerances3[1]);
-        final AdaptiveStepsizeIntegrator fourthIntegrator =
-            new DormandPrince853Integrator(0.001, 1000.0, tolerances4[0],
-                                           tolerances4[1]);
-        final AdaptiveStepsizeIntegrator fifthIntegrator =
-            new DormandPrince853Integrator(0.001, 1000.0, tolerances5[0],
-                                           tolerances5[1]);
-
-        final NumericalPropagator firstPropagator =
-            new NumericalPropagator(firstIntegrator);
-        final NumericalPropagator secondPropagator =
-            new NumericalPropagator(secondIntegrator);
-        final NumericalPropagator thirdPropagator =
-            new NumericalPropagator(thirdIntegrator);
-        final NumericalPropagator fourthPropagator =
-            new NumericalPropagator(fourthIntegrator);
-        final NumericalPropagator fifthPropagator =
-            new NumericalPropagator(fifthIntegrator);
-
-        final NormalizedSphericalHarmonicsProvider provider =
-            GravityFieldFactory.getNormalizedProvider(10, 10);
-        final ForceModel holmesFeatherstone =
-            new HolmesFeatherstoneAttractionModel(FramesFactory.getEME2000(),
-                                                  provider);
-
-        firstPropagator.setOrbitType(OrbitType.CARTESIAN);
-        firstPropagator.addForceModel(holmesFeatherstone);
-        firstPropagator.setInitialState(firstState);
-        final EphemerisGenerator firstGenerator =
-            firstPropagator.getEphemerisGenerator();
-        firstPropagator.propagate(startDate, finalDate);
-        final BoundedPropagator firstBoundedPropagator =
-            firstGenerator.getGeneratedEphemeris();
-
-        secondPropagator.setOrbitType(OrbitType.CARTESIAN);
-        secondPropagator.addForceModel(holmesFeatherstone);
-        secondPropagator.setInitialState(secondState);
-        final EphemerisGenerator secondGenerator =
-            secondPropagator.getEphemerisGenerator();
-        secondPropagator.propagate(startDate, finalDate);
-        final BoundedPropagator secondBoundedPropagator =
-            secondGenerator.getGeneratedEphemeris();
-
-        thirdPropagator.setOrbitType(OrbitType.CARTESIAN);
-        thirdPropagator.addForceModel(holmesFeatherstone);
-        thirdPropagator.setInitialState(thirdState);
-        final EphemerisGenerator thirdGenerator =
-            thirdPropagator.getEphemerisGenerator();
-        thirdPropagator.propagate(startDate, finalDate);
-        final BoundedPropagator thirdBoundedPropagator =
-            thirdGenerator.getGeneratedEphemeris();
-
-        fourthPropagator.setOrbitType(OrbitType.CARTESIAN);
-        fourthPropagator.addForceModel(holmesFeatherstone);
-        fourthPropagator.setInitialState(fourthState);
-        final EphemerisGenerator fourthGenerator =
-            fourthPropagator.getEphemerisGenerator();
-        fourthPropagator.propagate(startDate, finalDate);
-        final BoundedPropagator fourthBoundedPropagator =
-            fourthGenerator.getGeneratedEphemeris();
-
-        fifthPropagator.setOrbitType(OrbitType.CARTESIAN);
-        fifthPropagator.addForceModel(holmesFeatherstone);
-        fifthPropagator.setInitialState(fifthState);
-        final EphemerisGenerator fifthGenerator =
-            fifthPropagator.getEphemerisGenerator();
-        fifthPropagator.propagate(startDate, finalDate);
-        final BoundedPropagator fifthBoundedPropagator =
-            fifthGenerator.getGeneratedEphemeris();
-
-        propagators.add(firstBoundedPropagator);
-        propagators.add(secondBoundedPropagator);
-        propagators.add(thirdBoundedPropagator);
-        propagators.add(fourthBoundedPropagator);
-        propagators.add(fifthBoundedPropagator);
+        propagators.add(boundedPropagator1);
+        propagators.add(boundedPropagator2);
+        propagators.add(boundedPropagator3);
+        propagators.add(boundedPropagator4);
+        propagators.add(boundedPropagator5);
 
         final Constellation constellation =
             Constellation.builder(propagators, finalDate, header.getClock())
@@ -220,5 +144,35 @@ public class ConstellationTest
         final String pathFile =
             loadResources("templateFile/object/primary/entities/ConstellationTemplate.txt");
         verifyFileOutput(pathFile, constellation.toString(), 1e-8);
+    }
+
+    private BoundedPropagator propagatorFromOrbit(final AbsoluteDate startDate,
+                                                  final AbsoluteDate finalDate,
+                                                  final KeplerianOrbit orbit) {
+
+        final NormalizedSphericalHarmonicsProvider provider =
+            GravityFieldFactory.getNormalizedProvider(10, 10);
+        final ForceModel holmesFeatherstone =
+            new HolmesFeatherstoneAttractionModel(FramesFactory.getEME2000(),
+                                                  provider);
+
+        final SpacecraftState state = new SpacecraftState(orbit);
+        final double[][] tolerances =
+            NumericalPropagator.tolerances(10, orbit, OrbitType.CARTESIAN);
+
+        final AdaptiveStepsizeIntegrator integrator =
+            new DormandPrince853Integrator(0.001, 1000.0, tolerances[0],
+                                           tolerances[1]);
+        final NumericalPropagator propagator =
+            new NumericalPropagator(integrator);
+
+        propagator.setOrbitType(OrbitType.CARTESIAN);
+        propagator.addForceModel(holmesFeatherstone);
+        propagator.setInitialState(state);
+
+        final EphemerisGenerator generator = propagator.getEphemerisGenerator();
+        propagator.propagate(startDate, finalDate);
+
+        return generator.getGeneratedEphemeris();
     }
 }

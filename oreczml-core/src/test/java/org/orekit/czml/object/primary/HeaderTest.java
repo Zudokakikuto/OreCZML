@@ -16,6 +16,7 @@
  */
 package org.orekit.czml.object.primary;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
@@ -30,6 +31,18 @@ public class HeaderTest
     extends
     AbstractTest {
 
+    /** Initialise orekit data. */
+    private final double data = initializeOrekitData();
+
+    /** Header. */
+    final Header header = dummyHeader();
+
+    /** Header value. */
+    final String headerValue = "A header";
+
+    /** Header version number. */
+    final String headerVersionNumber = "1.0";
+
     /**
      * Header constructor test.
      *
@@ -37,31 +50,46 @@ public class HeaderTest
      */
     @Test
     @DefaultDataContext
+    @DisplayName("Header dummy constructor test")
     void HeaderConstructorTest()
         throws IOException,
             URISyntaxException {
 
-        loadOrekitData();
+        final String pathFile =
+            loadResources("templateFile/object/primary/HeaderTemplate.txt");
 
-        final Header header = dummyHeader();
+        verifyFileOutput(pathFile, header.toString(), 1e-8);
+    }
 
-        final String headerValue = "A header";
-        final String headerVersionNumber = "1.0";
+    @Test
+    @DisplayName("Header constructor coverage test")
+    public void HeaderCoverageConstructorTest()
+        throws URISyntaxException,
+            IOException {
+
         final Header headerCoverage =
             new Header(headerValue, headerVersionNumber, header.getClock());
+
+        // Reference file
+        final String coveragePathFile =
+            loadResources("templateFile/object/primary/HeaderCoverageTemplate.txt");
+
+        verifyFileOutput(coveragePathFile, headerCoverage.toString(), 1e-8);
+    }
+
+    @Test
+    @DisplayName("Header with a version constructor test")
+    public void HeaderVersionConstructorTest()
+        throws URISyntaxException,
+            IOException {
 
         final Header headerVersion =
             new Header(headerValue, headerVersionNumber, header.getClock(), "");
 
-        final String pathFile =
-            loadResources("templateFile/object/primary/HeaderTemplate.txt");
-        final String coveragePathFile =
-            loadResources("templateFile/object/primary/HeaderCoverageTemplate.txt");
+        // Reference file
         final String versionPathFile =
             loadResources("templateFile/object/primary/HeaderVersionTemplate.txt");
 
-        verifyFileOutput(pathFile, header.toString(), 1e-8);
-        verifyFileOutput(coveragePathFile, headerCoverage.toString(), 1e-8);
         verifyFileOutput(versionPathFile, headerVersion.toString(), 1e-8);
     }
 }
