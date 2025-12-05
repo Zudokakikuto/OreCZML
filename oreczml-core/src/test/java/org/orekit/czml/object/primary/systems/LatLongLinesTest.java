@@ -16,6 +16,7 @@
  */
 package org.orekit.czml.object.primary.systems;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
@@ -31,6 +32,12 @@ public class LatLongLinesTest
     extends
     AbstractTest {
 
+    /** Initialise orekit data. */
+    private final double data = initializeOrekitData();
+
+    /** Header. */
+    final Header header = dummyHeader();
+
     /**
      * Lat long lines constructor test.
      *
@@ -38,29 +45,38 @@ public class LatLongLinesTest
      */
     @Test
     @DefaultDataContext
+    @DisplayName("Latitude longitude lines contructor test")
     void LatLongLinesConstructorTest()
         throws IOException,
             URISyntaxException {
 
-        loadOrekitData();
-
-        final Header header = dummyHeader();
-
+        // Build the lat long lines
         final LatLongLines lines =
             LatLongLines.builder(header.getClock()).build();
 
+        // Reference file
+        final String pathFile =
+            loadResources("templateFile/object/primary/systems/LatLongLinesTemplate.txt");
+
+        verifyFileOutput(pathFile, lines.toString(), 1e-8);
+    }
+
+    @Test
+    @DisplayName("Latitude longitude lines with builder constructor test")
+    public void LatLongLinesBuilderConstructorTest()
+        throws URISyntaxException,
+            IOException {
+
+        // Build the lat long lines with the builder
         final LatLongLines linesBuilder =
             LatLongLines.builder(header.getClock()).withCustomID("CustomID")
                 .withDisplay(true).withLatitudeAngularStep(20)
                 .withLongitudeAngularStep(20).build();
 
-        final String pathFile =
-            loadResources("templateFile/object/primary/systems/LatLongLinesTemplate.txt");
+        // Reference file
         final String builderPathFile =
             loadResources("templateFile/object/primary/systems/LatLongLinesWithBuilderTemplate.txt");
 
-        verifyFileOutput(pathFile, lines.toString(), 1e-8);
         verifyFileOutput(builderPathFile, linesBuilder.toString(), 1e-8);
-
     }
 }

@@ -52,6 +52,17 @@ public class LineOfVisibilityTest
     extends
     AbstractTest {
 
+    final Header header = dummyHeader();
+
+    // Dates
+
+    /** Start Date. */
+    final AbsoluteDate startDate =
+        new AbsoluteDate(2024, 3, 15, 0, 0, 0.0, TimeScalesFactory.getUTC());
+
+    /** Final Date. */
+    final AbsoluteDate finalDate = startDate.shiftedBy(10.0 * 3600.0);
+
     /**
      * Line of visibility constructor test.
      *
@@ -64,20 +75,8 @@ public class LineOfVisibilityTest
         throws IOException,
             URISyntaxException {
 
-        loadOrekitData();
-
-        final Header header = dummyHeader();
-
-        final GeodeticPoint toulouseFrame =
-            new GeodeticPoint(FastMath.toRadians(43.6047),
-                              FastMath.toRadians(1.4442), 10);
-        final TopocentricFrame topocentricToulouse =
-            new TopocentricFrame(getEarth(), toulouseFrame, "Toulouse Frame");
-
-        final AbsoluteDate startDate =
-            new AbsoluteDate(2024, 3, 15, 0, 0, 0.0,
-                             TimeScalesFactory.getUTC());
-        final AbsoluteDate finalDate = startDate.shiftedBy(10.0 * 3600.0);
+        final TopocentricFrame topocentricFrame =
+            buildTopocentric("Toulouse Frame", 43.6047, 1.4442, 10);
 
         final KeplerianOrbit initialOrbit =
             new KeplerianOrbit(7878000, 0, FastMath.toRadians(80), 0,
@@ -86,7 +85,43 @@ public class LineOfVisibilityTest
                                FramesFactory.getEME2000(), startDate,
                                Constants.WGS84_EARTH_MU);
 
-        final SpacecraftState initialState = new SpacecraftState(initialOrbit);
+        final Spacecraft spacecraft =
+            spacecraftFromOrbit(startDate, finalDate, initialOrbit);
+
+        final LineOfVisibility line =
+            LineOfVisibility
+                .builder(topocentricFrame, spacecraft, header.getClock())
+                .build();
+
+        final LineOfVisibility coverageLine =
+            LineOfVisibility
+                .builder(topocentricFrame, spacecraft, header.getClock())
+                .withCustomID("CustomID").withAngleOfAperture(90.0).build();
+
+        final String pathFile =
+            loadResources("templateFile/object/primary/visu/LineOfVisibilityTemplate.txt");
+        final String pathCoverageFile =
+            loadResources("templateFile/object/primary/visu/LineOfVisibilityCoverageTemplate.txt");
+
+        verifyFileOutput(pathFile, line.toString(), 1e-8);
+        verifyFileOutput(pathCoverageFile, coverageLine.toString(), 1e-8);
+    }
+
+    private TopocentricFrame
+        buildTopocentric(final String nameFrame, final double latitude,
+                         final double longitude, final double altitude) {
+        final GeodeticPoint point =
+            new GeodeticPoint(FastMath.toRadians(latitude),
+                              FastMath.toRadians(longitude), altitude);
+        return new TopocentricFrame(getEarth(), point, nameFrame);
+    }
+
+    private Spacecraft spacecraftFromOrbit(final AbsoluteDate startDate,
+                                           final AbsoluteDate finalDate,
+                                           final KeplerianOrbit orbit)
+        throws URISyntaxException,
+            IOException {
+        final SpacecraftState initialState = new SpacecraftState(orbit);
 
         final NormalizedSphericalHarmonicsProvider provider =
             GravityFieldFactory.getNormalizedProvider(10, 10);
@@ -95,8 +130,7 @@ public class LineOfVisibilityTest
                                                   provider);
 
         final double[][] tolerances =
-            NumericalPropagator.tolerances(10, initialOrbit,
-                                           OrbitType.CARTESIAN);
+            NumericalPropagator.tolerances(10, orbit, OrbitType.CARTESIAN);
         final AdaptiveStepsizeIntegrator integrator =
             new DormandPrince853Integrator(0.001, 1000.0, tolerances[0],
                                            tolerances[1]);
@@ -114,25 +148,6 @@ public class LineOfVisibilityTest
         final BoundedPropagator boundedPropagator =
             generator.getGeneratedEphemeris();
 
-        final Spacecraft satellite =
-            Spacecraft.builder(boundedPropagator, header.getClock()).build();
-
-        final LineOfVisibility line =
-            LineOfVisibility
-                .builder(topocentricToulouse, satellite, header.getClock())
-                .build();
-
-        final LineOfVisibility coverageLine =
-            LineOfVisibility
-                .builder(topocentricToulouse, satellite, header.getClock())
-                .withCustomID("CustomID").withAngleOfAperture(90.0).build();
-
-        final String pathFile =
-            loadResources("templateFile/object/primary/visu/LineOfVisibilityTemplate.txt");
-        final String pathCoverageFile =
-            loadResources("templateFile/object/primary/visu/LineOfVisibilityCoverageTemplate.txt");
-
-        verifyFileOutput(pathFile, line.toString(), 1e-8);
-        verifyFileOutput(pathCoverageFile, coverageLine.toString(), 1e-8);
+        return Spacecraft.builder(boundedPropagator, header.getClock()).build();
     }
 }

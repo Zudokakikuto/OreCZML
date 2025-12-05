@@ -18,13 +18,14 @@ package org.orekit.czml.object.secondary;
 
 import org.hipparchus.geometry.euclidean.threed.Rotation;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.orekit.annotation.DefaultDataContext;
 import org.orekit.attitudes.Attitude;
 import org.orekit.czml.file.AbstractTest;
-import org.orekit.czml.object.utils.DateUtils;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.primary.entities.Spacecraft;
+import org.orekit.czml.object.utils.DateUtils;
 import org.orekit.frames.FramesFactory;
 import org.orekit.propagation.BoundedPropagator;
 import org.orekit.time.AbsoluteDate;
@@ -41,6 +42,16 @@ public class OrientationTest
     extends
     AbstractTest {
 
+    /** Initialise orekit data. */
+    private final double data = initializeOrekitData();
+
+    final Header header = dummyHeader();
+
+    final AbsoluteDate startDate =
+        DateUtils.toAbsoluteDate(header.getAvailability().getStart());
+
+    final AbsoluteDate stopDate = startDate.shiftedBy(60.0);
+
     /**
      * Orientation constructor test.
      *
@@ -48,51 +59,99 @@ public class OrientationTest
      * @throws URISyntaxException the uri syntax exception
      */
     @Test
+    @DisplayName("Orientation constructor test")
     void OrientationConstructorTest()
         throws IOException,
             URISyntaxException {
 
-        loadOrekitData();
-
-        final Header header = dummyHeader();
-        final AbsoluteDate startDate =
-            DateUtils.toAbsoluteDate(header.getAvailability().getStart());
-        final AbsoluteDate stopDate = startDate.shiftedBy(60.0);
-
         final BoundedPropagator propagator =
             dummyPropagator(startDate, stopDate, dummyOrbit(startDate));
-        final Spacecraft satellite =
+        final Spacecraft spacecraft =
             new Spacecraft(propagator, header.getClock());
 
-        final List<Attitude> attitudes = satellite.getAttitudes();
+        final List<Attitude> attitudes = spacecraft.getAttitudes();
 
         final String pathFile =
             loadResources("templateFile/object/secondary/OrientationTemplate.txt");
-        final String invertPathFile =
-            loadResources("templateFile/object/secondary/OrientationInvertTemplate.txt");
-        final String withBuilderPathFile =
-            loadResources("templateFile/object/secondary/OrientationWithBuilderTemplate.txt");
-        final String falseInvertPathFile =
-            loadResources("templateFile/object/secondary/OrientationFalseInvertTemplate.txt");
 
         final Orientation orientation =
             new Orientation(attitudes, FramesFactory.getEME2000());
+
+        verifyFileOutput(pathFile, orientation.toString(), 1e-8);
+
+        Assertions.assertEquals(attitudes, orientation.getAttitudes());
+    }
+
+    @Test
+    @DisplayName("Orientation with builder constructor test")
+    public void OrientationBuilderConstructorTest()
+        throws URISyntaxException,
+            IOException {
+
+        final BoundedPropagator propagator =
+            dummyPropagator(startDate, stopDate, dummyOrbit(startDate));
+        final Spacecraft spacecraft =
+            new Spacecraft(propagator, header.getClock());
+
+        final List<Attitude> attitudes = spacecraft.getAttitudes();
+
         final Orientation orientationWithBuilder =
             Orientation.builder(attitudes.get(0), FramesFactory.getEME2000())
                 .build();
+
+        // Reference file
+        final String withBuilderPathFile =
+            loadResources("templateFile/object/secondary/OrientationWithBuilderTemplate.txt");
+
+        verifyFileOutput(withBuilderPathFile, orientationWithBuilder.toString(),
+                         1e-8);
+    }
+
+    @Test
+    @DisplayName("Orientation inverted constructor test")
+    public void OrientationInvertedConstructorTest()
+        throws URISyntaxException,
+            IOException {
+
+        final BoundedPropagator propagator =
+            dummyPropagator(startDate, stopDate, dummyOrbit(startDate));
+        final Spacecraft spacecraft =
+            new Spacecraft(propagator, header.getClock());
+
+        final List<Attitude> attitudes = spacecraft.getAttitudes();
+
         final Orientation orientationInvert =
             new Orientation(attitudes, FramesFactory.getEME2000(), true, null);
+
+        // Reference file
+        final String invertPathFile =
+            loadResources("templateFile/object/secondary/OrientationInvertTemplate.txt");
+
+        verifyFileOutput(invertPathFile, orientationInvert.toString(), 1e-8);
+    }
+
+    @Test
+    @DisplayName("Orientation false invert constructor test")
+    public void OrientationFalseInvertConstructorTest()
+        throws URISyntaxException,
+            IOException {
+
+        final BoundedPropagator propagator =
+            dummyPropagator(startDate, stopDate, dummyOrbit(startDate));
+        final Spacecraft spacecraft =
+            new Spacecraft(propagator, header.getClock());
+
+        final List<Attitude> attitudes = spacecraft.getAttitudes();
+
         final Orientation orientationFalseInvert =
             new Orientation(attitudes, FramesFactory.getEME2000(), false,
                             new Rotation(1.0, 0.0, 0.0, 1.0, false));
 
-        verifyFileOutput(pathFile, orientation.toString(), 1e-8);
-        verifyFileOutput(invertPathFile, orientationInvert.toString(), 1e-8);
-        verifyFileOutput(withBuilderPathFile, orientationWithBuilder.toString(),
-                         1e-8);
+        // Reference file
+        final String falseInvertPathFile =
+            loadResources("templateFile/object/secondary/OrientationFalseInvertTemplate.txt");
+
         verifyFileOutput(falseInvertPathFile, orientationFalseInvert.toString(),
                          1e-8);
-
-        Assertions.assertEquals(attitudes, orientation.getAttitudes());
     }
 }

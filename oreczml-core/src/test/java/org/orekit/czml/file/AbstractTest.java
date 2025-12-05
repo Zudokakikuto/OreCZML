@@ -113,12 +113,6 @@ public class AbstractTest {
     public static final double CLASSIC_DURATION_OF_SIMULATION = 10 * 3600; // in
     // seconds;
 
-    /** user home. */
-    private static final String USER_HOME = "user.home";
-
-    /** orekit data. */
-    private static final String OREKIT_DATA = "orekit-data";
-
     /** The root of the project. */
     private static String ROOT =
         System.getProperty("user.dir").replace("oreczml-core", "");
@@ -142,6 +136,11 @@ public class AbstractTest {
         }
     }
 
+    protected final double initializeOrekitData() {
+        loadOrekitData();
+        return 1;
+    }
+
     /**
      * Load resources string.
      *
@@ -149,7 +148,7 @@ public class AbstractTest {
      * @return the string
      */
     public static String loadResources(final String resourcePath) {
-        return new File(GlobalTests.class.getClassLoader()
+        return new File(AbstractTest.class.getClassLoader()
             .getResource(resourcePath).getFile()).toPath().toString();
     }
 

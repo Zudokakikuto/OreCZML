@@ -6,6 +6,8 @@ import org.hipparchus.linear.MatrixUtils;
 import org.hipparchus.linear.RealMatrix;
 import org.hipparchus.util.FastMath;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.czml.archi.factory.BodyFactory;
@@ -68,397 +70,799 @@ public class CloningTest
     extends
     AbstractTest {
 
-    /** The test of all the cloning function. */
-    @Test
-    void cloningTest()
+    /** Initialise orekit data. */
+    private final double data = initializeOrekitData();
+
+    /** Header. */
+    private final Header dummyHeader = dummyHeader();
+
+    /** Clock. */
+    private final Clock clock = dummyHeader.getClock();
+
+    // Dates
+
+    /** Start date. */
+    private final AbsoluteDate startDate =
+        DateUtils.toAbsoluteDate(dummyHeader.getAvailability().getStart());
+
+    /** Final date. */
+    private final AbsoluteDate finalDate =
+        DateUtils.toAbsoluteDate(dummyHeader.getAvailability().getStop());
+
+    // Orbits
+
+    /** First orbit. */
+    private final Orbit firstOrbit =
+        dummyOrbit(startDate, 7900000, 0, 10, 0, 0, 0);
+
+    /** Second orbit. */
+    private final Orbit secondOrbit =
+        dummyOrbit(startDate, 7900000, 0, -10, 0, 0.1, 0);
+
+    /** Orbit or coverage. */
+    private final Orbit orbitCovering =
+        new KeplerianOrbit(7878000, 0, FastMath.toRadians(20), 0,
+                           FastMath.toRadians(0), FastMath.toRadians(0),
+                           PositionAngleType.MEAN, FramesFactory.getEME2000(),
+                           startDate, Constants.WGS84_EARTH_MU);
+
+    // Propagators
+
+    /** First propagator with ephemeris. */
+    private final PropagatorWithEphemeris propagatorWithEphemeris1 =
+        dummyNumericalPropagatorWithEphemeris(startDate, finalDate, firstOrbit);
+
+    /** Second propagator with ephemeris. */
+    private final PropagatorWithEphemeris propagatorWithEphemeris2 =
+        dummyNumericalPropagatorWithEphemeris(startDate, finalDate,
+                                              secondOrbit);
+
+    /** First numerical propagator. */
+    private final NumericalPropagator mockNumericalPropagator1 =
+        propagatorWithEphemeris1.getPropagator();
+
+    /** Second numerical propagator. */
+    private final NumericalPropagator mockNumericalPropagator2 =
+        propagatorWithEphemeris2.getPropagator();
+
+    /** First mocked bounded propagator. */
+    private final BoundedPropagator mockBoundedPropagator1 =
+        propagatorWithEphemeris1.getEphemeris();
+
+    /** Second mocked bounded propagator. */
+    private final BoundedPropagator mockBoundedPropagator2 =
+        propagatorWithEphemeris2.getEphemeris();
+
+    /** Coverage bounded propagator. */
+    private final BoundedPropagator boundedPropagatorCovering =
+        dummyPropagator(startDate, finalDate, orbitCovering);
+
+    /** List of bounded propagators. */
+    private final List<BoundedPropagator> boundedPropagators =
+        new ArrayList<>();
+
+    // Spacecrafts
+
+    /** First mocked spacecraft. */
+    private final Spacecraft mockSpacecraft1 =
+        Spacecraft.builder(mockBoundedPropagator1, clock).build();
+
+    /** Second mocked spacecraft. */
+    private final Spacecraft mockSpacecraft2 =
+        Spacecraft.builder(mockBoundedPropagator2, clock).build();
+
+    // Bodies
+
+    /** Body of Mars. */
+    private final Body mars = BodyFactory.getMars(clock);
+
+    // Covariances
+
+    /** Matrix of covariance. */
+    private final RealMatrix realMatrix =
+        MatrixUtils.createRealDiagonalMatrix(new double[] {
+            20000 *
+                                                            20000,
+            1e-6, 1e-6, 1e-6, 1e-6, (36 * 4.848e-6) * (36 * 4.848e-6)
+        });
+
+    /** State covariance. */
+    private final StateCovariance stateCovariance =
+        new StateCovariance(realMatrix, startDate, FramesFactory.getEME2000(),
+                            OrbitType.EQUINOCTIAL, PositionAngleType.MEAN);
+
+    // Propagation of the covariances
+
+    /** First covariance propagated. */
+    final List<StateCovariance> covariances1 =
+        covariancePropagation(mockSpacecraft1, mockNumericalPropagator1,
+                              stateCovariance, clock);
+
+    /** Second covariance propagated. */
+    final List<StateCovariance> covariances2 =
+        covariancePropagation(mockSpacecraft2, mockNumericalPropagator2,
+                              stateCovariance, clock);
+
+    // Topocentric frames
+    // Creation of a topocentric frame around Toulouse.
+
+    /** Toulouse point. */
+    final GeodeticPoint toulousePoint =
+        new GeodeticPoint(FastMath.toRadians(43.6047),
+                          FastMath.toRadians(1.4442), 10);
+
+    /** Toulouse frame. */
+    final TopocentricFrame topocentricToulouse =
+        new TopocentricFrame(AbstractTest.getEarth(), toulousePoint,
+                             "Toulouse");
+
+    // Creation of a topocentric frame around Quito
+
+    /** Quito point. */
+    final GeodeticPoint quitoPoint =
+        new GeodeticPoint(FastMath.toRadians(0.1807),
+                          FastMath.toRadians(11.5382), 2850);
+
+    /** Quito frame. */
+    final TopocentricFrame topocentricQuito =
+        new TopocentricFrame(getEarth(), quitoPoint, "Quito");
+
+    // Creation of a list of topocentric frame
+    final List<TopocentricFrame> topocentricFrames = new ArrayList<>();
+
+    /** Default constructor. */
+    public CloningTest()
         throws URISyntaxException,
             IOException {
+    }
 
-        // Initialisation of all needed objects to begin cloning tests
-        loadOrekitData();
-        final Header dummyHeader = dummyHeader();
-        final Clock clock = dummyHeader.getClock();
-        final AbsoluteDate startDate =
-            DateUtils.toAbsoluteDate(dummyHeader.getAvailability().getStart());
-        final AbsoluteDate finalDate =
-            DateUtils.toAbsoluteDate(dummyHeader.getAvailability().getStop());
-        final Orbit firstOrbit = dummyOrbit(startDate, 7900000, 0, 10, 0, 0, 0);
-        final Orbit secondOrbit =
-            dummyOrbit(startDate, 7900000, 0, -10, 0, 0.1, 0);
-        final PropagatorWithEphemeris propagatorWithEphemeris1 =
-            dummyNumericalPropagatorWithEphemeris(startDate, finalDate,
-                                                  firstOrbit);
-        final PropagatorWithEphemeris propagatorWithEphemeris2 =
-            dummyNumericalPropagatorWithEphemeris(startDate, finalDate,
-                                                  secondOrbit);
-        final NumericalPropagator mockNumericalPropagator1 =
-            propagatorWithEphemeris1.getPropagator();
-        final NumericalPropagator mockNumericalPropagator2 =
-            propagatorWithEphemeris2.getPropagator();
-        final BoundedPropagator mockBoundedPropagator1 =
-            propagatorWithEphemeris1.getEphemeris();
-        final BoundedPropagator mockBoundedPropagator2 =
-            propagatorWithEphemeris2.getEphemeris();
-        final Spacecraft mockSpacecraft1 =
-            Spacecraft.builder(mockBoundedPropagator1, clock).build();
-        final Spacecraft mockSpacecraft2 =
-            Spacecraft.builder(mockBoundedPropagator2, clock).build();
-        final List<BoundedPropagator> boundedPropagators = new ArrayList<>();
-        boundedPropagators.add(mockBoundedPropagator1);
-        boundedPropagators.add(mockBoundedPropagator2);
-        final Body mars = BodyFactory.getMars(clock);
+    @Nested
+    class PrimaryObjectsCloningTest {
 
-        // Build of the covariance
-        final RealMatrix realMatrix =
-            MatrixUtils.createRealDiagonalMatrix(new double[] {
-                20000 *
-                                                                20000,
-                1e-6, 1e-6, 1e-6, 1e-6, (36 * 4.848e-6) * (36 * 4.848e-6)
-            });
-        final StateCovariance stateCovariance =
-            new StateCovariance(realMatrix, startDate,
-                                FramesFactory.getEME2000(),
-                                OrbitType.EQUINOCTIAL, PositionAngleType.MEAN);
-        final List<StateCovariance> covariances1 =
-            covariancePropagation(mockSpacecraft1, mockNumericalPropagator1,
-                                  stateCovariance, clock);
-        final List<StateCovariance> covariances2 =
-            covariancePropagation(mockSpacecraft2, mockNumericalPropagator2,
-                                  stateCovariance, clock);
+        @Test
+        @DisplayName("Cloning of collision")
+        void CollisionCloningTest() {
 
-        // Creation of a topocentric frame around Toulouse.
-        final GeodeticPoint toulouseFrame =
-            new GeodeticPoint(FastMath.toRadians(43.6047),
-                              FastMath.toRadians(1.4442), 10);
-        final TopocentricFrame topocentricToulouse =
-            new TopocentricFrame(AbstractTest.getEarth(), toulouseFrame,
-                                 "Toulouse");
+            // Collision
+            final Collision collision =
+                Collision
+                    .builder(mockSpacecraft1, mockSpacecraft2, covariances1,
+                             covariances2, LOFType.TNW, LOFType.TNW)
+                    .build();
+            final Collision collisionCloned = collision.cloneObject();
+            Assertions.assertEquals(collision.toString(),
+                                    collisionCloned.toString());
 
-        // Creation of a topocentric frame around Quito
-        final GeodeticPoint quitoFrame =
-            new GeodeticPoint(FastMath.toRadians(0.1807),
-                              FastMath.toRadians(11.5382), 2850);
-        final TopocentricFrame topocentricQuito =
-            new TopocentricFrame(getEarth(), quitoFrame, "Quito");
+        }
 
-        // Creation of a list of topocentric frame
-        final List<TopocentricFrame> topocentricFrames = new ArrayList<>();
-        topocentricFrames.add(topocentricToulouse);
-        topocentricFrames.add(topocentricQuito);
+        @Test
+        @DisplayName("Cloning of covariance")
+        void CovarianceCloningTest()
+            throws URISyntaxException,
+                IOException {
 
-        // Field of observation build
-        final Orbit orbitCovering =
-            new KeplerianOrbit(7878000, 0, FastMath.toRadians(20), 0,
-                               FastMath.toRadians(0), FastMath.toRadians(0),
-                               PositionAngleType.MEAN,
-                               FramesFactory.getEME2000(), startDate,
-                               Constants.WGS84_EARTH_MU);
-        final SpacecraftState initialStateCovering =
-            new SpacecraftState(orbitCovering);
-        final BoundedPropagator boundedPropagatorCovering =
-            dummyPropagator(startDate, finalDate, orbitCovering);
-        final SinusoidalLof sinusoidalLof =
-            new SinusoidalLof(FramesFactory.getEME2000(), LOFType.VNC,
-                              Vector3D.PLUS_I, 3600, FastMath.toRadians(45.0),
-                              initialStateCovering.getDate());
-        boundedPropagatorCovering.setAttitudeProvider(sinusoidalLof);
-        boundedPropagatorCovering.propagate(startDate, finalDate);
-        final Spacecraft coveringSpacecraft =
-            Spacecraft.builder(boundedPropagatorCovering, clock)
-                .withColor(Color.RED).withOnlyOnePeriod().withDisplayAttitude()
-                .withReferenceSystem().build();
-        // Creation of the field of observation of the satellite, it describes
-        // the area the satellite see
-        final Transform initialInertToBody =
-            initialStateCovering.getFrame()
-                .getTransformTo(getEarth().getBodyFrame(),
-                                initialStateCovering.getDate());
-        final Transform initialFovBody =
-            new Transform(initialStateCovering.getDate(),
-                          initialStateCovering.toTransform().getInverse(),
-                          initialInertToBody);
-        final FieldOfView fov =
-            new DoubleDihedraFieldOfView(Vector3D.MINUS_K, Vector3D.PLUS_I,
-                                         FastMath.toRadians(20),
-                                         Vector3D.PLUS_J,
-                                         FastMath.toRadians(20), 2);
-        final FieldOfObservation fieldOfObservation =
-            FieldOfObservation.builder(coveringSpacecraft, fov, initialFovBody)
-                .build();
+            // Covariance
+            final Covariance covariance =
+                Covariance.builder(mockSpacecraft1, covariances1, LOFType.TNW)
+                    .build();
+            final Covariance covarianceCloned = covariance.cloneObject();
+            Assertions.assertEquals(covariance.toString(),
+                                    covarianceCloned.toString());
 
-        // CLONING TESTS
+        }
 
-        // Collision
-        final Collision collision =
-            Collision.builder(mockSpacecraft1, mockSpacecraft2, covariances1,
-                              covariances2, LOFType.TNW, LOFType.TNW)
-                .build();
-        final Collision collisionCloned = collision.cloneObject();
-        Assertions.assertEquals(collision.toString(),
-                                collisionCloned.toString());
+        @Test
+        @DisplayName("Cloning of body")
+        void BodyCloningTest() {
 
-        // Covariance
-        final Covariance covariance =
-            Covariance.builder(mockSpacecraft1, covariances1, LOFType.TNW)
-                .build();
-        final Covariance covarianceCloned = covariance.cloneObject();
-        Assertions.assertEquals(covariance.toString(),
-                                covarianceCloned.toString());
+            // Body
+            final Body body = BodyFactory.getMoon(clock);
+            final Body bodyCloned = body.cloneObject();
+            Assertions.assertEquals(body.toString(), bodyCloned.toString());
+        }
 
-        // Body
-        final Body body = BodyFactory.getMoon(clock);
-        final Body bodyCloned = body.cloneObject();
-        Assertions.assertEquals(body.toString(), bodyCloned.toString());
+        @Test
+        @DisplayName("Cloning of constellation")
+        void ConstellationCloningTest()
+            throws URISyntaxException,
+                IOException {
 
-        // Constellation
-        final Constellation constellation =
-            Constellation.builder(boundedPropagators, finalDate, clock).build();
-        final Constellation constellationCloned = constellation.cloneObject();
-        Assertions.assertEquals(constellation.toString(),
-                                constellationCloned.toString());
+            boundedPropagators.add(mockBoundedPropagator1);
+            boundedPropagators.add(mockBoundedPropagator2);
+            // Constellation
+            final Constellation constellation =
+                Constellation.builder(boundedPropagators, finalDate, clock)
+                    .build();
+            final Constellation constellationCloned =
+                constellation.cloneObject();
+            Assertions.assertEquals(constellation.toString(),
+                                    constellationCloned.toString());
+            boundedPropagators.clear();
+        }
 
-        // Ground Station
-        final CzmlGroundStation groundStation =
-            CzmlGroundStation.builder(topocentricToulouse, clock).build();
-        final CzmlGroundStation groundStationCloned =
-            groundStation.cloneObject();
-        Assertions.assertEquals(groundStation.toString(),
-                                groundStationCloned.toString());
+        @Test
+        @DisplayName("Cloning of ground station")
+        void GroundStationCloningTest()
+            throws URISyntaxException,
+                IOException {
 
-        // Influence sphere
-        final InfluenceSphere influenceSphere =
-            InfluenceSphere.builder(mars, clock).build();
-        final InfluenceSphere influenceSphereCloned =
-            influenceSphere.cloneObject();
-        Assertions.assertEquals(influenceSphere.toString(),
-                                influenceSphereCloned.toString());
+            // Ground Station
+            final CzmlGroundStation groundStation =
+                CzmlGroundStation.builder(topocentricToulouse, clock).build();
+            final CzmlGroundStation groundStationCloned =
+                groundStation.cloneObject();
+            Assertions.assertEquals(groundStation.toString(),
+                                    groundStationCloned.toString());
+        }
 
-        // Spacecraft
-        final Spacecraft spacecraftCloned = mockSpacecraft1.cloneObject();
-        Assertions.assertEquals(mockSpacecraft1.toString(),
-                                spacecraftCloned.toString());
+        @Test
+        @DisplayName("Cloning of influence sphere")
+        void InfluenceSphereCloningTest() {
 
-        // Attitude Pointing
-        mockSpacecraft1.displaySpacecraftAttitude();
-        final AttitudePointing attitudePointing =
-            AttitudePointing
-                .builder(mockSpacecraft1, getEarth(), Vector3D.MINUS_J, clock)
-                .build();
-        final AttitudePointing attitudePointingCloned =
-            attitudePointing.cloneObject();
-        Assertions.assertEquals(attitudePointing.toString(),
-                                attitudePointingCloned.toString());
+            // Influence sphere
+            final InfluenceSphere influenceSphere =
+                InfluenceSphere.builder(mars, clock).build();
+            final InfluenceSphere influenceSphereCloned =
+                influenceSphere.cloneObject();
+            Assertions.assertEquals(influenceSphere.toString(),
+                                    influenceSphereCloned.toString());
+        }
 
-        // Covered Surface On Body
-        final CoveredSurfaceOnBody coveredSurfaceOnBody =
-            CoveredSurfaceOnBody.builder(coveringSpacecraft, fieldOfObservation)
-                .withColor(Color.RED).withFill(false).withOutline(true).build();
-        final CoveredSurfaceOnBody coveredSurfaceOnBodyCloned =
-            coveredSurfaceOnBody.cloneObject();
-        Assertions.assertEquals(coveredSurfaceOnBody.toString(),
-                                coveredSurfaceOnBodyCloned.toString());
+        @Test
+        @DisplayName("Cloning of spacecraft")
+        void SpacecraftCloningTest() {
 
-        // Central Body Reference System
-        final CentralBodyReferenceSystem system =
-            CentralBodyReferenceSystem.builder(clock).build();
-        final CentralBodyReferenceSystem systemCloned = system.cloneObject();
-        Assertions.assertEquals(system.toString(), systemCloned.toString());
+            // Spacecraft
+            final Spacecraft spacecraftCloned = mockSpacecraft1.cloneObject();
+            Assertions.assertEquals(mockSpacecraft1.toString(),
+                                    spacecraftCloned.toString());
+        }
 
-        // Lat long lines
-        final LatLongLines lines = LatLongLines.builder(clock).build();
-        final LatLongLines linesCloned = lines.cloneObject();
-        Assertions.assertEquals(lines.toString(), linesCloned.toString());
+        @Test
+        @DisplayName("Cloning of attitude pointing")
+        void AttitudePointingCloningTest() {
 
-        // Spacecraft Reference system
-        final SpacecraftReferenceSystem spacecraftReferenceSystem =
-            new SpacecraftReferenceSystem(mockSpacecraft1);
-        final SpacecraftReferenceSystem spacecraftReferenceSystemCloned =
-            spacecraftReferenceSystem.cloneObject();
-        Assertions.assertEquals(spacecraftReferenceSystem.toString(),
-                                spacecraftReferenceSystemCloned.toString());
+            // Attitude Pointing
+            mockSpacecraft1.displaySpacecraftAttitude();
+            final AttitudePointing attitudePointing =
+                AttitudePointing.builder(mockSpacecraft1, getEarth(),
+                                         Vector3D.MINUS_J, clock)
+                    .build();
+            final AttitudePointing attitudePointingCloned =
+                attitudePointing.cloneObject();
+            Assertions.assertEquals(attitudePointing.toString(),
+                                    attitudePointingCloned.toString());
+        }
 
-        // Field of Observation
-        final FieldOfObservation fieldOfObservationCloned =
-            fieldOfObservation.cloneObject();
-        Assertions.assertEquals(fieldOfObservation.toString(),
-                                fieldOfObservationCloned.toString());
+        @Test
+        @DisplayName("Cloning of covered surface on body")
+        void CoveredSurfaceOnBodyCloningTest()
+            throws URISyntaxException,
+                IOException {
 
-        // Inter Sat Visu
-        // With Spacecraft
-        final InterSatVisu interSatVisuSpacecraft =
-            InterSatVisu
-                .builder(mockSpacecraft1, mockSpacecraft2, finalDate, clock)
-                .build();
-        final InterSatVisu interSatVisuSpacecraftCloned =
-            interSatVisuSpacecraft.cloneObject();
-        Assertions.assertEquals(interSatVisuSpacecraft.toString(),
-                                interSatVisuSpacecraftCloned.toString());
-        // With propagator list
-        final InterSatVisu interSatVisuList =
-            InterSatVisu.builder(boundedPropagators, finalDate, clock).build();
-        final InterSatVisu interSatVisuListCloned =
-            interSatVisuList.cloneObject();
-        Assertions.assertEquals(interSatVisuList.toString(),
-                                interSatVisuListCloned.toString());
-        // With Constellation
-        final InterSatVisu interSatVisuConstellation =
-            InterSatVisu.builder(constellation, finalDate, clock).build();
-        final InterSatVisu interSatVisuConstellationCloned =
-            interSatVisuConstellation.cloneObject();
-        Assertions.assertEquals(interSatVisuConstellation.toString(),
-                                interSatVisuConstellationCloned.toString());
+            // Initialisation of the field of view
+            final SpacecraftState initialStateCovering =
+                new SpacecraftState(orbitCovering);
+            final SinusoidalLof sinusoidalLof =
+                new SinusoidalLof(FramesFactory.getEME2000(), LOFType.VNC,
+                                  Vector3D.PLUS_I, 3600,
+                                  FastMath.toRadians(45.0),
+                                  initialStateCovering.getDate());
+            boundedPropagatorCovering.setAttitudeProvider(sinusoidalLof);
+            boundedPropagatorCovering.propagate(startDate, finalDate);
 
-        // Line of visibility
-        // With spacecraft
-        final LineOfVisibility lineOfVisibilitySpacecraft =
-            LineOfVisibility
-                .builder(topocentricToulouse, mockSpacecraft1, clock).build();
-        final LineOfVisibility lineOfVisibilitySpacecraftCloned =
-            lineOfVisibilitySpacecraft.cloneObject();
-        Assertions.assertEquals(lineOfVisibilitySpacecraft.toString(),
-                                lineOfVisibilitySpacecraftCloned.toString());
-        // With Constellation
-        final LineOfVisibility lineOfVisibilityConstellation =
-            LineOfVisibility.builder(topocentricToulouse, constellation, clock)
-                .build();
-        final LineOfVisibility lineOfVisibilityConstellationCloned =
-            lineOfVisibilityConstellation.cloneObject();
-        Assertions.assertEquals(lineOfVisibilityConstellation.toString(),
-                                lineOfVisibilityConstellationCloned.toString());
+            final Spacecraft spacecraft =
+                Spacecraft.builder(boundedPropagatorCovering, clock)
+                    .withColor(Color.RED).withOnlyOnePeriod()
+                    .withDisplayAttitude().withReferenceSystem().build();
 
-        // Multiple line of visibility
-        // With Spacecraft
-        final MultipleLineOfVisibility multipleLineOfVisibilitySpacecraft =
-            MultipleLineOfVisibility.builder(topocentricFrames, mockSpacecraft1)
-                .build();
-        final MultipleLineOfVisibility multipleLineOfVisibilitySpacecraftCloned =
-            multipleLineOfVisibilitySpacecraft.cloneObject();
-        Assertions
-            .assertEquals(multipleLineOfVisibilitySpacecraft.toString(),
-                          multipleLineOfVisibilitySpacecraftCloned.toString());
-        // With Constellation
-        final MultipleLineOfVisibility multipleLineOfVisibilityConstellation =
-            MultipleLineOfVisibility.builder(topocentricFrames, constellation)
-                .build();
-        final MultipleLineOfVisibility multipleLineOfVisibilityConstellationCloned =
-            multipleLineOfVisibilityConstellation.cloneObject();
-        Assertions
-            .assertEquals(multipleLineOfVisibilityConstellation.toString(),
-                          multipleLineOfVisibilityConstellationCloned
-                              .toString());
+            // Creation of the field of observation of the satellite, it
+            // describes
+            // the area the satellite see
+            final Transform initialInertToBody =
+                initialStateCovering.getFrame()
+                    .getTransformTo(getEarth().getBodyFrame(),
+                                    initialStateCovering.getDate());
+            final Transform initialFovBody =
+                new Transform(initialStateCovering.getDate(),
+                              initialStateCovering.toTransform().getInverse(),
+                              initialInertToBody);
+            final FieldOfView fov =
+                new DoubleDihedraFieldOfView(Vector3D.MINUS_K, Vector3D.PLUS_I,
+                                             FastMath.toRadians(20),
+                                             Vector3D.PLUS_J,
+                                             FastMath.toRadians(20), 2);
+            final FieldOfObservation fieldOfObservation =
+                FieldOfObservation.builder(spacecraft, fov, initialFovBody)
+                    .build();
 
-        // Station visibility circle
-        final StationVisibilityCircle circle =
-            StationVisibilityCircle
-                .builder(topocentricToulouse, mockSpacecraft1, clock).build();
-        final StationVisibilityCircle circleCloned = circle.cloneObject();
-        Assertions.assertEquals(circle.toString(), circleCloned.toString());
+            // Covered Surface On Body
+            final CoveredSurfaceOnBody coveredSurfaceOnBody =
+                CoveredSurfaceOnBody.builder(spacecraft, fieldOfObservation)
+                    .withColor(Color.RED).withFill(false).withOutline(true)
+                    .build();
+            final CoveredSurfaceOnBody coveredSurfaceOnBodyCloned =
+                coveredSurfaceOnBody.cloneObject();
+            Assertions.assertEquals(coveredSurfaceOnBody.toString(),
+                                    coveredSurfaceOnBodyCloned.toString());
+        }
 
-        // Visibility Cone
-        final VisibilityCone cone =
-            new VisibilityCone(topocentricToulouse, mockSpacecraft1, 90.0,
-                               clock);
-        final VisibilityCone coneCloned = cone.cloneObject();
-        Assertions.assertEquals(cone.toString(), coneCloned.toString());
+        @Test
+        @DisplayName("Cloning of central body reference system")
+        void CentralBodyReferenceSystemCloningTest() {
 
-        // Ground Track
-        // With Spacecraft
-        final GroundTrack groundTrack =
-            GroundTrack.builder(mockSpacecraft1, getEarth(), clock).build();
-        final GroundTrack groundTrackCloned = groundTrack.cloneObject();
-        Assertions.assertEquals(groundTrack.toString(),
-                                groundTrackCloned.toString());
+            // Central Body Reference System
+            final CentralBodyReferenceSystem system =
+                CentralBodyReferenceSystem.builder(clock).build();
 
-        // Header
-        final Header headerCloned = dummyHeader.cloneObject();
-        Assertions.assertEquals(dummyHeader.toString(),
-                                headerCloned.toString());
+            final CentralBodyReferenceSystem systemCloned =
+                system.cloneObject();
+            Assertions.assertEquals(system.toString(), systemCloned.toString());
+        }
 
-        // Maneuver Sequence
-        final ManeuverSequence sequence =
-            dummyManeuverSequence(startDate, finalDate, mockSpacecraft1);
-        final ManeuverSequence sequenceCloned = sequence.cloneObject();
-        Assertions.assertEquals(sequence.toString(), sequenceCloned.toString());
+        @Test
+        @DisplayName("Cloning of latitude longitude lines")
+        void LatitudeLongitudeLinesCloningTest() {
 
-        // Billboard
-        final Billboard billboard =
-            new Billboard(Spacecraft.DEFAULT_MODEL_PATH);
-        final Billboard billboardCloned = billboard.cloneObject();
-        Assertions.assertEquals(billboard.toString(),
-                                billboardCloned.toString());
+            // Lat long lines
+            final LatLongLines lines = LatLongLines.builder(clock).build();
 
-        // Clock
-        final Clock clockCloned = clock.cloneObject();
-        Assertions.assertEquals(clock.toString(), clockCloned.toString());
+            final LatLongLines linesCloned = lines.cloneObject();
+            Assertions.assertEquals(lines.toString(), linesCloned.toString());
+        }
 
-        // Cylinder
-        final Cylinder cylinder =
-            new Cylinder(topocentricToulouse, mockSpacecraft1, 90.0, clock);
-        final Cylinder cylinderCloned = cylinder.cloneObject();
-        Assertions.assertEquals(cylinder.toString(), cylinderCloned.toString());
+        @Test
+        @DisplayName("Cloning of spacecraft reference system")
+        void SpacecraftReferenceSystemCloningTest() {
 
-        // CzmlEllipsoid
-        // With cartesians
-        final Cartesian dummyCartesian = new Cartesian(40, 10, 5);
-        final CzmlEllipsoid ellipsoidCartesian =
-            CzmlEllipsoid.builder(dummyCartesian, clock).build();
-        final CzmlEllipsoid ellipsoidCartesianCloned =
-            ellipsoidCartesian.cloneObject();
-        Assertions.assertEquals(ellipsoidCartesian.toString(),
-                                ellipsoidCartesianCloned.toString());
-        // With julian dates
-        final CzmlEllipsoid ellipsoidJD =
-            CzmlEllipsoid
-                .builder(mockSpacecraft1.getJulianDates(),
-                         mockSpacecraft1.getCartesianArraylist(), clock)
-                .build();
-        final CzmlEllipsoid ellipsoidJDCloned = ellipsoidJD.cloneObject();
-        Assertions.assertEquals(ellipsoidJD.toString(),
-                                ellipsoidJDCloned.toString());
+            // Spacecraft Reference system
+            final SpacecraftReferenceSystem spacecraftReferenceSystem =
+                new SpacecraftReferenceSystem(mockSpacecraft1);
 
-        // Label
-        final Label label = new Label("Text", Color.RED);
-        final Label labelCloned = label.cloneObject();
-        Assertions.assertEquals(label.toString(), labelCloned.toString());
+            final SpacecraftReferenceSystem spacecraftReferenceSystemCloned =
+                spacecraftReferenceSystem.cloneObject();
+            Assertions.assertEquals(spacecraftReferenceSystem.toString(),
+                                    spacecraftReferenceSystemCloned.toString());
 
-        // Orientation
-        // Single attitude
-        final Orientation orientationSingleAttitude =
-            Orientation.builder(mockSpacecraft1.getAttitudes().get(0),
-                                FramesFactory.getEME2000())
-                .build();
-        final Orientation orientationSingleAttitudeCloned =
-            orientationSingleAttitude.cloneObject();
-        Assertions.assertEquals(orientationSingleAttitude.toString(),
-                                orientationSingleAttitudeCloned.toString());
-        // Multiple Attitudes
-        final Orientation orientationMultipleAttitudes =
-            Orientation.builder(mockSpacecraft1.getAttitudes(),
-                                FramesFactory.getEME2000())
-                .build();
-        final Orientation orientationMultipleAttitudesCloned =
-            orientationMultipleAttitudes.cloneObject();
-        Assertions.assertEquals(orientationMultipleAttitudes.toString(),
-                                orientationMultipleAttitudesCloned.toString());
+        }
 
-        // Path
-        final Path path = new Path(clock.getAvailability(), true);
-        final Path pathCloned = path.cloneObject();
-        Assertions.assertEquals(path.toString(), pathCloned.toString());
+        @Test
+        @DisplayName("Cloning of field of observation")
+        void FieldOfObservationCloningTest()
+            throws URISyntaxException,
+                IOException {
 
-        // Polygon
-        final Polygon polygon =
-            Polygon.builder(mockSpacecraft1.getCartesianArraylist(), clock)
-                .build();
-        final Polygon polygonCloned = polygon.cloneObject();
-        Assertions.assertEquals(polygon.toString(), polygonCloned.toString());
+            // Initialisation of the field of view
+            final SpacecraftState initialStateCovering =
+                new SpacecraftState(orbitCovering);
+            final SinusoidalLof sinusoidalLof =
+                new SinusoidalLof(FramesFactory.getEME2000(), LOFType.VNC,
+                                  Vector3D.PLUS_I, 3600,
+                                  FastMath.toRadians(45.0),
+                                  initialStateCovering.getDate());
+            boundedPropagatorCovering.setAttitudeProvider(sinusoidalLof);
+            boundedPropagatorCovering.propagate(startDate, finalDate);
 
-        // Time position
-        final TimePosition timePosition =
-            new TimePosition(mockSpacecraft1.getCartesianArraylist(),
-                             mockSpacecraft1.getJulianDates());
-        final TimePosition timePositionCloned = timePosition.cloneObject();
-        Assertions.assertEquals(timePosition.toString(),
-                                timePositionCloned.toString());
+            final Spacecraft spacecraft =
+                Spacecraft.builder(boundedPropagatorCovering, clock)
+                    .withColor(Color.RED).withOnlyOnePeriod()
+                    .withDisplayAttitude().withReferenceSystem().build();
+
+            // Creation of the field of observation of the satellite, it
+            // describes
+            // the area the satellite see
+            final Transform initialInertToBody =
+                initialStateCovering.getFrame()
+                    .getTransformTo(getEarth().getBodyFrame(),
+                                    initialStateCovering.getDate());
+            final Transform initialFovBody =
+                new Transform(initialStateCovering.getDate(),
+                              initialStateCovering.toTransform().getInverse(),
+                              initialInertToBody);
+            final FieldOfView fov =
+                new DoubleDihedraFieldOfView(Vector3D.MINUS_K, Vector3D.PLUS_I,
+                                             FastMath.toRadians(20),
+                                             Vector3D.PLUS_J,
+                                             FastMath.toRadians(20), 2);
+            final FieldOfObservation fieldOfObservation =
+                FieldOfObservation.builder(spacecraft, fov, initialFovBody)
+                    .build();
+
+            // Field of Observation
+            final FieldOfObservation fieldOfObservationCloned =
+                fieldOfObservation.cloneObject();
+            Assertions.assertEquals(fieldOfObservation.toString(),
+                                    fieldOfObservationCloned.toString());
+        }
+
+        @Test
+        @DisplayName("Cloning of inter sat visu with Spacecraft")
+        void InterSatVisuCloningTest()
+            throws URISyntaxException,
+                IOException {
+
+            // Inter Sat Visu
+            // With Spacecraft
+            final InterSatVisu interSatVisuSpacecraft =
+                InterSatVisu
+                    .builder(mockSpacecraft1, mockSpacecraft2, finalDate, clock)
+                    .build();
+            final InterSatVisu interSatVisuSpacecraftCloned =
+                interSatVisuSpacecraft.cloneObject();
+            Assertions.assertEquals(interSatVisuSpacecraft.toString(),
+                                    interSatVisuSpacecraftCloned.toString());
+        }
+
+        @Test
+        @DisplayName("Cloning of inter sat visu with propagator list")
+        void InterSatVisuPropagatorsCloningTest()
+            throws URISyntaxException,
+                IOException {
+
+            boundedPropagators.add(mockBoundedPropagator1);
+            boundedPropagators.add(mockBoundedPropagator2);
+            // With propagator list
+            final InterSatVisu interSatVisuList =
+                InterSatVisu.builder(boundedPropagators, finalDate, clock)
+                    .build();
+
+            final InterSatVisu interSatVisuListCloned =
+                interSatVisuList.cloneObject();
+            Assertions.assertEquals(interSatVisuList.toString(),
+                                    interSatVisuListCloned.toString());
+            boundedPropagators.clear();
+        }
+
+        @Test
+        @DisplayName("Cloning of inter sat visu with constellation")
+        void InterSatVisuConstellationCloningTest()
+            throws URISyntaxException,
+                IOException {
+
+            boundedPropagators.add(mockBoundedPropagator1);
+            boundedPropagators.add(mockBoundedPropagator2);
+            // Constellation
+            final Constellation constellation =
+                Constellation.builder(boundedPropagators, finalDate, clock)
+                    .build();
+            // With Constellation
+            final InterSatVisu interSatVisuConstellation =
+                InterSatVisu.builder(constellation, finalDate, clock).build();
+
+            final InterSatVisu interSatVisuConstellationCloned =
+                interSatVisuConstellation.cloneObject();
+            Assertions.assertEquals(interSatVisuConstellation.toString(),
+                                    interSatVisuConstellationCloned.toString());
+            boundedPropagators.clear();
+        }
+
+        @Test
+        @DisplayName("Cloning of line of visibility with spacecraft")
+        void LineOfVisibilitySpacecraftCloningTest()
+            throws URISyntaxException,
+                IOException {
+
+            // Line of visibility
+            // With spacecraft
+            final LineOfVisibility lineOfVisibilitySpacecraft =
+                LineOfVisibility
+                    .builder(topocentricToulouse, mockSpacecraft1, clock)
+                    .build();
+
+            final LineOfVisibility lineOfVisibilitySpacecraftCloned =
+                lineOfVisibilitySpacecraft.cloneObject();
+            Assertions
+                .assertEquals(lineOfVisibilitySpacecraft.toString(),
+                              lineOfVisibilitySpacecraftCloned.toString());
+        }
+
+        @Test
+        @DisplayName("Cloning of line of visibility with constellation")
+        void LineOfVisibilityConstellationCloningTest()
+            throws URISyntaxException,
+                IOException {
+
+            boundedPropagators.add(mockBoundedPropagator1);
+            boundedPropagators.add(mockBoundedPropagator2);
+            // Constellation
+            final Constellation constellation =
+                Constellation.builder(boundedPropagators, finalDate, clock)
+                    .build();
+            // With Constellation
+            final LineOfVisibility lineOfVisibilityConstellation =
+                LineOfVisibility
+                    .builder(topocentricToulouse, constellation, clock).build();
+
+            final LineOfVisibility lineOfVisibilityConstellationCloned =
+                lineOfVisibilityConstellation.cloneObject();
+            Assertions
+                .assertEquals(lineOfVisibilityConstellation.toString(),
+                              lineOfVisibilityConstellationCloned.toString());
+            boundedPropagators.clear();
+        }
+
+        @Test
+        @DisplayName("Cloning of multiple line of visibility with spacecraft")
+        void MultipleLineOfVisibilitySpacecraftCloningTest()
+            throws URISyntaxException,
+                IOException {
+
+            topocentricFrames.add(topocentricToulouse);
+            topocentricFrames.add(topocentricQuito);
+            // Multiple line of visibility
+            // With Spacecraft
+            final MultipleLineOfVisibility multipleLineOfVisibilitySpacecraft =
+                MultipleLineOfVisibility
+                    .builder(topocentricFrames, mockSpacecraft1).build();
+
+            final MultipleLineOfVisibility multipleLineOfVisibilitySpacecraftCloned =
+                multipleLineOfVisibilitySpacecraft.cloneObject();
+            Assertions
+                .assertEquals(multipleLineOfVisibilitySpacecraft.toString(),
+                              multipleLineOfVisibilitySpacecraftCloned
+                                  .toString());
+            topocentricFrames.clear();
+        }
+
+        @Test
+        @DisplayName("Cloning of multiple line of visibility with constellation")
+        void MultipleLineOfVisibilityConstellationCloningTest()
+            throws URISyntaxException,
+                IOException {
+
+            topocentricFrames.add(topocentricToulouse);
+            topocentricFrames.add(topocentricQuito);
+
+            boundedPropagators.add(mockBoundedPropagator1);
+            boundedPropagators.add(mockBoundedPropagator2);
+
+            // Constellation
+            final Constellation constellation =
+                Constellation.builder(boundedPropagators, finalDate, clock)
+                    .build();
+            // With Constellation
+            final MultipleLineOfVisibility multipleLineOfVisibilityConstellation =
+                MultipleLineOfVisibility
+                    .builder(topocentricFrames, constellation).build();
+
+            final MultipleLineOfVisibility multipleLineOfVisibilityConstellationCloned =
+                multipleLineOfVisibilityConstellation.cloneObject();
+            Assertions
+                .assertEquals(multipleLineOfVisibilityConstellation.toString(),
+                              multipleLineOfVisibilityConstellationCloned
+                                  .toString());
+
+            boundedPropagators.clear();
+            topocentricFrames.clear();
+        }
+
+        @Test
+        @DisplayName("Cloning of station visibility circle")
+        void StationVisibilityCircleCloningTest() {
+
+            // Station visibility circle
+            final StationVisibilityCircle circle =
+                StationVisibilityCircle
+                    .builder(topocentricToulouse, mockSpacecraft1, clock)
+                    .build();
+
+            final StationVisibilityCircle circleCloned = circle.cloneObject();
+            Assertions.assertEquals(circle.toString(), circleCloned.toString());
+
+        }
+
+        @Test
+        @DisplayName("Cloning of visibility cone")
+        void VisibilityConeCloningTest() {
+
+            // Visibility Cone
+            final VisibilityCone cone =
+                new VisibilityCone(topocentricToulouse, mockSpacecraft1, 90.0,
+                                   clock);
+
+            final VisibilityCone coneCloned = cone.cloneObject();
+            Assertions.assertEquals(cone.toString(), coneCloned.toString());
+        }
+
+        @Test
+        @DisplayName("Cloning of ground track")
+        void GrounTrackCloningTest() {
+
+            // Ground Track
+            // With Spacecraft
+            final GroundTrack groundTrack =
+                GroundTrack.builder(mockSpacecraft1, getEarth(), clock).build();
+
+            final GroundTrack groundTrackCloned = groundTrack.cloneObject();
+            Assertions.assertEquals(groundTrack.toString(),
+                                    groundTrackCloned.toString());
+        }
+
+        @Test
+        @DisplayName("Cloning of header")
+        void HeaderCloningTest() {
+
+            // Header
+            final Header headerCloned = dummyHeader.cloneObject();
+            Assertions.assertEquals(dummyHeader.toString(),
+                                    headerCloned.toString());
+        }
+
+        @Test
+        @DisplayName("Cloning of maneuver sequence")
+        void ManeuverSequenceCloningTest()
+            throws URISyntaxException,
+                IOException {
+
+            // Maneuver Sequence
+            final ManeuverSequence sequence =
+                dummyManeuverSequence(startDate, finalDate, mockSpacecraft1);
+
+            final ManeuverSequence sequenceCloned = sequence.cloneObject();
+            Assertions.assertEquals(sequence.toString(),
+                                    sequenceCloned.toString());
+        }
+    }
+
+    @Nested
+    class SecondaryObjectsCloningTest {
+
+        @Test
+        @DisplayName("Cloning of billboard")
+        void BillboardCloningTest() {
+
+            // Billboard
+            final Billboard billboard =
+                new Billboard(Spacecraft.DEFAULT_MODEL_PATH);
+
+            final Billboard billboardCloned = billboard.cloneObject();
+            Assertions.assertEquals(billboard.toString(),
+                                    billboardCloned.toString());
+
+        }
+
+        @Test
+        @DisplayName("Cloning of clock")
+        void ClockCloningTest() {
+
+            // Clock
+            final Clock clockCloned = clock.cloneObject();
+            Assertions.assertEquals(clock.toString(), clockCloned.toString());
+
+        }
+
+        @Test
+        @DisplayName("Cloning of cylinder")
+        void CylinderCloningTest() {
+
+            // Cylinder
+            final Cylinder cylinder =
+                new Cylinder(topocentricToulouse, mockSpacecraft1, 90.0, clock);
+
+            final Cylinder cylinderCloned = cylinder.cloneObject();
+            Assertions.assertEquals(cylinder.toString(),
+                                    cylinderCloned.toString());
+        }
+
+        @Test
+        @DisplayName("Cloning of czml ellipsoid with cartesians")
+        void CzmlEllipsoidCartesiansCloningTest() {
+
+            // CzmlEllipsoid
+            // With cartesians
+            final Cartesian dummyCartesian = new Cartesian(40, 10, 5);
+
+            final CzmlEllipsoid ellipsoidCartesian =
+                CzmlEllipsoid.builder(dummyCartesian, clock).build();
+
+            final CzmlEllipsoid ellipsoidCartesianCloned =
+                ellipsoidCartesian.cloneObject();
+            Assertions.assertEquals(ellipsoidCartesian.toString(),
+                                    ellipsoidCartesianCloned.toString());
+        }
+
+        @Test
+        @DisplayName("Cloning of czml ellipsoid with julian dates")
+        void CzmlEllipsoidJDCloningTest() {
+
+            // With julian dates
+            final CzmlEllipsoid ellipsoidJD =
+                CzmlEllipsoid
+                    .builder(mockSpacecraft1.getJulianDates(),
+                             mockSpacecraft1.getCartesianArraylist(), clock)
+                    .build();
+
+            final CzmlEllipsoid ellipsoidJDCloned = ellipsoidJD.cloneObject();
+            Assertions.assertEquals(ellipsoidJD.toString(),
+                                    ellipsoidJDCloned.toString());
+        }
+
+        @Test
+        @DisplayName("Cloning of label")
+        void LabelCloningTest() {
+
+            // Label
+            final Label label = new Label("Text", Color.RED);
+
+            final Label labelCloned = label.cloneObject();
+            Assertions.assertEquals(label.toString(), labelCloned.toString());
+
+        }
+
+        @Test
+        @DisplayName("Cloning of orientation with a single attitude")
+        void OrientationSingleCloningTest() {
+
+            // Orientation
+            // Single attitude
+            final Orientation orientationSingleAttitude =
+                Orientation.builder(mockSpacecraft1.getAttitudes().get(0),
+                                    FramesFactory.getEME2000())
+                    .build();
+
+            final Orientation orientationSingleAttitudeCloned =
+                orientationSingleAttitude.cloneObject();
+            Assertions.assertEquals(orientationSingleAttitude.toString(),
+                                    orientationSingleAttitudeCloned.toString());
+        }
+
+        @Test
+        @DisplayName("Cloning of orientation with multiple attitudes")
+        void OrientationMultipleAttitudesCloningTest() {
+
+            // Multiple Attitudes
+            final Orientation orientationMultipleAttitudes =
+                Orientation.builder(mockSpacecraft1.getAttitudes(),
+                                    FramesFactory.getEME2000())
+                    .build();
+
+            final Orientation orientationMultipleAttitudesCloned =
+                orientationMultipleAttitudes.cloneObject();
+            Assertions
+                .assertEquals(orientationMultipleAttitudes.toString(),
+                              orientationMultipleAttitudesCloned.toString());
+
+        }
+
+        @Test
+        @DisplayName("Cloning of path")
+        void PathCloningTest() {
+
+            // Path
+            final Path path = new Path(clock.getAvailability(), true);
+
+            final Path pathCloned = path.cloneObject();
+            Assertions.assertEquals(path.toString(), pathCloned.toString());
+
+        }
+
+        @Test
+        @DisplayName("Cloning of poygon")
+        void PolygonCloningTest() {
+
+            // Polygon
+            final Polygon polygon =
+                Polygon.builder(mockSpacecraft1.getCartesianArraylist(), clock)
+                    .build();
+
+            final Polygon polygonCloned = polygon.cloneObject();
+            Assertions.assertEquals(polygon.toString(),
+                                    polygonCloned.toString());
+
+        }
+
+        @Test
+        @DisplayName("Cloning of time position")
+        void TimePositionCloningTest() {
+
+            // Time position
+            final TimePosition timePosition =
+                new TimePosition(mockSpacecraft1.getCartesianArraylist(),
+                                 mockSpacecraft1.getJulianDates());
+
+            final TimePosition timePositionCloned = timePosition.cloneObject();
+            Assertions.assertEquals(timePosition.toString(),
+                                    timePositionCloned.toString());
+        }
     }
 }

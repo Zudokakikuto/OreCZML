@@ -17,12 +17,13 @@
 package org.orekit.czml.object.primary.pointing;
 
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.utils.DateUtils;
 import org.orekit.czml.object.primary.entities.Spacecraft;
+import org.orekit.czml.object.utils.DateUtils;
 import org.orekit.propagation.BoundedPropagator;
 import org.orekit.time.AbsoluteDate;
 
@@ -38,6 +39,24 @@ public class AttitudePointingTest
     extends
     AbstractTest {
 
+    /** Initialise orekit data. */
+    private final double data = initializeOrekitData();
+
+    /** Header. */
+    final Header header = dummyHeader();
+
+    // Dates
+
+    /** Start date. */
+    final AbsoluteDate startDate =
+        DateUtils.toAbsoluteDate(header.getAvailability().getStart());
+
+    /** Stop Date. */
+    final AbsoluteDate stopDate = startDate.shiftedBy(60.0);
+
+    /** Clock multiplier. */
+    final double clockMultiplier = 10.0;
+
     /**
      * Attitude pointing constructor test.
      *
@@ -49,42 +68,50 @@ public class AttitudePointingTest
         throws URISyntaxException,
             IOException {
 
-        loadOrekitData();
-
-        final Header header = dummyHeader();
-
-        final AbsoluteDate startDate =
-            DateUtils.toAbsoluteDate(header.getAvailability().getStart());
-        final double clockMultiplier = 10.0;
-        final AbsoluteDate stopDate = startDate.shiftedBy(60.0);
-
         final BoundedPropagator propagator =
             dummyPropagator(startDate, stopDate, dummyOrbit(startDate));
 
-        final Spacecraft satellite =
+        final Spacecraft spacecraft =
             Spacecraft.builder(propagator, clockMultiplier)
                 .withDisplayAttitude().build();
 
         final AttitudePointing attitudePointing =
-            AttitudePointing.builder(satellite, getEarth(), Vector3D.MINUS_I,
+            AttitudePointing.builder(spacecraft, getEarth(), Vector3D.MINUS_I,
                                      header.getClock())
                 .build();
         attitudePointing.displayPointingPath();
         attitudePointing.displayPeriodPointingPath();
 
+        final String pathFile =
+            loadResources("templateFile/object/primary/pointing/AttitudePointingTemplate.txt");
+
+        verifyFileOutput(pathFile, attitudePointing.toString(), 1e-8);
+    }
+
+    @Test
+    @DisplayName("Attitude Pointing with builder constructor Test")
+    public void AttitudePointingBuilderConstructorTest()
+        throws URISyntaxException,
+            IOException {
+
+        // Build Spacecraft
+        final BoundedPropagator propagator =
+            dummyPropagator(startDate, stopDate, dummyOrbit(startDate));
+        final Spacecraft spacecraft =
+            Spacecraft.builder(propagator, clockMultiplier)
+                .withDisplayAttitude().build();
+
         final AttitudePointing attitudePointingWithBuilder =
             AttitudePointing
-                .builder(satellite, getEarth(), Vector3D.MINUS_I,
+                .builder(spacecraft, getEarth(), Vector3D.MINUS_I,
                          header.getClock())
                 .withCustomID("CustomID").withDisplayOnGround(false)
                 .withColor(Color.ORANGE).build();
 
-        final String pathFile =
-            loadResources("templateFile/object/primary/pointing/AttitudePointingTemplate.txt");
+        // Reference file
         final String builderPathFile =
             loadResources("templateFile/object/primary/pointing/AttitudePointingWithBuilderTemplate.txt");
 
-        verifyFileOutput(pathFile, attitudePointing.toString(), 1e-8);
         verifyFileOutput(builderPathFile,
                          attitudePointingWithBuilder.toString(), 1e-8);
     }

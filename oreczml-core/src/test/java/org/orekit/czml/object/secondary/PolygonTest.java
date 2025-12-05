@@ -34,6 +34,12 @@ public class PolygonTest
     extends
     AbstractTest {
 
+    /** Initialise orekit data. */
+    private final double data = initializeOrekitData();
+
+    /** Header. */
+    final Header header = dummyHeader();
+
     /**
      * Polygon constructor test.
      *
@@ -44,10 +50,6 @@ public class PolygonTest
     void PolygonConstructorTest()
         throws IOException,
             URISyntaxException {
-
-        loadOrekitData();
-
-        final Header header = dummyHeader();
 
         final List<Cartesian> cartesians = randomCartesian();
 

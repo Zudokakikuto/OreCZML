@@ -58,6 +58,21 @@ public class FieldOfObservationTest
     extends
     AbstractTest {
 
+    /** Header. */
+    final Header header = dummyHeader();
+
+    // Dates
+
+    /** Start Date. */
+    final AbsoluteDate startDate =
+        new AbsoluteDate(2024, 3, 15, 0, 0, 0.0, TimeScalesFactory.getUTC());
+
+    /** Final Date. */
+    final AbsoluteDate finalDate = startDate.shiftedBy(10 * 3600);
+
+    /** Clock. */
+    final Clock clock = header.getClock();
+
     /**
      * Field of observation constructor test.
      *
@@ -70,16 +85,7 @@ public class FieldOfObservationTest
         throws IOException,
             URISyntaxException {
 
-        loadOrekitData();
-
-        final Header header = dummyHeader();
-        final Clock clock = header.getClock();
         clock.setMultiplier(10.0);
-
-        final AbsoluteDate startDate =
-            new AbsoluteDate(2024, 3, 15, 0, 0, 0.0,
-                             TimeScalesFactory.getUTC());
-        final AbsoluteDate finalDate = startDate.shiftedBy(10 * 3600);
 
         final KeplerianOrbit initialOrbit =
             new KeplerianOrbit(7878000, 0, FastMath.toRadians(20), 0,
@@ -88,13 +94,50 @@ public class FieldOfObservationTest
                                FramesFactory.getEME2000(), startDate,
                                Constants.WGS84_EARTH_MU);
 
-        final SpacecraftState initialState = new SpacecraftState(initialOrbit);
+        final BoundedPropagator boundedPropagator =
+            propagatorFromOrbit(startDate, finalDate, initialOrbit);
+        final SpacecraftState initialState =
+            boundedPropagator.getInitialState();
+
+        final Spacecraft spacecraft =
+            new Spacecraft(boundedPropagator, header.getClock());
+
+        final FieldOfView fov =
+            new DoubleDihedraFieldOfView(Vector3D.PLUS_J, Vector3D.PLUS_I,
+                                         FastMath.toRadians(20),
+                                         Vector3D.PLUS_K,
+                                         FastMath.toRadians(20), 2);
+        final Transform initialInertToBody =
+            spacecraft.getSpacecraftPropagator().getFrame()
+                .getTransformTo(getEarth().getBodyFrame(),
+                                initialState.getDate());
+        final Transform initialFovBody =
+            new Transform(initialState.getDate(),
+                          spacecraft.getSpacecraftPropagator().getInitialState()
+                              .toTransform().getInverse(),
+                          initialInertToBody);
+        final FieldOfObservation fieldOfObservation =
+            FieldOfObservation.builder(spacecraft, fov, initialFovBody)
+                .withColor(Color.ORANGE).withBody(getEarth())
+                .withCustomID("CustomID").withAngularStep(20.0).build();
+
+        // Reference file
+        final String pathFile =
+            loadResources("templateFile/object/primary/visu/FieldOfObservationTemplate.txt");
+
+        verifyFileOutput(pathFile, fieldOfObservation.toString(), 1e-3);
+    }
+
+    private BoundedPropagator propagatorFromOrbit(final AbsoluteDate startDate,
+                                                  final AbsoluteDate finalDate,
+                                                  final KeplerianOrbit orbit) {
+
+        final SpacecraftState initialState = new SpacecraftState(orbit);
 
         // Build of the propagator
 
         final double[][] tolerances =
-            NumericalPropagator.tolerances(10, initialOrbit,
-                                           OrbitType.CARTESIAN);
+            NumericalPropagator.tolerances(10, orbit, OrbitType.CARTESIAN);
         final AdaptiveStepsizeIntegrator integrator =
             new DormandPrince853Integrator(0.001, 1000.0, tolerances[0],
                                            tolerances[1]);
@@ -119,32 +162,6 @@ public class FieldOfObservationTest
         propagator.setAttitudeProvider(lofOffset);
 
         propagator.propagate(startDate, finalDate);
-        final BoundedPropagator boundedPropagator =
-            generator.getGeneratedEphemeris();
-
-        final Spacecraft satellite =
-            new Spacecraft(boundedPropagator, header.getClock());
-
-        final FieldOfView fov =
-            new DoubleDihedraFieldOfView(Vector3D.PLUS_J, Vector3D.PLUS_I,
-                                         FastMath.toRadians(20),
-                                         Vector3D.PLUS_K,
-                                         FastMath.toRadians(20), 2);
-
-        final Transform initialInertToBody =
-            propagator.getFrame().getTransformTo(getEarth().getBodyFrame(),
-                                                 initialState.getDate());
-        final Transform initialFovBody =
-            new Transform(initialState.getDate(), propagator.getInitialState()
-                .toTransform().getInverse(), initialInertToBody);
-
-        final FieldOfObservation fieldOfObservation =
-            FieldOfObservation.builder(satellite, fov, initialFovBody)
-                .withColor(Color.ORANGE).withBody(getEarth())
-                .withCustomID("CustomID").withAngularStep(20.0).build();
-
-        final String pathFile =
-            loadResources("templateFile/object/primary/visu/FieldOfObservationTemplate.txt");
-        verifyFileOutput(pathFile, fieldOfObservation.toString(), 1e-3);
+        return generator.getGeneratedEphemeris();
     }
 }

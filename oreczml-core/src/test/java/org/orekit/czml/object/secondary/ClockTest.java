@@ -19,11 +19,12 @@ package org.orekit.czml.object.secondary;
 import cesiumlanguagewriter.ClockRange;
 import cesiumlanguagewriter.ClockStep;
 import cesiumlanguagewriter.TimeInterval;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
-import org.orekit.czml.object.utils.DateUtils;
 import org.orekit.czml.object.primary.Header;
+import org.orekit.czml.object.utils.DateUtils;
 import org.orekit.data.DataSource;
 import org.orekit.files.ccsds.ndm.ParserBuilder;
 import org.orekit.files.ccsds.ndm.odm.oem.Oem;
@@ -41,6 +42,18 @@ public class ClockTest
     extends
     AbstractTest {
 
+    /** Initialise orekit data. */
+    private final double data = initializeOrekitData();
+
+    /** Header. */
+    final Header header = dummyHeader();
+
+    // Dates
+    final AbsoluteDate startDate =
+        DateUtils.toAbsoluteDate(header.getAvailability().getStart());
+
+    final AbsoluteDate finalDate = startDate.shiftedBy(60.0);
+
     /**
      * Clock constructor test.
      *
@@ -51,40 +64,53 @@ public class ClockTest
         throws IOException,
             URISyntaxException {
 
-        loadOrekitData();
+        final Clock clock = new Clock(startDate, finalDate, 10.0);
 
-        final Header header = dummyHeader();
-        final AbsoluteDate startDate =
-            DateUtils.toAbsoluteDate(header.getAvailability().getStart());
-        final AbsoluteDate finalDate = startDate.shiftedBy(60.0);
+        final String pathFile =
+            loadResources("templateFile/object/secondary/ClockTemplate.txt");
+
+        verifyFileOutput(pathFile, clock.toString(), 1e-8);
+
+    }
+
+    @Test
+    @DisplayName("Clock coverage constructor test")
+    public void ClockCoverageConstructorTest()
+        throws URISyntaxException,
+            IOException {
+
         final TimeInterval interval =
             new TimeInterval(header.getAvailability().getStart(),
                              header.getAvailability().getStop());
 
+        final Clock clockCoverage =
+            new Clock(interval, header.getAvailability().getStart(), 60.0,
+                      ClockRange.LOOP_STOP, ClockStep.SYSTEM_CLOCK_MULTIPLIER);
+
+        // Reference file
+        final String coveragePathFile =
+            loadResources("templateFile/object/secondary/ClockCoverageTemplate.txt");
+
+        verifyFileOutput(coveragePathFile, clockCoverage.toString(), 1e-8);
+    }
+
+    @Test
+    @DisplayName("Oem Clock constructor test")
+    public void ClockOemConstructorTest()
+        throws URISyntaxException,
+            IOException {
         final String OemPath = loadResources("oemForOemTuto.xml");
         final DataSource dataSource = new DataSource(OemPath);
         final ParserBuilder parserBuilder = new ParserBuilder();
         final OemParser oemParser = parserBuilder.buildOemParser();
         final Oem oem = oemParser.parse(dataSource);
 
-        final Clock clock = new Clock(startDate, finalDate, 10.0);
-
-        final Clock clockCoverage =
-            new Clock(interval, header.getAvailability().getStart(), 60.0,
-                      ClockRange.LOOP_STOP, ClockStep.SYSTEM_CLOCK_MULTIPLIER);
-
         final Clock oemClock = new Clock(oem);
 
-        final String pathFile =
-            loadResources("templateFile/object/secondary/ClockTemplate.txt");
-        final String coveragePathFile =
-            loadResources("templateFile/object/secondary/ClockCoverageTemplate.txt");
+        // Reference file
         final String oemClockPathFile =
             loadResources("templateFile/object/secondary/OemClockTemplate.txt");
 
-        verifyFileOutput(pathFile, clock.toString(), 1e-8);
-        verifyFileOutput(coveragePathFile, clockCoverage.toString(), 1e-8);
         verifyFileOutput(oemClockPathFile, oemClock.toString(), 1e-8);
-
     }
 }

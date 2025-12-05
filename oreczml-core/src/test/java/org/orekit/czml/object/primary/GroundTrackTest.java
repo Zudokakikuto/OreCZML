@@ -16,6 +16,7 @@
  */
 package org.orekit.czml.object.primary;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.entities.Constellation;
@@ -37,6 +38,21 @@ public class GroundTrackTest
     extends
     AbstractTest {
 
+    /** Initialise orekit data. */
+    private final double data = initializeOrekitData();
+
+    /** Header. */
+    final Header header = dummyHeader();
+
+    // Dates
+
+    /** Start Date. */
+    final AbsoluteDate startDate =
+        DateUtils.toAbsoluteDate(header.getAvailability().getStart());
+
+    /** Final Date. */
+    final AbsoluteDate finalDate = startDate.shiftedBy(60.0);
+
     /**
      * Ground track constructor test.
      *
@@ -48,18 +64,55 @@ public class GroundTrackTest
         throws IOException,
             URISyntaxException {
 
-        loadOrekitData();
+        final BoundedPropagator propagator =
+            dummyPropagator(startDate, finalDate, dummyOrbit(startDate));
 
-        final Header header = dummyHeader();
-        final AbsoluteDate startDate =
-            DateUtils.toAbsoluteDate(header.getAvailability().getStart());
-        final AbsoluteDate finalDate = startDate.shiftedBy(60.0);
+        final Spacecraft satellite =
+            Spacecraft.builder(propagator, header.getClock()).build();
+
+        final GroundTrack groundTrack =
+            new GroundTrack(satellite, getEarth(), header.getClock());
+        groundTrack.displayLinkSatellite();
+
+        final String pathFile =
+            loadResources("templateFile/object/primary/GroundTrackTemplate.txt");
+
+        verifyFileOutput(pathFile, groundTrack.toString(), 1e-8);
+    }
+
+    @Test
+    @DisplayName("Ground track builder constructor test")
+    public void GroundTrackBuilderConstructorTest()
+        throws URISyntaxException,
+            IOException {
 
         final BoundedPropagator propagator =
             dummyPropagator(startDate, finalDate, dummyOrbit(startDate));
 
         final Spacecraft satellite =
             Spacecraft.builder(propagator, header.getClock()).build();
+
+        // Build ground track from builder
+        final GroundTrack groundTrackWithBuilder =
+            GroundTrack.builder(satellite, getEarth(), header.getClock())
+                .withColor(Color.ORANGE).withCustomID("CustomID").build();
+
+        // Reference file
+        final String builderPathFile =
+            loadResources("templateFile/object/primary/GroundTrackWithBuilderTemplate.txt");
+
+        verifyFileOutput(builderPathFile, groundTrackWithBuilder.toString(),
+                         1e-8);
+    }
+
+    @Test
+    @DisplayName("Ground Track constellation constructor test")
+    public void GroundTrackConstellationConstructorTest()
+        throws URISyntaxException,
+            IOException {
+
+        final BoundedPropagator propagator =
+            dummyPropagator(startDate, finalDate, dummyOrbit(startDate));
 
         final List<BoundedPropagator> propagators =
             new ArrayList<>(List.of(propagator));
@@ -68,29 +121,16 @@ public class GroundTrackTest
             Constellation.builder(propagators, finalDate, header.getClock())
                 .build();
 
-        final GroundTrack groundTrack =
-            new GroundTrack(satellite, getEarth(), header.getClock());
-        groundTrack.displayLinkSatellite();
-
-        final GroundTrack groundTrackWithBuilder =
-            GroundTrack.builder(satellite, getEarth(), header.getClock())
-                .withColor(Color.ORANGE).withCustomID("CustomID").build();
-
+        // Build ground track from constellation
         final GroundTrack constellationGroundTrack =
             GroundTrack.builder(constellation, getEarth(), header.getClock())
                 .build();
         constellationGroundTrack.displayLinkSatellite();
 
-        final String pathFile =
-            loadResources("templateFile/object/primary/GroundTrackTemplate.txt");
-        final String builderPathFile =
-            loadResources("templateFile/object/primary/GroundTrackWithBuilderTemplate.txt");
+        // Reference file
         final String constellationPathFile =
             loadResources("templateFile/object/primary/GroundTrackConstellationTemplate.txt");
 
-        verifyFileOutput(pathFile, groundTrack.toString(), 1e-8);
-        verifyFileOutput(builderPathFile, groundTrackWithBuilder.toString(),
-                         1e-8);
         verifyFileOutput(constellationPathFile,
                          constellationGroundTrack.toString(), 1e-8);
     }

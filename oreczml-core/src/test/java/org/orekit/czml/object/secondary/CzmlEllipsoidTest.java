@@ -21,6 +21,7 @@ import cesiumlanguagewriter.JulianDate;
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
@@ -54,6 +55,21 @@ public class CzmlEllipsoidTest
     extends
     AbstractTest {
 
+    /** Initialise orekit data. */
+    private final double data = initializeOrekitData();
+
+    /** Header. */
+    final Header header = dummyHeader();
+
+    // Dates
+
+    /** Start date. */
+    final AbsoluteDate startDate =
+        new AbsoluteDate(2024, 3, 15, 0, 0, 0.0, TimeScalesFactory.getUTC());
+
+    /** Final date. */
+    final AbsoluteDate finalDate = startDate.shiftedBy(5 * 3600);
+
     /**
      * Czml ellipsoid constructor test.
      *
@@ -62,18 +78,10 @@ public class CzmlEllipsoidTest
      */
     @Test
     @DefaultDataContext
+    @DisplayName("Czml ellipsoid constructor test")
     void CzmlEllipsoidConstructorTest()
         throws IOException,
             URISyntaxException {
-
-        loadOrekitData();
-
-        final Header header = dummyHeader();
-
-        final AbsoluteDate startDate =
-            new AbsoluteDate(2024, 3, 15, 0, 0, 0.0,
-                             TimeScalesFactory.getUTC());
-        final AbsoluteDate finalDate = startDate.shiftedBy(5 * 3600);
 
         final KeplerianOrbit initialOrbit =
             new KeplerianOrbit(7878000, 0, FastMath.toRadians(10), 0,
@@ -82,13 +90,52 @@ public class CzmlEllipsoidTest
                                FramesFactory.getEME2000(), startDate,
                                Constants.WGS84_EARTH_MU);
 
-        final SpacecraftState initialState = new SpacecraftState(initialOrbit);
+        final Spacecraft spacecraft =
+            spacecraftFromOrbit(startDate, finalDate, initialOrbit);
+
+        final List<JulianDate> julianDates = spacecraft.getJulianDates();
+
+        final List<Cartesian> randomCartesians =
+            computeRandomCartesians(julianDates.size());
+
+        final CzmlEllipsoid ellipsoid =
+            new CzmlEllipsoid(julianDates, randomCartesians, header.getClock());
+
+        final String pathFile =
+            loadResources("templateFile/object/secondary/CzmlEllipsoidTemplate.txt");
+
+        verifyFileOutput(pathFile, ellipsoid.toString(), 1e-8);
+    }
+
+    @Test
+    @DisplayName("Czml ellipsoid builder constructor test")
+    public void CzmlEllipsoidBuilderConstructorTest()
+        throws URISyntaxException,
+            IOException {
+
+        final CzmlEllipsoid ellipsoidBuilder =
+            CzmlEllipsoid.builder(new Cartesian(0, 0, 0), header.getClock())
+                .withColor(Color.ORANGE).withFill(true).withOutline(true)
+                .withSliceStackPartition(6, 5).build();
+
+        // Reference file
+        final String builderPathFile =
+            loadResources("templateFile/object/secondary/CzmlEllipsoidWithBuilderTemplate.txt");
+
+        verifyFileOutput(builderPathFile, ellipsoidBuilder.toString(), 1e-8);
+    }
+
+    private Spacecraft spacecraftFromOrbit(final AbsoluteDate startDate,
+                                           final AbsoluteDate finalDate,
+                                           final KeplerianOrbit orbit)
+        throws URISyntaxException,
+            IOException {
+        final SpacecraftState initialState = new SpacecraftState(orbit);
 
         // Build of the propagator
 
         final double[][] tolerances =
-            NumericalPropagator.tolerances(10, initialOrbit,
-                                           OrbitType.CARTESIAN);
+            NumericalPropagator.tolerances(10, orbit, OrbitType.CARTESIAN);
         final AdaptiveStepsizeIntegrator integrator =
             new DormandPrince853Integrator(0.001, 1000.0, tolerances[0],
                                            tolerances[1]);
@@ -112,29 +159,6 @@ public class CzmlEllipsoidTest
         final BoundedPropagator boundedPropagator =
             generator.getGeneratedEphemeris();
 
-        final Spacecraft satellite =
-            new Spacecraft(boundedPropagator, header.getClock());
-
-        final List<JulianDate> julianDates = satellite.getJulianDates();
-
-        final List<Cartesian> randomCartesians =
-            computeRandomCartesians(julianDates.size());
-
-        final CzmlEllipsoid ellipsoid =
-            new CzmlEllipsoid(julianDates, randomCartesians, header.getClock());
-
-        final CzmlEllipsoid ellipsoidBuilder =
-            CzmlEllipsoid.builder(new Cartesian(0, 0, 0), header.getClock())
-                .withColor(Color.ORANGE).withFill(true).withOutline(true)
-                .withSliceStackPartition(6, 5).build();
-
-        final String pathFile =
-            loadResources("templateFile/object/secondary/CzmlEllipsoidTemplate.txt");
-        final String builderPathFile =
-            loadResources("templateFile/object/secondary/CzmlEllipsoidWithBuilderTemplate.txt");
-
-        verifyFileOutput(pathFile, ellipsoid.toString(), 1e-8);
-        verifyFileOutput(builderPathFile, ellipsoidBuilder.toString(), 1e-8);
-
+        return new Spacecraft(boundedPropagator, header.getClock());
     }
 }

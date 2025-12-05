@@ -20,6 +20,7 @@ import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.orekit.annotation.DefaultDataContext;
 import org.orekit.attitudes.LofOffset;
@@ -41,6 +42,7 @@ import org.orekit.orbits.OrbitType;
 import org.orekit.orbits.PositionAngleType;
 import org.orekit.propagation.BoundedPropagator;
 import org.orekit.propagation.EphemerisGenerator;
+import org.orekit.propagation.Propagator;
 import org.orekit.propagation.SpacecraftState;
 import org.orekit.propagation.numerical.NumericalPropagator;
 import org.orekit.time.AbsoluteDate;
@@ -57,6 +59,28 @@ public class CoveredSurfaceOnBodyTest
     extends
     AbstractTest {
 
+    /** Initialise orekit data. */
+    private final double data = initializeOrekitData();
+
+    /** Header. */
+    final Header header = dummyHeader();
+
+    // Dates
+
+    /** Start date. */
+    final AbsoluteDate startDate =
+        new AbsoluteDate(2024, 3, 15, 0, 0, 0.0, TimeScalesFactory.getUTC());
+
+    /** Final Date. */
+    final AbsoluteDate finalDate = startDate.shiftedBy(10 * 3600);
+
+    /** Initial Orbit. */
+    final KeplerianOrbit initialOrbit =
+        new KeplerianOrbit(7878000, 0, FastMath.toRadians(20), 0,
+                           FastMath.toRadians(0), FastMath.toRadians(0),
+                           PositionAngleType.MEAN, FramesFactory.getEME2000(),
+                           startDate, Constants.WGS84_EARTH_MU);
+
     /**
      * Covered surface on body constructor test.
      *
@@ -65,32 +89,103 @@ public class CoveredSurfaceOnBodyTest
      */
     @Test
     @DefaultDataContext
+    @DisplayName("Covered surface on body constructor test")
     void CoveredSurfaceOnBodyConstructorTest()
         throws IOException,
             URISyntaxException {
 
-        loadOrekitData();
+        // Build of the propagator
+        final BoundedPropagator boundedPropagator =
+            propagatorFromOrbit(startDate, finalDate, initialOrbit);
+        final SpacecraftState initialState =
+            boundedPropagator.getInitialState();
+        final Spacecraft spacecraft =
+            Spacecraft.builder(boundedPropagator, header.getClock()).build();
+        final Propagator propagator = spacecraft.getSpacecraftPropagator();
 
-        final Header header = dummyHeader();
-        final AbsoluteDate startDate =
-            new AbsoluteDate(2024, 3, 15, 0, 0, 0.0,
-                             TimeScalesFactory.getUTC());
-        final AbsoluteDate finalDate = startDate.shiftedBy(10 * 3600);
+        // Build of the fov
+        final FieldOfView fov =
+            new DoubleDihedraFieldOfView(Vector3D.PLUS_J, Vector3D.PLUS_I,
+                                         FastMath.toRadians(20),
+                                         Vector3D.PLUS_K,
+                                         FastMath.toRadians(20), 2);
+        final Transform initialInertToBody =
+            propagator.getFrame().getTransformTo(getEarth().getBodyFrame(),
+                                                 initialState.getDate());
+        final Transform initialFovBody =
+            new Transform(initialState.getDate(),
+                          initialState.toTransform().getInverse(),
+                          initialInertToBody);
 
-        final KeplerianOrbit initialOrbit =
-            new KeplerianOrbit(7878000, 0, FastMath.toRadians(20), 0,
-                               FastMath.toRadians(0), FastMath.toRadians(0),
-                               PositionAngleType.MEAN,
-                               FramesFactory.getEME2000(), startDate,
-                               Constants.WGS84_EARTH_MU);
+        // Build of the field of observation
+        final FieldOfObservation fieldOfObservation =
+            FieldOfObservation.builder(spacecraft, fov, initialFovBody).build();
 
-        final SpacecraftState initialState = new SpacecraftState(initialOrbit);
+        // Build of the covered surface on body
+        final CoveredSurfaceOnBody surface =
+            CoveredSurfaceOnBody.builder(spacecraft, fieldOfObservation)
+                .build();
+
+        // Reference file
+        final String pathFile =
+            loadResources("templateFile/object/primary/pointing/CoveredSurfaceOnBodyTemplate.txt");
+
+        verifyFileOutput(pathFile, surface.toString(), 1e-8);
+    }
+
+    @Test
+    @DisplayName("Covered surface test with builder constructor")
+    public void CoveredSurfaceOnBodyBuilderConstructortest()
+        throws URISyntaxException,
+            IOException {
 
         // Build of the propagator
+        final BoundedPropagator boundedPropagator =
+            propagatorFromOrbit(startDate, finalDate, initialOrbit);
+        final SpacecraftState initialState =
+            boundedPropagator.getInitialState();
+        final Spacecraft spacecraft =
+            Spacecraft.builder(boundedPropagator, header.getClock()).build();
+        final Propagator propagator = spacecraft.getSpacecraftPropagator();
+
+        // Build of the fov
+        final FieldOfView fov =
+            new DoubleDihedraFieldOfView(Vector3D.PLUS_J, Vector3D.PLUS_I,
+                                         FastMath.toRadians(20),
+                                         Vector3D.PLUS_K,
+                                         FastMath.toRadians(20), 2);
+        final Transform initialInertToBody =
+            propagator.getFrame().getTransformTo(getEarth().getBodyFrame(),
+                                                 initialState.getDate());
+        final Transform initialFovBody =
+            new Transform(initialState.getDate(),
+                          initialState.toTransform().getInverse(),
+                          initialInertToBody);
+
+        // Build of the field of observation
+        final FieldOfObservation fieldOfObservation =
+            FieldOfObservation.builder(spacecraft, fov, initialFovBody).build();
+
+        // Build of the surface with a builder
+        final CoveredSurfaceOnBody surfaceBuilder =
+            CoveredSurfaceOnBody.builder(spacecraft, fieldOfObservation)
+                .withCustomId("CustomID").build();
+
+        // Reference file
+        final String builderPathFile =
+            loadResources("templateFile/object/primary/pointing/CoveredSurfaceOnBodyWithBuilderTemplate.txt");
+
+        verifyFileOutput(builderPathFile, surfaceBuilder.toString(), 1e-8);
+    }
+
+    public BoundedPropagator propagatorFromOrbit(final AbsoluteDate startDate,
+                                                 final AbsoluteDate finalDate,
+                                                 final KeplerianOrbit orbit) {
+
+        final SpacecraftState initialState = new SpacecraftState(orbit);
 
         final double[][] tolerances =
-            NumericalPropagator.tolerances(10, initialOrbit,
-                                           OrbitType.CARTESIAN);
+            NumericalPropagator.tolerances(10, orbit, OrbitType.CARTESIAN);
         final AdaptiveStepsizeIntegrator integrator =
             new DormandPrince853Integrator(0.001, 1000.0, tolerances[0],
                                            tolerances[1]);
@@ -115,42 +210,6 @@ public class CoveredSurfaceOnBodyTest
         propagator.setAttitudeProvider(lofOffset);
 
         propagator.propagate(startDate, finalDate);
-        final BoundedPropagator boundedPropagator =
-            generator.getGeneratedEphemeris();
-
-        final Spacecraft satellite =
-            Spacecraft.builder(boundedPropagator, header.getClock()).build();
-
-        final FieldOfView fov =
-            new DoubleDihedraFieldOfView(Vector3D.PLUS_J, Vector3D.PLUS_I,
-                                         FastMath.toRadians(20),
-                                         Vector3D.PLUS_K,
-                                         FastMath.toRadians(20), 2);
-
-        final Transform initialInertToBody =
-            propagator.getFrame().getTransformTo(getEarth().getBodyFrame(),
-                                                 initialState.getDate());
-        final Transform initialFovBody =
-            new Transform(initialState.getDate(),
-                          initialState.toTransform().getInverse(),
-                          initialInertToBody);
-
-        final FieldOfObservation fieldOfObservation =
-            FieldOfObservation.builder(satellite, fov, initialFovBody).build();
-
-        final CoveredSurfaceOnBody surface =
-            CoveredSurfaceOnBody.builder(satellite, fieldOfObservation).build();
-
-        final CoveredSurfaceOnBody surfaceBuilder =
-            CoveredSurfaceOnBody.builder(satellite, fieldOfObservation)
-                .withCustomId("CustomID").build();
-
-        final String pathFile =
-            loadResources("templateFile/object/primary/pointing/CoveredSurfaceOnBodyTemplate.txt");
-        verifyFileOutput(pathFile, surface.toString(), 1e-8);
-
-        final String builderPathFile =
-            loadResources("templateFile/object/primary/pointing/CoveredSurfaceOnBodyWithBuilderTemplate.txt");
-        verifyFileOutput(builderPathFile, surfaceBuilder.toString(), 1e-8);
+        return generator.getGeneratedEphemeris();
     }
 }

@@ -59,16 +59,13 @@ public class InfluenceSphereUtilsTest
     extends
     AbstractTest {
 
-    /**
-     * TODO : Fix the complexity of the computation for influence sphere changes
-     * : Use the version of issue 53.
-     */
+    /** Initialise orekit data. */
+    private final double data = initializeOrekitData();
+
     @Test
     void findCrossingSphereDatesTest()
         throws URISyntaxException,
             IOException {
-
-        loadOrekitData();
 
         final String output = generateOutput();
 

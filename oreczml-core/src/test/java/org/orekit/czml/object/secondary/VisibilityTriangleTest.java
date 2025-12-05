@@ -3,7 +3,7 @@ package org.orekit.czml.object.secondary;
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
-import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.orekit.annotation.DefaultDataContext;
 import org.orekit.bodies.GeodeticPoint;
@@ -32,9 +32,6 @@ import org.orekit.utils.Constants;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 /**
  * Test class for the visibility triangle object.
@@ -46,43 +43,112 @@ public class VisibilityTriangleTest
     extends
     AbstractTest {
 
+    /** Initialise orekit data. */
+    private final double data = initializeOrekitData();
+
+    // Dates
+
+    /** Start date. */
+    final AbsoluteDate startDate =
+        new AbsoluteDate(2024, 3, 15, 0, 0, 0.0, TimeScalesFactory.getUTC());
+
+    /** Final date. */
+    final AbsoluteDate finalDate = startDate.shiftedBy(10.0 * 3600.0);
+
+    /** Clock. */
+    final Clock clock =
+        new Clock(startDate, finalDate, AbstractTest.STEP_BETWEEN_EACH_INSTANT);
+
+    /** Header. */
+    final Header header = new Header("Dummy Header", clock);
+
+    /** Toulouse point. */
+    final GeodeticPoint toulousePoint =
+        new GeodeticPoint(FastMath.toRadians(43.6047),
+                          FastMath.toRadians(1.4442), 10);
+
+    /** Toulouse frame. */
+    final TopocentricFrame topocentricToulouse =
+        new TopocentricFrame(getEarth(), toulousePoint, "Toulouse Frame");
+
+    // Orbit
+    final KeplerianOrbit initialOrbit =
+        new KeplerianOrbit(7878000, 0, FastMath.toRadians(80), 0,
+                           FastMath.toRadians(90), FastMath.toRadians(0),
+                           PositionAngleType.MEAN, FramesFactory.getEME2000(),
+                           startDate, Constants.WGS84_EARTH_MU);
+
     /** Constructor test. */
     @Test
     @DefaultDataContext
+    @DisplayName("Visibility triangle constructor test")
     void VisibilityTriangleConstructorTest()
         throws URISyntaxException,
             IOException {
 
-        loadOrekitData();
+        final BoundedPropagator boundedPropagator =
+            propagatorFromOrbit(startDate, finalDate, initialOrbit);
+
+        final Spacecraft spacecraft =
+            Spacecraft.builder(boundedPropagator, header.getClock()).build();
+
+        // Line of visibility with a visibility triangle
+        final LineOfVisibility coverageLine =
+            LineOfVisibility
+                .builder(topocentricToulouse, spacecraft, header.getClock())
+                .withVisibilityTriangle().withCustomID("CustomID")
+                .withAngleOfAperture(90.0).build();
+
+        final String linePathFile =
+            loadResources("templateFile/object/secondary/VisibilityTriangleConstructorTemplate.txt");
+
+        verifyFileOutput(linePathFile, coverageLine.toString(), 1e-8);
+    }
+
+    @Test
+    @DisplayName("Visibility triangle coverage Czml File test")
+    public void VisibilityTriangleCzmlFileTest()
+        throws URISyntaxException,
+            IOException {
 
         final String output = generateOutput();
 
-        final AbsoluteDate startDate =
-            new AbsoluteDate(2024, 3, 15, 0, 0, 0.0,
-                             TimeScalesFactory.getUTC());
-        final AbsoluteDate finalDate = startDate.shiftedBy(10.0 * 3600.0);
-
-        final Clock clock =
-            new Clock(startDate, finalDate,
-                      AbstractTest.STEP_BETWEEN_EACH_INSTANT);
-        final Header header = new Header("Dummy Header", clock);
-
-        final GeodeticPoint toulouseFrame =
-            new GeodeticPoint(FastMath.toRadians(43.6047),
-                              FastMath.toRadians(1.4442), 10);
-        final TopocentricFrame topocentricToulouse =
-            new TopocentricFrame(getEarth(), toulouseFrame, "Toulouse Frame");
+        // Ground Station
         final CzmlGroundStation station =
             CzmlGroundStation.builder(topocentricToulouse, clock).build();
 
-        final KeplerianOrbit initialOrbit =
-            new KeplerianOrbit(7878000, 0, FastMath.toRadians(80), 0,
-                               FastMath.toRadians(90), FastMath.toRadians(0),
-                               PositionAngleType.MEAN,
-                               FramesFactory.getEME2000(), startDate,
-                               Constants.WGS84_EARTH_MU);
+        // Spacecraft
+        final BoundedPropagator boundedPropagator =
+            propagatorFromOrbit(startDate, finalDate, initialOrbit);
+        final Spacecraft spacecraft =
+            Spacecraft.builder(boundedPropagator, header.getClock()).build();
 
-        final SpacecraftState initialState = new SpacecraftState(initialOrbit);
+        // Line of visibility with a visibility triangle
+        final LineOfVisibility lineOfVisibility =
+            LineOfVisibility
+                .builder(topocentricToulouse, spacecraft, header.getClock())
+                .withVisibilityTriangle().withCustomID("CustomID")
+                .withAngleOfAperture(90.0).build();
+
+        // Czml File
+        final CzmlFile file =
+            CzmlFile.builder(header).withSpacecraft(spacecraft)
+                .withCzmlGroundStation(station)
+                .withLineOfVisibility(lineOfVisibility).build();
+
+        // Reference file
+        final String entireFilePathFile =
+            loadResources("templateFile/object/secondary/VisibilityTriangleTestFileTemplate.txt");
+
+        verifyFileOutput(entireFilePathFile, file.toString(), 1e-8);
+
+        file.write(output);
+    }
+
+    private BoundedPropagator propagatorFromOrbit(final AbsoluteDate startDate,
+                                                  final AbsoluteDate finalDate,
+                                                  final KeplerianOrbit orbit) {
+        final SpacecraftState initialState = new SpacecraftState(orbit);
         final NormalizedSphericalHarmonicsProvider provider =
             GravityFieldFactory.getNormalizedProvider(10, 10);
         final ForceModel holmesFeatherstone =
@@ -90,8 +156,7 @@ public class VisibilityTriangleTest
                                                   provider);
 
         final double[][] tolerances =
-            NumericalPropagator.tolerances(10, initialOrbit,
-                                           OrbitType.CARTESIAN);
+            NumericalPropagator.tolerances(10, orbit, OrbitType.CARTESIAN);
         final AdaptiveStepsizeIntegrator integrator =
             new DormandPrince853Integrator(0.001, 1000.0, tolerances[0],
                                            tolerances[1]);
@@ -106,31 +171,6 @@ public class VisibilityTriangleTest
         final EphemerisGenerator generator = propagator.getEphemerisGenerator();
 
         propagator.propagate(startDate, finalDate);
-        final BoundedPropagator boundedPropagator =
-            generator.getGeneratedEphemeris();
-
-        final Spacecraft spacecraft =
-            Spacecraft.builder(boundedPropagator, header.getClock()).build();
-
-        final LineOfVisibility coverageLine =
-            LineOfVisibility
-                .builder(topocentricToulouse, spacecraft, header.getClock())
-                .withVisibilityTriangle().withCustomID("CustomID")
-                .withAngleOfAperture(90.0).build();
-
-        final String linePathFile =
-            loadResources("templateFile/object/secondary/VisibilityTriangleConstructorTemplate.txt");
-        final String entireFilePathFile =
-            loadResources("templateFile/object/secondary/VisibilityTriangleTestFileTemplate.txt");
-
-        final CzmlFile file =
-            CzmlFile.builder(header).withSpacecraft(spacecraft)
-                .withCzmlGroundStation(station)
-                .withLineOfVisibility(coverageLine).build();
-
-        verifyFileOutput(linePathFile, coverageLine.toString(), 1e-8);
-        verifyFileOutput(entireFilePathFile, file.toString(), 1e-8);
-
-        file.write(output);
+        return generator.getGeneratedEphemeris();
     }
 }

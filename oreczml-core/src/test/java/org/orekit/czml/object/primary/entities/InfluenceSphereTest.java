@@ -37,6 +37,23 @@ public class InfluenceSphereTest
     extends
     AbstractTest {
 
+    /** Initialise orekit data. */
+    private final double data = initializeOrekitData();
+
+    /** Header. */
+    final Header header = dummyHeader();
+
+    /** Start Date. */
+    final AbsoluteDate startDate =
+        DateUtils.toAbsoluteDate(header.getAvailability().getStart());
+
+    /** Stop Date. */
+    final AbsoluteDate stopDate =
+        DateUtils.toAbsoluteDate(header.getAvailability().getStop());
+
+    /** Clock. */
+    final Clock clock = new Clock(startDate, stopDate, 10.0);
+
     /**
      * Body constructor test.
      *
@@ -48,39 +65,29 @@ public class InfluenceSphereTest
         throws URISyntaxException,
             IOException {
 
-        // Load of orekit data
-        loadOrekitData();
-
-        // Dummy header
-        final Header header = dummyHeader();
-
-        // Building of the clock
-        final AbsoluteDate startDate =
-            DateUtils.toAbsoluteDate(header.getAvailability().getStart());
-        final AbsoluteDate stopDate =
-            DateUtils.toAbsoluteDate(header.getAvailability().getStop());
-        final Clock clock = new Clock(startDate, stopDate, 10.0);
-
         // Building of the body for the influence sphere
         final String pathToEarthModel = loadResources("Bodies/earth.glb");
         final String pathToSunModel = loadResources("Bodies/sun.glb");
 
+        // Build of the sun frame
         final Frame sunFrame =
             CelestialBodyFactory.getSun().getBodyOrientedFrame();
-
         final Body sun =
             Body.builder(CelestialBodyFactory.getSun(), pathToSunModel,
                          sunFrame, clock, null)
                 .build();
 
+        // Build of the earth
         final Body earth =
             Body.builder(CelestialBodyFactory.getEarth(), pathToEarthModel,
                          sunFrame, clock, sun)
                 .build();
 
+        // Build of the influence sphere of the earth
         final InfluenceSphere influenceSphereWithCentralBody =
             InfluenceSphere.builder(earth, clock).build();
 
+        // Reference frame
         final String influenceSphereWithCentralBodyTemplate =
             loadResources("templateFile/object/primary/entities/InfluenceSphereWithCentralBodyTemplate.txt");
 

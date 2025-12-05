@@ -60,6 +60,20 @@ public class MultipleLineOfVisibilityTest
     extends
     AbstractTest {
 
+    final double data = initializeOrekitData();
+
+    // Date
+
+    /** Start Date. */
+    final AbsoluteDate startDate =
+        new AbsoluteDate(2024, 3, 15, 0, 0, 0.0, TimeScalesFactory.getUTC());
+
+    /** Final date. */
+    final AbsoluteDate finalDate = startDate.shiftedBy(10 * 3600);
+
+    /** Clock. */
+    final Clock clock = new Clock(startDate, finalDate, 60.0);
+
     /**
      * Multiple line of visibility constructor test.
      *
@@ -72,35 +86,18 @@ public class MultipleLineOfVisibilityTest
         throws URISyntaxException,
             IOException {
 
-        loadOrekitData();
-
         final String output = generateOutput();
-
-        final AbsoluteDate startDate =
-            new AbsoluteDate(2024, 3, 15, 0, 0, 0.0,
-                             TimeScalesFactory.getUTC());
-        final AbsoluteDate finalDate = startDate.shiftedBy(10 * 3600);
-        final Clock clock = new Clock(startDate, finalDate, 60.0);
 
         // Creation of the header
         final Header header =
             new Header("Tracking of a satellite by several stations", clock);
 
-        final GeodeticPoint toulouseFrame =
-            new GeodeticPoint(FastMath.toRadians(43.6047),
-                              FastMath.toRadians(1.4442), 10);
         final TopocentricFrame topocentricToulouse =
-            new TopocentricFrame(getEarth(), toulouseFrame, "Toulouse Frame");
-        final GeodeticPoint quitoFrame =
-            new GeodeticPoint(FastMath.toRadians(0.1807),
-                              FastMath.toRadians(11.5382), 2850);
+            buildTopocentric("Toulouse Frame", 43.6047, 1.4442, 10);
         final TopocentricFrame topocentricQuito =
-            new TopocentricFrame(getEarth(), quitoFrame, "Quito");
-        final GeodeticPoint sydneyFrame =
-            new GeodeticPoint(FastMath.toRadians(-33.8688),
-                              FastMath.toRadians(-241.2093), 100);
+            buildTopocentric("Quito", 0.1807, 11.5382, 2850);
         final TopocentricFrame topocentricSydney =
-            new TopocentricFrame(getEarth(), sydneyFrame, "Sydney");
+            buildTopocentric("Sydney", -33.8688, -241.2093, 100);
 
         final List<TopocentricFrame> topocentricFrames = new ArrayList<>();
         topocentricFrames.add(topocentricToulouse);
@@ -114,13 +111,41 @@ public class MultipleLineOfVisibilityTest
                                FramesFactory.getEME2000(), startDate,
                                Constants.WGS84_EARTH_MU);
 
-        final SpacecraftState initialState = new SpacecraftState(initialOrbit);
+        final Spacecraft spacecraft =
+            spacecraftFromOrbit(startDate, finalDate, initialOrbit);
+
+        // Build of the multiple line of visibility object$
+        final MultipleLineOfVisibility multipleLineOfVisibility =
+            MultipleLineOfVisibility.builder(topocentricFrames, spacecraft)
+                .build();
+
+        final CzmlFile file =
+            CzmlFile.builder(header).withSpacecraft(spacecraft)
+                .withMultipleLineOfVisibility(multipleLineOfVisibility).build();
+
+        file.write(output);
+    }
+
+    private TopocentricFrame
+        buildTopocentric(final String frameName, final double latitude,
+                         final double longitude, final double altitude) {
+        final GeodeticPoint toulouseFrame =
+            new GeodeticPoint(FastMath.toRadians(latitude),
+                              FastMath.toRadians(longitude), altitude);
+        return new TopocentricFrame(getEarth(), toulouseFrame, frameName);
+    }
+
+    private Spacecraft spacecraftFromOrbit(final AbsoluteDate startDate,
+                                           final AbsoluteDate finalDate,
+                                           final KeplerianOrbit orbit)
+        throws URISyntaxException,
+            IOException {
+        final SpacecraftState initialState = new SpacecraftState(orbit);
 
         // Build of the propagator
 
         final double[][] tolerances =
-            NumericalPropagator.tolerances(10.0, initialOrbit,
-                                           OrbitType.CARTESIAN);
+            NumericalPropagator.tolerances(10.0, orbit, OrbitType.CARTESIAN);
         final AdaptiveStepsizeIntegrator integrator =
             new DormandPrince853Integrator(0.001, 1000.0, tolerances[0],
                                            tolerances[1]);
@@ -145,19 +170,7 @@ public class MultipleLineOfVisibilityTest
             generator.getGeneratedEphemeris();
 
         // Build of the satellite
-        final Spacecraft satellite =
-            Spacecraft.builder(boundedPropagator, clock).withOnlyOnePeriod()
-                .build();
-
-        // Build of the multiple line of visibility object$
-        final MultipleLineOfVisibility multipleLineOfVisibility =
-            MultipleLineOfVisibility.builder(topocentricFrames, satellite)
-                .build();
-
-        final CzmlFile file =
-            CzmlFile.builder(header).withSpacecraft(satellite)
-                .withMultipleLineOfVisibility(multipleLineOfVisibility).build();
-
-        file.write(output);
+        return Spacecraft.builder(boundedPropagator, clock).withOnlyOnePeriod()
+            .build();
     }
 }
