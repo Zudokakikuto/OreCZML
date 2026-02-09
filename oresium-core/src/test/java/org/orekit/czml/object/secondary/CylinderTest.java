@@ -90,7 +90,7 @@ public class CylinderTest
                          header.getClock());
 
         final String pathFile =
-            loadResources("templateFile/object/secondary/CylinderTemplate.txt");
+            loadResources("templateFile/object/secondary/cylinder/CylinderTemplate.txt");
 
         verifyFileOutput(pathFile, cylinder.toString(), 1e-8);
     }
@@ -110,7 +110,7 @@ public class CylinderTest
 
         // Reference file
         final String coveragePathFile =
-            loadResources("templateFile/object/secondary/CylinderCoverageTemplate.txt");
+            loadResources("templateFile/object/secondary/cylinder/CylinderCoverageTemplate.txt");
 
         verifyFileOutput(coveragePathFile, coverageCylinder.toString(), 1e-8);
     }
@@ -129,7 +129,7 @@ public class CylinderTest
 
         // Reference file
         final String groundStationPathFile =
-            loadResources("templateFile/object/secondary/CylinderGroundStationTemplate.txt");
+            loadResources("templateFile/object/secondary/cylinder/CylinderGroundStationTemplate.txt");
 
         verifyFileOutput(groundStationPathFile,
                          groundStationCylinder.toString(), 1e-8);
@@ -146,7 +146,7 @@ public class CylinderTest
 
         // Reference file
         final String topocentricPathFile =
-            loadResources("templateFile/object/secondary/CylinderTopocentricTemplate.txt");
+            loadResources("templateFile/object/secondary/cylinder/CylinderTopocentricTemplate.txt");
 
         verifyFileOutput(topocentricPathFile, topocentricCylinder.toString(),
                          1e-8);

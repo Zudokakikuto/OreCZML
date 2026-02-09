@@ -75,7 +75,7 @@ public class GroundTrackTest
         groundTrack.displayLinkSatellite();
 
         final String pathFile =
-            loadResources("templateFile/object/primary/GroundTrackTemplate.txt");
+            loadResources("templateFile/object/primary/grountrack/GroundTrackTemplate.txt");
 
         verifyFileOutput(pathFile, groundTrack.toString(), 1e-8);
     }
@@ -99,7 +99,7 @@ public class GroundTrackTest
 
         // Reference file
         final String builderPathFile =
-            loadResources("templateFile/object/primary/GroundTrackWithBuilderTemplate.txt");
+            loadResources("templateFile/object/primary/grountrack/GroundTrackWithBuilderTemplate.txt");
 
         verifyFileOutput(builderPathFile, groundTrackWithBuilder.toString(),
                          1e-8);
@@ -129,7 +129,7 @@ public class GroundTrackTest
 
         // Reference file
         final String constellationPathFile =
-            loadResources("templateFile/object/primary/GroundTrackConstellationTemplate.txt");
+            loadResources("templateFile/object/primary/grountrack/GroundTrackConstellationTemplate.txt");
 
         verifyFileOutput(constellationPathFile,
                          constellationGroundTrack.toString(), 1e-8);

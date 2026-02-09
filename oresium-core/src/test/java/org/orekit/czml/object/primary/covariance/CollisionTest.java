@@ -168,7 +168,7 @@ public class CollisionTest
 
         // Reference file
         final String pathFile =
-            loadResources("templateFile/object/primary/covariance/CollisionTemplate.txt");
+            loadResources("templateFile/object/primary/covariances/collision/CollisionTemplate.txt");
 
         verifyFileOutput(pathFile, collision.toString(), 1e-4);
     }
@@ -250,7 +250,7 @@ public class CollisionTest
 
         // Reference file
         final String builderPathFile =
-            loadResources("templateFile/object/primary/covariance/CollisionWithBuilderTemplate.txt");
+            loadResources("templateFile/object/primary/covariances/collision/CollisionWithBuilderTemplate.txt");
 
         verifyFileOutput(builderPathFile, collisionBuilder.toString(), 1e-4);
     }

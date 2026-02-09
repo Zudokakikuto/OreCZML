@@ -58,7 +58,8 @@ public class PathTest
 
         final Path path = new Path(availability);
 
-        final String pathFile = loadResources("templateFile/PathTemplate.txt");
+        final String pathFile =
+            loadResources("templateFile/object/unclassed/path/PathTemplate.txt");
 
         verifyFileOutput(pathFile, path.toString(), 1e-8);
     }
@@ -73,7 +74,7 @@ public class PathTest
 
         // Reference file
         final String pathCoverageFile =
-            loadResources("templateFile/PathCoverageTemplate.txt");
+            loadResources("templateFile/object/unclassed/path/PathCoverageTemplate.txt");
 
         verifyFileOutput(pathCoverageFile, pathCoverage.toString(), 1e-8);
         Assertions.assertTrue(pathCoverage.isShow());

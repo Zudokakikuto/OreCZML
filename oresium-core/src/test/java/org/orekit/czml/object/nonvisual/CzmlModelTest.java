@@ -53,7 +53,7 @@ public class CzmlModelTest
                           header.getClock());
 
         final String pathFile =
-            loadResources("templateFile/nonvisual/CzmlModelTemplate.txt");
+            loadResources("templateFile/nonvisual/czmlmodel/CzmlModelTemplate.txt");
 
         Assertions.assertEquals(Files.readString(Path.of(pathFile)),
                                 modelToTest.toString());

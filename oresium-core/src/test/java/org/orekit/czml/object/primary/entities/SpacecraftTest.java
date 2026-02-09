@@ -80,9 +80,9 @@ public class SpacecraftTest
                 .build();
 
         final String pathFile =
-            loadResources("templateFile/object/primary/entities/SpacecraftTemplate.txt");
+            loadResources("templateFile/object/primary/entities/spacecraft/SpacecraftTemplate.txt");
         final String pathFileWithModel =
-            loadResources("templateFile/object/primary/entities/SpacecraftBuilderWithModelTemplate.txt");
+            loadResources("templateFile/object/primary/entities/spacecraft/SpacecraftBuilderWithModelTemplate.txt");
 
         verifyFileOutput(pathFileWithModel, spacecraftWithModel.toString(),
                          1e-8);
@@ -108,7 +108,7 @@ public class SpacecraftTest
                 .withName("Spacecraft").withDisplayName().build();
 
         final String pathFile =
-            loadResources("templateFile/object/primary/entities/SpacecraftLabelTemplate.txt");
+            loadResources("templateFile/object/primary/entities/spacecraft/SpacecraftLabelTemplate.txt");
 
         verifyFileOutput(pathFile, spacecraft.toString(), 1e-8);
     }
@@ -133,7 +133,7 @@ public class SpacecraftTest
                 .withDisplayAttitude().build();
 
         final String pathFile =
-            loadResources("templateFile/object/primary/entities/SpacecraftAttitudeTemplate.txt");
+            loadResources("templateFile/object/primary/entities/spacecraft/SpacecraftAttitudeTemplate.txt");
 
         Assertions.assertEquals(Files.readString(Path.of(pathFile)),
                                 spacecraft.toString());
@@ -169,7 +169,7 @@ public class SpacecraftTest
         spacecraft.displayInfluenceSphereChanges(bodyList, earth);
 
         final String spacecraftWithInfluenceSphereTemplate =
-            loadResources("templateFile/object/primary/entities/SpacecraftInfluenceSphereTemplate.txt");
+            loadResources("templateFile/object/primary/entities/spacecraft/SpacecraftInfluenceSphereTemplate.txt");
 
         verifyFileOutput(spacecraftWithInfluenceSphereTemplate,
                          spacecraft.toString(), 1e-8);

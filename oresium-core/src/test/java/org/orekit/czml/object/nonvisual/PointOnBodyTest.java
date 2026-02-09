@@ -24,8 +24,8 @@ import org.junit.jupiter.api.Test;
 import org.orekit.annotation.DefaultDataContext;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.czml.file.AbstractTest;
-import org.orekit.czml.object.utils.DateUtils;
 import org.orekit.czml.object.primary.Header;
+import org.orekit.czml.object.utils.DateUtils;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -80,7 +80,7 @@ public class PointOnBodyTest
         pointOnBodyTest.setDisplayPeriodPointingPath(true, 20.0);
 
         final String pathFile =
-            loadResources("templateFile/nonvisual/PointOnBodyTemplate.txt");
+            loadResources("templateFile/nonvisual/pointonbody/PointOnBodyTemplate.txt");
         verifyFileOutput(pathFile, pointOnBodyTest.toString(), 1e-8);
 
         // Getters coverage

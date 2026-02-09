@@ -56,7 +56,7 @@ public class PolylineTest
             Polyline.nonVectorBuilder(header.getClock()).build();
 
         final String pathFile =
-            loadResources("templateFile/PolylineTemplate.txt");
+            loadResources("templateFile/object/unclassed/polyline/PolylineTemplate.txt");
 
         verifyFileOutput(pathFile, polyline.toString(), 1e-8);
     }
@@ -77,7 +77,7 @@ public class PolylineTest
 
         // Reference file
         final String nonVectorPathFile =
-            loadResources("templateFile/PolylineNonVectorTemplate.txt");
+            loadResources("templateFile/object/unclassed/polyline/PolylineNonVectorTemplate.txt");
 
         verifyFileOutput(nonVectorPathFile, polylineNonVector.toString(), 1e-8);
     }

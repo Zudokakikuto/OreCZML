@@ -102,7 +102,7 @@ public class CzmlEllipsoidTest
             new CzmlEllipsoid(julianDates, randomCartesians, header.getClock());
 
         final String pathFile =
-            loadResources("templateFile/object/secondary/CzmlEllipsoidTemplate.txt");
+            loadResources("templateFile/object/secondary/czmlellipsoid/CzmlEllipsoidTemplate.txt");
 
         verifyFileOutput(pathFile, ellipsoid.toString(), 1e-8);
     }
@@ -120,7 +120,7 @@ public class CzmlEllipsoidTest
 
         // Reference file
         final String builderPathFile =
-            loadResources("templateFile/object/secondary/CzmlEllipsoidWithBuilderTemplate.txt");
+            loadResources("templateFile/object/secondary/czmlellipsoid/CzmlEllipsoidWithBuilderTemplate.txt");
 
         verifyFileOutput(builderPathFile, ellipsoidBuilder.toString(), 1e-8);
     }

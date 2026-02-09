@@ -143,7 +143,7 @@ public class ManeuverSequenceTest
                 .build();
 
         final String maneuversPathFile =
-            loadResources("templateFile/object/primary/ManeuverSequenceTemplate.txt");
+            loadResources("templateFile/object/primary/maneuversequence/ManeuverSequenceTemplate.txt");
 
         // Verify file output
         verifyFileOutput(maneuversPathFile, maneuverSequence.toString(), 1e-3);
@@ -289,7 +289,7 @@ public class ManeuverSequenceTest
 
         // Reference file
         final String maneuverSimplePathFile =
-            loadResources("templateFile/object/primary/ManeuverSequenceSimpleTemplate.txt");
+            loadResources("templateFile/object/primary/maneuversequence/ManeuverSequenceSimpleTemplate.txt");
 
         verifyFileOutput(maneuverSimplePathFile,
                          maneuverSequenceSimple.toString(), 1e-3);
@@ -333,7 +333,7 @@ public class ManeuverSequenceTest
 
         // Reference file
         final String maneuverMultiplePathFile =
-            loadResources("templateFile/object/primary/ManeuverSequenceMultipleTemplate.txt");
+            loadResources("templateFile/object/primary/maneuversequence/ManeuverSequenceMultipleTemplate.txt");
 
         verifyFileOutput(maneuverMultiplePathFile,
                          maneuverSequenceMultiple.toString(), 1e-3);

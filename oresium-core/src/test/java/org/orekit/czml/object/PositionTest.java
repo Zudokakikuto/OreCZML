@@ -57,9 +57,9 @@ public class PositionTest
                          header.getClock());
 
         final String cartesianPathFile =
-            loadResources("templateFile/PositionCartesianTemplate.txt");
+            loadResources("templateFile/object/unclassed/position/PositionCartesianTemplate.txt");
         final String referenceFramePathFile =
-            loadResources("templateFile/PositionCartesianWithReferenceFrameTemplate.txt");
+            loadResources("templateFile/object/unclassed/position/PositionCartesianWithReferenceFrameTemplate.txt");
 
         verifyFileOutput(cartesianPathFile, positionCartesian.toString(), 1e-8);
         verifyFileOutput(referenceFramePathFile,
@@ -91,7 +91,7 @@ public class PositionTest
 
         // Reference file
         final String degreesPathFile =
-            loadResources("templateFile/PositionDegreesTemplate.txt");
+            loadResources("templateFile/object/unclassed/position/PositionDegreesTemplate.txt");
 
         verifyFileOutput(degreesPathFile, positionDegrees.toString(), 1e-8);
 
@@ -113,7 +113,7 @@ public class PositionTest
 
         // Reference file
         final String radiansPathFile =
-            loadResources("templateFile/PositionRadiansTemplate.txt");
+            loadResources("templateFile/object/unclassed/position/PositionRadiansTemplate.txt");
 
         verifyFileOutput(radiansPathFile, positionRadians.toString(), 1e-8);
 

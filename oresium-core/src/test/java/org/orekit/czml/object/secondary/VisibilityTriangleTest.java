@@ -100,7 +100,7 @@ public class VisibilityTriangleTest
                 .withAngleOfAperture(90.0).build();
 
         final String linePathFile =
-            loadResources("templateFile/object/secondary/VisibilityTriangleConstructorTemplate.txt");
+            loadResources("templateFile/object/secondary/visibilitytriangle/VisibilityTriangleConstructorTemplate.txt");
 
         verifyFileOutput(linePathFile, coverageLine.toString(), 1e-8);
     }
@@ -138,7 +138,7 @@ public class VisibilityTriangleTest
 
         // Reference file
         final String entireFilePathFile =
-            loadResources("templateFile/object/secondary/VisibilityTriangleTestFileTemplate.txt");
+            loadResources("templateFile/object/secondary/visibilitytriangle/VisibilityTriangleTestFileTemplate.txt");
 
         verifyFileOutput(entireFilePathFile, file.toString(), 1e-8);
 

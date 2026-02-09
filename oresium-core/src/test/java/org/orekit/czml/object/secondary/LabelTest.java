@@ -53,7 +53,7 @@ public class LabelTest
         final Label label = new Label("header");
 
         final String pathFile =
-            loadResources("templateFile/object/secondary/LabelTemplate.txt");
+            loadResources("templateFile/object/secondary/label/LabelTemplate.txt");
 
         verifyFileOutput(pathFile, label.toString(), 1e-8);
     }
@@ -68,7 +68,7 @@ public class LabelTest
 
         // Reference file
         final String coveragePathFile =
-            loadResources("templateFile/object/secondary/LabelCoverageTemplate.txt");
+            loadResources("templateFile/object/secondary/label/LabelCoverageTemplate.txt");
 
         verifyFileOutput(coveragePathFile, coverageLabel.toString(), 1e-8);
     }
@@ -85,7 +85,7 @@ public class LabelTest
 
         // Reference file
         final String completePathFile =
-            loadResources("templateFile/object/secondary/LabelCompleteTemplate.txt");
+            loadResources("templateFile/object/secondary/label/LabelCompleteTemplate.txt");
 
         verifyFileOutput(completePathFile, completeLabel.toString(), 1e-8);
     }

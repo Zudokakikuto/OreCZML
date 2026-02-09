@@ -142,7 +142,7 @@ public class ConstellationTest
                 .displayOnlyOnePeriod().build();
 
         final String pathFile =
-            loadResources("templateFile/object/primary/entities/ConstellationTemplate.txt");
+            loadResources("templateFile/object/primary/entities/constellation/ConstellationTemplate.txt");
         verifyFileOutput(pathFile, constellation.toString(), 1e-8);
     }
 

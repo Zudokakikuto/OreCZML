@@ -51,7 +51,7 @@ public class CzmlShowTest
         final CzmlShow show = new CzmlShow(true, header.getClock());
 
         final String pathFile =
-            loadResources("templateFile/CzmlShowTemplate.txt");
+            loadResources("templateFile/object/unclassed/czmlshow/CzmlShowTemplate.txt");
 
         verifyFileOutput(pathFile, show.toString(), 1e-8);
     }

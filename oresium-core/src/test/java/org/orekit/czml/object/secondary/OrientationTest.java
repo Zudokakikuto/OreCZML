@@ -72,7 +72,7 @@ public class OrientationTest
         final List<Attitude> attitudes = spacecraft.getAttitudes();
 
         final String pathFile =
-            loadResources("templateFile/object/secondary/OrientationTemplate.txt");
+            loadResources("templateFile/object/secondary/orientation/OrientationTemplate.txt");
 
         final Orientation orientation =
             new Orientation(attitudes, FramesFactory.getEME2000());
@@ -101,7 +101,7 @@ public class OrientationTest
 
         // Reference file
         final String withBuilderPathFile =
-            loadResources("templateFile/object/secondary/OrientationWithBuilderTemplate.txt");
+            loadResources("templateFile/object/secondary/orientation/OrientationWithBuilderTemplate.txt");
 
         verifyFileOutput(withBuilderPathFile, orientationWithBuilder.toString(),
                          1e-8);
@@ -125,7 +125,7 @@ public class OrientationTest
 
         // Reference file
         final String invertPathFile =
-            loadResources("templateFile/object/secondary/OrientationInvertTemplate.txt");
+            loadResources("templateFile/object/secondary/orientation/OrientationInvertTemplate.txt");
 
         verifyFileOutput(invertPathFile, orientationInvert.toString(), 1e-8);
     }
@@ -149,7 +149,7 @@ public class OrientationTest
 
         // Reference file
         final String falseInvertPathFile =
-            loadResources("templateFile/object/secondary/OrientationFalseInvertTemplate.txt");
+            loadResources("templateFile/object/secondary/orientation/OrientationFalseInvertTemplate.txt");
 
         verifyFileOutput(falseInvertPathFile, orientationFalseInvert.toString(),
                          1e-8);

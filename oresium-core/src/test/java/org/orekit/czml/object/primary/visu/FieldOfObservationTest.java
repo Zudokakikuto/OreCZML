@@ -123,7 +123,7 @@ public class FieldOfObservationTest
 
         // Reference file
         final String pathFile =
-            loadResources("templateFile/object/primary/visu/FieldOfObservationTemplate.txt");
+            loadResources("templateFile/object/primary/visu/fieldofobservation/FieldOfObservationTemplate.txt");
 
         verifyFileOutput(pathFile, fieldOfObservation.toString(), 1e-3);
     }
