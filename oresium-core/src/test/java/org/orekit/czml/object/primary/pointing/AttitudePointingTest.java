@@ -83,7 +83,7 @@ public class AttitudePointingTest
         attitudePointing.displayPeriodPointingPath();
 
         final String pathFile =
-            loadResources("templateFile/object/primary/pointing/AttitudePointingTemplate.txt");
+            loadResources("templateFile/object/primary/pointing/attitudepointing/AttitudePointingTemplate.txt");
 
         verifyFileOutput(pathFile, attitudePointing.toString(), 1e-8);
     }
@@ -110,7 +110,7 @@ public class AttitudePointingTest
 
         // Reference file
         final String builderPathFile =
-            loadResources("templateFile/object/primary/pointing/AttitudePointingWithBuilderTemplate.txt");
+            loadResources("templateFile/object/primary/pointing/attitudepointing/AttitudePointingWithBuilderTemplate.txt");
 
         verifyFileOutput(builderPathFile,
                          attitudePointingWithBuilder.toString(), 1e-8);

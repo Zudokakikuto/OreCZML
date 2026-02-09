@@ -56,7 +56,7 @@ public class CentralBodyReferenceSystemTest
             CentralBodyReferenceSystem.builder(header.getClock()).build();
 
         final String pathFile =
-            loadResources("templateFile/object/primary/systems/CentralBodyReferenceSystemTemplate.txt");
+            loadResources("templateFile/object/primary/systems/centralbodyreferencesystem/CentralBodyReferenceSystemTemplate.txt");
 
         verifyFileOutput(pathFile, system.toString(), 1e-8);
     }
@@ -75,7 +75,7 @@ public class CentralBodyReferenceSystemTest
 
         // Reference file
         final String builderPathFile =
-            loadResources("templateFile/object/primary/systems/CentralBodyReferenceSystemWithBuilderTemplate.txt");
+            loadResources("templateFile/object/primary/systems/centralbodyreferencesystem/CentralBodyReferenceSystemWithBuilderTemplate.txt");
 
         verifyFileOutput(builderPathFile, systemBuilder.toString(), 1e-8);
     }

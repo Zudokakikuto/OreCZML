@@ -84,7 +84,7 @@ public class StationVisibilityCircleTest
                 .builder(topocentricToulouse, spacecraft, clock).build();
 
         final String circlePathFile =
-            loadResources("templateFile/object/secondary/StationVisibilityCircleConstructorTemplate.txt");
+            loadResources("templateFile/object/secondary/stationvisibilitycircle/StationVisibilityCircleConstructorTemplate.txt");
 
         verifyFileOutput(circlePathFile, circle.toString(), 1e-8);
 
@@ -114,7 +114,7 @@ public class StationVisibilityCircleTest
 
         // Reference file
         final String entirePathFile =
-            loadResources("templateFile/object/secondary/StationVisibilityCircleTestFileTemplate.txt");
+            loadResources("templateFile/object/secondary/stationvisibilitycircle/StationVisibilityCircleTestFileTemplate.txt");
 
         verifyFileOutput(entirePathFile, file.toString(), 1e-8);
 

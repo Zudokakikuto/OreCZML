@@ -99,9 +99,9 @@ public class LineOfVisibilityTest
                 .withCustomID("CustomID").withAngleOfAperture(90.0).build();
 
         final String pathFile =
-            loadResources("templateFile/object/primary/visu/LineOfVisibilityTemplate.txt");
+            loadResources("templateFile/object/primary/visu/lineofvisibility/LineOfVisibilityTemplate.txt");
         final String pathCoverageFile =
-            loadResources("templateFile/object/primary/visu/LineOfVisibilityCoverageTemplate.txt");
+            loadResources("templateFile/object/primary/visu/lineofvisibility/LineOfVisibilityCoverageTemplate.txt");
 
         verifyFileOutput(pathFile, line.toString(), 1e-8);
         verifyFileOutput(pathCoverageFile, coverageLine.toString(), 1e-8);

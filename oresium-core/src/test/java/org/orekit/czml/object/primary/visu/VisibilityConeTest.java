@@ -113,7 +113,7 @@ public class VisibilityConeTest
                                header.getClock());
 
         final String pathFile =
-            loadResources("templateFile/object/primary/visu/VisibilityConeTemplate.txt");
+            loadResources("templateFile/object/primary/visu/visibilitycone/VisibilityConeTemplate.txt");
 
         verifyFileOutput(pathFile, cone.toString(), 1e-8);
     }
@@ -131,7 +131,7 @@ public class VisibilityConeTest
 
         // Reference file
         final String coveragePathFile =
-            loadResources("templateFile/object/primary/visu/VisibilityConeCoverageTemplate.txt");
+            loadResources("templateFile/object/primary/visu/visibilitycone/VisibilityConeCoverageTemplate.txt");
 
         verifyFileOutput(coveragePathFile, coverageCone.toString(), 1e-8);
     }
@@ -154,7 +154,7 @@ public class VisibilityConeTest
 
         // Reference file
         final String cylinderSatPathFile =
-            loadResources("templateFile/object/primary/visu/VisibilityConeCylinderSatTemplate.txt");
+            loadResources("templateFile/object/primary/visu/visibilitycone/VisibilityConeCylinderSatTemplate.txt");
 
         verifyFileOutput(cylinderSatPathFile, cylinderSatCone.toString(), 1e-8);
     }
@@ -171,7 +171,7 @@ public class VisibilityConeTest
 
         // Reference file
         final String groundStationPathFile =
-            loadResources("templateFile/object/primary/visu/VisibilityConeGroundStationTemplate.txt");
+            loadResources("templateFile/object/primary/visu/visibilitycone/VisibilityConeGroundStationTemplate.txt");
 
         verifyFileOutput(groundStationPathFile, groundStationCone.toString(),
                          1e-8);
@@ -194,7 +194,7 @@ public class VisibilityConeTest
 
         // Reference file
         final String GroundStationSatPathFile =
-            loadResources("templateFile/object/primary/visu/VisibilityConeGroundStationSatTemplate.txt");
+            loadResources("templateFile/object/primary/visu/visibilitycone/VisibilityConeGroundStationSatTemplate.txt");
 
         verifyFileOutput(GroundStationSatPathFile,
                          groundStationSatCone.toString(), 1e-8);

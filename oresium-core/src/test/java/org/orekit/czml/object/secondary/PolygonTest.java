@@ -56,7 +56,7 @@ public class PolygonTest
         final Polygon polygon = new Polygon(cartesians, header.getClock());
 
         final String pathFile =
-            loadResources("templateFile/object/secondary/PolygonTemplate.txt");
+            loadResources("templateFile/object/secondary/polygon/PolygonTemplate.txt");
 
         verifyFileOutput(pathFile, polygon.toString(), 1e-8);
     }

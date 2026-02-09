@@ -121,7 +121,7 @@ public class InterSatVisuTest
                 .build();
 
         final String pathFile =
-            loadResources("templateFile/object/primary/visu/InterSatVisuTemplate.txt");
+            loadResources("templateFile/object/primary/visu/intersatvisu/InterSatVisuTemplate.txt");
 
         verifyFileOutput(pathFile, interSatVisu.toString(), 1e-8);
 
@@ -161,7 +161,7 @@ public class InterSatVisuTest
             spacecraftFromOrbit(startDate, finalDate, secondOrbit);
 
         final String pathFile =
-            loadResources("templateFile/object/primary/visu/InterSatVisuTemplate.txt");
+            loadResources("templateFile/object/primary/visu/intersatvisu/InterSatVisuTemplate.txt");
         final InterSatVisu interSatVisuBuilder =
             InterSatVisu.builder(firstSpacecraft, secondSpacecraft, finalDate,
                                  header.getClock())
@@ -197,7 +197,7 @@ public class InterSatVisuTest
 
         // Reference files
         final String propagatorsInterSatPathFile =
-            loadResources("templateFile/object/primary/visu/InterSatVisuPropagatorsTemplate.txt");
+            loadResources("templateFile/object/primary/visu/intersatvisu/InterSatVisuPropagatorsTemplate.txt");
 
         verifyFileOutput(propagatorsInterSatPathFile,
                          interSatVisuPropagators.toString(), 1e-8);
@@ -233,7 +233,7 @@ public class InterSatVisuTest
 
         // Reference file
         final String propagatorsInterSatPathFile =
-            loadResources("templateFile/object/primary/visu/InterSatVisuPropagatorsTemplate.txt");
+            loadResources("templateFile/object/primary/visu/intersatvisu/InterSatVisuPropagatorsTemplate.txt");
 
         verifyFileOutput(propagatorsInterSatPathFile,
                          interSatVisuPropagatorsBuilder.toString(), 1e-8);
@@ -267,7 +267,7 @@ public class InterSatVisuTest
 
         // Reference file
         final String propagatorsIDInterSatPathFile =
-            loadResources("templateFile/object/primary/visu/InterSatVisuPropagatorsIDTemplate.txt");
+            loadResources("templateFile/object/primary/visu/intersatvisu/InterSatVisuPropagatorsIDTemplate.txt");
 
         verifyFileOutput(propagatorsIDInterSatPathFile,
                          interSatVisuPropagatorsID.toString(), 1e-8);
@@ -302,7 +302,7 @@ public class InterSatVisuTest
 
         // Reference file
         final String constellationInterSatPathFile =
-            loadResources("templateFile/object/primary/visu/InterSatVisuConstellationTemplate.txt");
+            loadResources("templateFile/object/primary/visu/intersatvisu/InterSatVisuConstellationTemplate.txt");
 
         verifyFileOutput(constellationInterSatPathFile,
                          interSatVisuFromConstellationBuilder.toString(), 1e-8);
@@ -330,7 +330,7 @@ public class InterSatVisuTest
 
         // Reference file
         final String constructorInterSatPathFile =
-            loadResources("templateFile/object/primary/visu/InterSatVisuFromConstructorTemplate.txt");
+            loadResources("templateFile/object/primary/visu/intersatvisu/InterSatVisuFromConstructorTemplate.txt");
 
         verifyFileOutput(constructorInterSatPathFile,
                          interSatVisuFromConstructor.toString(), 1e-8);
@@ -363,7 +363,7 @@ public class InterSatVisuTest
 
         // Reference file
         final String constructorPropagatorsInterSatPathFile =
-            loadResources("templateFile/object/primary/visu/InterSatVisuFromPropagatorsConstructorTemplate.txt");
+            loadResources("templateFile/object/primary/visu/intersatvisu/InterSatVisuFromPropagatorsConstructorTemplate.txt");
 
         verifyFileOutput(constructorPropagatorsInterSatPathFile,
                          interSatVisuFromPropagators.toString(), 1e-8);
@@ -398,7 +398,7 @@ public class InterSatVisuTest
 
         // Reference file
         final String constructorConstellationInterSatPathFile =
-            loadResources("templateFile/object/primary/visu/InterSatVisuFromConstellationConstructorTemplate.txt");
+            loadResources("templateFile/object/primary/visu/intersatvisu/InterSatVisuFromConstellationConstructorTemplate.txt");
 
         verifyFileOutput(constructorConstellationInterSatPathFile,
                          interSatVisuFromConstellation.toString(), 1e-8);

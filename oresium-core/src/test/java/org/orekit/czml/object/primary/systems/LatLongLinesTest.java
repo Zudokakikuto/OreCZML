@@ -56,7 +56,7 @@ public class LatLongLinesTest
 
         // Reference file
         final String pathFile =
-            loadResources("templateFile/object/primary/systems/LatLongLinesTemplate.txt");
+            loadResources("templateFile/object/primary/systems/latlonglines/LatLongLinesTemplate.txt");
 
         verifyFileOutput(pathFile, lines.toString(), 1e-8);
     }
@@ -75,7 +75,7 @@ public class LatLongLinesTest
 
         // Reference file
         final String builderPathFile =
-            loadResources("templateFile/object/primary/systems/LatLongLinesWithBuilderTemplate.txt");
+            loadResources("templateFile/object/primary/systems/latlonglines/LatLongLinesWithBuilderTemplate.txt");
 
         verifyFileOutput(builderPathFile, linesBuilder.toString(), 1e-8);
     }

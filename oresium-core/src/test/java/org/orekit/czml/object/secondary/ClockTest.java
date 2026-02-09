@@ -67,7 +67,7 @@ public class ClockTest
         final Clock clock = new Clock(startDate, finalDate, 10.0);
 
         final String pathFile =
-            loadResources("templateFile/object/secondary/ClockTemplate.txt");
+            loadResources("templateFile/object/secondary/clock/ClockTemplate.txt");
 
         verifyFileOutput(pathFile, clock.toString(), 1e-8);
 
@@ -89,7 +89,7 @@ public class ClockTest
 
         // Reference file
         final String coveragePathFile =
-            loadResources("templateFile/object/secondary/ClockCoverageTemplate.txt");
+            loadResources("templateFile/object/secondary/clock/ClockCoverageTemplate.txt");
 
         verifyFileOutput(coveragePathFile, clockCoverage.toString(), 1e-8);
     }
@@ -109,7 +109,7 @@ public class ClockTest
 
         // Reference file
         final String oemClockPathFile =
-            loadResources("templateFile/object/secondary/OemClockTemplate.txt");
+            loadResources("templateFile/object/secondary/clock/ClockOemTemplate.txt");
 
         verifyFileOutput(oemClockPathFile, oemClock.toString(), 1e-8);
     }

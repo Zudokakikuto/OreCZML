@@ -20,8 +20,8 @@ import org.junit.jupiter.api.Test;
 import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.Header;
-import org.orekit.czml.object.utils.DateUtils;
 import org.orekit.czml.object.primary.entities.Spacecraft;
+import org.orekit.czml.object.utils.DateUtils;
 import org.orekit.propagation.BoundedPropagator;
 import org.orekit.time.AbsoluteDate;
 
@@ -66,7 +66,7 @@ public class SpacecraftReferenceSystemTest
             new SpacecraftReferenceSystem(satellite);
 
         final String pathFile =
-            loadResources("templateFile/object/primary/systems/SpacecraftReferenceSystemTemplate.txt");
+            loadResources("templateFile/object/primary/systems/spacecraftreferencesystem/SpacecraftReferenceSystemTemplate.txt");
 
         verifyFileOutput(pathFile, system.toString(), 1e-8);
     }

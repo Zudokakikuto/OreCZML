@@ -57,7 +57,7 @@ public class BillboardTest
         final Billboard billboard = new Billboard(imageStr);
 
         final String pathFile =
-            loadResources("templateFile/object/secondary/BillboardTemplate.txt");
+            loadResources("templateFile/object/secondary/billboard/BillboardTemplate.txt");
 
         verifyFileOutput(pathFile, billboard.toString(), 1e-8);
     }
@@ -72,7 +72,7 @@ public class BillboardTest
 
         // Reference file
         final String coveragePathFile =
-            loadResources("templateFile/object/secondary/BillboardCoverageTemplate.txt");
+            loadResources("templateFile/object/secondary/billboard/BillboardCoverageTemplate.txt");
 
         verifyFileOutput(coveragePathFile, billboardCoverage.toString(), 1e-8);
     }
@@ -90,7 +90,7 @@ public class BillboardTest
 
         // Reference file
         final String nearFarPathFile =
-            loadResources("templateFile/object/secondary/BillboardNearFarTemplate.txt");
+            loadResources("templateFile/object/secondary/billboard/BillboardNearFarTemplate.txt");
 
         verifyFileOutput(nearFarPathFile, billboardNearFar.toString(), 1e-8);
     }
@@ -111,7 +111,7 @@ public class BillboardTest
 
         // Reference file
         final String complexConstructorPathFile =
-            loadResources("templateFile/object/secondary/BillboardComplexConstructorTemplate.txt");
+            loadResources("templateFile/object/secondary/billboard/BillboardComplexConstructorTemplate.txt");
 
         verifyFileOutput(complexConstructorPathFile,
                          complexConstructor.toString(), 1e-8);

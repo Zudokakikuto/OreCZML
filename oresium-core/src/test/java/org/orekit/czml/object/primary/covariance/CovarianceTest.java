@@ -126,7 +126,7 @@ public class CovarianceTest
                 .withColor(Color.ORANGE).withCustomID("CustomID").build();
 
         final String pathFile =
-            loadResources("templateFile/object/primary/covariance/CovarianceTemplate.txt");
+            loadResources("templateFile/object/primary/covariances/covariance/CovarianceTemplate.txt");
         verifyFileOutput(pathFile, covariance.toString(), 1e-4);
     }
 

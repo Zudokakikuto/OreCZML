@@ -128,7 +128,7 @@ public class CoveredSurfaceOnBodyTest
 
         // Reference file
         final String pathFile =
-            loadResources("templateFile/object/primary/pointing/CoveredSurfaceOnBodyTemplate.txt");
+            loadResources("templateFile/object/primary/pointing/coveredsurfaceonbody/CoveredSurfaceOnBodyTemplate.txt");
 
         verifyFileOutput(pathFile, surface.toString(), 1e-8);
     }
@@ -173,7 +173,7 @@ public class CoveredSurfaceOnBodyTest
 
         // Reference file
         final String builderPathFile =
-            loadResources("templateFile/object/primary/pointing/CoveredSurfaceOnBodyWithBuilderTemplate.txt");
+            loadResources("templateFile/object/primary/pointing/coveredsurfaceonbody/CoveredSurfaceOnBodyWithBuilderTemplate.txt");
 
         verifyFileOutput(builderPathFile, surfaceBuilder.toString(), 1e-8);
     }

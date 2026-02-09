@@ -98,7 +98,7 @@ public class TimePositionTest
             new TimePosition(randomCartesians, julianDates);
 
         final String pathFile =
-            loadResources("templateFile/object/secondary/TimePositionTemplate.txt");
+            loadResources("templateFile/object/secondary/timeposition/TimePositionTemplate.txt");
 
         verifyFileOutput(pathFile, timePosition.toString(), 1e-8);
     }

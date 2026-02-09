@@ -56,7 +56,7 @@ public class HeaderTest
             URISyntaxException {
 
         final String pathFile =
-            loadResources("templateFile/object/primary/HeaderTemplate.txt");
+            loadResources("templateFile/object/primary/header/HeaderTemplate.txt");
 
         verifyFileOutput(pathFile, header.toString(), 1e-8);
     }
@@ -72,7 +72,7 @@ public class HeaderTest
 
         // Reference file
         final String coveragePathFile =
-            loadResources("templateFile/object/primary/HeaderCoverageTemplate.txt");
+            loadResources("templateFile/object/primary/header/HeaderCoverageTemplate.txt");
 
         verifyFileOutput(coveragePathFile, headerCoverage.toString(), 1e-8);
     }
@@ -88,7 +88,7 @@ public class HeaderTest
 
         // Reference file
         final String versionPathFile =
-            loadResources("templateFile/object/primary/HeaderVersionTemplate.txt");
+            loadResources("templateFile/object/primary/header/HeaderVersionTemplate.txt");
 
         verifyFileOutput(versionPathFile, headerVersion.toString(), 1e-8);
     }

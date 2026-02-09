@@ -89,7 +89,7 @@ public class InfluenceSphereTest
 
         // Reference frame
         final String influenceSphereWithCentralBodyTemplate =
-            loadResources("templateFile/object/primary/entities/InfluenceSphereWithCentralBodyTemplate.txt");
+            loadResources("templateFile/object/primary/entities/influencesphere/InfluenceSphereWithCentralBodyTemplate.txt");
 
         verifyFileOutput(influenceSphereWithCentralBodyTemplate,
                          influenceSphereWithCentralBody.toString(), 1e-8);

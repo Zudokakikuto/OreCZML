@@ -86,7 +86,7 @@ public class BodyTest
 
         // Reference file
         final String bodyPathFile =
-            loadResources("templateFile/object/primary/entities/BodyTemplate.txt");
+            loadResources("templateFile/object/primary/entities/body/BodyTemplate.txt");
 
         verifyFileOutput(bodyPathFile, body.toString(), 1e-8);
     }
@@ -111,7 +111,7 @@ public class BodyTest
 
         // Reference file
         final String builderPathFiles =
-            loadResources("templateFile/object/primary/entities/BodyWithBuilderTemplate.txt");
+            loadResources("templateFile/object/primary/entities/body/BodyWithBuilderTemplate.txt");
 
         verifyFileOutput(builderPathFiles, bodyBuilder.toString(), 1e-8);
         Assertions.assertEquals(CelestialBodyFactory.getMars(),
@@ -140,7 +140,7 @@ public class BodyTest
 
         // Reference file
         final String bodyWithModelFiles =
-            loadResources("templateFile/object/primary/entities/BodyWithModelTemplate.txt");
+            loadResources("templateFile/object/primary/entities/body/BodyWithModelTemplate.txt");
 
         verifyFileOutput(bodyWithModelFiles, bodyWithModel.toString(), 1e-8);
     }
@@ -171,7 +171,7 @@ public class BodyTest
 
         // Reference file
         final String bodiesPathFiles =
-            loadResources("templateFile/object/primary/entities/BodiesTemplate.txt");
+            loadResources("templateFile/object/primary/entities/body/BodiesTemplate.txt");
 
         verifyFileOutput(bodiesPathFiles, file.toString(), 1e-8);
     }

@@ -74,7 +74,7 @@ public class CzmlGroundStationTest
             new CzmlGroundStation(topocentricToulouse, header.getClock());
 
         final String pathFile =
-            loadResources("templateFile/object/primary/entities/CzmlGroundStationTemplate.txt");
+            loadResources("templateFile/object/primary/entities/czmlgroundstation/CzmlGroundStationTemplate.txt");
 
         verifyFileOutput(pathFile, station.toString(), 1e-8);
     }
@@ -96,7 +96,7 @@ public class CzmlGroundStationTest
 
         // Reference file
         final String builderPathFile =
-            loadResources("templateFile/object/primary/entities/CzmlGroundStationWithBuilderTemplate.txt");
+            loadResources("templateFile/object/primary/entities/czmlgroundstation/CzmlGroundStationWithBuilderTemplate.txt");
         verifyFileOutput(builderPathFile, stationBuilder.toString(), 1e-8);
     }
 
@@ -117,7 +117,7 @@ public class CzmlGroundStationTest
 
         // Reference file
         final String builderWithModelPathFile =
-            loadResources("templateFile/object/primary/entities/CzmlGroundStationBuilderWithModelTemplate.txt");
+            loadResources("templateFile/object/primary/entities/czmlgroundstation/CzmlGroundStationBuilderWithModelTemplate.txt");
 
         verifyFileOutput(builderWithModelPathFile, stationWithModel.toString(),
                          1e-8);
