@@ -1,26 +1,65 @@
-# included templates
+workflow:
+    rules:
+        - when: always
+
 include:
-  - remote: "https://gitlab.com/to-be-continuous/maven/-/raw/3.9.0/templates/gitlab-ci-maven.yml"
+    - remote: "https://gitlab.com/to-be-continuous/maven/-/raw/3.9.0/templates/gitlab-ci-maven.yml"
 
 variables:
-  MAVEN_DEPLOY_ENABLED: "true"
-  MAVEN_IMAGE: "registry.orekit.org/orekit/oreczml/cicd:1.0"
-  MAVEN_CFG_DIR: "/root/.m2"
-  MAVEN_SETTINGS_FILE: ${MAVEN_PROJECT_DIR}/cicd/ci-settings.xml
-  MAVEN_DEPLOY_FROM_UNPROTECTED_DISABLED : true
-  MVN_FORBID_SNAPSHOT_DEPENDENCIES_DISABLED : true
-  SONAR_QUALITY_GATE_ENABLED: true
-  GIT_SUBMODULE_STRATEGY: recursive
+    MAVEN_IMAGE: "$CI_REGISTRY_IMAGE:latest"
+    MAVEN_DEPLOY_ENABLED: "true"
+    CACHE_KEY: "czml-writer-${CI_COMMIT_REF_SLUG}"
+    MAVEN_CFG_DIR: "$CI_PROJECT_DIR/.m2"
+    MAVEN_SETTINGS_FILE: ${MAVEN_PROJECT_DIR}/cicd/ci-settings.xml
+    MAVEN_DEPLOY_FROM_UNPROTECTED_DISABLED: "true"
+    MVN_FORBID_SNAPSHOT_DEPENDENCIES_DISABLED: "true"
+    SONAR_QUALITY_GATE_ENABLED: "true"
+    GIT_SUBMODULE_STRATEGY: recursive
+    MAVEN_LOCAL_REPO: "$CI_PROJECT_DIR/.m2/repository"
+    MAVEN_CLI_OPTS: "-Dmaven.repo.local=$MAVEN_LOCAL_REPO"
 
-# your pipeline stages
+cache:
+    key: "maven-${CI_COMMIT_REF_SLUG}"
+    paths:
+        - .m2/repository/
+
 stages:
-  - build
-  - test
-  - package-build
-  - package-test
-  - infra
-  - deploy
-  - acceptance
-  - publish
-  - infra-prod
-  - production
+    - build
+    - test
+    - package-build
+    - package-test
+    - infra
+    - deploy
+    - acceptance
+    - publish
+    - infra-prod
+    - production
+
+mvn-build:
+    variables:
+        MAVEN_CLI_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
+    before_script:
+        - !reference [.mvn-base, before_script]
+        - mkdir -p "$CI_PROJECT_DIR/.m2/repository"
+        - mvn -q -Dmaven.repo.local="$CI_PROJECT_DIR/.m2/repository" install:install-file -Dfile="$CI_PROJECT_DIR/cicd/cesiumlanguagewriter-3.0.0.jar" -DgroupId=com.agi -DartifactId=czml-writer -Dversion=3.0.0 -Dpackaging=jar -DgeneratePom=true
+        - git config --global url."https://oauth2:${ORESIUM_DATA_TOKEN}@gitlab.orekit.org/".insteadOf "https://gitlab.orekit.org/"
+        - git submodule sync --recursive
+        - git submodule update --init --recursive
+        - git submodule status
+        - pwd
+        - test -f .gitmodules && (cat .gitmodules; echo) || echo "NO .gitmodules file"
+        - git submodule status --recursive || true
+        - git config --file .gitmodules --list || true
+        - GIT_TRACE=1 GIT_CURL_VERBOSE=1 git submodule update --init --recursive || true
+
+mvn-sonar:
+    variables:
+        MAVEN_CLI_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
+    before_script:
+        - !reference [ .mvn-base, before_script ]
+        - echo "SONAR_HOST_URL=$SONAR_HOST_URL"
+        - test -n "$SONAR_TOKEN" && echo "SONAR_TOKEN is set" || echo "SONAR_TOKEN is MISSING/EMPTY"
+        - echo "=== INSTALL CZML-WRITER LOCAL ==="
+        - mkdir -p "$CI_PROJECT_DIR/.m2/repository"
+        - mvn -q -Dmaven.repo.local="$CI_PROJECT_DIR/.m2/repository" install:install-file -Dfile="$CI_PROJECT_DIR/cicd/cesiumlanguagewriter-3.0.0.jar" -DgroupId=com.agi -DartifactId=czml-writer -Dversion=3.0.0 -Dpackaging=jar -DgeneratePom=true
+        - git config --global url."https://oauth2:${ORESIUM_DATA_TOKEN}@gitlab.orekit.org/".insteadOf "https://gitlab.orekit.org/"

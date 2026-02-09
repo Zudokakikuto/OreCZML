@@ -1,10 +1,12 @@
-![Logo OreCzml](https://github.com/Zudokakikuto/OreCZML/blob/master/images/OreCZML.png?raw=true)
+## This project was named OreCzml, since the V1.1 it is now Oresium.
+
+![Logo Oresium](https://github.com/Zudokakikuto/OreCzml/blob/master/images/OreCzml.png?raw=true)
 
 # Introduction
 
-The OreCZML project aims to create an interface between the [Orekit][orekit]
+The Oresium project aims to create an interface between the [Orekit][orekit]
 space dynamics library and the [Cesium][cesium] 3D visualization library. Like
-Orekit, OreCZML is developed in Java. It delegates calculations to Orekit and
+Orekit, Oresium is developed in Java. It delegates calculations to Orekit and
 converts the results into [CZML][czml] files. These files can then be used by
 Cesium to visualize the trajectories and other orbit and attitude parameters
 of satellites.
@@ -13,7 +15,7 @@ of satellites.
 [![Quality Gate Status](https://sonar.orekit.org/api/project_badges/measure?branch=master&project=orekit%3Aoreczml&metric=alert_status)](https://sonar.orekit.org/dashboard?id=orekit%3Aoreczml)
 [![Coverage](https://sonar.orekit.org/api/project_badges/measure?project=orekit%3Aoreczml&metric=coverage)](https://sonar.orekit.org/component_measures?metric=Coverage&id=orekit%3Aoreczml)
 [![Security Rating](https://sonar.orekit.org/api/project_badges/measure?project=orekit%3Aoreczml&metric=security_rating)](https://sonar.orekit.org/component_measures?metric=security_review_rating&id=orekit%3Aoreczml)
-![Latest release](https://gitlab.orekit.org/orekit/oreczml/-/badges/release.svg)
+![Latest release](https://gitlab.orekit.org/orekit/oresium/-/badges/release.svg)
 
 <p align="center">
   <img src="https://github.com/Zudokakikuto/OreCZML/blob/master/images/sinusoidalAttitudeFovGIF.gif?raw=true" alt=""/>
@@ -79,7 +81,7 @@ it is recommended to clone the repository by including the submodules. To do
 so you can write:
 
 ```git
-git clone --recurse-submodules https://gitlab.orekit.org/orekit/oreczml.git
+git clone --recurse-submodules https://gitlab.orekit.org/orekit/oresium.git
 ```
 
 If you cloned the repository without the submodules, you can still do:
@@ -90,16 +92,16 @@ git submodule update --init
 
 # Deployment
 
-To use a deployed version of OreCzml, you will need to download the `.jar`
+To use a deployed version of Oresium, you will need to download the `.jar`
 file of the core module. You can find the last version in the
-[releases](https://gitlab.orekit.org/orekit/oreczml/-/releases). Then, run
+[releases](https://gitlab.orekit.org/orekit/oresium/-/releases). Then, run
 this Maven command:
 
 ```bash
 mvn install:install-file \
-    -Dfile=[PATH]\oreczml-core-1.0.jar \
+    -Dfile=[PATH]\oresium-core-1.0.jar \
     -DgroupId=org.orekit \
-    -DartifactId=OreCzml \
+    -DartifactId=Oresium \
     -Dversion=1.0 \
     -Dpackaging=jar \
     -DgeneratePom=true
@@ -145,8 +147,8 @@ mvn spotless:apply
 
 # Wiki and more
 
-Check out the [wiki](https://gitlab.orekit.org/orekit/oreczml/-/wikis/home),
-including the [Get Started](https://gitlab.orekit.org/orekit/oreczml/-/wikis/Get-Started).
+Check out the [wiki](https://gitlab.orekit.org/orekit/oresium/-/wikis/home),
+including the [Get Started](https://gitlab.orekit.org/orekit/oresium/-/wikis/Get-Started).
 Also visit the [Orekit Forum](https://https://forum.orekit.org) or the
 [Cesium Forum](https://community.cesium.com/) for related questions.
 
@@ -214,7 +216,7 @@ Copyright © 2024–2025, [CS GROUP][csgroup] and other contributors
 
 All Rights Reserved.
 
-Permission to modify and redistribute OreCZML is granted under the terms of
+Permission to modify and redistribute Oresium is granted under the terms of
 the Apache 2.0 license. See the [LICENSE.txt](LICENSE.txt) file for the full
 license.
 

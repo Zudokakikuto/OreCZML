@@ -37,7 +37,7 @@ build/
 .DS_Store
 /.idea/
 /src/main/resources/Dependencies/cesiumlanguagewriter-1.0.jar
-/oreczml-core/target/
-/oreczml-tutorials/target/
+/oresium-core/target/*
+/oresium-tutorials/target/
 /target/
 /Output/

@@ -3,15 +3,15 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.orekit</groupId>
-    <artifactId>oreczml-parent</artifactId>
+    <artifactId>oresium-parent</artifactId>
     <version>1.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>oreczml-parent</name>
-    <url>https://gitlab.orekit.org/orekit/oreczml</url>
+    <name>oresium-parent</name>
+    <url>https://gitlab.orekit.org/orekit/oresium</url>
     <inceptionYear>2024</inceptionYear>
     <description>
-        OreCzml is a bridge library between Orekit and czml-writer (by
+        Oresium is a bridge library between Orekit and czml-writer (by
         AnalyticalGraphicsInc) libraries. The goal is to display orbital 3D
         vizualisation using CesiumJS.
     </description>
@@ -24,17 +24,17 @@
         <sonar.projectKey>${env.CI_PROJECT_NAMESPACE}:${env.CI_PROJECT_NAME}</sonar.projectKey>
         <sonar.projectName>${env.CI_PROJECT_TITLE} (${env.CI_PROJECT_NAMESPACE}:${env.CI_PROJECT_NAME})</sonar.projectName>
         <sonar.qualitygate.wait>true</sonar.qualitygate.wait>
-        <oreczml.orekit.version>12.2</oreczml.orekit.version>
-        <oreczml.maven-compiler-plugin.version>3.13.0</oreczml.maven-compiler-plugin.version>
-        <oreczml.maven-source-plugin.version>3.3.1</oreczml.maven-source-plugin.version>
-        <oreczml.maven-javadoc-plugin.version>3.6.0</oreczml.maven-javadoc-plugin.version>
-        <oreczml.build-helper-maven-plugin.version>3.4.0</oreczml.build-helper-maven-plugin.version>
-        <oreczml.maven-gpg-plugin.version>3.1.0</oreczml.maven-gpg-plugin.version>
-        <oreczml.maven-install-plugin.version>3.1.1</oreczml.maven-install-plugin.version>
-        <oreczml.maven-checkstyle-plugin.version>3.6.0</oreczml.maven-checkstyle-plugin.version>
+        <oresium.orekit.version>12.2</oresium.orekit.version>
+        <oresium.maven-compiler-plugin.version>3.13.0</oresium.maven-compiler-plugin.version>
+        <oresium.maven-source-plugin.version>3.3.1</oresium.maven-source-plugin.version>
+        <oresium.maven-javadoc-plugin.version>3.6.0</oresium.maven-javadoc-plugin.version>
+        <oresium.build-helper-maven-plugin.version>3.4.0</oresium.build-helper-maven-plugin.version>
+        <oresium.maven-gpg-plugin.version>3.1.0</oresium.maven-gpg-plugin.version>
+        <oresium.maven-install-plugin.version>3.1.1</oresium.maven-install-plugin.version>
+        <oresium.maven-checkstyle-plugin.version>3.6.0</oresium.maven-checkstyle-plugin.version>
         <!-- Checkstyle 9.3 seems to be the last version usable with JDK 8 -->
-        <oreczml.checkstyle.version>9.3</oreczml.checkstyle.version>
-        <oreczml.spotless.version>2.44.0</oreczml.spotless.version>
+        <oresium.checkstyle.version>9.3</oresium.checkstyle.version>
+        <oresium.spotless.version>2.44.0</oresium.spotless.version>
     </properties>
 
     <build>
@@ -43,7 +43,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>${oreczml.maven-compiler-plugin.version}</version>
+                <version>${oresium.maven-compiler-plugin.version}</version>
                 <configuration>
                     <source>${project.compiler.source}</source>
                     <target>${project.compiler.target}</target>
@@ -53,12 +53,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>${oreczml.maven-checkstyle-plugin.version}</version>
+                <version>${oresium.maven-checkstyle-plugin.version}</version>
                 <dependencies>
                     <dependency>
                         <groupId>com.puppycrawl.tools</groupId>
                         <artifactId>checkstyle</artifactId>
-                        <version>${oreczml.checkstyle.version}</version>
+                        <version>${oresium.checkstyle.version}</version>
                     </dependency>
                 </dependencies>
                 <configuration>
@@ -71,7 +71,7 @@
             <plugin>
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>
-                <version>${oreczml.spotless.version}</version>
+                <version>${oresium.spotless.version}</version>
 
                 <executions>
                     <execution>
@@ -95,9 +95,9 @@
                             <spaces>true</spaces>
                         </indent>
                         <includes>
-                            <include>oreczml-core/src/main/java/**/*.java</include>
-                            <include>oreczml-core/src/test/java/**/*.java</include>
-                            <include>oreczml-tutorials/src/main/java/**/*.java</include>
+                            <include>oresium-core/src/main/java/**/*.java</include>
+                            <include>oresium-core/src/test/java/**/*.java</include>
+                            <include>oresium-tutorials/src/main/java/**/*.java</include>
                         </includes>
                     </java>
                 </configuration>
@@ -108,8 +108,8 @@
 
 
     <modules>
-        <module>oreczml-core</module>
-        <module>oreczml-tutorials</module>
+        <module>oresium-core</module>
+        <module>oresium-tutorials</module>
     </modules>
 
     <dependencyManagement>
@@ -118,12 +118,12 @@
             <dependency>
                 <groupId>org.orekit</groupId>
                 <artifactId>orekit</artifactId>
-                <version>${oreczml.orekit.version}</version>
+                <version>${oresium.orekit.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>
-                <version>${oreczml.spotless.version}</version>
+                <version>${oresium.spotless.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -147,7 +147,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
-                        <version>${oreczml.maven-source-plugin.version}</version>
+                        <version>${oresium.maven-source-plugin.version}</version>
                         <executions>
                             <execution>
                                 <id>attach-sources</id>
@@ -160,7 +160,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>${oreczml.maven-javadoc-plugin.version}</version>
+                        <version>${oresium.maven-javadoc-plugin.version}</version>
                         <executions>
                             <execution>
                                 <id>attach-javadocs</id>
@@ -173,7 +173,7 @@
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>build-helper-maven-plugin</artifactId>
-                        <version>${oreczml.build-helper-maven-plugin.version}</version>
+                        <version>${oresium.build-helper-maven-plugin.version}</version>
                         <executions>
                             <execution>
                                 <id>attach-artifacts</id>
@@ -184,7 +184,7 @@
                                 <configuration>
                                     <artifacts>
                                         <artifact>
-                                            <file>${basedir}/target/oreczml-${project.version}-sources.jar</file>
+                                            <file>${basedir}/target/oresium-${project.version}-sources.jar</file>
                                             <type>source-jar</type>
                                         </artifact>
                                     </artifacts>
@@ -195,7 +195,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>${oreczml.maven-gpg-plugin.version}</version>
+                        <version>${oresium.maven-gpg-plugin.version}</version>
                         <configuration>
                             <gpgArguments>
                                 <arg>--digest-algo=SHA512</arg>
@@ -215,7 +215,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-install-plugin</artifactId>
-                        <version>${oreczml.maven-install-plugin.version}</version>
+                        <version>${oresium.maven-install-plugin.version}</version>
                     </plugin>
                 </plugins>
             </build>

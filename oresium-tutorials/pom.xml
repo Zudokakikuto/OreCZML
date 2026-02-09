@@ -1,0 +1,91 @@
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.orekit</groupId>
+        <artifactId>oresium-parent</artifactId>
+        <version>1.1-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>oresium-tutorials</artifactId>
+    <packaging>jar</packaging>
+
+    <name>oresium-tutorials</name>
+    <url>https://gitlab.orekit.org/orekit/oresium</url>
+    <description>Oresium core module</description>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <oresium.hipparchus.version>3.1</oresium.hipparchus.version>
+        <oresium.maven-checkstyle-plugin.version>3.6.0</oresium.maven-checkstyle-plugin.version>
+        <!-- Checkstyle 9.3 seems to be the last version usable with JDK 8 -->
+        <oresium.checkstyle.version>9.3</oresium.checkstyle.version>
+        <oresium.spotless.version>2.44.0</oresium.spotless.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.orekit</groupId>
+            <artifactId>orekit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.orekit</groupId>
+            <artifactId>oresium-core</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hipparchus</groupId>
+            <artifactId>hipparchus-geometry</artifactId>
+            <version>${oresium.hipparchus.version}</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>${oresium.maven-checkstyle-plugin.version}</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.puppycrawl.tools</groupId>
+                        <artifactId>checkstyle</artifactId>
+                        <version>${oresium.checkstyle.version}</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <configLocation>${basedir}/../checkstyle.xml</configLocation>
+                    <enableRulesSummary>false</enableRulesSummary>
+                    <headerLocation>${basedir}/../license-header.txt</headerLocation>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>${oresium.spotless.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>apply</goal>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <java>
+                        <eclipse>
+                            <file>${project.basedir}/../orekit-eclipse-formatter.xml</file>
+                        </eclipse>
+                        <includes>
+                            <include>src/main/java/**/*.java</include>
+                            <include>src/test/java/**/*.java</include>
+                        </includes>
+                    </java>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
