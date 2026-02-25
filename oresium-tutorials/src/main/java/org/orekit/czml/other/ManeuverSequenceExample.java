@@ -196,8 +196,6 @@ public class ManeuverSequenceExample {
 
         propagator.setAttitudeProvider(sequence);
 
-        sequence.registerSwitchEvents(propagator);
-
         // Trigger for the maneuver
         final ManeuverTriggers firstTriggers =
             new DateBasedManeuverTriggers(firingDateLOF, duration);

@@ -27,6 +27,7 @@ import org.orekit.attitudes.AttitudesSequence;
 import org.orekit.attitudes.GroundPointTarget;
 import org.orekit.attitudes.LofOffset;
 import org.orekit.attitudes.PredefinedTarget;
+import org.orekit.bodies.CelestialBody;
 import org.orekit.bodies.CelestialBodyFactory;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.czml.TutorialUtils;
@@ -57,7 +58,6 @@ import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.AngularDerivativesFilter;
 import org.orekit.utils.Constants;
-import org.orekit.utils.ExtendedPVCoordinatesProvider;
 import org.orekit.utils.IERSConventions;
 
 import java.awt.Color;
@@ -113,8 +113,7 @@ public class AttitudePathAlongOrbit {
                        clock, pathToJSFolder);
 
         // Creation of the model of the sun
-        final ExtendedPVCoordinatesProvider sunModel =
-            CelestialBodyFactory.getSun();
+        final CelestialBody sunModel = CelestialBodyFactory.getSun();
 
         // List of points on earth to look at :
         final GeodeticPoint mexico =
@@ -305,8 +304,6 @@ public class AttitudePathAlongOrbit {
         attitudesSequence.resetActiveProvider(attitudeProviderToEarth);
 
         propagator.setAttitudeProvider(attitudesSequence);
-
-        attitudesSequence.registerSwitchEvents(propagator);
 
         final EphemerisGenerator generator = propagator.getEphemerisGenerator();
 

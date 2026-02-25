@@ -58,6 +58,8 @@ import org.orekit.utils.Constants;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -236,8 +238,6 @@ public class ManeuverSequenceTest
 
         propagator.setAttitudeProvider(sequence);
 
-        sequence.registerSwitchEvents(propagator);
-
         // Trigger for the maneuver
         final ManeuverTriggers firstTriggers =
             new DateBasedManeuverTriggers(firingDateLOF, duration);
@@ -410,8 +410,6 @@ public class ManeuverSequenceTest
         sequence.resetActiveProvider(bodyPointed);
 
         propagator.setAttitudeProvider(sequence);
-
-        sequence.registerSwitchEvents(propagator);
 
         // Trigger for the maneuver
         final ManeuverTriggers firstTriggers =
