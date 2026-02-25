@@ -39,7 +39,6 @@ import org.orekit.propagation.events.EventDetector;
 import org.orekit.propagation.events.EventSlopeFilter;
 import org.orekit.propagation.events.ExtremumApproachDetector;
 import org.orekit.propagation.events.FilterType;
-import org.orekit.propagation.events.handlers.ContinueOnEvent;
 import org.orekit.time.AbsoluteDate;
 import org.orekit.utils.TimeSpanMap;
 
@@ -322,7 +321,9 @@ public class Collision
      *        will be detected.
      * @param visuMap : The time span map that will register all the time
      *        intervals when the satellites meet.
-     * @return : The event detector that was added to the propagator.
+     * @return : The event detector that was added to the propagator. // TODO :
+     *         When Orekit 14 is released, put the event detector on the
+     *         EventSlopeFilter with .withHandler() [Oresium-80]
      */
     private EventDetector
         collisionPropagation(final BoundedPropagator propagatorFirstSat,
@@ -333,19 +334,13 @@ public class Collision
         final AbsoluteDate stopDate = propagatorFirstSat.getMaxDate();
         final ExtremumApproachDetector extremumApproachDetector =
             new ExtremumApproachDetector(propagatorSecondSat)
-                .withHandler(new ContinueOnEvent());
-        final EventDetector closeApproachDetector =
-            new EventSlopeFilter<>(extremumApproachDetector,
-                                   FilterType.TRIGGER_ONLY_INCREASING_EVENTS)
                 .withHandler((s, detector, increasing) -> {
-                    if (increasing) {
-                        visuMap.addValidAfter(true, s.getDate(), true);
-                    }
-                    if (!increasing) {
-                        visuMap.addValidAfter(false, s.getDate(), true);
-                    }
+                    visuMap.addValidAfter(true, s.getDate(), true);
                     return Action.CONTINUE;
                 });
+        final EventDetector closeApproachDetector =
+            new EventSlopeFilter<>(extremumApproachDetector,
+                                   FilterType.TRIGGER_ONLY_INCREASING_EVENTS);
         propagatorFirstSat.addEventDetector(closeApproachDetector);
         propagatorFirstSat.propagate(startDate, stopDate);
         return closeApproachDetector;

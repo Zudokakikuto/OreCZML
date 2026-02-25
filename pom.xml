@@ -24,7 +24,7 @@
         <sonar.projectKey>${env.CI_PROJECT_NAMESPACE}:${env.CI_PROJECT_NAME}</sonar.projectKey>
         <sonar.projectName>${env.CI_PROJECT_TITLE} (${env.CI_PROJECT_NAMESPACE}:${env.CI_PROJECT_NAME})</sonar.projectName>
         <sonar.qualitygate.wait>true</sonar.qualitygate.wait>
-        <oresium.orekit.version>12.2</oresium.orekit.version>
+        <oresium.orekit.version>13.1.4</oresium.orekit.version>
         <oresium.maven-compiler-plugin.version>3.13.0</oresium.maven-compiler-plugin.version>
         <oresium.maven-source-plugin.version>3.3.1</oresium.maven-source-plugin.version>
         <oresium.maven-javadoc-plugin.version>3.6.0</oresium.maven-javadoc-plugin.version>

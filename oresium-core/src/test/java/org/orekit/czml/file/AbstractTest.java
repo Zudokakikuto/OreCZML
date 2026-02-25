@@ -380,7 +380,7 @@ public class AbstractTest {
             new StateCovarianceMatrixProvider("covariance", stm, harvester,
                                               initCovariance);
 
-        propagator.addAdditionalStateProvider(provider);
+        propagator.addAdditionalDataProvider(provider);
 
         propagator.getMultiplexer().add(clockMultiplier, spacecraftState -> {
             final StateCovariance covariance =
@@ -457,8 +457,6 @@ public class AbstractTest {
         sequence.resetActiveProvider(bodyPointed);
 
         propagator.setAttitudeProvider(sequence);
-
-        sequence.registerSwitchEvents(propagator);
 
         // Trigger for the maneuver
         final ManeuverTriggers firstTriggers =
@@ -833,7 +831,7 @@ public class AbstractTest {
             new StateCovarianceMatrixProvider("covariance", stm, harvester,
                                               initCovariance);
 
-        propagator.addAdditionalStateProvider(provider);
+        propagator.addAdditionalDataProvider(provider);
 
         propagator.getMultiplexer().add(clock.getMultiplier(),
                                         spacecraftState -> {

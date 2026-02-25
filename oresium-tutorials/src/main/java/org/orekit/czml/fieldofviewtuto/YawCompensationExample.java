@@ -49,8 +49,8 @@ import org.orekit.propagation.numerical.NumericalPropagator;
 import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.Constants;
+import org.orekit.utils.ExtendedPositionProvider;
 import org.orekit.utils.IERSConventions;
-import org.orekit.utils.PVCoordinatesProvider;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -102,7 +102,7 @@ public class YawCompensationExample {
                        clock, pathToJSFolder);
 
         // Creation of the model of the sun
-        final PVCoordinatesProvider sunModel = CelestialBodyFactory.getSun();
+        final ExtendedPositionProvider sunModel = CelestialBodyFactory.getSun();
 
         // Build of a LEO orbit
 

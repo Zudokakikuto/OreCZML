@@ -860,7 +860,8 @@ public class Spacecraft
     public double getPeriod() {
         try {
             this.period =
-                spacecraftPropagator.getInitialState().getKeplerianPeriod();
+                spacecraftPropagator.getInitialState().getOrbit()
+                    .getKeplerianPeriod();
         } catch (OrekitException e) {
             throw new OresiumException(OresiumMessages.NO_ORBIT_FOR_KEPLERIAN_PERIOD);
         }

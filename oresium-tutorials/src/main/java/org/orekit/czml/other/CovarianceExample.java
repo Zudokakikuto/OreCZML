@@ -226,7 +226,7 @@ public class CovarianceExample {
             new StateCovarianceMatrixProvider("covariance", stm, harvester,
                                               initCovariance);
 
-        propagator.addAdditionalStateProvider(provider);
+        propagator.addAdditionalDataProvider(provider);
 
         propagator.getMultiplexer().add(clock.getMultiplier(),
                                         spacecraftState -> {
