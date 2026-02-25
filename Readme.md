@@ -12,9 +12,9 @@ Cesium to visualize the trajectories and other orbit and attitude parameters
 of satellites.
 
 [![](http://img.shields.io/:license-apache-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
-[![Quality Gate Status](https://sonar.orekit.org/api/project_badges/measure?branch=master&project=orekit%3Aoreczml&metric=alert_status)](https://sonar.orekit.org/dashboard?id=orekit%3Aoreczml)
-[![Coverage](https://sonar.orekit.org/api/project_badges/measure?project=orekit%3Aoreczml&metric=coverage)](https://sonar.orekit.org/component_measures?metric=Coverage&id=orekit%3Aoreczml)
-[![Security Rating](https://sonar.orekit.org/api/project_badges/measure?project=orekit%3Aoreczml&metric=security_rating)](https://sonar.orekit.org/component_measures?metric=security_review_rating&id=orekit%3Aoreczml)
+[![Quality Gate Status](https://sonar.orekit.org/api/project_badges/measure?branch=master&project=orekit%3Aoresium&metric=alert_status)](https://sonar.orekit.org/dashboard?id=orekit%3Aoresium)
+[![Coverage](https://sonar.orekit.org/api/project_badges/measure?project=orekit%3Aoresium&metric=coverage)](https://sonar.orekit.org/component_measures?metric=Coverage&id=orekit%3Aoresium)
+[![Security Rating](https://sonar.orekit.org/api/project_badges/measure?project=orekit%3Aoresium&metric=security_rating)](https://sonar.orekit.org/component_measures?metric=security_review_rating&id=orekit%3Aoresium)
 ![Latest release](https://gitlab.orekit.org/orekit/oresium/-/badges/release.svg)
 
 <p align="center">
