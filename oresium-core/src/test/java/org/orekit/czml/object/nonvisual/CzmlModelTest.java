@@ -16,15 +16,13 @@
  */
 package org.orekit.czml.object.nonvisual;
 
-import org.junit.jupiter.api.Assertions;
+import java.io.IOException;
+import java.net.URISyntaxException;
+
 import org.junit.jupiter.api.Test;
 import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.Header;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 /**
  * The type Czml model test.
@@ -46,7 +44,7 @@ public class CzmlModelTest
     @Test
     @DefaultDataContext
     void CzmlModelConstructorTest()
-        throws IOException {
+        throws IOException, URISyntaxException {
 
         final CzmlModel modelToTest =
             new CzmlModel(loadResources("Default3DModels/ISSModel.glb"), false,
@@ -55,7 +53,6 @@ public class CzmlModelTest
         final String pathFile =
             loadResources("templateFile/nonvisual/czmlmodel/CzmlModelTemplate.txt");
 
-        Assertions.assertEquals(Files.readString(Path.of(pathFile)),
-                                modelToTest.toString());
+        verifyFileOutput(pathFile, modelToTest.toString(), 1e-8);
     }
 }
