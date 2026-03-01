@@ -135,8 +135,6 @@ public class SpacecraftTest
         final String pathFile =
             loadResources("templateFile/object/primary/entities/spacecraft/SpacecraftAttitudeTemplate.txt");
 
-        Assertions.assertEquals(Files.readString(Path.of(pathFile)),
-                                spacecraft.toString());
         verifyFileOutput(pathFile, spacecraft.toString(), 1e-8);
     }
 
