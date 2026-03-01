@@ -44,7 +44,8 @@ public class CzmlModelTest
     @Test
     @DefaultDataContext
     void CzmlModelConstructorTest()
-        throws IOException, URISyntaxException {
+        throws IOException,
+            URISyntaxException {
 
         final CzmlModel modelToTest =
             new CzmlModel(loadResources("Default3DModels/ISSModel.glb"), false,
