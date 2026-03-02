@@ -19,11 +19,11 @@ package org.orekit.czml.object.primary.visu;
 
 import cesiumlanguagewriter.CesiumOutputStream;
 import cesiumlanguagewriter.CesiumStreamWriter;
+import cesiumlanguagewriter.JulianDate;
 import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.Reference;
 import cesiumlanguagewriter.TimeInterval;
 import org.hipparchus.ode.events.Action;
-import org.hipparchus.util.FastMath;
 import org.orekit.annotation.DefaultDataContext;
 import org.orekit.bodies.OneAxisEllipsoid;
 import org.orekit.czml.errors.OresiumException;
@@ -123,14 +123,22 @@ public class InterSatVisu
     private SpacecraftState initialState;
 
     /**
-     * The list of the dates when satellites see each other.
+     * A time map used to track whether the satellites are visible in the event
+     * detector.
      */
-    private final List<AbsoluteDate> datesWhenVisu = new ArrayList<>();
+    private TimeSpanMap<Boolean> timeSpanMap = new TimeSpanMap<>(null);
 
     /**
-     * The list of dates when satellites don't see each other.
+     * A list of time intervals that represents when the satellite is visible or
+     * not.
      */
-    private final List<AbsoluteDate> datesWhenNotVisu = new ArrayList<>();
+    private List<TimeInterval> timeIntervals = new ArrayList<>();
+
+    /**
+     * The list of boolean to display or not the line if the satellite is
+     * visible or not.
+     */
+    private List<Boolean> visuList = new ArrayList<>();;
 
     /**
      * The start date of the propagation.
@@ -146,11 +154,6 @@ public class InterSatVisu
      * The references of each satellite.
      */
     private Iterable<Reference> references;
-
-    /**
-     * A list of boolean that show when to display or not the lines.
-     */
-    private final List<Boolean> booleanList = new ArrayList<>();
 
     /**
      * A list of CzmlShow that contains all the information about when and if
@@ -287,18 +290,12 @@ public class InterSatVisu
                 .toArray(new Reference[0]);
         this.references = convertToIterable(referenceList);
 
-        this.propagationInterSat(finalDateInput, satellite1Input,
-                                 satellite2Input);
-
-        final List<TimeInterval> singleTimeIntervalsOfVisu =
-            this.buildIntervals(datesWhenVisu, datesWhenNotVisu,
-                                getAvailability());
+        this.buildSingleTimeIntervalsAndVisu(satellite1, satellite2);
         this.polyline =
             Polyline.nonVectorBuilder(this.clock)
                 .withFirstReference(referenceFirstSatellite)
                 .withSecondReference(referenceSecondSatellite).build();
-        this.showList =
-            this.buildShowList(singleTimeIntervalsOfVisu, booleanList);
+        this.showList = this.buildShowList(timeIntervals, visuList);
     }
 
     /**
@@ -622,7 +619,7 @@ public class InterSatVisu
      * @return the boolean list
      */
     public List<Boolean> getBooleanList() {
-        return Collections.unmodifiableList(booleanList);
+        return Collections.unmodifiableList(visuList);
     }
 
     /**
@@ -743,42 +740,40 @@ public class InterSatVisu
      * Add a detector for the interring sat view between the two satellites.
      * Then this function propagates the propagator of the first satellite.
      *
-     * @param finalDateInput : The final date of the propagation.
-     * @param satellite1Input : The first satellite of the couple
-     * @param satellite2Input : The second satellite of the couple
+     * @param boundedPropagatorSat1 : The propagator for the first satellite
+     * @param boundedPropagatorSat2 : The propagator for the second satellite
+     * @return : The visibility at the beginning of the propagation interval
      */
-    private void propagationInterSat(final AbsoluteDate finalDateInput,
-                                     final Spacecraft satellite1Input,
-                                     final Spacecraft satellite2Input) {
-
-        final BoundedPropagator boundedPropagatorSat1 =
-            satellite1Input.getSpacecraftBoundedPropagator();
-        final BoundedPropagator boundedPropagatorSat2 =
-            satellite2Input.getSpacecraftBoundedPropagator();
+    private boolean
+        propagationInterSat(final BoundedPropagator boundedPropagatorSat1,
+                            final BoundedPropagator boundedPropagatorSat2) {
 
         final InterSatDirectViewDetector detector =
             new InterSatDirectViewDetector(this.getBody(),
                                            boundedPropagatorSat2)
                 .withHandler((spacecraftState, currentDetector, increasing) -> {
-                    if (!increasing) {
-                        this.datesWhenNotVisu.add(spacecraftState.getDate());
-                        this.booleanList.add(true);
+                    if (increasing) {
+                        timeSpanMap.addValidAfter(true,
+                                                  spacecraftState.getDate(),
+                                                  true);
                     } else {
-                        this.datesWhenVisu.add(spacecraftState.getDate());
-                        this.booleanList.add(false);
+                        timeSpanMap.addValidAfter(false,
+                                                  spacecraftState.getDate(),
+                                                  true);
                     }
                     return Action.CONTINUE;
                 });
 
-        final TimeInterval availabilityOfTheSatellite =
-            this.getSatellite1().getAvailability();
+        final AbsoluteDate initDate =
+            DateUtils.toAbsoluteDate(getClock().getAvailability().getStart());
+        final AbsoluteDate stopDate =
+            DateUtils.toAbsoluteDate(getClock().getAvailability().getStop());
 
-        final AbsoluteDate startDateTemp =
-            DateUtils.toAbsoluteDate(availabilityOfTheSatellite.getStart());
-
+        final boolean initiallyVisible =
+            detector.g(boundedPropagatorSat1.getInitialState()) > 0.0;
         boundedPropagatorSat1.addEventDetector(detector);
-
-        boundedPropagatorSat1.propagate(startDateTemp, finalDateInput);
+        boundedPropagatorSat1.propagate(initDate, stopDate);
+        return initiallyVisible;
     }
 
     /**
@@ -925,121 +920,55 @@ public class InterSatVisu
     }
 
     /**
-     * Aims at building the time intervals from a list when satellites see each
-     * other, and a list when satellite doesn't see each other.
+     * This function aims at building the time intervals and the list of
+     * visualization containing the boolean showing if the station sees the
+     * satellite or not.
      *
-     * @param datesWhenVisuInput : A list of absolute dates that contains all
-     *        the dates when satellites start to see each other.
-     * @param datesWhenNotVisuInput : A list of absolute dates that contains all
-     *        the dates when satellites stop to see each other.
-     * @param availability : The availability considered.
-     * @return : A list of time intervals that represents the time
-     *         chronologically when satellites see and don't see each other.
-     */
-    private List<TimeInterval>
-        buildIntervals(final List<AbsoluteDate> datesWhenVisuInput,
-                       final List<AbsoluteDate> datesWhenNotVisuInput,
-                       final TimeInterval availability) {
-
-        if (!datesWhenVisuInput.isEmpty() && !datesWhenNotVisuInput.isEmpty()) {
-
-            final AbsoluteDate minimalDate;
-            boolean seenAtTheBeginning = false;
-            minimalDate = datesWhenVisuInput.get(0);
-
-            if (minimalDate.isAfter(datesWhenNotVisuInput.get(0))) {
-                seenAtTheBeginning = true;
-            }
-
-            final int minimumLength =
-                FastMath.min(datesWhenNotVisuInput.size(),
-                             datesWhenVisuInput.size());
-
-            final List<TimeInterval> toReturn = new ArrayList<>();
-
-            buildTimeShowIntervals(seenAtTheBeginning, datesWhenVisuInput,
-                                   datesWhenNotVisuInput, minimumLength,
-                                   toReturn, availability);
-
-            return toReturn;
-        }
-
-        return new ArrayList<>();
-    }
-
-    /**
-     * This function aims at building the list of boolean and of time interval
-     * from two lists of start and stop date. Those lists represent the dates
-     * when satellites start and stop to see each other.
-     *
-     * @param seenAtTheBeginning : If the satellites have seen each other since
-     *        the beginning of the simulation.
-     * @param datesWhenVisuInput : The list of absolute date that contains all
-     *        the start date of when satellites see each other.
-     * @param datesWhenNotVisuInput : The list of absolute date that contains
-     *        all the stop date of when satellites stop seeing each others.
-     * @param minimumLength : The minimum length of between the two lists of
-     *        absolute dates.
-     * @param toReturn : The list of time intervals that will be returned with
-     *        added time intervals.
-     * @param availability : The availability considered.
+     * @param satellite1Input : The first spacecraft.
+     * @param satellite2Input : The second spacecraft.
      */
     private void
-        buildTimeShowIntervals(final boolean seenAtTheBeginning,
-                               final List<AbsoluteDate> datesWhenVisuInput,
-                               final List<AbsoluteDate> datesWhenNotVisuInput,
-                               final int minimumLength,
-                               final List<TimeInterval> toReturn,
-                               final TimeInterval availability) {
+        buildSingleTimeIntervalsAndVisu(final Spacecraft satellite1Input,
+                                        final Spacecraft satellite2Input) {
 
-        // Case where the spacecraft is not seen at the beginning
-        if (!seenAtTheBeginning) {
-            if (!(datesWhenNotVisuInput.size() > datesWhenVisuInput.size())) {
-                datesWhenVisuInput
-                    .add(DateUtils.toAbsoluteDate(availability.getStop()));
-                this.booleanList.add(false);
+        // Get satellite propagators
+        final BoundedPropagator boundedPropagatorSat1 =
+            (BoundedPropagator) satellite1Input.getSpacecraftPropagator();
+        final BoundedPropagator boundedPropagatorSat2 =
+            (BoundedPropagator) satellite2Input.getSpacecraftPropagator();
+
+        // Get min date and max date for line propagation
+        final AbsoluteDate initDate =
+            DateUtils.toAbsoluteDate(getClock().getAvailability().getStart());
+        final AbsoluteDate stopDate =
+            DateUtils.toAbsoluteDate(getClock().getAvailability().getStop());
+
+        // Fills out timeIntervals and visuList, and returns the initial
+        // visibility between
+        // the satellites
+        final boolean initiallyVisible =
+            propagationInterSat(boundedPropagatorSat1, boundedPropagatorSat2);
+
+        // Solver adds all but the very first interval, so we add it manually
+        timeSpanMap.addValidAfter(initiallyVisible, initDate, false);
+
+        // Goes through the timeSpanMap to create the list of visibility
+        // intervals
+        for (TimeSpanMap.Span<Boolean> span = timeSpanMap.getFirstNonNullSpan();
+             span != null; span = span.next()) {
+            visuList.add(span.getData());
+            final JulianDate startJulian =
+                DateUtils.toJulianDate(span.getStart());
+            JulianDate stopJulian = DateUtils.toJulianDate(span.getEnd());
+
+            if (span == timeSpanMap.getLastNonNullSpan()) {
+                // last span: ensure it ends exactly at maxDate
+                stopJulian = DateUtils.toJulianDate(stopDate);
             }
-            toReturn.add(new TimeInterval(availability.getStart(), DateUtils
-                .toJulianDate(datesWhenVisuInput.get(0))));
-            for (int i = 0; i < minimumLength; i++) {
-                toReturn
-                    .add(new TimeInterval(DateUtils
-                        .toJulianDate(datesWhenVisuInput.get(i)),
-                                          DateUtils
-                                              .toJulianDate(datesWhenNotVisuInput
-                                                  .get(i))));
-                toReturn
-                    .add(new TimeInterval(DateUtils
-                        .toJulianDate(datesWhenNotVisuInput.get(i)),
-                                          DateUtils
-                                              .toJulianDate(datesWhenVisuInput
-                                                  .get(i + 1))));
-            }
+            timeIntervals.add(new TimeInterval(startJulian, stopJulian));
         }
-        // Case where the spacecraft is seen at the beginning
-        else {
-            if (!(datesWhenVisuInput.size() > datesWhenNotVisuInput.size())) {
-                datesWhenNotVisuInput
-                    .add(DateUtils.toAbsoluteDate(availability.getStop()));
-                this.booleanList.add(true);
-            }
-            toReturn.add(new TimeInterval(availability.getStart(), DateUtils
-                .toJulianDate(datesWhenNotVisuInput.get(0))));
-            for (int i = 0; i < minimumLength; i++) {
-                toReturn
-                    .add(new TimeInterval(DateUtils
-                        .toJulianDate(datesWhenNotVisuInput.get(i)),
-                                          DateUtils
-                                              .toJulianDate(datesWhenVisuInput
-                                                  .get(i))));
-                toReturn
-                    .add(new TimeInterval(DateUtils
-                        .toJulianDate(datesWhenVisuInput.get(i)),
-                                          DateUtils
-                                              .toJulianDate(datesWhenNotVisuInput
-                                                  .get(i + 1))));
-            }
-        }
+
+        boundedPropagatorSat1.clearEventsDetectors();
     }
 
     /**
