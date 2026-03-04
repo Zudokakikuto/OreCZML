@@ -16,7 +16,7 @@
  */
 package org.orekit.czml.object.secondary;
 
-import cesiumlanguagewriter.Cartesian;
+import cesiumlanguagewriter.Cartographic;
 import cesiumlanguagewriter.CesiumInterpolationAlgorithm;
 import cesiumlanguagewriter.CesiumOutputStream;
 import cesiumlanguagewriter.JulianDate;
@@ -30,18 +30,18 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Time position class
+ * Earth-based time position class
  * <p>
- * The class aims at representing a position and a time of an object as an x/y/z
- * value in the earth inertial fram.
+ * The class aims at representing a position and a time of an object as a
+ * lat/lon/alt value in the earth body frame.
  * </p>
  *
- * @author Julien LEBLOND
- * @since 1.0.0
+ * @author Brianna Aubin
+ * @since 1.1
  */
-public class TimePosition
+public class CartographicTimePosition
     extends
-    AbstractSecondaryObject<TimePosition> {
+    AbstractSecondaryObject<CartographicTimePosition> {
 
     /**
      * The julian dates when the position is defined.
@@ -51,7 +51,7 @@ public class TimePosition
     /**
      * The cartesian coordinates that define the position of the object.
      */
-    private final List<Cartesian> positions;
+    private final List<Cartographic> positions;
 
     /**
      * The algorithm of interpolation used. The parameters available are:
@@ -74,21 +74,21 @@ public class TimePosition
     /**
      * The basic time position constructor.
      *
-     * @param cartesians : The list of cartesian positions
+     * @param cartographics : The list of cartesian positions
      * @param julianDates : A list of double representing the number of seconds
      *        that separate the initial instant from all the instants of the
      *        simulation.
      */
-    public TimePosition(final List<Cartesian> cartesians,
-                        final List<JulianDate> julianDates) {
+    public CartographicTimePosition(final List<Cartographic> cartographics,
+                                    final List<JulianDate> julianDates) {
         this.dates = new ArrayList<>(julianDates);
         this.positions = new ArrayList<>();
-        this.positions.addAll(cartesians);
+        this.positions.addAll(cartographics);
 
         this.cesiumInterpolationAlgorithm =
             CesiumInterpolationAlgorithm.LAGRANGE;
         this.interpolationDegree = 5;
-        this.referenceFrame = "INERTIAL";
+        this.referenceFrame = "EARTH_FRAME";
     }
 
     // Overrides
@@ -100,14 +100,14 @@ public class TimePosition
             writer.writeReferenceFrame(referenceFrame);
             writer.writeInterpolationAlgorithm(cesiumInterpolationAlgorithm);
             writer.writeInterpolationDegree(interpolationDegree);
-            writer.writeCartesian(dates, positions);
+            writer.writeCartographicRadians(dates, positions);
         }
     }
 
     @Override
-    public TimePosition cloneObject() {
+    public CartographicTimePosition cloneObject() {
         if (!positions.isEmpty() && !dates.isEmpty()) {
-            return new TimePosition(this.positions, this.dates);
+            return new CartographicTimePosition(this.positions, this.dates);
         } else {
             throw new OresiumException(OresiumMessages.NOT_VALID_SECONDARY_OBJECT_FOR_CLONE);
         }
@@ -120,7 +120,7 @@ public class TimePosition
      *
      * @return the positions
      */
-    public List<Cartesian> getPositions() {
+    public List<Cartographic> getPositions() {
         return Collections.unmodifiableList(positions);
     }
 
