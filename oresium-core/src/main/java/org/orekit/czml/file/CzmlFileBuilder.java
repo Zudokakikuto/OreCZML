@@ -24,6 +24,7 @@ import org.orekit.czml.object.primary.covariance.Covariance;
 import org.orekit.czml.object.primary.entities.Body;
 import org.orekit.czml.object.primary.entities.Constellation;
 import org.orekit.czml.object.primary.entities.CzmlGroundStation;
+import org.orekit.czml.object.primary.entities.GroundVehicle;
 import org.orekit.czml.object.primary.entities.InfluenceSphere;
 import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.primary.pointing.AttitudePointing;
@@ -58,6 +59,9 @@ public class CzmlFileBuilder {
 
     /** List of all the satellites to write. */
     private List<Spacecraft> satellites = new ArrayList<>();
+
+    /** List of all the ground vehicles to write. */
+    private List<GroundVehicle> groundVehicles = new ArrayList<>();
 
     /** List of all the constellations to write. */
     private List<Constellation> constellations = new ArrayList<>();
@@ -155,6 +159,32 @@ public class CzmlFileBuilder {
     public CzmlFileBuilder
         withSpacecraft(final List<Spacecraft> satellitesInput) {
         this.satellites.addAll(satellitesInput);
+        return this;
+    }
+
+    // GroundVehicle
+
+    /**
+     * Function to set up a ground vehicle.
+     *
+     * @param groundVehicleInput : The ground vehicle to set up.
+     * @return : The czml file builder with the given ground vehicle.
+     */
+    public CzmlFileBuilder
+        withGroundVehicle(final GroundVehicle... groundVehicleInput) {
+        this.groundVehicles.addAll(Arrays.asList(groundVehicleInput));
+        return this;
+    }
+
+    /**
+     * Function to set up a list of ground vehicles.
+     *
+     * @param groundVehiclesInput : The list of ground vehicles to set up.
+     * @return : The czml file builder with the given list of ground vehicles.
+     */
+    public CzmlFileBuilder
+        withGroundVehicle(final List<GroundVehicle> groundVehiclesInput) {
+        this.groundVehicles.addAll(groundVehiclesInput);
         return this;
     }
 
@@ -667,6 +697,7 @@ public class CzmlFileBuilder {
         toReturn.addObject(header);
 
         addSatellites(toReturn);
+        addGroundVehicles(toReturn);
         addConstellations(toReturn);
         addGroundStations(toReturn);
         addInfluenceSpheres(toReturn);
@@ -695,13 +726,24 @@ public class CzmlFileBuilder {
     // Private functions
 
     /**
-     * This function adds the satellites to the czml file.
+     * This function adds the ground vehicles to the czml file.
      *
      * @param file : The czml file that will be written.
      */
     private void addSatellites(final CzmlFile file) {
         for (final Spacecraft satellite : satellites) {
             file.addObject(satellite);
+        }
+    }
+
+    /**
+     * This function adds the ground vehicles to the czml file.
+     *
+     * @param file : The czml file that will be written.
+     */
+    private void addGroundVehicles(final CzmlFile file) {
+        for (final GroundVehicle groundVehicle : groundVehicles) {
+            file.addObject(groundVehicle);
         }
     }
 
@@ -917,6 +959,7 @@ public class CzmlFileBuilder {
     private void clear() {
         this.header = null;
         this.satellites = new ArrayList<>();
+        this.groundVehicles = new ArrayList<>();
         this.constellations = new ArrayList<>();
         this.groundStations = new ArrayList<>();
         this.interSatVisus = new ArrayList<>();
