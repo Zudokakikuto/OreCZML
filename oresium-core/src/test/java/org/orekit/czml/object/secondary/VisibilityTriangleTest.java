@@ -95,7 +95,7 @@ public class VisibilityTriangleTest
         // Line of visibility with a visibility triangle
         final LineOfVisibility coverageLine =
             LineOfVisibility
-                .builder(topocentricToulouse, spacecraft, header.getClock())
+                .builder(topocentricToulouse, spacecraft, spacecraft.getClock())
                 .withVisibilityTriangle().withCustomID("CustomID")
                 .withAngleOfAperture(90.0).build();
 

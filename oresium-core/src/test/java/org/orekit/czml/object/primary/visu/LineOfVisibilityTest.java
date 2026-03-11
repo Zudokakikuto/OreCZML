@@ -52,6 +52,9 @@ public class LineOfVisibilityTest
     extends
     AbstractTest {
 
+    /** Initialise orekit data. */
+    private final double data = initializeOrekitData();
+
     final Header header = dummyHeader();
 
     // Dates
@@ -90,12 +93,12 @@ public class LineOfVisibilityTest
 
         final LineOfVisibility line =
             LineOfVisibility
-                .builder(topocentricFrame, spacecraft, header.getClock())
+                .builder(topocentricFrame, spacecraft, spacecraft.getClock())
                 .build();
 
         final LineOfVisibility coverageLine =
             LineOfVisibility
-                .builder(topocentricFrame, spacecraft, header.getClock())
+                .builder(topocentricFrame, spacecraft, spacecraft.getClock())
                 .withCustomID("CustomID").withAngleOfAperture(90.0).build();
 
         final String pathFile =

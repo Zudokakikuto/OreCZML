@@ -16,7 +16,6 @@
  */
 package org.orekit.czml.object.primary.entities;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.archi.factory.BodyFactory;
@@ -30,8 +29,6 @@ import org.orekit.time.AbsoluteDate;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
