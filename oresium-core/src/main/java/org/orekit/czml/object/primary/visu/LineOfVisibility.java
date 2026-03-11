@@ -18,7 +18,6 @@ package org.orekit.czml.object.primary.visu;
 
 import cesiumlanguagewriter.CesiumOutputStream;
 import cesiumlanguagewriter.CesiumStreamWriter;
-import cesiumlanguagewriter.GregorianDate;
 import cesiumlanguagewriter.JulianDate;
 import cesiumlanguagewriter.PacketCesiumWriter;
 import cesiumlanguagewriter.Reference;
@@ -513,72 +512,43 @@ public class LineOfVisibility
 
         final BoundedPropagator propagator =
             (BoundedPropagator) satellite_input.getSpacecraftPropagator();
-        final GregorianDate firstGregorianDate =
-            new GregorianDate(1, 1, 1, 0, 0, 0.0);
-        final JulianDate firstStartDate = new JulianDate(firstGregorianDate);
-        final JulianDate lastDate =
-            DateUtils.toJulianDate(satellite_input.getOrbits()
-                .get(satellite_input.getOrbits().size() - 1).getDate());
-
-        final SpacecraftState initialState = propagator.getInitialState();
 
         final TimeSpanMap<Boolean> visuMap = new TimeSpanMap<>(null);
-        // Add the first boolean false that represent the visibility out of the
-        // scope of the simulation.
-        visuMap.addValidBetween(false, initialState.getDate(),
-                                propagator.getMaxDate());
+
+        // Get min date and max date for line propagation
+        final AbsoluteDate minDate =
+            DateUtils.toAbsoluteDate(clock.getAvailability().getStart());
+        final AbsoluteDate maxDate =
+            DateUtils.toAbsoluteDate(clock.getAvailability().getStop());
+
         final ElevationDetector visuDetector =
             detectionVisu(topocentricFrameInput, visuMap);
+        final SpacecraftState initialState = propagator.propagate(minDate);
         final double enVisu = visuDetector.g(initialState);
 
+        Boolean firstVal = false;
         if (enVisu > 0) {
-            visuList.add(true);
-        } else {
-            visuList.add(false);
+            firstVal = true;
         }
 
         propagator.addEventDetector(visuDetector);
         propagator.propagate(propagator.getMinDate(), propagator.getMaxDate());
 
+        // Solver adds all but the very first interval, so we add it manually
+        visuMap.addValidAfter(firstVal, minDate, false);
+
         for (TimeSpanMap.Span<Boolean> span = visuMap.getFirstNonNullSpan();
              span != null; span = span.next()) {
-            if (span.getEnd().isAfter(DateUtils
-                .toAbsoluteDate(clockInput.getAvailability().getStop()))) {
-                if (visuList.get(visuList.size() - 1)) {
-                    visuList.add(false);
-                } else {
-                    visuList.add(true);
-                }
-                final JulianDate startDate =
-                    DateUtils.toJulianDate(span.getStart());
-                final JulianDate stopDate =
-                    clockInput.getAvailability().getStop();
-                final TimeInterval currentTimeInterval =
-                    new TimeInterval(startDate, stopDate);
-                timeIntervals.add(currentTimeInterval);
-            } else {
-                visuList.add(span.getData());
-                final JulianDate startDate =
-                    DateUtils.toJulianDate(span.getStart());
-                final JulianDate stopDate =
-                    DateUtils.toJulianDate(span.getEnd());
-                final TimeInterval currentTimeInterval =
-                    new TimeInterval(startDate, stopDate);
-                timeIntervals.add(currentTimeInterval);
+            visuList.add(span.getData());
+            final JulianDate startJulian =
+                DateUtils.toJulianDate(span.getStart());
+            JulianDate stopJulian = DateUtils.toJulianDate(span.getEnd());
+
+            if (span == visuMap.getLastNonNullSpan()) {
+                // last span: ensure it ends exactly at maxDate
+                stopJulian = DateUtils.toJulianDate(maxDate);
             }
-        }
-
-        if (timeIntervals.size() > 1) {
-
-            final JulianDate firstStopDate = timeIntervals.get(0).getStart();
-            final TimeInterval firstTimeInterval =
-                new TimeInterval(firstStartDate, firstStopDate);
-
-            timeIntervals.add(0, firstTimeInterval);
-        }
-        if (timeIntervals.size() == 1) {
-            // Not seen
-            timeIntervals.add(new TimeInterval(firstStartDate, lastDate));
+            timeIntervals.add(new TimeInterval(startJulian, stopJulian));
         }
 
         propagator.clearEventsDetectors();
