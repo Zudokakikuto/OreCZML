@@ -8,7 +8,6 @@ include:
 variables:
     MAVEN_IMAGE: "$CI_REGISTRY_IMAGE:latest"
     MAVEN_DEPLOY_ENABLED: "true"
-    CACHE_KEY: "czml-writer-${CI_COMMIT_REF_SLUG}"
     MAVEN_CFG_DIR: "$CI_PROJECT_DIR/.m2"
     MAVEN_SETTINGS_FILE: ${MAVEN_PROJECT_DIR}/cicd/ci-settings.xml
     MAVEN_DEPLOY_FROM_UNPROTECTED_DISABLED: "true"
@@ -41,7 +40,6 @@ mvn-build:
     before_script:
         - !reference [.mvn-base, before_script]
         - mkdir -p "$CI_PROJECT_DIR/.m2/repository"
-        - mvn -q -Dmaven.repo.local="$CI_PROJECT_DIR/.m2/repository" install:install-file -Dfile="$CI_PROJECT_DIR/cicd/cesiumlanguagewriter-3.0.0.jar" -DgroupId=com.agi -DartifactId=czml-writer -Dversion=3.0.0 -Dpackaging=jar -DgeneratePom=true
         - git config --global url."https://oauth2:${ORESIUM_DATA_TOKEN}@gitlab.orekit.org/".insteadOf "https://gitlab.orekit.org/"
         - git submodule sync --recursive
         - git submodule update --init --recursive
@@ -59,7 +57,5 @@ mvn-sonar:
         - !reference [ .mvn-base, before_script ]
         - echo "SONAR_HOST_URL=$SONAR_HOST_URL"
         - test -n "$SONAR_TOKEN" && echo "SONAR_TOKEN is set" || echo "SONAR_TOKEN is MISSING/EMPTY"
-        - echo "=== INSTALL CZML-WRITER LOCAL ==="
         - mkdir -p "$CI_PROJECT_DIR/.m2/repository"
-        - mvn -q -Dmaven.repo.local="$CI_PROJECT_DIR/.m2/repository" install:install-file -Dfile="$CI_PROJECT_DIR/cicd/cesiumlanguagewriter-3.0.0.jar" -DgroupId=com.agi -DartifactId=czml-writer -Dversion=3.0.0 -Dpackaging=jar -DgeneratePom=true
         - git config --global url."https://oauth2:${ORESIUM_DATA_TOKEN}@gitlab.orekit.org/".insteadOf "https://gitlab.orekit.org/"
