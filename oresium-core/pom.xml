@@ -46,9 +46,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.agi</groupId>
+            <groupId>io.github.zudokakikuto</groupId>
             <artifactId>czml-writer</artifactId>
-            <version>${oresium.czml.version}</version>
+            <version>1.0.0</version>
         </dependency>
     </dependencies>
     <build>
