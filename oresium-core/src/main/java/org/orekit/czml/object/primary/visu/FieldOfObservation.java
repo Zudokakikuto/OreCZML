@@ -28,8 +28,6 @@ import org.hipparchus.util.FastMath;
 import org.orekit.annotation.DefaultDataContext;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.bodies.OneAxisEllipsoid;
-import org.orekit.czml.errors.OresiumException;
-import org.orekit.czml.errors.OresiumMessages;
 import org.orekit.czml.object.Polyline;
 import org.orekit.czml.object.nonvisual.PointOnBody;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
@@ -45,8 +43,6 @@ import org.orekit.utils.Constants;
 import org.orekit.utils.IERSConventions;
 
 import java.awt.Color;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -286,9 +282,7 @@ public class FieldOfObservation
 
     @Override
     public void writeCzmlBlock(final CesiumStreamWriter stream,
-                               final CesiumOutputStream output)
-        throws URISyntaxException,
-            IOException {
+                               final CesiumOutputStream output) {
         output.setPrettyFormatting(true);
         numberOfPolylines = 0;
         if (!noDetection) {
@@ -327,19 +321,15 @@ public class FieldOfObservation
 
     @Override
     public FieldOfObservation cloneObject() {
-        try {
-            final FieldOfObservation copy =
-                FieldOfObservation
-                    .builder(this.spacecraft, this.fov,
-                             this.initialTransformFovToBody)
-                    .withColor(this.polylineColor).withBody(this.body)
-                    .withCustomID(getId()).withAngularStep(this.angularStep)
-                    .build();
-            copy.setName(getName());
-            return copy;
-        } catch (URISyntaxException | IOException e) {
-            throw new OresiumException(OresiumMessages.NOT_VALID_PRIMARY_OBJECT_FOR_CLONE);
-        }
+        final FieldOfObservation copy =
+            FieldOfObservation
+                .builder(this.spacecraft, this.fov,
+                         this.initialTransformFovToBody)
+                .withColor(this.polylineColor).withBody(this.body)
+                .withCustomID(getId()).withAngularStep(this.angularStep)
+                .build();
+        copy.setName(getName());
+        return copy;
     }
 
     // Getters

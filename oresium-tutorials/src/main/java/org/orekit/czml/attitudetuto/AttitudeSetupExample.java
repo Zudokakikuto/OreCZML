@@ -95,7 +95,7 @@ public class AttitudeSetupExample {
             new Header("Setup of the attitude of a satellite", clock,
                        pathToJSFolder);
 
-        //// Build of a satellite with a propagator
+        // Build of a satellite with a propagator
         // Build of a LEO orbit
         final KeplerianOrbit initialOrbit =
             new KeplerianOrbit(7878000, 0, FastMath.toRadians(20), 0,

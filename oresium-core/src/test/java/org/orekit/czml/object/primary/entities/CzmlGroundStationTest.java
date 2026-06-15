@@ -26,9 +26,6 @@ import org.orekit.czml.object.nonvisual.CzmlModel;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.frames.TopocentricFrame;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-
 /**
  * The type Czml ground station test.
  */
@@ -59,16 +56,11 @@ public class CzmlGroundStationTest
         loadResources("Default3DModels/ground_Station.glb");
 
     /**
-     * Czml ground station constructor test.
-     *
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException the io exception
+     * Czml ground station constructor test. *
      */
     @Test
     @DefaultDataContext
-    void CzmlGroundStationConstructorTest()
-        throws URISyntaxException,
-            IOException {
+    void CzmlGroundStationConstructorTest() {
 
         final CzmlGroundStation station =
             new CzmlGroundStation(topocentricToulouse, header.getClock());
@@ -81,9 +73,7 @@ public class CzmlGroundStationTest
 
     @Test
     @DisplayName("Czml Ground Station with Builder constructor")
-    public void CzmlGroundStationBuilderConstructorTest()
-        throws URISyntaxException,
-            IOException {
+    public void CzmlGroundStationBuilderConstructorTest() {
 
         // Build of the topocentric frame
         final TopocentricFrame topocentricToulouse =
@@ -102,9 +92,7 @@ public class CzmlGroundStationTest
 
     @Test
     @DisplayName("Test of Czml Ground Station with a model")
-    public void CzmlGroundStationWithModelConstructorTest()
-        throws URISyntaxException,
-            IOException {
+    public void CzmlGroundStationWithModelConstructorTest() {
 
         // Build of the model
         final CzmlModel model =

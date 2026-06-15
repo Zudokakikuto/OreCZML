@@ -48,8 +48,6 @@ import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.Constants;
 
 import java.awt.Color;
-import java.io.IOException;
-import java.net.URISyntaxException;
 
 /**
  * The type Field of observation test.
@@ -74,16 +72,11 @@ public class FieldOfObservationTest
     final Clock clock = header.getClock();
 
     /**
-     * Field of observation constructor test.
-     *
-     * @throws IOException the io exception
-     * @throws URISyntaxException the uri syntax exception
+     * Field of observation constructor test. *
      */
     @Test
     @DefaultDataContext
-    void FieldOfObservationConstructorTest()
-        throws IOException,
-            URISyntaxException {
+    void FieldOfObservationConstructorTest() {
 
         clock.setMultiplier(10.0);
 

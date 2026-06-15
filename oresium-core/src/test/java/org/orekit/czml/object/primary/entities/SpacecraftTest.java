@@ -16,10 +16,18 @@
  */
 package org.orekit.czml.object.primary.entities;
 
+import cesiumlanguagewriter.Cartesian;
+import cesiumlanguagewriter.JulianDate;
+import cesiumlanguagewriter.TimeInterval;
+import org.hipparchus.geometry.euclidean.threed.Rotation;
+import org.hipparchus.geometry.euclidean.threed.Vector3D;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.archi.factory.BodyFactory;
 import org.orekit.czml.file.AbstractTest;
+import org.orekit.czml.file.CzmlFile;
 import org.orekit.czml.object.nonvisual.CzmlModel;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.secondary.Clock;
@@ -27,8 +35,6 @@ import org.orekit.czml.object.utils.DateUtils;
 import org.orekit.propagation.BoundedPropagator;
 import org.orekit.time.AbsoluteDate;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,16 +58,22 @@ public class SpacecraftTest
 
     final AbsoluteDate finalDate = startDate.shiftedBy(60.0);
 
+    // Build of the spacecraft
+    final BoundedPropagator dummyPropagator =
+        dummyPropagator(startDate, finalDate, dummyOrbit(startDate));
+
+    final Spacecraft dummySpacecraft =
+        Spacecraft.builder(dummyPropagator, header.getClock().getMultiplier())
+            .withName("Spacecraft").withDisplayName().build();
+
+    public SpacecraftTest() {
+    }
+
     /**
-     * Satellite constructor test.
-     *
-     * @throws IOException the io exception
-     * @throws URISyntaxException the uri syntax exception
+     * Satellite constructor test. *
      */
     @Test
-    void SatelliteConstructorTest()
-        throws IOException,
-            URISyntaxException {
+    void SatelliteConstructorTest() {
 
         final BoundedPropagator propagator =
             dummyPropagator(startDate, finalDate, dummyOrbit(startDate));
@@ -87,15 +99,10 @@ public class SpacecraftTest
     }
 
     /**
-     * Satellite constructor test.
-     *
-     * @throws IOException the io exception
-     * @throws URISyntaxException the uri syntax exception
+     * Satellite constructor test. *
      */
     @Test
-    void SatelliteLabelTest()
-        throws IOException,
-            URISyntaxException {
+    void SatelliteLabelTest() {
 
         final BoundedPropagator propagator =
             dummyPropagator(startDate, finalDate, dummyOrbit(startDate));
@@ -111,16 +118,11 @@ public class SpacecraftTest
     }
 
     /**
-     * Attitude constructor test.
-     *
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException the io exception
+     * Attitude constructor test. *
      */
     @Test
     @DefaultDataContext
-    void attitudeConstructorTest()
-        throws URISyntaxException,
-            IOException {
+    void attitudeConstructorTest() {
 
         final BoundedPropagator propagator =
             dummyPropagator(startDate, finalDate, dummyOrbit(startDate));
@@ -138,9 +140,7 @@ public class SpacecraftTest
     /** Test for the display of the influence sphere. */
     @Test
     @DefaultDataContext
-    void influenceSphereDisplayTest()
-        throws URISyntaxException,
-            IOException {
+    void influenceSphereDisplayTest() {
 
         final AbsoluteDate finalDate = startDate.shiftedBy(60.0);
 
@@ -169,4 +169,213 @@ public class SpacecraftTest
         verifyFileOutput(spacecraftWithInfluenceSphereTemplate,
                          spacecraft.toString(), 1e-8);
     }
+
+    /** Test for the getDisplayReferenceSytem. */
+    @Test
+    @DefaultDataContext
+    void displayReferenceSystemTest() {
+
+        final AbsoluteDate finalDate = startDate.shiftedBy(60.0);
+
+        // Build of the spacecraft
+        final BoundedPropagator propagator =
+            dummyPropagator(startDate, finalDate, dummyOrbit(startDate));
+
+        final Spacecraft spacecraft =
+            Spacecraft.builder(propagator, header.getClock())
+                .withDisplayAttitude().build();
+
+        spacecraft.displaySpacecraftReferenceSystem();
+
+        final CzmlFile file =
+            CzmlFile.builder(header).withSpacecraft(spacecraft).build();
+
+        final String spacecraftTemplateFile =
+            loadResources("templateFile/object/primary/entities/spacecraft/SpacecraftCzmlFileDisplayReferenceSystemTemplate.txt");
+
+        verifyFileOutput(spacecraftTemplateFile, file.toString(), 1e-8);
+    }
+
+    /** Test for the clone object. */
+    @Test
+    @DefaultDataContext
+    void cloneObjectTests() {
+
+        final AbsoluteDate finalDate = startDate.shiftedBy(60.0);
+
+        // Build of the spacecraft
+        final BoundedPropagator propagator =
+            dummyPropagator(startDate, finalDate, dummyOrbit(startDate));
+
+        final Spacecraft spacecraft =
+            Spacecraft.builder(propagator, header.getClock())
+                .withDisplayAttitude().build();
+
+        spacecraft.displaySpacecraftAttitude();
+
+        final Spacecraft clonedSpacecraft = spacecraft.cloneObject();
+
+        final String spacecraftTemplateFile =
+            loadResources("templateFile/object/primary/entities/spacecraft/SpacecraftClonedTemplate.txt");
+
+        verifyFileOutput(spacecraftTemplateFile, clonedSpacecraft.toString(),
+                         1e-8);
+
+    }
+
+    @Nested
+    public class GetterSetterTests {
+
+        @Test
+        void orientedTest() {
+            Assertions.assertFalse(dummySpacecraft.isOriented());
+        }
+
+        @Test
+        void orientedTestTrue() {
+            dummySpacecraft.setOriented(true);
+            Assertions.assertTrue(dummySpacecraft.isOriented());
+            dummySpacecraft.setOriented(false);
+        }
+
+        @Test
+        void displayOnlyOnePeriodTest() {
+            Assertions.assertFalse(dummySpacecraft.isDisplayOnlyOnePeriod());
+        }
+
+        @Test
+        void displayOnlyOnePeriodTrue() {
+            dummySpacecraft.setDisplayOnlyOnePeriod(true);
+            Assertions.assertTrue(dummySpacecraft.isDisplayOnlyOnePeriod());
+            dummySpacecraft.setDisplayOnlyOnePeriod(false);
+        }
+
+        @Test
+        void displayAttitudeTest() {
+            Assertions.assertFalse(dummySpacecraft.isDisplayAttitude());
+        }
+
+        @Test
+        void displayAttitudeTrue() {
+            dummySpacecraft.setDisplayAttitude(true);
+            Assertions.assertTrue(dummySpacecraft.isDisplayAttitude());
+            dummySpacecraft.setDisplayAttitude(false);
+        }
+
+        @Test
+        void displayReferenceSystemTest() {
+            Assertions.assertFalse(dummySpacecraft.isDisplayReferenceSystem());
+        }
+
+        @Test
+        void displayReferenceSystemTrue() {
+            dummySpacecraft.setDisplayReferenceSystem(true);
+            Assertions.assertTrue(dummySpacecraft.isDisplayReferenceSystem());
+            dummySpacecraft.setDisplayReferenceSystem(false);
+        }
+
+        @Test
+        void displayInfluenceSphereChangesTest() {
+            Assertions
+                .assertFalse(dummySpacecraft.isDisplayInfluenceSphereChanges());
+        }
+
+        @Test
+        void displayInfluenceSphereChangesTrue() {
+            dummySpacecraft.setDisplayInfluenceSphereChanges(true);
+            Assertions
+                .assertTrue(dummySpacecraft.isDisplayInfluenceSphereChanges());
+            dummySpacecraft.setDisplayInfluenceSphereChanges(false);
+        }
+
+        @Test
+        void intervalInfluenceSheres() {
+            Assertions
+                .assertNull(dummySpacecraft.getIntervalInfluenceSpheres());
+        }
+
+        @Test
+        void intervalInfluenceSphereChangesFill() {
+            final List<TimeInterval> timeIntervals = new ArrayList<>();
+            final TimeInterval interval =
+                new TimeInterval(DateUtils.toJulianDate(startDate),
+                                 DateUtils.toJulianDate(finalDate));
+            timeIntervals.add(interval);
+            dummySpacecraft.setIntervalInfluenceSpheres(timeIntervals);
+            Assertions.assertEquals(interval, dummySpacecraft
+                .getIntervalInfluenceSpheres().get(0));
+            dummySpacecraft.setIntervalInfluenceSpheres(null);
+        }
+
+        @Test
+        void positionInsideInfluenceSheres() {
+            Assertions
+                .assertNull(dummySpacecraft.getPositionInsideInfluenceSphere());
+        }
+
+        @Test
+        void positionInsideInfluenceSphereFill() {
+            final List<List<Cartesian>> cartesiansListList = new ArrayList<>();
+            final List<Cartesian> cartesiansList = new ArrayList<>();
+            final Cartesian cartesian = new Cartesian(40, 1, 4);
+            cartesiansList.add(cartesian);
+            cartesiansListList.add(cartesiansList);
+            dummySpacecraft
+                .setPositionInsideInfluenceSphere(cartesiansListList);
+            Assertions.assertEquals(cartesian, dummySpacecraft
+                .getPositionInsideInfluenceSphere().get(0).get(0));
+            dummySpacecraft.setPositionInsideInfluenceSphere(null);
+        }
+
+        @Test
+        void timeInsideInfluenceSphereTest() {
+            Assertions
+                .assertNull(dummySpacecraft.getTimeInsideInfluenceSphere());
+        }
+
+        @Test
+        void timeInsideInfluenceSphereFill() {
+            final List<List<JulianDate>> julianDateListList = new ArrayList<>();
+            final List<JulianDate> julianDateList = new ArrayList<>();
+            final JulianDate julianDate = DateUtils.toJulianDate(startDate);
+            julianDateList.add(julianDate);
+            julianDateListList.add(julianDateList);
+            dummySpacecraft.setTimeInsideInfluenceSphere(julianDateListList);
+            Assertions.assertEquals(julianDate, dummySpacecraft
+                .getTimeInsideInfluenceSphere().get(0).get(0));
+            dummySpacecraft.setTimeInsideInfluenceSphere(null);
+        }
+
+        @Test
+        void optionalRotationTest() {
+            Assertions.assertNull(dummySpacecraft.getOptionalRotation());
+        }
+
+        @Test
+        void optionalRotationNotNull() {
+            final Vector3D vector = new Vector3D(2, 1, 1);
+            final Vector3D vector2 = new Vector3D(2, 2, 10);
+            final Rotation rotation = new Rotation(vector, vector2);
+            dummySpacecraft.setOptionalRotation(rotation);
+            Assertions.assertEquals(rotation,
+                                    dummySpacecraft.getOptionalRotation());
+            dummySpacecraft.setOptionalRotation(null);
+        }
+
+        @Test
+        void startDateTest() {
+            Assertions.assertEquals(startDate, dummySpacecraft.getStartDate());
+        }
+
+        @Test
+        void finalDateTest() {
+            Assertions.assertEquals(finalDate, dummySpacecraft.getFinalDate());
+        }
+
+        @Test
+        void clockMultiplierTest() {
+            Assertions.assertEquals(10.0, dummySpacecraft.getClockMultiplier());
+        }
+    }
+
 }

@@ -27,8 +27,6 @@ import org.orekit.utils.Constants;
 import org.orekit.utils.IERSConventions;
 
 import java.awt.Color;
-import java.io.IOException;
-import java.net.URISyntaxException;
 
 /**
  * Field of observation builder class
@@ -159,13 +157,9 @@ public class FieldOfObservationBuilder {
      * The build function that generates a field of observation object.
      *
      * @return : A field of observation object with the given parameters of the
-     *         builder.
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException the io exception
+     *         builder. *
      */
-    public FieldOfObservation build()
-        throws URISyntaxException,
-            IOException {
+    public FieldOfObservation build() {
         return new FieldOfObservation(satellite, fieldOfView, fovToBody, body,
                                       angularStep, color, customID);
     }

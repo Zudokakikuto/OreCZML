@@ -27,8 +27,6 @@ import org.orekit.propagation.BoundedPropagator;
 import org.orekit.time.AbsoluteDate;
 
 import java.awt.Color;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -71,12 +69,12 @@ public class Constellation
     /**
      * The list of all the initial orbits of the constellation.
      */
-    private final List<Orbit> InitialOrbits = new ArrayList<>();
+    private final List<Orbit> initialOrbits = new ArrayList<>();
 
     /**
      * The list containing all the ids of all the satellites.
      */
-    private final List<String> Ids = new ArrayList<>();
+    private final List<String> ids = new ArrayList<>();
 
     // intrinsic parameters
 
@@ -125,19 +123,16 @@ public class Constellation
     /**
      * The constructor with a default model.
      *
-     * @param Propagators : A list of bounded propagator that represents each a
+     * @param propagators : A list of bounded propagator that represents each a
      *        propagator for a given satellite.
      * @param finalDate : The final date when the propagation must stop.
-     * @param clock : The time frame for which the feature is visible
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException the io exception
+     * @param clock : The time frame for which the feature is visible * the uri
+     *        syntax exception * the io exception
      */
-    Constellation(final List<BoundedPropagator> Propagators,
-                  final AbsoluteDate finalDate, final Clock clock)
-        throws URISyntaxException,
-            IOException {
-        this(Propagators, finalDate, DEFAULT_STRING_MODEL,
-             DEFAULT_ID + Propagators.size() + " " + DEFAULT_NUMBER_OF_SAT,
+    Constellation(final List<BoundedPropagator> propagators,
+                  final AbsoluteDate finalDate, final Clock clock) {
+        this(propagators, finalDate, DEFAULT_STRING_MODEL,
+             DEFAULT_ID + propagators.size() + " " + DEFAULT_NUMBER_OF_SAT,
              clock, clock.getMultiplier());
     }
 
@@ -155,9 +150,7 @@ public class Constellation
     Constellation(final List<BoundedPropagator> propagatorsInput,
                   final AbsoluteDate finalDate, final String modelPath,
                   final String customID, final Clock clock,
-                  final double clockMultiplier)
-        throws URISyntaxException,
-            IOException {
+                  final double clockMultiplier) {
 
         this(propagatorsInput, finalDate, Collections.singletonList(modelPath),
              customID, clock, clockMultiplier);
@@ -173,16 +166,13 @@ public class Constellation
      * @param customID : The custom ID of the constellation.
      * @param modelsInput : List of the models for each satellite
      * @param clock : The clock
-     * @param clockMultiplier : Interval in seconds between DateTime values
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException the io exception
+     * @param clockMultiplier : Interval in seconds between DateTime values *
+     *        the uri syntax exception * the io exception
      */
     Constellation(final List<BoundedPropagator> propagatorsInput,
                   final AbsoluteDate finalDateInput,
                   final List<String> modelsInput, final String customID,
-                  final Clock clock, final double clockMultiplier)
-        throws URISyntaxException,
-            IOException {
+                  final Clock clock, final double clockMultiplier) {
 
         final List<Color> colorList = colorWheel(propagatorsInput.size());
         this.models = modelsInput;
@@ -224,25 +214,18 @@ public class Constellation
      */
     @Override
     public void writeCzmlBlock(final CesiumStreamWriter stream,
-                               final CesiumOutputStream output)
-        throws URISyntaxException,
-            IOException {
+                               final CesiumOutputStream output) {
         iterateOnSatelliteWriting(stream, output);
     }
 
     @Override
     public Constellation cloneObject() {
-        try {
-            final Constellation copy =
-                Constellation
-                    .builder(this.propagators, this.finalDate, this.clock)
-                    .withModel(models).withCustomId(getId()).build();
-            copy.setName(getName());
-            return copy;
+        final Constellation copy =
+            Constellation.builder(this.propagators, this.finalDate, this.clock)
+                .withModel(models).withCustomId(getId()).build();
+        copy.setName(getName());
+        return copy;
 
-        } catch (URISyntaxException | IOException e) {
-            throw new OresiumException(OresiumMessages.NOT_VALID_PRIMARY_OBJECT_FOR_CLONE);
-        }
     }
 
     // Display methods
@@ -285,7 +268,7 @@ public class Constellation
      * @return the initial orbits
      */
     public List<Orbit> getInitialOrbits() {
-        return Collections.unmodifiableList(InitialOrbits);
+        return Collections.unmodifiableList(initialOrbits);
     }
 
     /**
@@ -303,7 +286,7 @@ public class Constellation
      * @return the ids
      */
     public List<String> getIds() {
-        return Collections.unmodifiableList(Ids);
+        return Collections.unmodifiableList(ids);
     }
 
     // Private functions
@@ -319,12 +302,10 @@ public class Constellation
      * @param multipleModelsInput : The boolean to use or not several models for
      *        satellites.
      */
-    private void defineMultipleArgument(final AbsoluteDate finalDateInput,
-                                        final List<Color> colorList,
-                                        final boolean multipleModelsInput,
-                                        final List<String> modelsInput)
-        throws URISyntaxException,
-            IOException {
+    protected void defineMultipleArgument(final AbsoluteDate finalDateInput,
+                                          final List<Color> colorList,
+                                          final boolean multipleModelsInput,
+                                          final List<String> modelsInput) {
         for (int i = 0; i < propagators.size(); i++) {
             final BoundedPropagator propagator = propagators.get(i);
             if (!multipleModelsInput) {
@@ -334,8 +315,8 @@ public class Constellation
                         .withModelPath(modelsInput.get(0))
                         .withColor(colorList.get(i)).build();
                 satellites.add(currentSatellite);
-                Ids.add(currentSatellite.getId());
-                InitialOrbits.add(currentSatellite.getOrbits().get(0));
+                ids.add(currentSatellite.getId());
+                initialOrbits.add(currentSatellite.getOrbits().get(0));
             } else {
                 if (modelsInput.size() != propagators.size()) {
                     throw new OresiumException(OresiumMessages.NOT_SAME_NUMBER_SAT_MODELS);
@@ -346,8 +327,8 @@ public class Constellation
                         .withFinalDate(finalDate).withModelPath(currentModel)
                         .withColor(colorList.get(i)).build();
                 satellites.add(currentSatellite);
-                Ids.add(currentSatellite.getId());
-                InitialOrbits.add(currentSatellite.getOrbits().get(0));
+                ids.add(currentSatellite.getId());
+                initialOrbits.add(currentSatellite.getOrbits().get(0));
             }
         }
     }
@@ -362,9 +343,7 @@ public class Constellation
      *        to write into the CzmLFile.
      */
     private void iterateOnSatelliteWriting(final CesiumStreamWriter stream,
-                                           final CesiumOutputStream output)
-        throws URISyntaxException,
-            IOException {
+                                           final CesiumOutputStream output) {
         for (final Spacecraft satelliteToOutput : satellites) {
             if (displayAttitude) {
                 satelliteToOutput.displaySpacecraftAttitude();

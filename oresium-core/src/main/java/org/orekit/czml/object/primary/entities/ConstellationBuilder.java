@@ -21,8 +21,6 @@ import org.orekit.czml.object.secondary.Clock;
 import org.orekit.propagation.BoundedPropagator;
 import org.orekit.time.AbsoluteDate;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -158,13 +156,9 @@ public class ConstellationBuilder {
      * The build function that generates a constellation object.
      *
      * @return : A constellation object with the given parameters of the
-     *         builder.
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException the io exception
+     *         builder. *
      */
-    public Constellation build()
-        throws URISyntaxException,
-            IOException {
+    public Constellation build() {
         final Constellation tempConstellation =
             new Constellation(propagators, finalDate, pathToModel, customID,
                               clock, clockMultiplier);

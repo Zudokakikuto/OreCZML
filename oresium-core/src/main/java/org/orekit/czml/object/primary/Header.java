@@ -28,7 +28,6 @@ import org.orekit.czml.file.CzmlFile;
 import org.orekit.czml.object.secondary.Clock;
 
 import java.io.StringWriter;
-import java.util.Objects;
 
 /**
  * Header class
@@ -175,55 +174,36 @@ public class Header
         this.writeCzmlBlock(streamWriter, output);
         final String tempString = writer.toString();
         final String[] splittedString = tempString.split("\\[");
-        return splittedString[1];
+        return splittedString[1].substring(1);
     }
 
     @Override
     public Header cloneObject() {
         final Header toReturn;
-        if (this.getName() != null && this.getAvailability() != null) {
-            if (this.version != null) {
-                if (!Objects.equals(this.pathToExternalResources,
-                                    DEFAULT_RESOURCES)) {
-                    final Header copy =
-                        new Header(this.getName(), this.version, this.clock,
-                                   this.pathToExternalResources);
-                    copy.setId(getId());
-                    copy.setAvailability(getAvailability());
-                    toReturn = copy;
-                } else {
-                    final Header copy =
-                        new Header(this.getName(), this.version, this.clock);
-                    copy.setId(getId());
-                    copy.setAvailability(getAvailability());
-                    toReturn = copy;
-                }
-            } else if (!Objects.equals(this.pathToExternalResources,
-                                       DEFAULT_RESOURCES)) {
-                final Header copy =
-                    new Header(this.getName(), this.clock,
+        if (this.getName() != null && this.getClock() != null) {
+            final Header copy;
+            if (!(this.pathToExternalResources.equals(DEFAULT_RESOURCES))) {
+                copy =
+                    new Header(this.getName(), this.version, this.clock,
                                this.pathToExternalResources);
-                copy.setId(getId());
-                copy.setAvailability(getAvailability());
-                toReturn = copy;
             } else {
-                final Header copy = new Header(this.getName(), this.clock);
-                copy.setId(getId());
-                copy.setAvailability(getAvailability());
-                toReturn = copy;
+                copy = new Header(this.getName(), this.version, this.clock);
             }
-            return toReturn;
+            copy.setId(getId());
+            copy.setAvailability(getAvailability());
+            toReturn = copy;
         } else {
             throw new OresiumException(OresiumMessages.NOT_VALID_PRIMARY_OBJECT_FOR_CLONE);
         }
+        return toReturn;
     }
+
+    // Getters
 
     @Override
     public TimeInterval getAvailability() {
         return getClock().getAvailability();
     }
-
-    // Getters
 
     /**
      * Gets path to external resource folder.
@@ -232,6 +212,17 @@ public class Header
      */
     public static String getPathToExternalResourceFolder() {
         return pathToExternalResourceFolder;
+    }
+
+    /**
+     * Gets absolute path to external resource. The difference between the path
+     * to external resource and external resources folder is that the path to
+     * external resources folder is the parent.
+     *
+     * @return the path to external resource
+     */
+    public String getPathToExternalResources() {
+        return pathToExternalResources;
     }
 
     /**
@@ -250,5 +241,17 @@ public class Header
      */
     public static String getDefaultResources() {
         return DEFAULT_RESOURCES;
+    }
+
+    // Setter
+
+    /**
+     * Sets the path to the external resources.
+     *
+     * @param pathToExternalResources : The path to the external resources
+     */
+    public void
+        setPathToExternalResources(final String pathToExternalResources) {
+        this.pathToExternalResources = pathToExternalResources;
     }
 }

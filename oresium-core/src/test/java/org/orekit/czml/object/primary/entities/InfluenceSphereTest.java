@@ -26,9 +26,6 @@ import org.orekit.czml.object.utils.DateUtils;
 import org.orekit.frames.Frame;
 import org.orekit.time.AbsoluteDate;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-
 /**
  * The type Influence sphere test.
  */
@@ -55,15 +52,10 @@ public class InfluenceSphereTest
     final Clock clock = new Clock(startDate, stopDate, 10.0);
 
     /**
-     * Body constructor test.
-     *
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException the io exception
+     * Body constructor test. *
      */
     @Test
-    void InfluenceSphereConstructorTest()
-        throws URISyntaxException,
-            IOException {
+    void InfluenceSphereConstructorTest() {
 
         // Building of the body for the influence sphere
         final String pathToEarthModel = loadResources("Bodies/earth.glb");

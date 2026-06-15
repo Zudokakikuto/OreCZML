@@ -28,6 +28,7 @@ import org.orekit.attitudes.AttitudesSequence;
 import org.orekit.attitudes.CelestialBodyPointed;
 import org.orekit.attitudes.LofOffset;
 import org.orekit.bodies.CelestialBodyFactory;
+import org.orekit.czml.errors.OresiumException;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.forces.ForceModel;
@@ -56,10 +57,6 @@ import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.AngularDerivativesFilter;
 import org.orekit.utils.Constants;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -106,17 +103,12 @@ public class ManeuverSequenceTest
                            startDate, Constants.WGS84_EARTH_MU);
 
     /**
-     * Maneuver sequence constructor test.
-     *
-     * @throws IOException the io exception
-     * @throws URISyntaxException the uri syntax exception
+     * Maneuver sequence constructor test. *
      */
     @Test
     @DefaultDataContext
     @DisplayName("Maneuver sequence constructor test")
-    void ManeuverSequenceConstructorTest()
-        throws IOException,
-            URISyntaxException {
+    void ManeuverSequenceConstructorTest() {
 
         // Creation of the list of maneuvers
         final List<Maneuver> maneuvers = new ArrayList<>();
@@ -166,9 +158,7 @@ public class ManeuverSequenceTest
 
     @Test
     @DisplayName("Maneuver sequence constructor test with one simple maneuver")
-    public void ManeuverSequenceSimpleConstructorTest()
-        throws URISyntaxException,
-            IOException {
+    public void ManeuverSequenceSimpleConstructorTest() {
 
         // Creation of the list of maneuvers
         final List<Maneuver> maneuvers = new ArrayList<>();
@@ -297,9 +287,7 @@ public class ManeuverSequenceTest
 
     @Test
     @DisplayName("Maneuver sequence constructor test with multiple maneuvers")
-    public void ManeuverSequenceMultipleManeuversConstructorTest()
-        throws URISyntaxException,
-            IOException {
+    public void ManeuverSequenceMultipleManeuversConstructorTest() {
 
         // Creation of the list of maneuvers
         final List<Maneuver> maneuvers = new ArrayList<>();
@@ -339,6 +327,205 @@ public class ManeuverSequenceTest
                          maneuverSequenceMultiple.toString(), 1e-3);
         Assertions.assertEquals(accelerations,
                                 maneuverSequenceMultiple.getArrowsDirection());
+    }
+
+    @Test
+    @DisplayName("Maneuver Sequence constructor test")
+    public void ManeuverSequenceManeuverConstructorTest() {
+
+        // Creation of the list of maneuvers
+        final List<Maneuver> maneuvers = new ArrayList<>();
+
+        // List of acceleration directions
+        final List<Vector3D> accelerations = new ArrayList<>();
+        accelerations.add(Vector3D.PLUS_I);
+        accelerations.add(Vector3D.PLUS_J);
+
+        // Creation of the attitude sequence and the propagator
+        final Map<AttitudesSequence, BoundedPropagator> map =
+            buildMapFromOrbit(startDate, finalDate, initialOrbit, maneuvers);
+        final Optional<AttitudesSequence> sequenceOptional =
+            map.keySet().stream().findFirst();
+
+        AttitudesSequence sequence = null;
+        if (sequenceOptional.isPresent()) {
+            sequence = sequenceOptional.get();
+        }
+
+        // Build the spacecraft
+        final BoundedPropagator boundedPropagator = map.get(sequence);
+        final Spacecraft spacecraft =
+            new Spacecraft(boundedPropagator, header.getClock());
+
+        final ManeuverSequence maneuverSequence =
+            new ManeuverSequence(sequence, maneuvers, spacecraft,
+                                 Vector3D.PLUS_I, LOFType.TNW,
+                                 header.getClock());
+
+        // Reference file
+        final String maneuverMultiplePathFile =
+            loadResources("templateFile/object/primary/maneuversequence/ManeuverSequenceConstructorPlusITemplate.txt");
+
+        verifyFileOutput(maneuverMultiplePathFile, maneuverSequence.toString(),
+                         1e-3);
+    }
+
+    @Test
+    @DisplayName("Test cloneObject method for ManeuverSequence")
+    public void testCloneObject() {
+        // Test case 1: Single maneuver
+        final List<Maneuver> maneuvers = new ArrayList<>();
+        final Map<AttitudesSequence, BoundedPropagator> map =
+            buildMapFromOrbit(startDate, finalDate, initialOrbit, maneuvers);
+        final Optional<AttitudesSequence> sequenceOptional =
+            map.keySet().stream().findFirst();
+
+        AttitudesSequence sequence = null;
+        if (sequenceOptional.isPresent()) {
+            sequence = sequenceOptional.get();
+        }
+
+        final BoundedPropagator boundedPropagator = map.get(sequence);
+        final Spacecraft spacecraft =
+            new Spacecraft(boundedPropagator, header.getClock());
+
+        final ManeuverSequence original =
+            ManeuverSequence
+                .builder(sequence, maneuvers.get(0), spacecraft,
+                         Vector3D.PLUS_I, LOFType.TNW, header.getClock())
+                .withCustomID("test-id-1")
+                .withPathModel("custom/path/model1.glb").withShowTrust(true)
+                .build();
+
+        final ManeuverSequence cloned = original.cloneObject();
+
+        // Verify properties are preserved
+        Assertions.assertEquals(original.getId(), cloned.getId());
+        Assertions.assertEquals(original.getName(), cloned.getName());
+        Assertions.assertEquals(original.getManeuvers(), cloned.getManeuvers());
+        Assertions.assertEquals(
+                                original.getPropagator().getInitialState()
+                                    .getPVCoordinates().toString(),
+                                cloned.getPropagator().getInitialState()
+                                    .getPVCoordinates().toString());
+        Assertions.assertEquals(original.getArrowsDirection(),
+                                cloned.getArrowsDirection());
+        Assertions.assertEquals(original.getSequence(), cloned.getSequence());
+        Assertions.assertEquals(original.getLof(), cloned.getLof());
+        Assertions.assertEquals(original.isShowTrust(), cloned.isShowTrust());
+        Assertions.assertEquals(original.getModel().getAbsolutePath(),
+                                cloned.getModel().getAbsolutePath());
+    }
+
+    @Test
+    @DisplayName("Cloning test throw")
+    public void testCloningThrow() {
+
+        final ManeuverSequence sequence =
+            ManeuverSequence.builder(null, new ArrayList<>(), null,
+                                     new ArrayList<>(), null, null)
+                .build();
+
+        Assertions.assertThrows(OresiumException.class, sequence::cloneObject);
+    }
+
+    @Test
+    @DisplayName("Test cloneObject method for ManeuverSequence Multiple maneuvers")
+    public void testCloneObjectMultipleManeuvers() {
+        // Test case 2: Multiple maneuvers with single direction
+
+        final List<Maneuver> maneuvers = new ArrayList<>();
+        final Map<AttitudesSequence, BoundedPropagator> map =
+            buildMapFromOrbit(startDate, finalDate, initialOrbit, maneuvers);
+        final Optional<AttitudesSequence> sequenceOptional =
+            map.keySet().stream().findFirst();
+
+        AttitudesSequence sequence = null;
+        if (sequenceOptional.isPresent()) {
+            sequence = sequenceOptional.get();
+        }
+
+        final BoundedPropagator boundedPropagator = map.get(sequence);
+        final Spacecraft spacecraft =
+            new Spacecraft(boundedPropagator, header.getClock());
+
+        final ManeuverSequence original =
+            ManeuverSequence
+                .builder(sequence, maneuvers, spacecraft, Vector3D.PLUS_I,
+                         LOFType.TNW, header.getClock())
+                .withCustomID("test-id-2")
+                .withPathModel("custom/path/model2.glb").withShowTrust(false)
+                .build();
+
+        final ManeuverSequence cloned = original.cloneObject();
+
+        // Verify properties are preserved
+        Assertions.assertEquals(original.getId(), cloned.getId());
+        Assertions.assertEquals(original.getName(), cloned.getName());
+        Assertions.assertEquals(original.getManeuvers(), cloned.getManeuvers());
+        Assertions.assertEquals(
+                                original.getPropagator().getInitialState()
+                                    .getPVCoordinates().toString(),
+                                cloned.getPropagator().getInitialState()
+                                    .getPVCoordinates().toString());
+        Assertions.assertEquals(original.getArrowsDirection(),
+                                cloned.getArrowsDirection());
+        Assertions.assertEquals(original.getSequence(), cloned.getSequence());
+        Assertions.assertEquals(original.getLof(), cloned.getLof());
+        Assertions.assertEquals(original.isShowTrust(), cloned.isShowTrust());
+        Assertions.assertEquals(original.getModel().getAbsolutePath(),
+                                cloned.getModel().getAbsolutePath());
+    }
+
+    @Test
+    @DisplayName("Test cloneObject method for ManeuverSequence Multiple maneuvers with mutliple direction")
+    public void testCloneObjectMultipleManeuversWithMutlipleDirection() {
+        // Test case 3: Multiple maneuvers with multiple directions
+        final List<Maneuver> maneuvers = new ArrayList<>();
+        final List<Vector3D> accelerations = new ArrayList<>();
+        accelerations.add(Vector3D.PLUS_I);
+        accelerations.add(Vector3D.PLUS_J);
+
+        final Map<AttitudesSequence, BoundedPropagator> map =
+            buildMapFromOrbit(startDate, finalDate, initialOrbit, maneuvers);
+        final Optional<AttitudesSequence> sequenceOptional =
+            map.keySet().stream().findFirst();
+
+        AttitudesSequence sequence = null;
+        if (sequenceOptional.isPresent()) {
+            sequence = sequenceOptional.get();
+        }
+
+        final BoundedPropagator boundedPropagator = map.get(sequence);
+        final Spacecraft spacecraft =
+            new Spacecraft(boundedPropagator, header.getClock());
+
+        final ManeuverSequence original =
+            ManeuverSequence
+                .builder(sequence, maneuvers, spacecraft, accelerations,
+                         LOFType.TNW, header.getClock())
+                .withCustomID("test-id-3")
+                .withPathModel("custom/path/model3.glb").withShowTrust(true)
+                .build();
+
+        final ManeuverSequence cloned = original.cloneObject();
+
+        // Verify properties are preserved
+        Assertions.assertEquals(original.getId(), cloned.getId());
+        Assertions.assertEquals(original.getName(), cloned.getName());
+        Assertions.assertEquals(original.getManeuvers(), cloned.getManeuvers());
+        Assertions.assertEquals(
+                                original.getPropagator().getInitialState()
+                                    .getPVCoordinates().toString(),
+                                cloned.getPropagator().getInitialState()
+                                    .getPVCoordinates().toString());
+        Assertions.assertEquals(original.getArrowsDirection(),
+                                cloned.getArrowsDirection());
+        Assertions.assertEquals(original.getSequence(), cloned.getSequence());
+        Assertions.assertEquals(original.getLof(), cloned.getLof());
+        Assertions.assertEquals(original.isShowTrust(), cloned.isShowTrust());
+        Assertions.assertEquals(original.getModel().getAbsolutePath(),
+                                cloned.getModel().getAbsolutePath());
     }
 
     private Map<AttitudesSequence, BoundedPropagator>

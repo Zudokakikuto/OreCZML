@@ -21,8 +21,6 @@ import org.orekit.frames.LOF;
 import org.orekit.propagation.StateCovariance;
 
 import java.awt.Color;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.List;
 
 /**
@@ -109,13 +107,9 @@ public class CovarianceBuilder {
      * The build function that generates the covariance display object.
      *
      * @return : A covariance display object with the given parameters of the
-     *         builder.
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException the io exception
+     *         builder. *
      */
-    public Covariance build()
-        throws URISyntaxException,
-            IOException {
+    public Covariance build() {
         if (this.satellite != null && !this.covariances.isEmpty()) {
             return new Covariance(satellite, covariances, lof, color, customID);
         }

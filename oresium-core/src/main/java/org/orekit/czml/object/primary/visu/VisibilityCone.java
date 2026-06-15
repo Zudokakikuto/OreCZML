@@ -98,7 +98,7 @@ public class VisibilityCone
     private TopocentricFrame topocentricFrame;
 
     /** The clock of the visibility cone. */
-    private Clock clock;
+    private final Clock clock;
 
     // Constructors
 

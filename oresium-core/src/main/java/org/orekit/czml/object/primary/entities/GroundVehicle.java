@@ -18,8 +18,6 @@ package org.orekit.czml.object.primary.entities;
 
 import java.awt.Color;
 import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -30,8 +28,6 @@ import org.hipparchus.util.FastMath;
 import org.orekit.attitudes.Attitude;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.bodies.OneAxisEllipsoid;
-import org.orekit.czml.errors.OresiumException;
-import org.orekit.czml.errors.OresiumMessages;
 import org.orekit.czml.object.ModelType;
 import org.orekit.czml.object.nonvisual.CzmlModel;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
@@ -90,15 +86,18 @@ public class GroundVehicle
     /** The default name of the GroundVehicle. */
     public static final String DEFAULT_NAME = "GroundVehicle";
 
-    /** The default reference position tool. */
-    public static final String H_REFERENCE_POSITION = "#position";
+    /** Beginning of the HTML. */
+    public static final String BEGIN_HTML = "<!--HTML-->\r\n<p>Id : ";
 
-    /** The default format for the formatted ID. */
-    public static final String DEFAULT_FORMAT =
-        DEFAULT_ID + "{P(%1.8e, %2.8e, %3.8e), V(%4.8e, %5.8e, %6.8e)}";
+    /** Simulated from HTML. */
+    public static final String SIMULATED_FROM =
+        "</p>\r\n<p>" + "Simulated from : ";
 
-    /** The reference frame used for this object. */
-    public static final String DEFAULT_INERTIAL = "EARTH_FRAME";
+    /** String for 'to'. */
+    public static final String TO = " to ";
+
+    /** End HTML. */
+    public static final String END_HTML = "</p>";
 
     /** The default orbit color of the GroundVehicle. */
     public static final Color DEFAULT_COLOR = new Color(255, 255, 255);
@@ -167,9 +166,7 @@ public class GroundVehicle
      * @param finalDate : The stop date to consider for the stop the propagation
      *        and the availability of the GroundVehicle.
      * @param earth : the earth body model
-     * @param clockMultiplier : The clock multiplier
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException the io exception
+     * @param clockMultiplier : The clock multiplier *
      */
     public GroundVehicle(final PVCoordinatesProvider coordsProvider,
                          final AbsoluteDate startDate,
@@ -183,9 +180,9 @@ public class GroundVehicle
             .toJulianDate(startDate), DateUtils.toJulianDate(finalDate)));
         this.coordsProvider = coordsProvider;
         this.description =
-            "<!--HTML-->\r\n<p>Id : " +
-                           DEFAULT_ID + "</p>\r\n<p>" + "Simulated from : " +
-                           startDate + " to " + finalDate + "</p>";
+            BEGIN_HTML +
+                           DEFAULT_ID + SIMULATED_FROM + startDate + TO +
+                           finalDate + END_HTML;
         this.color = DEFAULT_COLOR;
         this.model = new CzmlModel(DEFAULT_MODEL_PATH, true, clock);
         this.modelType = model.getModelType();
@@ -211,9 +208,7 @@ public class GroundVehicle
      * @param modelPath : The path to the model to load.
      * @param color : The color of the orbit.
      * @param customID : The custom ID of the GroundVehicle.
-     * @param name : The name of the GroundVehicle.
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException the io exception
+     * @param name : The name of the GroundVehicle. *
      */
     public GroundVehicle(final PVCoordinatesProvider coordsProvider,
                          final AbsoluteDate startDateInput,
@@ -221,9 +216,7 @@ public class GroundVehicle
                          final OneAxisEllipsoid earth,
                          final double clockMultiplier, final String modelPath,
                          final Color color, final String customID,
-                         final String name)
-        throws URISyntaxException,
-            IOException {
+                         final String name) {
 
         this.setId(customID);
         this.setName(name);
@@ -232,9 +225,9 @@ public class GroundVehicle
             .toJulianDate(startDateInput), DateUtils.toJulianDate(finalDateInput)));
         this.coordsProvider = coordsProvider;
         this.description =
-            "<!--HTML-->\r\n<p>Id : " +
-                           customID + "</p>\r\n<p>" + "Simulated from : " +
-                           startDateInput + " to " + finalDateInput + "</p>";
+            BEGIN_HTML +
+                           customID + SIMULATED_FROM + startDateInput + TO +
+                           finalDateInput + END_HTML;
         this.color = color;
         this.model = new CzmlModel(modelPath, true, clock);
         this.modelType = model.getModelType();
@@ -252,9 +245,9 @@ public class GroundVehicle
      * @param coordsProvider : The propagator used to create the GroundVehicle
      *        trajectory.
      * @param startDate : The GroundVehicle takeoff date.
-     * @param stopDate : The GroundVehicle landing date.
-     * @param clock : The clock multiplier value used to create the trajectory
-     *        timestep.
+     * @param finalDate : The GroundVehicle landing date.
+     * @param clockMultiplier : The clock multiplier value used to create the
+     *        trajectory timestep.
      * @param earth : The body the GroundVehicle is flying around.
      * @return the GroundVehicle builder
      */
@@ -277,7 +270,7 @@ public class GroundVehicle
     }
 
     /**
-     * Calculates the ground points for the vehicle trajectory in the output
+     * Calculates the ground points for the vehicle trajectory in the output.
      * CZML file
      */
     private void createGroundVehicleTrajectory() {
@@ -297,9 +290,7 @@ public class GroundVehicle
 
     @Override
     public void writeCzmlBlock(final CesiumStreamWriter stream,
-                               final CesiumOutputStream output)
-        throws URISyntaxException,
-            IOException {
+                               final CesiumOutputStream output) {
 
         output.setPrettyFormatting(true);
 
@@ -319,48 +310,38 @@ public class GroundVehicle
 
             czmlPosition(packet, output, getCartographicArraylist(),
                          getJulianDates());
-
-        } catch (URISyntaxException | IOException e) {
-            throw new RuntimeException(e);
         }
     }
 
     @Override
     public GroundVehicle cloneObject() {
-        try {
-            final GroundVehicle copy =
-                new GroundVehicle(this.coordsProvider, this.startDate,
-                                  this.finalDate, this.earth,
-                                  this.clockMultiplier,
-                                  this.getModel().getAbsolutePath(), this.color,
-                                  this.getId(), this.getName());
+        final GroundVehicle copy =
+            new GroundVehicle(this.coordsProvider, this.startDate,
+                              this.finalDate, this.earth, this.clockMultiplier,
+                              this.getModel().getAbsolutePath(), this.color,
+                              this.getId(), this.getName());
 
-            copy.setId(this.getId());
-            copy.setName(this.getName());
-            copy.clock = this.getClock();
-            copy.setAvailability(new TimeInterval(DateUtils
-                .toJulianDate(this.startDate), DateUtils.toJulianDate(this.finalDate)));
-            copy.coordsProvider = this.coordsProvider;
-            copy.displayAttitude = this.displayAttitude;
-            if (displayAttitude) {
-                copy.setAttitudes(this.attitudes);
-                copy.setOrientation(this.orientation);
-            }
-            copy.description =
-                "<!--HTML-->\r\n<p>Id : " +
-                               this.getId() + "</p>\r\n<p>" +
-                               "Simulated from : " + startDate + " to " +
-                               finalDate + "</p>";
-            copy.color = color;
-            copy.model =
-                new CzmlModel(this.getModel().getAbsolutePath(), true, clock);
-            copy.displayName = this.displayName;
-            copy.earth = this.earth;
-            return copy;
-
-        } catch (URISyntaxException | IOException e) {
-            throw new OresiumException(OresiumMessages.NOT_VALID_PRIMARY_OBJECT_FOR_CLONE);
+        copy.setId(this.getId());
+        copy.setName(this.getName());
+        copy.clock = this.getClock();
+        copy.setAvailability(new TimeInterval(DateUtils
+            .toJulianDate(this.startDate), DateUtils.toJulianDate(this.finalDate)));
+        copy.coordsProvider = this.coordsProvider;
+        copy.displayAttitude = this.displayAttitude;
+        if (displayAttitude) {
+            copy.setAttitudes(this.attitudes);
+            copy.setOrientation(this.orientation);
         }
+        copy.description =
+            BEGIN_HTML +
+                           this.getId() + SIMULATED_FROM + startDate + TO +
+                           finalDate + END_HTML;
+        copy.color = color;
+        copy.model =
+            new CzmlModel(this.getModel().getAbsolutePath(), true, clock);
+        copy.displayName = this.displayName;
+        copy.earth = this.earth;
+        return copy;
     }
 
     // Display functions
@@ -420,14 +401,14 @@ public class GroundVehicle
             }
             // To account for fact that last attitude will be NaN with zero
             // velocity
-            Attitude temp1 = toReturn.get(toReturn.size() - 1);
-            Attitude temp2 = toReturn.get(toReturn.size() - 2);
+            final Attitude temp1 = toReturn.get(toReturn.size() - 1);
+            final Attitude temp2 = toReturn.get(toReturn.size() - 2);
 
             final TimeStampedAngularCoordinates timeStampedAngularCoords =
                 new TimeStampedAngularCoordinates(temp1.getDate(),
                                                   temp2.getRotation(),
                                                   Vector3D.ZERO, Vector3D.ZERO);
-            Attitude output =
+            final Attitude output =
                 new Attitude(FramesFactory.getEME2000(),
                              timeStampedAngularCoords);
 
@@ -601,11 +582,11 @@ public class GroundVehicle
     /**
      * Sets coordinates provider.
      *
-     * @param coordsProvider the PVCoordinatesProvider
+     * @param coordsProviderInput the PVCoordinatesProvider
      */
     public void
-        setPVCoordinatesProvider(final PVCoordinatesProvider coordsProvider) {
-        this.coordsProvider = coordsProvider;
+        setPVCoordinatesProvider(final PVCoordinatesProvider coordsProviderInput) {
+        this.coordsProvider = coordsProviderInput;
     }
 
     /**
@@ -615,6 +596,15 @@ public class GroundVehicle
      */
     public void setClock(final Clock clock) {
         this.clock = clock;
+    }
+
+    /**
+     * Sets the display of the attitude.
+     *
+     * @param displayAttitude : Boolean to show the attitude or not
+     */
+    public void setDisplayAttitude(final boolean displayAttitude) {
+        this.displayAttitude = displayAttitude;
     }
 
     /**
@@ -643,15 +633,6 @@ public class GroundVehicle
      */
     public void setOrientation(final Orientation orientation) {
         this.orientation = orientation;
-    }
-
-    /**
-     * Sets orbit color.
-     *
-     * @param trajectoryColor the orbit color
-     */
-    public void setTrajectoryColor(final Color trajectoryColor) {
-        this.color = trajectoryColor;
     }
 
     /**
@@ -686,9 +667,7 @@ public class GroundVehicle
      */
     private void czmlDisplay(final PacketCesiumWriter packet,
                              final CesiumStreamWriter stream,
-                             final CesiumOutputStream output)
-        throws URISyntaxException,
-            IOException {
+                             final CesiumOutputStream output) {
 
         if (getModelType() == ModelType.MODEL_2D ||
             getModelType() == ModelType.EMPTY_MODEL) {
@@ -757,7 +736,7 @@ public class GroundVehicle
      * @param packet : The packet that will write in the czml file.
      * @param output : The output stream of cesium that will contain the strings
      *        to write into the CzmLFile.
-     * @param cartesians : The cartesians coordinates to be written
+     * @param cartograhpics : The cartographics coordinates to be written
      * @param julianDates : The JulianDate corresponding the cartesian
      *        coordinates
      */

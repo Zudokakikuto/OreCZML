@@ -21,8 +21,11 @@ import cesiumlanguagewriter.JulianDate;
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.orekit.annotation.DefaultDataContext;
+import org.orekit.czml.errors.OresiumException;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.primary.entities.Spacecraft;
@@ -42,8 +45,7 @@ import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.Constants;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -73,16 +75,11 @@ public class TimePositionTest
                            startDate, Constants.WGS84_EARTH_MU);
 
     /**
-     * Time position constructor test.
-     *
-     * @throws IOException the io exception
-     * @throws URISyntaxException the uri syntax exception
+     * Time position constructor test. *
      */
     @Test
     @DefaultDataContext
-    void TimePositionConstructorTest()
-        throws IOException,
-            URISyntaxException {
+    void TimePositionConstructorTest() {
 
         // Build of the propagator
         final BoundedPropagator boundedPropagator =
@@ -101,6 +98,36 @@ public class TimePositionTest
             loadResources("templateFile/object/secondary/timeposition/TimePositionTemplate.txt");
 
         verifyFileOutput(pathFile, timePosition.toString(), 1e-8);
+    }
+
+    @Test
+    @DisplayName("Test clone object when throws oresium exception")
+    void CloneObjectTest() {
+        // Build of the propagator
+        final BoundedPropagator boundedPropagator =
+            propagatorFromOrbit(startDate, finalDate, initialOrbit);
+        final Spacecraft satellite =
+            new Spacecraft(boundedPropagator, header.getClock());
+
+        final List<JulianDate> julianDates = satellite.getJulianDates();
+        final List<Cartesian> randomCartesians =
+            computeRandomCartesians(julianDates.size());
+
+        final TimePosition timePositionFilled =
+            new TimePosition(randomCartesians, julianDates);
+        final TimePosition timePositionEmpty =
+            new TimePosition(new ArrayList<>(), new ArrayList<>());
+
+        final TimePosition timePositionFilledCloned =
+            timePositionFilled.cloneObject();
+
+        final String pathFileFilledTemplate =
+            loadResources("templateFile/object/secondary/timeposition/TimePositionTemplateFilled.txt");
+
+        verifyFileOutput(pathFileFilledTemplate,
+                         timePositionFilledCloned.toString(), 1e-8);
+        Assertions.assertThrows(OresiumException.class,
+                                () -> timePositionEmpty.cloneObject());
     }
 
     private BoundedPropagator propagatorFromOrbit(final AbsoluteDate startDate,

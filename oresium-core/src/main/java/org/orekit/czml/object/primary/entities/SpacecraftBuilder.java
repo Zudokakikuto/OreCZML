@@ -25,8 +25,6 @@ import org.orekit.time.AbsoluteDate;
 
 import java.awt.Color;
 import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -199,12 +197,8 @@ public class SpacecraftBuilder {
      *
      * @param modelPathInput : The model to set up.
      * @return : The Spacecraft builder with the given model.
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException the io exception
      */
-    public SpacecraftBuilder withModelPath(final String modelPathInput)
-        throws URISyntaxException,
-            IOException {
+    public SpacecraftBuilder withModelPath(final String modelPathInput) {
         this.modelPath = modelPathInput;
         return this;
     }
@@ -375,12 +369,8 @@ public class SpacecraftBuilder {
      * The build function that generates a Spacecraft object.
      *
      * @return : A Spacecraft object with the given parameters of the builder.
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException the io exception
      */
-    public Spacecraft build()
-        throws URISyntaxException,
-            IOException {
+    public Spacecraft build() {
         final Spacecraft tempSpacecraft =
             new Spacecraft(propagator, startDate, finalDate, clockMultiplier,
                            modelPath, color, customID, name);

@@ -33,8 +33,6 @@ import org.orekit.czml.object.secondary.Clock;
 import org.orekit.czml.object.secondary.Label;
 
 import java.awt.Color;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -206,9 +204,7 @@ public class LatLongLines
 
     @Override
     public void writeCzmlBlock(final CesiumStreamWriter stream,
-                               final CesiumOutputStream output)
-        throws URISyntaxException,
-            IOException {
+                               final CesiumOutputStream output) {
         writeLatitudeAndLongitude(cartographicLatitudeByLine,
                                   numberOfLatitudeLines, true, output, stream);
 

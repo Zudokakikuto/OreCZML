@@ -25,8 +25,6 @@ import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.Header;
 
 import java.awt.Color;
-import java.io.IOException;
-import java.net.URISyntaxException;
 
 /**
  * The type Polyline test.
@@ -43,14 +41,10 @@ public class PolylineTest
 
     /**
      * Polyline constructor test.
-     *
-     * @throws IOException the io exception
      */
     @Test
     @DefaultDataContext
-    void PolylineConstructorTest()
-        throws IOException,
-            URISyntaxException {
+    void PolylineConstructorTest() {
 
         final Polyline polyline =
             Polyline.nonVectorBuilder(header.getClock()).build();
@@ -63,9 +57,7 @@ public class PolylineTest
 
     @Test
     @DisplayName("Polyline non vector constructor test")
-    public void PolylineNonVectorConstructorTest()
-        throws URISyntaxException,
-            IOException {
+    public void PolylineNonVectorConstructorTest() {
 
         final Polyline polylineNonVector =
             Polyline.nonVectorBuilder(header.getClock()).withColor(Color.ORANGE)

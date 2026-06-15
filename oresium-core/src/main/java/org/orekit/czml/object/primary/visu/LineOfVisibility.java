@@ -40,8 +40,6 @@ import org.orekit.propagation.events.ElevationDetector;
 import org.orekit.time.AbsoluteDate;
 import org.orekit.utils.TimeSpanMap;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -291,9 +289,7 @@ public class LineOfVisibility
      */
     public static LineOfVisibilityBuilder
         builder(final TopocentricFrame topocentricFrameInput,
-                final Constellation constellationInput, final Clock clock)
-            throws URISyntaxException,
-                IOException {
+                final Constellation constellationInput, final Clock clock) {
         return new LineOfVisibilityBuilder(topocentricFrameInput,
                                            constellationInput, clock);
     }
@@ -302,9 +298,7 @@ public class LineOfVisibility
 
     @Override
     public void writeCzmlBlock(final CesiumStreamWriter stream,
-                               final CesiumOutputStream output)
-        throws URISyntaxException,
-            IOException {
+                               final CesiumOutputStream output) {
         if (this.triangle != null) {
             this.triangle.writeCzmlBlock(stream, output);
         } else if (!(triangles.isEmpty())) {
@@ -325,50 +319,45 @@ public class LineOfVisibility
     @Override
     public LineOfVisibility cloneObject() {
         final LineOfVisibility toReturn;
-        try {
-            if (this.spacecraft != null) {
-                if (this.triangle != null) {
-                    toReturn =
-                        LineOfVisibility
-                            .builder(this.topocentricFrame, this.spacecraft,
-                                     this.clock)
-                            .withAngleOfAperture(this.angleOfAperture)
-                            .withCustomID(getId()).withVisibilityTriangle()
-                            .build();
-                } else {
-                    toReturn =
-                        LineOfVisibility
-                            .builder(this.topocentricFrame, this.spacecraft,
-                                     this.clock)
-                            .withAngleOfAperture(this.angleOfAperture)
-                            .withCustomID(getId()).build();
-                }
-                toReturn.setName(getName());
-            } else if (!this.satellites.isEmpty()) {
-                if (!this.triangles.isEmpty()) {
-                    toReturn =
-                        LineOfVisibility
-                            .builder(this.topocentricFrame, this.constellation,
-                                     this.clock)
-                            .withCustomID(getId())
-                            .withAngleOfAperture(this.angleOfAperture)
-                            .withVisibilityTriangle().build();
-                } else {
-                    toReturn =
-                        LineOfVisibility
-                            .builder(this.topocentricFrame, this.constellation,
-                                     this.clock)
-                            .withCustomID(getId())
-                            .withAngleOfAperture(this.angleOfAperture).build();
-                }
-                toReturn.setName(getName());
+        if (this.spacecraft != null) {
+            if (this.triangle != null) {
+                toReturn =
+                    LineOfVisibility
+                        .builder(this.topocentricFrame, this.spacecraft,
+                                 this.clock)
+                        .withAngleOfAperture(this.angleOfAperture)
+                        .withCustomID(getId()).withVisibilityTriangle().build();
             } else {
-                throw new OresiumException(OresiumMessages.NOT_VALID_PRIMARY_OBJECT_FOR_CLONE);
+                toReturn =
+                    LineOfVisibility
+                        .builder(this.topocentricFrame, this.spacecraft,
+                                 this.clock)
+                        .withAngleOfAperture(this.angleOfAperture)
+                        .withCustomID(getId()).build();
             }
-            return toReturn;
-        } catch (URISyntaxException | IOException e) {
+            toReturn.setName(getName());
+        } else if (!this.satellites.isEmpty()) {
+            if (!this.triangles.isEmpty()) {
+                toReturn =
+                    LineOfVisibility
+                        .builder(this.topocentricFrame, this.constellation,
+                                 this.clock)
+                        .withCustomID(getId())
+                        .withAngleOfAperture(this.angleOfAperture)
+                        .withVisibilityTriangle().build();
+            } else {
+                toReturn =
+                    LineOfVisibility
+                        .builder(this.topocentricFrame, this.constellation,
+                                 this.clock)
+                        .withCustomID(getId())
+                        .withAngleOfAperture(this.angleOfAperture).build();
+            }
+            toReturn.setName(getName());
+        } else {
             throw new OresiumException(OresiumMessages.NOT_VALID_PRIMARY_OBJECT_FOR_CLONE);
         }
+        return toReturn;
     }
 
     /**

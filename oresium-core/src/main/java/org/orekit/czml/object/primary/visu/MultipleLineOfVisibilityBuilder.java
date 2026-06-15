@@ -21,11 +21,8 @@ import org.orekit.czml.errors.OresiumMessages;
 import org.orekit.czml.object.primary.entities.Constellation;
 import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.secondary.Clock;
-import org.orekit.errors.OrekitIOException;
 import org.orekit.frames.TopocentricFrame;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -121,9 +118,7 @@ public class MultipleLineOfVisibilityBuilder {
         return this;
     }
 
-    public MultipleLineOfVisibility build()
-        throws URISyntaxException,
-            IOException {
+    public MultipleLineOfVisibility build() {
 
         final MultipleLineOfVisibility multipleLineOfVisibility;
         this.lines =
@@ -140,7 +135,7 @@ public class MultipleLineOfVisibilityBuilder {
             multipleLineOfVisibility.clear();
             multipleLineOfVisibility.addAll(lines);
         } else {
-            throw new OrekitIOException(OresiumMessages.NO_SPACECRAFT_OR_CONSTELLATION);
+            throw new OresiumException(OresiumMessages.NO_SPACECRAFT_OR_CONSTELLATION);
         }
         return multipleLineOfVisibility;
     }
@@ -162,9 +157,7 @@ public class MultipleLineOfVisibilityBuilder {
                    final Constellation constellationInput,
                    final List<Clock> clocksInput,
                    final boolean displayTriangleInput,
-                   final List<String> customIdsInput)
-            throws URISyntaxException,
-                IOException {
+                   final List<String> customIdsInput) {
 
         checkSizeArguments(topocentricFramesInput, clocksInput, customIdsInput);
 
@@ -209,8 +202,6 @@ public class MultipleLineOfVisibilityBuilder {
                 }
                 linesBuilt.add(lineBuilder.build());
             }
-        } else {
-            throw new OresiumException(OresiumMessages.NO_SPACECRAFT_OR_CONSTELLATION);
         }
         return linesBuilt;
     }

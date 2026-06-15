@@ -1,0 +1,252 @@
+{
+  "id":"VIS/Toulouse Frame/Spacecraft",
+  "name":"Visibility of Toulouse Frame looking at Spacecraft",
+  "availability":"2024-03-15T00:00:00Z/2024-03-15T10:00:00Z",
+  "cylinder":{
+    "bottomRadius":10,
+    "topRadius":8506145.763817273,
+    "length":1499863,
+    "material":{
+      "solidColor":{
+        "color":{
+          "rgba":[
+            0,0,0,0
+          ]
+        }
+      }
+    },
+    "heightReference":"CLAMP_TO_GROUND"
+  },
+  "position":{
+    "interval":"2024-03-15T00:00:00Z/2024-03-15T10:00:00Z",
+    "cartesian":[
+      4624415.12018318,116587.90809901741,4376399.285187051
+    ]
+  }
+},
+{
+  "id":"Toulouse FrameSPACECRAFT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-7.00506805e+03, 4.28936708e-13, 1.23518250e+03)}LINE_VISU/Toulouse Frame/Constellation/1  satellites ",
+  "name":"Line between Toulouse Frame and Spacecraft",
+  "availability":"2024-03-15T00:00:00Z/2024-03-15T10:00:00Z",
+  "polyline":{
+    "width":1,
+    "arcType":"NONE",
+    "material":{
+      "solidColor":{
+        "color":{
+          "rgba":[
+            0,255,255,255
+          ]
+        }
+      }
+    },
+    "positions":{
+      "references":[
+        "VIS/Toulouse Frame/Spacecraft#position",
+        "SPACECRAFT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-7.00506805e+03, 4.28936708e-13, 1.23518250e+03)}#position"
+      ]
+    },
+    "show":[
+      {
+        "interval":"2024-03-15T00:00:00Z/2024-03-15T10:00:00Z",
+        "boolean":false
+      }
+    ]
+  }
+},
+{
+  "id":"VIS/Quito/Spacecraft",
+  "name":"Visibility of Quito looking at Spacecraft",
+  "availability":"2024-03-15T00:00:00Z/2024-03-15T10:00:00Z",
+  "cylinder":{
+    "bottomRadius":10,
+    "topRadius":8506145.763817273,
+    "length":1499863,
+    "material":{
+      "solidColor":{
+        "color":{
+          "rgba":[
+            0,0,0,0
+          ]
+        }
+      }
+    },
+    "heightReference":"CLAMP_TO_GROUND"
+  },
+  "position":{
+    "interval":"2024-03-15T00:00:00Z/2024-03-15T10:00:00Z",
+    "cartesian":[
+      6252006.354635347,1276326.5078899097,19989.72752649244
+    ]
+  }
+},
+{
+  "id":"QuitoSPACECRAFT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-7.00506805e+03, 4.28936708e-13, 1.23518250e+03)}LINE_VISU/Quito/Constellation/1  satellites ",
+  "name":"Line between Quito and Spacecraft",
+  "availability":[
+    "2024-03-15T00:00:00Z/2024-03-15T00:24:11Z",
+    "2024-03-15T00:24:11Z/2024-03-15T00:41:58Z",
+    "2024-03-15T00:41:58Z/2024-03-15T02:29:55Z",
+    "2024-03-15T02:29:55Z/2024-03-15T02:48:11Z",
+    "2024-03-15T02:48:11Z/2024-03-15T04:35:27Z",
+    "2024-03-15T04:35:27Z/2024-03-15T04:54:11Z",
+    "2024-03-15T04:54:11Z/2024-03-15T06:41:12Z",
+    "2024-03-15T06:41:12Z/2024-03-15T06:59:51Z",
+    "2024-03-15T06:59:51Z/2024-03-15T08:47:17Z",
+    "2024-03-15T08:47:17Z/2024-03-15T09:05:23Z",
+    "2024-03-15T09:05:23Z/2024-03-15T10:00:00Z"
+  ],
+  "polyline":{
+    "width":1,
+    "arcType":"NONE",
+    "material":{
+      "solidColor":{
+        "color":{
+          "rgba":[
+            0,255,255,255
+          ]
+        }
+      }
+    },
+    "positions":{
+      "references":[
+        "VIS/Quito/Spacecraft#position",
+        "SPACECRAFT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-7.00506805e+03, 4.28936708e-13, 1.23518250e+03)}#position"
+      ]
+    },
+    "show":[
+      {
+        "interval":"2024-03-15T00:00:00Z/2024-03-15T00:24:11Z",
+        "boolean":false
+      },
+      {
+        "interval":"2024-03-15T00:24:11Z/2024-03-15T00:41:58Z",
+        "boolean":true
+      },
+      {
+        "interval":"2024-03-15T00:41:58Z/2024-03-15T02:29:55Z",
+        "boolean":false
+      },
+      {
+        "interval":"2024-03-15T02:29:55Z/2024-03-15T02:48:11Z",
+        "boolean":true
+      },
+      {
+        "interval":"2024-03-15T02:48:11Z/2024-03-15T04:35:27Z",
+        "boolean":false
+      },
+      {
+        "interval":"2024-03-15T04:35:27Z/2024-03-15T04:54:11Z",
+        "boolean":true
+      },
+      {
+        "interval":"2024-03-15T04:54:11Z/2024-03-15T06:41:12Z",
+        "boolean":false
+      },
+      {
+        "interval":"2024-03-15T06:41:12Z/2024-03-15T06:59:51Z",
+        "boolean":true
+      },
+      {
+        "interval":"2024-03-15T06:59:51Z/2024-03-15T08:47:17Z",
+        "boolean":false
+      },
+      {
+        "interval":"2024-03-15T08:47:17Z/2024-03-15T09:05:23Z",
+        "boolean":true
+      },
+      {
+        "interval":"2024-03-15T09:05:23Z/2024-03-15T10:00:00Z",
+        "boolean":false
+      }
+    ]
+  }
+},
+{
+  "id":"VIS/Sydney/Spacecraft",
+  "name":"Visibility of Sydney looking at Spacecraft",
+  "availability":"2024-03-15T00:00:00Z/2024-03-15T10:00:00Z",
+  "cylinder":{
+    "bottomRadius":10,
+    "topRadius":8506145.763817273,
+    "length":1499863,
+    "material":{
+      "solidColor":{
+        "color":{
+          "rgba":[
+            0,0,0,0
+          ]
+        }
+      }
+    },
+    "heightReference":"CLAMP_TO_GROUND"
+  },
+  "position":{
+    "interval":"2024-03-15T00:00:00Z/2024-03-15T10:00:00Z",
+    "cartesian":[
+      -2553246.331180981,4646124.039691579,-3534428.117218433
+    ]
+  }
+},
+{
+  "id":"SydneySPACECRAFT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-7.00506805e+03, 4.28936708e-13, 1.23518250e+03)}LINE_VISU/Sydney/Constellation/1  satellites ",
+  "name":"Line between Sydney and Spacecraft",
+  "availability":[
+    "2024-03-15T00:00:00Z/2024-03-15T03:12:46Z",
+    "2024-03-15T03:12:46Z/2024-03-15T03:21:10Z",
+    "2024-03-15T03:21:10Z/2024-03-15T05:17:24Z",
+    "2024-03-15T05:17:24Z/2024-03-15T05:26:10Z",
+    "2024-03-15T05:26:10Z/2024-03-15T07:24:41Z",
+    "2024-03-15T07:24:41Z/2024-03-15T07:28:37Z",
+    "2024-03-15T07:28:37Z/2024-03-15T10:00:00Z"
+  ],
+  "polyline":{
+    "width":1,
+    "arcType":"NONE",
+    "material":{
+      "solidColor":{
+        "color":{
+          "rgba":[
+            0,255,255,255
+          ]
+        }
+      }
+    },
+    "positions":{
+      "references":[
+        "VIS/Sydney/Spacecraft#position",
+        "SPACECRAFT/{P(4.82388374e-10, 7.87800000e+06, 0.00000000e+00), V(-7.00506805e+03, 4.28936708e-13, 1.23518250e+03)}#position"
+      ]
+    },
+    "show":[
+      {
+        "interval":"2024-03-15T00:00:00Z/2024-03-15T03:12:46Z",
+        "boolean":false
+      },
+      {
+        "interval":"2024-03-15T03:12:46Z/2024-03-15T03:21:10Z",
+        "boolean":true
+      },
+      {
+        "interval":"2024-03-15T03:21:10Z/2024-03-15T05:17:24Z",
+        "boolean":false
+      },
+      {
+        "interval":"2024-03-15T05:17:24Z/2024-03-15T05:26:10Z",
+        "boolean":true
+      },
+      {
+        "interval":"2024-03-15T05:26:10Z/2024-03-15T07:24:41Z",
+        "boolean":false
+      },
+      {
+        "interval":"2024-03-15T07:24:41Z/2024-03-15T07:28:37Z",
+        "boolean":true
+      },
+      {
+        "interval":"2024-03-15T07:28:37Z/2024-03-15T10:00:00Z",
+        "boolean":false
+      }
+    ]
+  }
+}

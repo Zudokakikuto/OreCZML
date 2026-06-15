@@ -47,8 +47,6 @@ import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.Constants;
 
 import java.awt.Color;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,7 +55,7 @@ import java.util.Optional;
 /**
  * The type Covariance test.
  */
-public class CovarianceTest
+class CovarianceTest
     extends
     AbstractTest {
 
@@ -86,16 +84,11 @@ public class CovarianceTest
     final SpacecraftState initialState = new SpacecraftState(initialOrbit);
 
     /**
-     * Covariance constructor test.
-     *
-     * @throws IOException the io exception
-     * @throws URISyntaxException the uri syntax exception
+     * Covariance constructor test. *
      */
     @Test
     @DefaultDataContext
-    void CovarianceConstructorTest()
-        throws IOException,
-            URISyntaxException {
+    void CovarianceConstructorTest() {
 
         final Map<Propagator, Spacecraft> mapPropSpacecraft =
             spacecraftBuild(header);
@@ -130,9 +123,7 @@ public class CovarianceTest
         verifyFileOutput(pathFile, covariance.toString(), 1e-4);
     }
 
-    private Map<Propagator, Spacecraft> spacecraftBuild(final Header header)
-        throws URISyntaxException,
-            IOException {
+    private Map<Propagator, Spacecraft> spacecraftBuild(final Header header) {
 
         final double[][] tolerances =
             NumericalPropagator.tolerances(10, initialOrbit,

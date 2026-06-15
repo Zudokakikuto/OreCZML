@@ -25,8 +25,6 @@ import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
 
 import java.awt.Color;
-import java.io.IOException;
-import java.net.URISyntaxException;
 
 /**
  * The type Label test.
@@ -40,15 +38,11 @@ public class LabelTest
 
     /**
      * Label constructor test.
-     *
-     * @throws IOException the io exception
      */
     @Test
     @DefaultDataContext
     @DisplayName("Label constructor test")
-    void LabelConstructorTest()
-        throws IOException,
-            URISyntaxException {
+    void LabelConstructorTest() {
 
         final Label label = new Label("header");
 
@@ -60,9 +54,7 @@ public class LabelTest
 
     @Test
     @DisplayName("Label coverage constructor test")
-    public void LabelCoverageConstructorTest()
-        throws URISyntaxException,
-            IOException {
+    public void LabelCoverageConstructorTest() {
 
         final Label coverageLabel = new Label("A text", Color.RED);
 
@@ -75,9 +67,7 @@ public class LabelTest
 
     @Test
     @DisplayName("Label complete constructor test")
-    public void LabelCompleteConstructorTest()
-        throws URISyntaxException,
-            IOException {
+    public void LabelCompleteConstructorTest() {
         final Label completeLabel =
             new Label("A text", Color.RED, CesiumHorizontalOrigin.CENTER,
                       CesiumVerticalOrigin.BASELINE, CesiumLabelStyle.FILL,

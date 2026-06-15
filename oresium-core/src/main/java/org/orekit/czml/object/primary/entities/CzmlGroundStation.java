@@ -26,8 +26,6 @@ import cesiumlanguagewriter.PositionCesiumWriter;
 import cesiumlanguagewriter.TimeStandard;
 import cesiumlanguagewriter.UriCesiumWriter;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
-import org.orekit.czml.errors.OresiumException;
-import org.orekit.czml.errors.OresiumMessages;
 import org.orekit.czml.object.nonvisual.CzmlModel;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
 import org.orekit.czml.object.primary.visu.StationVisibilityCircle;
@@ -36,8 +34,6 @@ import org.orekit.czml.object.secondary.Clock;
 import org.orekit.czml.object.secondary.Label;
 import org.orekit.frames.TopocentricFrame;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -111,14 +107,10 @@ public class CzmlGroundStation
      *
      * @param topocentricFrame : The topocentric frame where the ground station
      *        must be located.
-     * @param clock : The clock considered.
-     * @throws URISyntaxException : the uri syntax of the ground station
-     * @throws IOException : the io exception
+     * @param clock : The clock considered. *
      */
     public CzmlGroundStation(final TopocentricFrame topocentricFrame,
-                             final Clock clock)
-        throws URISyntaxException,
-            IOException {
+                             final Clock clock) {
         this(topocentricFrame, DEFAULT_3D_MODEL, clock);
     }
 
@@ -129,14 +121,10 @@ public class CzmlGroundStation
      * @param topocentricFrame : The topocentric frame where the ground station
      *        must be located.
      * @param modelPath : The path of the model to load.
-     * @param clock : The availability of the ground station.
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException the io exception
+     * @param clock : The availability of the ground station. *
      */
     public CzmlGroundStation(final TopocentricFrame topocentricFrame,
-                             final String modelPath, final Clock clock)
-        throws URISyntaxException,
-            IOException {
+                             final String modelPath, final Clock clock) {
 
         this.topocentricFrame = topocentricFrame;
         this.setName(DEFAULT_NAME + topocentricFrame.getName());
@@ -183,9 +171,7 @@ public class CzmlGroundStation
 
     @Override
     public void writeCzmlBlock(final CesiumStreamWriter stream,
-                               final CesiumOutputStream output)
-        throws IOException,
-            URISyntaxException {
+                               final CesiumOutputStream output) {
         this.positionOnEarth = positionsOnEarth.get(0);
         output.setPrettyFormatting(true);
         try (PacketCesiumWriter packet = stream.openPacket(output)) {
@@ -207,23 +193,19 @@ public class CzmlGroundStation
 
     @Override
     public CzmlGroundStation cloneObject() {
-        try {
-            final CzmlGroundStation copy;
-            if (model != null) {
-                copy =
-                    CzmlGroundStation.builder(this.topocentricFrame, this.clock)
-                        .withModel(this.model).build();
-            } else {
-                copy =
-                    CzmlGroundStation.builder(this.topocentricFrame, this.clock)
-                        .build();
-            }
-            copy.setId(getId());
-            copy.setName(getName());
-            return copy;
-        } catch (URISyntaxException | IOException e) {
-            throw new OresiumException(OresiumMessages.NOT_VALID_PRIMARY_OBJECT_FOR_CLONE);
+        final CzmlGroundStation copy;
+        if (model != null) {
+            copy =
+                CzmlGroundStation.builder(this.topocentricFrame, this.clock)
+                    .withModel(this.model).build();
+        } else {
+            copy =
+                CzmlGroundStation.builder(this.topocentricFrame, this.clock)
+                    .build();
         }
+        copy.setId(getId());
+        copy.setName(getName());
+        return copy;
 
     }
 
@@ -306,9 +288,7 @@ public class CzmlGroundStation
      *        to write into the CzmLFile.
      */
     private void writeBillBoard(final PacketCesiumWriter packet,
-                                final CesiumOutputStream output)
-        throws IOException,
-            URISyntaxException {
+                                final CesiumOutputStream output) {
         if (model == null) {
             try (BillboardCesiumWriter billboardWriter =
                 packet.getBillboardWriter()) {
@@ -339,9 +319,7 @@ public class CzmlGroundStation
      *        to write into the CzmLFile.
      */
     private void writeModel(final PacketCesiumWriter packet,
-                            final CesiumOutputStream output)
-        throws IOException,
-            URISyntaxException {
+                            final CesiumOutputStream output) {
         if (model == null) {
             writeBillBoard(packet, output);
         } else {

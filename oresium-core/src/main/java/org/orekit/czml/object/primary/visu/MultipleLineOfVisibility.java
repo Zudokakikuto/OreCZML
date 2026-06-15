@@ -25,8 +25,6 @@ import org.orekit.czml.object.primary.entities.Constellation;
 import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.frames.TopocentricFrame;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -80,9 +78,7 @@ public class MultipleLineOfVisibility
      * @param spacecraft : The spacecraft
      */
     MultipleLineOfVisibility(final List<TopocentricFrame> topocentricFrames,
-                             final Spacecraft spacecraft)
-        throws URISyntaxException,
-            IOException {
+                             final Spacecraft spacecraft) {
         this.topocentricFrames = topocentricFrames;
         this.lines = buildLines(topocentricFrames, spacecraft, null);
         this.id =
@@ -98,9 +94,7 @@ public class MultipleLineOfVisibility
      * @param constellation : The constellation
      */
     MultipleLineOfVisibility(final List<TopocentricFrame> topocentricFrames,
-                             final Constellation constellation)
-        throws URISyntaxException,
-            IOException {
+                             final Constellation constellation) {
         this.topocentricFrames = topocentricFrames;
         this.lines = buildLines(topocentricFrames, null, constellation);
         this.id =
@@ -148,19 +142,15 @@ public class MultipleLineOfVisibility
     @Override
     public MultipleLineOfVisibility cloneObject() {
         final MultipleLineOfVisibility toReturn;
-        try {
-            if (this.spacecraft != null) {
-                toReturn =
-                    new MultipleLineOfVisibility(this.topocentricFrames,
-                                                 this.spacecraft);
-            } else if (this.constellation != null) {
-                toReturn =
-                    new MultipleLineOfVisibility(this.topocentricFrames,
-                                                 this.constellation);
-            } else {
-                throw new OresiumException(OresiumMessages.NOT_VALID_PRIMARY_OBJECT_FOR_CLONE);
-            }
-        } catch (URISyntaxException | IOException e) {
+        if (this.spacecraft != null) {
+            toReturn =
+                new MultipleLineOfVisibility(this.topocentricFrames,
+                                             this.spacecraft);
+        } else if (this.constellation != null) {
+            toReturn =
+                new MultipleLineOfVisibility(this.topocentricFrames,
+                                             this.constellation);
+        } else {
             throw new OresiumException(OresiumMessages.NOT_VALID_PRIMARY_OBJECT_FOR_CLONE);
         }
         return toReturn;
@@ -177,9 +167,7 @@ public class MultipleLineOfVisibility
     private List<LineOfVisibility>
         buildLines(final List<TopocentricFrame> topocentricFramesInput,
                    final Spacecraft spacecraftInput,
-                   final Constellation constellationInput)
-            throws URISyntaxException,
-                IOException {
+                   final Constellation constellationInput) {
         final List<LineOfVisibility> linesBuilt = new ArrayList<>();
         if (spacecraftInput != null) {
             for (final TopocentricFrame topocentricFrame : topocentricFramesInput) {
@@ -206,9 +194,7 @@ public class MultipleLineOfVisibility
 
     @Override
     public void writeCzmlBlock(final CesiumStreamWriter stream,
-                               final CesiumOutputStream output)
-        throws URISyntaxException,
-            IOException {
+                               final CesiumOutputStream output) {
         for (final LineOfVisibility line : lines) {
             line.writeCzmlBlock(stream, output);
         }

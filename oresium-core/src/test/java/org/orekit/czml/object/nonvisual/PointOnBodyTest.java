@@ -18,17 +18,20 @@ package org.orekit.czml.object.nonvisual;
 
 import cesiumlanguagewriter.JulianDate;
 import cesiumlanguagewriter.TimeInterval;
+import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.hipparchus.util.FastMath;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.orekit.annotation.DefaultDataContext;
 import org.orekit.bodies.GeodeticPoint;
+import org.orekit.czml.errors.OresiumException;
+import org.orekit.czml.errors.OresiumMessages;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.utils.DateUtils;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -46,32 +49,31 @@ public class PointOnBodyTest
 
     private final Header header = dummyHeader();
 
+    final TimeInterval availability1 = header.getAvailability();
+
+    final TimeInterval availability2 = DateUtils.shitfedBy(availability1, 10.0);
+
+    final TimeInterval availability3 = DateUtils.shitfedBy(availability2, 10.0);
+
+    final TimeInterval availability4 = DateUtils.shitfedBy(availability3, 10.0);
+
+    final List<TimeInterval> availabilities =
+        new ArrayList<>(Arrays.asList(availability1, availability2,
+                                      availability3, availability4));
+
+    final List<JulianDate> julianDates =
+        DateUtils.toJulianDateList(availabilities);
+
+    final List<GeodeticPoint> points = getPoints();
+
+    final PointOnBody pointOnBodyCoverage =
+        new PointOnBody(julianDates, points, getEarth());
+
     /**
      * Point on body constructor test.
-     *
-     * @throws IOException the io exception
      */
     @Test
-    void PointOnBodyConstructorTest()
-        throws IOException,
-            URISyntaxException {
-
-        final TimeInterval availability1 = header.getAvailability();
-        final TimeInterval availability2 =
-            DateUtils.shitfedBy(availability1, 10.0);
-        final TimeInterval availability3 =
-            DateUtils.shitfedBy(availability2, 10.0);
-        final TimeInterval availability4 =
-            DateUtils.shitfedBy(availability3, 10.0);
-
-        final List<TimeInterval> availabilities =
-            new ArrayList<>(Arrays.asList(availability1, availability2,
-                                          availability3, availability4));
-
-        final List<JulianDate> julianDates =
-            DateUtils.toJulianDateList(availabilities);
-
-        final List<GeodeticPoint> points = getPoints();
+    void PointOnBodyConstructorTest() {
 
         final PointOnBody pointOnBodyTest =
             new PointOnBody(julianDates, points, getEarth());
@@ -88,6 +90,74 @@ public class PointOnBodyTest
         Assertions.assertEquals(julianDates, pointOnBodyTest.getJulianDates());
         Assertions.assertTrue(pointOnBodyTest.isDisplayPath());
         Assertions.assertTrue(pointOnBodyTest.isDisplayPeriodPointingPath());
+    }
+
+    @Test
+    @DisplayName("Test cloning point on body")
+    void CloningPointOnBodyTest() {
+        final PointOnBody pointOnBodyClonedFilled =
+            pointOnBodyCoverage.cloneObject();
+
+        final String pathFile =
+            loadResources("templateFile/nonvisual/pointonbody/PointOnBodyFilledTemplate.txt");
+
+        verifyFileOutput(pathFile, pointOnBodyClonedFilled.toString(), 1e-8);
+    }
+
+    @Test
+    @DisplayName("cloneObject with empty lists throws OresiumException")
+    void cloneObject_WithEmptyLists_ThrowsOresiumException() {
+        // Given
+        final PointOnBody pointEmpty =
+            new PointOnBody(new ArrayList<>(), new ArrayList<>(), getEarth());
+
+        // When & Then
+        final OresiumException exception =
+            Assertions.assertThrows(OresiumException.class,
+                                    () -> pointEmpty.cloneObject());
+        Assertions
+            .assertEquals(OresiumMessages.NOT_VALID_SECONDARY_OBJECT_FOR_CLONE,
+                          exception.getSpecifier());
+    }
+
+    @Nested
+    class GetterSetterTests {
+
+        @Test
+        void BodyTest() {
+            Assertions
+                .assertEquals(pointOnBodyCoverage.getBody().getBodyFrame(),
+                              getEarth().getBodyFrame());
+        }
+
+        @Test
+        void PeriodForPathTest() {
+            Assertions.assertEquals(0.0,
+                                    pointOnBodyCoverage.getPeriodForPath());
+            pointOnBodyCoverage.setPeriodForPath(60.0);
+            Assertions.assertEquals(60.0,
+                                    pointOnBodyCoverage.getPeriodForPath());
+            pointOnBodyCoverage.setPeriodForPath(0.0);
+        }
+
+        @Test
+        void PositionListTest() {
+            final List<Vector3D> vectors =
+                Arrays
+                    .asList(new Vector3D(4670485.168196356, 117406.8163742912,
+                                         4327508.579180574),
+                            new Vector3D(4594012.0201616045, 116286.7483182724,
+                                         4408098.559028037),
+                            new Vector3D(4516131.340298485, 115104.1018633768,
+                                         4487355.479933731),
+                            new Vector3D(4436866.372943926, 113858.7357344475,
+                                         4565254.734230921),
+                            new Vector3D(4356240.809131441, 112550.5364193539,
+                                         4641772.102357388));
+            Assertions
+                .assertEquals(pointOnBodyCoverage.getPositionsList().toString(),
+                              vectors.toString());
+        }
     }
 
     private static List<GeodeticPoint> getPoints() {

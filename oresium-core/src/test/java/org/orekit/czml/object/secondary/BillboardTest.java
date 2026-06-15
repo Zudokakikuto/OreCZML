@@ -25,13 +25,11 @@ import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
 
 import java.awt.Color;
-import java.io.IOException;
-import java.net.URISyntaxException;
 
 /**
  * The type Billboard test.
  */
-public class BillboardTest
+class BillboardTest
     extends
     AbstractTest {
 
@@ -44,15 +42,11 @@ public class BillboardTest
 
     /**
      * Billboard constructor test.
-     *
-     * @throws IOException the io exception
      */
     @Test
     @DefaultDataContext
     @DisplayName("Billboard constructor test")
-    void BillboardConstructorTest()
-        throws IOException,
-            URISyntaxException {
+    void BillboardConstructorTest() {
 
         final Billboard billboard = new Billboard(imageStr);
 
@@ -64,9 +58,7 @@ public class BillboardTest
 
     @Test
     @DisplayName("Billboard coverage constructor test")
-    public void BillboardCoverageConstructorTest()
-        throws URISyntaxException,
-            IOException {
+    void BillboardCoverageConstructorTest() {
 
         final Billboard billboardCoverage = new Billboard(imageStr, 10);
 
@@ -79,9 +71,7 @@ public class BillboardTest
 
     @Test
     @DisplayName("Billboard near far constructor test")
-    public void BillboardNearFarConstructorTest()
-        throws URISyntaxException,
-            IOException {
+    void BillboardNearFarConstructorTest() {
         final NearFarScalar nearFarScalar =
             new NearFarScalar(10.0, 20.0, 100.0, 50.0);
 
@@ -97,9 +87,7 @@ public class BillboardTest
 
     @Test
     @DisplayName("Complex billboard constructor test")
-    public void ComplexBillboardConstructorTest()
-        throws URISyntaxException,
-            IOException {
+    void ComplexBillboardConstructorTest() {
 
         final NearFarScalar nearFarScalar =
             new NearFarScalar(10.0, 20.0, 100.0, 50.0);

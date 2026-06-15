@@ -39,8 +39,6 @@ import org.orekit.frames.Frame;
 import org.orekit.frames.Transform;
 import org.orekit.time.AbsoluteDate;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -248,9 +246,7 @@ public class Body
 
     @Override
     public void writeCzmlBlock(final CesiumStreamWriter stream,
-                               final CesiumOutputStream output)
-        throws URISyntaxException,
-            IOException {
+                               final CesiumOutputStream output) {
         output.setPrettyFormatting(true);
         try (PacketCesiumWriter packet = stream.openPacket(output)) {
             packet.writeId(getId());
@@ -424,9 +420,7 @@ public class Body
      *        to write into the CzmLFile.
      */
     private void writeModel(final PacketCesiumWriter packet,
-                            final CesiumOutputStream output)
-        throws URISyntaxException,
-            IOException {
+                            final CesiumOutputStream output) {
         if (modelScale != 0.0 &&
             modelMaximumScale != 0.0 && modelMinimumPixelSize != 0.0) {
             this.model =

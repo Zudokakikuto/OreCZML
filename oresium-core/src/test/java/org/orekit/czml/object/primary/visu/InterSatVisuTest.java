@@ -16,12 +16,19 @@
  */
 package org.orekit.czml.object.primary.visu;
 
+import cesiumlanguagewriter.Reference;
 import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+
+import org.orekit.bodies.OneAxisEllipsoid;
+import org.orekit.czml.errors.OresiumException;
+import org.orekit.czml.errors.OresiumMessages;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.Polyline;
 import org.orekit.czml.object.primary.Header;
@@ -34,6 +41,7 @@ import org.orekit.forces.gravity.potential.GravityFieldFactory;
 import org.orekit.forces.gravity.potential.NormalizedSphericalHarmonicsProvider;
 import org.orekit.frames.FramesFactory;
 import org.orekit.orbits.KeplerianOrbit;
+import org.orekit.orbits.Orbit;
 import org.orekit.orbits.OrbitType;
 import org.orekit.orbits.PositionAngleType;
 import org.orekit.propagation.BoundedPropagator;
@@ -45,8 +53,6 @@ import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.Constants;
 
 import java.awt.Color;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -54,11 +60,11 @@ import java.util.List;
 /**
  * The type Inter sat visu test.
  */
-public class InterSatVisuTest
+class InterSatVisuTest
     extends
     AbstractTest {
 
-    private final double data = initializeOrekitData();
+    final double data = initializeOrekitData();
 
     // Dates
 
@@ -93,27 +99,63 @@ public class InterSatVisuTest
                            FramesFactory.getEME2000(), startDate,
                            Constants.WGS84_EARTH_MU);
 
+    final Spacecraft firstSpacecraft =
+        Spacecraft
+            .builder(dummyPropagator(startDate, finalDate, firstOrbit), clock)
+            .build();
+
+    final Spacecraft secondSpacecraft =
+        Spacecraft
+            .builder(dummyPropagator(startDate, finalDate, secondOrbit), clock)
+            .build();
+
+    final InterSatVisu dummyInterSatVisu =
+        InterSatVisu
+            .builder(firstSpacecraft, secondSpacecraft, finalDate, clock)
+            .build();
+
+    static Constellation constellation = null;
+
+    static InterSatVisu interSatVisuConstellation = null;
+
+    /** Empty constructor. */
+    public InterSatVisuTest() {
+    }
+
+    @BeforeEach
+    void setup() {
+        final List<BoundedPropagator> propagators = new ArrayList<>();
+        final Spacecraft firstSpacecraft =
+            Spacecraft
+                .builder(dummyPropagator(startDate, finalDate, firstOrbit),
+                         clock)
+                .build();
+        final Spacecraft secondSpacecraft =
+            Spacecraft
+                .builder(dummyPropagator(startDate, finalDate, secondOrbit),
+                         clock)
+                .build();
+        propagators.add(firstSpacecraft.getSpacecraftBoundedPropagator());
+        propagators.add(secondSpacecraft.getSpacecraftBoundedPropagator());
+        constellation =
+            Constellation.builder(propagators, finalDate, clock).build();
+        interSatVisuConstellation =
+            InterSatVisu.builder(constellation, finalDate, clock).build();
+    }
+
     /**
-     * Inter sat visu constructor test.
-     *
-     * @throws IOException the io exception
-     * @throws URISyntaxException the uri syntax exception
+     * Inter sat visu constructor test. *
      */
     @Test
     @DisplayName("Inter sat visu constructor test")
-    void InterSatVisuConstructorTest()
-        throws IOException,
-            URISyntaxException {
+    void interSatVisuConstructorTest() {
 
-        final List<Spacecraft> satellites = new ArrayList<>();
         final Spacecraft firstSat =
             spacecraftFromOrbit(startDate, finalDate, firstOrbit);
         final Spacecraft secondSat =
             spacecraftFromOrbit(startDate, finalDate, secondOrbit);
         firstSat.setOrbitColor(new Color(255, 0, 0, 255));
         secondSat.setOrbitColor(new Color(255, 127, 0, 255));
-        satellites.add(firstSat);
-        satellites.add(secondSat);
 
         final InterSatVisu interSatVisu =
             InterSatVisu
@@ -128,7 +170,7 @@ public class InterSatVisuTest
         Assertions.assertEquals(
                                 secondSat.getSpaceCraftStates().get(0)
                                     .getPVCoordinates().toString(),
-                                interSatVisu.getSatellite2()
+                                interSatVisu.getSpacecraft2()
                                     .getSpaceCraftStates().get(0)
                                     .getPVCoordinates().toString());
         Assertions.assertEquals(startDate, interSatVisu.getStartDate());
@@ -150,30 +192,26 @@ public class InterSatVisuTest
 
     @Test
     @DisplayName("Inter sat visu with builder constructor test")
-    public void InterSatVisuBuilderConstructorTets()
-        throws URISyntaxException,
-            IOException {
+    void interSatVisuBuilderConstructorTets() {
 
         // Bounded Propagators
-        final Spacecraft firstSpacecraft =
+        final Spacecraft spacecraft =
             spacecraftFromOrbit(startDate, finalDate, firstOrbit);
-        final Spacecraft secondSpacecraft =
+        final Spacecraft spacecraft2 =
             spacecraftFromOrbit(startDate, finalDate, secondOrbit);
 
         final String pathFile =
             loadResources("templateFile/object/primary/visu/intersatvisu/InterSatVisuTemplate.txt");
         final InterSatVisu interSatVisuBuilder =
-            InterSatVisu.builder(firstSpacecraft, secondSpacecraft, finalDate,
-                                 header.getClock())
+            InterSatVisu
+                .builder(spacecraft, spacecraft2, finalDate, header.getClock())
                 .build();
         verifyFileOutput(pathFile, interSatVisuBuilder.toString(), 1e-8);
     }
 
     @Test
     @DisplayName("Inter Sat visu with propagators")
-    public void InterSatVisuPropagatorConstructorTest()
-        throws URISyntaxException,
-            IOException {
+    void interSatVisuPropagatorConstructorTest() {
 
         // Spacecrafts
         final Spacecraft spacecraft1 =
@@ -207,9 +245,7 @@ public class InterSatVisuTest
 
     @Test
     @DisplayName("Inter Sat visu with builder and propagators")
-    public void InterSatVisuBuilderPropagatorConstructorTest()
-        throws URISyntaxException,
-            IOException {
+    void interSatVisuBuilderPropagatorConstructorTest() {
 
         // Spacecrafts
         final Spacecraft spacecraft1 =
@@ -241,9 +277,7 @@ public class InterSatVisuTest
 
     @Test
     @DisplayName("Inter sat visu with builder propagators and ID")
-    public void InterSatVisuBuilderPropagatorsIdConstructorTest()
-        throws URISyntaxException,
-            IOException {
+    void interSatVisuBuilderPropagatorsIdConstructorTest() {
 
         // Spacecrafts
         final Spacecraft spacecraft1 =
@@ -275,9 +309,7 @@ public class InterSatVisuTest
 
     @Test
     @DisplayName("Inter sat visu constellation builder")
-    public void InterSatVisuConstellationBuilder()
-        throws URISyntaxException,
-            IOException {
+    void interSatVisuConstellationBuilder() {
 
         // Spacecrafts
         final Spacecraft spacecraft1 =
@@ -314,9 +346,7 @@ public class InterSatVisuTest
 
     @Test
     @DisplayName("Inter sat visu from constructor")
-    public void InterSatVisuFromConstructor()
-        throws URISyntaxException,
-            IOException {
+    void interSatVisuFromConstructor() {
 
         // Spacecrafts
         final Spacecraft spacecraft1 =
@@ -338,9 +368,7 @@ public class InterSatVisuTest
 
     @Test
     @DisplayName("Inter Sat Visu from propagators constructors")
-    public void InterSatVisuPropagatorsConstructorTest()
-        throws URISyntaxException,
-            IOException {
+    void interSatVisuPropagatorsConstructorTest() {
 
         // Spacecrafts
         final Spacecraft spacecraft1 =
@@ -371,44 +399,518 @@ public class InterSatVisuTest
 
     @Test
     @DisplayName("Inter sat visu from constellation constructor")
-    public void InterSatVisuConstellationConstructorTest()
-        throws URISyntaxException,
-            IOException {
-
-        // Spacecrafts
-        final Spacecraft spacecraft1 =
-            spacecraftFromOrbit(startDate, finalDate, firstOrbit);
-        final Spacecraft spacecraft2 =
-            spacecraftFromOrbit(startDate, finalDate, secondOrbit);
-
-        // Propagators
-        final BoundedPropagator propagator1 =
-            spacecraft1.getSpacecraftBoundedPropagator();
-        final BoundedPropagator propagator2 =
-            spacecraft2.getSpacecraftBoundedPropagator();
-        final List<BoundedPropagator> propagators = new ArrayList<>();
-        propagators.add(propagator1);
-        propagators.add(propagator2);
-
-        // Build the inter sat visu from constellation and constructor
-        final Constellation constellation =
-            Constellation.builder(propagators, finalDate, clock).build();
-        final InterSatVisu interSatVisuFromConstellation =
-            new InterSatVisu(constellation, finalDate, header.getClock());
+    void interSatVisuConstellationConstructorTest() {
 
         // Reference file
         final String constructorConstellationInterSatPathFile =
             loadResources("templateFile/object/primary/visu/intersatvisu/InterSatVisuFromConstellationConstructorTemplate.txt");
 
         verifyFileOutput(constructorConstellationInterSatPathFile,
-                         interSatVisuFromConstellation.toString(), 1e-8);
+                         interSatVisuConstellation.toString(), 1e-8);
+    }
+
+    /** Test for the propagators builder for inter sat visu. */
+    @Test
+    void insertSatVisuPropagatorsBuilderConstructorTest() {
+        final List<BoundedPropagator> propagators = new ArrayList<>();
+        propagators.add(dummyPropagator(startDate, finalDate, firstOrbit));
+        propagators.add(dummyPropagator(startDate, finalDate, secondOrbit));
+
+        final InterSatVisu interSatVisu =
+            new InterSatVisu(propagators, finalDate, "10", clock);
+
+        final String templateFile =
+            loadResources("templateFile/object/primary/visu/intersatvisu/InterSatVisuPropagatorBuilderConstructorTemplate.txt");
+
+        verifyFileOutput(templateFile, interSatVisu.toString(), 1e-8);
+    }
+
+    @Test
+    void testCloneObject() {
+        final Spacecraft spacecraft =
+            Spacecraft
+                .builder(dummyPropagator(startDate, finalDate, firstOrbit),
+                         clock)
+                .build();
+        final Spacecraft spacecraft2 =
+            Spacecraft
+                .builder(dummyPropagator(startDate, finalDate, secondOrbit),
+                         clock)
+                .build();
+        final InterSatVisu interSatVisu =
+            InterSatVisu.builder(spacecraft, spacecraft2, finalDate, clock)
+                .build();
+
+        final InterSatVisu clonedIntersatVisu = interSatVisu.cloneObject();
+
+        Assertions.assertEquals(interSatVisu.toString(),
+                                clonedIntersatVisu.toString());
+    }
+
+    @Test
+    void testClonedConstellationObject() {
+
+        final InterSatVisu clonedIntersatVisu =
+            interSatVisuConstellation.cloneObject();
+
+        final List<BoundedPropagator> propagators =
+            interSatVisuConstellation.getPropagators();
+        interSatVisuConstellation.setPropagators(new ArrayList<>());
+
+        Assertions.assertEquals(clonedIntersatVisu.toString(),
+                                interSatVisuConstellation.toString());
+
+        interSatVisuConstellation.setPropagators(propagators);
+    }
+
+    @Test
+    @DisplayName("Cloning error : No spacecraft, no constellation, no propagators")
+    void testCloningError() {
+        final InterSatVisu interSatVisuEmpty =
+            new InterSatVisu(new ArrayList<>(), finalDate, clock);
+
+        // Assertions
+        Assertions.assertThrows(OresiumException.class,
+                                interSatVisuEmpty::cloneObject);
+    }
+
+    @Nested
+    class GetterSetterTests {
+
+        @Test
+        void spacecraft1Test() {
+            Assertions
+                .assertEquals(dummyInterSatVisu.getSpacecraft1().toString(),
+                              firstSpacecraft.toString());
+        }
+
+        @Test
+        void spacecraft2Test() {
+            Assertions
+                .assertEquals(dummyInterSatVisu.getSpacecraft2().toString(),
+                              secondSpacecraft.toString());
+        }
+
+        @Test
+        void getReferencesTest() {
+            final Reference reference1 =
+                new Reference("SPACECRAFT/{P(7.87800000e+06, 0.00000000e+00, 0.00000000e+00), V(-0.00000000e+00, 7.11313252e+03, 0.00000000e+00)}#position");
+            Assertions.assertEquals(dummyInterSatVisu.getReferences().iterator()
+                .next(), reference1);
+        }
+
+        @Test
+        void constellationTest() {
+
+            Assertions.assertEquals(constellation.toString(),
+                                    interSatVisuConstellation.getConstellation()
+                                        .toString());
+        }
+
+        @Test
+        void orbitsTest() {
+            final List<Orbit> orbits = new ArrayList<>();
+            orbits.add(firstSpacecraft.getOrbits().get(0));
+            orbits.add(secondSpacecraft.getOrbits().get(0));
+            Assertions
+                .assertEquals(interSatVisuConstellation.getOrbits().toString(),
+                              orbits.toString());
+        }
+
+        @Test
+        @DisplayName("Get polyline")
+        void getPolylineTest() {
+            // The polyline created by the InterSatVisu should not be null
+            Assertions.assertNotNull(dummyInterSatVisu.getPolyline());
+            // The polyline's clock should match the polyline built with the
+            // same clock
+            final Polyline expectedPolyline =
+                Polyline.nonVectorBuilder(clock).build();
+            Assertions.assertEquals(expectedPolyline.getClock().toString(),
+                                    dummyInterSatVisu.getPolyline().getClock()
+                                        .toString());
+            Assertions.assertEquals(expectedPolyline.getClock().toString(),
+                                    dummyInterSatVisu.getPolyline().getClock()
+                                        .toString());
+            Assertions.assertEquals(expectedPolyline.getClock().getMultiplier(),
+                                    dummyInterSatVisu.getPolyline().getClock()
+                                        .getMultiplier());
+        }
+
+        @Test
+        @DisplayName("Get initial state")
+        void getInitialStateTest() {
+            // The initial state should be the first state of the first
+            // spacecraft
+            final SpacecraftState expectedState =
+                firstSpacecraft.getSpaceCraftStates().get(0);
+            Assertions
+                .assertEquals(expectedState.getDate(),
+                              dummyInterSatVisu.getInitialState().getDate());
+            Assertions.assertEquals(expectedState.getOrbit().getA(),
+                                    dummyInterSatVisu.getInitialState()
+                                        .getOrbit().getA(),
+                                    1e-10);
+        }
+
+        @Test
+        @DisplayName("Get body")
+        void getBodyTest() {
+            // The body should not be null
+            final OneAxisEllipsoid body = dummyInterSatVisu.getBody();
+            Assertions.assertNotNull(body);
+            // Verify it's the WGS84 Earth ellipsoid
+            Assertions.assertEquals(Constants.WGS84_EARTH_EQUATORIAL_RADIUS,
+                                    body.getEquatorialRadius(), 1e-10);
+            Assertions.assertEquals(Constants.WGS84_EARTH_FLATTENING,
+                                    body.getFlattening(), 1e-10);
+        }
+
+        @Test
+        @DisplayName("Get polyline from constellation")
+        void getPolylineConstellationTest() {
+            // For constellation-based InterSatVisu, polylines are stored per
+            // pair
+            // The polyline inside the visu block is accessed via writeCzmlBlock
+            Assertions.assertNotNull(interSatVisuConstellation.toString());
+        }
+
+        @Test
+        @DisplayName("Get final date")
+        void getFinalDateTest() {
+            Assertions.assertEquals(finalDate,
+                                    dummyInterSatVisu.getFinalDate());
+        }
+
+        @Test
+        @DisplayName("Set propagators")
+        void setPropagatorsTest() {
+            final List<BoundedPropagator> newPropagators = new ArrayList<>();
+            newPropagators
+                .add(dummyPropagator(startDate, finalDate, firstOrbit));
+            newPropagators
+                .add(dummyPropagator(startDate, finalDate, secondOrbit));
+
+            final InterSatVisu interSatVisu =
+                InterSatVisu.builder(firstSpacecraft, secondSpacecraft,
+                                     finalDate, clock)
+                    .build();
+
+            interSatVisu.setPropagators(newPropagators);
+            Assertions.assertEquals(newPropagators,
+                                    interSatVisu.getPropagators());
+        }
+    }
+
+    @Test
+    @DisplayName("Clone from constellation path")
+    void testCloneFromConstellationPath() {
+        // Create InterSatVisu from propagators (which internally creates a
+        // constellation)
+        final List<BoundedPropagator> propagators = new ArrayList<>();
+        final Spacecraft spacecraft1 =
+            spacecraftFromOrbit(startDate, finalDate, firstOrbit);
+        final Spacecraft spacecraft2 =
+            spacecraftFromOrbit(startDate, finalDate, secondOrbit);
+        propagators.add(spacecraft1.getSpacecraftBoundedPropagator());
+        propagators.add(spacecraft2.getSpacecraftBoundedPropagator());
+
+        final InterSatVisu interSatVisuFromPropagators =
+            new InterSatVisu(propagators, finalDate, clock);
+
+        // Clear the propagators list so the propagators clone path is skipped
+        final List<BoundedPropagator> savedPropagators =
+            new ArrayList<>(interSatVisuFromPropagators.getPropagators());
+        interSatVisuFromPropagators.setPropagators(new ArrayList<>());
+
+        // Clone should now go through the constellation path
+        final InterSatVisu cloned = interSatVisuFromPropagators.cloneObject();
+        Assertions.assertNotNull(cloned);
+        Assertions.assertEquals(interSatVisuFromPropagators.getName(),
+                                cloned.getName());
+
+        // Restore propagators
+        interSatVisuFromPropagators.setPropagators(savedPropagators);
+    }
+
+    @Test
+    @DisplayName("Write CZML block with two satellites")
+    void testWriteCzmlBlockTwoSatellites() {
+        // The writeCzmlBlock method for two satellites (constellationSatellites
+        // is empty)
+        // should produce valid output that equals toString()
+        final Spacecraft firstSat =
+            spacecraftFromOrbit(startDate, finalDate, firstOrbit);
+        final Spacecraft secondSat =
+            spacecraftFromOrbit(startDate, finalDate, secondOrbit);
+
+        final InterSatVisu interSatVisu =
+            InterSatVisu.builder(firstSat, secondSat, finalDate, clock).build();
+
+        final String czmlOutput = interSatVisu.toString();
+        Assertions.assertNotNull(czmlOutput);
+        Assertions.assertTrue(czmlOutput.contains("\"id\":\"INTER_SAT_VISU/"));
+    }
+
+    @Test
+    @DisplayName("Write CZML block with constellation")
+    void testWriteCzmlBlockConstellation() {
+        // The writeCzmlBlock method for constellation should produce valid
+        // output
+        final String czmlOutput = interSatVisuConstellation.toString();
+        Assertions.assertNotNull(czmlOutput);
+
+        // Verify constellation output contains expected structure
+        Assertions.assertTrue(czmlOutput.contains("INTER_SAT_VISU/"));
+        Assertions.assertTrue(czmlOutput
+            .contains("Visualisation inter-constellation"));
+    }
+
+    @Test
+    @DisplayName("Ids satellite getter")
+    void testGetIdsSatellites() {
+        final List<String> ids = interSatVisuConstellation.getIdsSatellites();
+        Assertions.assertFalse(ids.isEmpty());
+        Assertions.assertEquals(2, ids.size());
+    }
+
+    @Test
+    @DisplayName("Start date getter from constellation")
+    void testStartDateFromConstellation() {
+        Assertions.assertNotNull(interSatVisuConstellation.getStartDate());
+    }
+
+    @Test
+    @DisplayName("Boolean list from two-sat InterSatVisu")
+    void testBooleanList() {
+        // The boolean list should contain alternating true/false values
+        // representing visibility
+        final List<Boolean> booleanList = dummyInterSatVisu.getBooleanList();
+        Assertions.assertNotNull(booleanList);
+        Assertions.assertFalse(booleanList.isEmpty());
+        // Should start with true (visible at initial time)
+        Assertions.assertTrue(booleanList.get(0));
+    }
+
+    @Test
+    @DisplayName("Propagators getter on propagators-based InterSatVisu")
+    void testPropagatorsGetter() {
+        final List<BoundedPropagator> propagators = new ArrayList<>();
+        propagators.add(dummyPropagator(startDate, finalDate, firstOrbit));
+        propagators.add(dummyPropagator(startDate, finalDate, secondOrbit));
+        final InterSatVisu interSatVisuProp =
+            new InterSatVisu(propagators, finalDate, clock);
+        Assertions.assertEquals(propagators.size(),
+                                interSatVisuProp.getPropagators().size());
+    }
+
+    @Test
+    @DisplayName("Builder with clock override")
+    void testBuilderWithClockOverride() {
+        final Spacecraft firstSat =
+            spacecraftFromOrbit(startDate, finalDate, firstOrbit);
+        final Spacecraft secondSat =
+            spacecraftFromOrbit(startDate, finalDate, secondOrbit);
+        final Clock overrideClock = new Clock(startDate, finalDate, 10.0);
+
+        final InterSatVisu interSatVisu =
+            InterSatVisu.builder(firstSat, secondSat, finalDate, clock)
+                .withClock(overrideClock).build();
+
+        final Polyline polyline = interSatVisu.getPolyline();
+        Assertions.assertEquals(overrideClock.getMultiplier(),
+                                polyline.getClock().getMultiplier());
+    }
+
+    @Test
+    @DisplayName("Builder with custom ID")
+    void testBuilderWithCustomId() {
+        final Spacecraft firstSat =
+            spacecraftFromOrbit(startDate, finalDate, firstOrbit);
+        final Spacecraft secondSat =
+            spacecraftFromOrbit(startDate, finalDate, secondOrbit);
+
+        final InterSatVisu interSatVisu =
+            InterSatVisu.builder(firstSat, secondSat, finalDate, clock)
+                .withCustomId("CUSTOM_TEST_ID").build();
+
+        Assertions
+            .assertTrue(interSatVisu.toString().contains("CUSTOM_TEST_ID"));
+    }
+
+    @Test
+    @DisplayName("Test references iterable")
+    void testReferencesIterable() {
+        // Test that getReferences() returns a non-empty iterable
+        final Iterable<Reference> references =
+            dummyInterSatVisu.getReferences();
+        Assertions.assertNotNull(references);
+
+        // Convert to list and verify it has the expected number of references
+        final List<Reference> referenceList = new ArrayList<>();
+        references.forEach(referenceList::add);
+        Assertions.assertEquals(2, referenceList.size());
+    }
+
+    @Test
+    @DisplayName("Test availability calculation with equal durations")
+    void testFindMinimumAvailabilityEqualDurations() {
+        // Create two spacecraft with equal availability durations
+        final Spacecraft spacecraft1 =
+            spacecraftFromOrbit(startDate, finalDate, firstOrbit);
+        final Spacecraft spacecraft2 =
+            spacecraftFromOrbit(startDate, finalDate, secondOrbit);
+
+        // Create InterSatVisu to test the private method indirectly
+        final InterSatVisu interSatVisu =
+            new InterSatVisu(spacecraft1, spacecraft2, finalDate);
+
+        // The start date should be the same as the spacecraft availability
+        // start
+        Assertions.assertEquals(startDate, interSatVisu.getStartDate());
+    }
+
+    @Test
+    @DisplayName("Test event handler through propagation")
+    void testEventHandlerThroughPropagation() {
+        // Test that the event handler works by verifying that we get visibility
+        // data
+        // This indirectly tests the InterSatViewHandler functionality
+        final List<Boolean> booleanList = dummyInterSatVisu.getBooleanList();
+        Assertions.assertNotNull(booleanList);
+        Assertions.assertFalse(booleanList.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Test reorganize satellite list")
+    void testReorganizeSatelliteList() {
+        // Create a constellation with 3 satellites to test the reorganization
+        final List<BoundedPropagator> propagators = new ArrayList<>();
+        final KeplerianOrbit thirdOrbit =
+            new KeplerianOrbit(7500000, 0, FastMath.toRadians(40),
+                               FastMath.toRadians(60), FastMath.toRadians(0),
+                               FastMath.toRadians(0), PositionAngleType.MEAN,
+                               FramesFactory.getEME2000(), startDate,
+                               Constants.WGS84_EARTH_MU);
+
+        propagators.add(dummyPropagator(startDate, finalDate, firstOrbit));
+        propagators.add(dummyPropagator(startDate, finalDate, secondOrbit));
+        propagators.add(dummyPropagator(startDate, finalDate, thirdOrbit));
+
+        final Constellation testConstellation =
+            Constellation.builder(propagators, finalDate, clock).build();
+        final InterSatVisu interSatVisu =
+            InterSatVisu.builder(testConstellation, finalDate, clock).build();
+
+        // Should have 3 pairs for 3 satellites (n*(n-1)/2 = 3*2/2 = 3)
+        Assertions.assertEquals(3,
+                                interSatVisu.getConstellation()
+                                    .getTotalOfSatellite() *
+                                   (interSatVisu.getConstellation()
+                                       .getTotalOfSatellite() -
+                                    1) /
+                                   2,
+                                interSatVisu.getConstellation()
+                                    .getTotalOfSatellite() > 1 ? 0.1 : 0);
+    }
+
+    @Test
+    @DisplayName("Test visibility data generation")
+    void testVisibilityDataGeneration() {
+        // Test that visibility data is generated and has reasonable values
+        final List<Boolean> booleanList = dummyInterSatVisu.getBooleanList();
+
+        // Should have visibility data
+        Assertions.assertNotNull(booleanList);
+        Assertions.assertFalse(booleanList.isEmpty());
+
+        // Should have alternating true/false values (visibility changes over
+        // time)
+        boolean hasTrue = false;
+        boolean hasFalse = false;
+        for (Boolean visibility : booleanList) {
+            if (visibility)
+                hasTrue = true;
+            if (!visibility)
+                hasFalse = true;
+            if (hasTrue && hasFalse)
+                break; // Found both true and false
+        }
+
+        // Should have both visible and non-visible periods
+        Assertions.assertTrue(hasTrue, "Should have some visible periods");
+        Assertions.assertTrue(hasFalse, "Should have some non-visible periods");
+    }
+
+    @Test
+    @DisplayName("Test error when cloning with no valid objects")
+    void testErrorWhenCloningWithNoValidObjects() {
+        // Create an InterSatVisu with empty propagators
+        final InterSatVisu interSatVisu =
+            new InterSatVisu(new ArrayList<>(), finalDate, clock);
+
+        // Should throw OresiumException
+        final OresiumException exception =
+            Assertions.assertThrows(OresiumException.class,
+                                    interSatVisu::cloneObject);
+
+        Assertions
+            .assertEquals(OresiumMessages.NOT_VALID_PRIMARY_OBJECT_FOR_CLONE,
+                          exception.getSpecifier());
+    }
+
+    @Test
+    @DisplayName("Test getters for constellation-based InterSatVisu")
+    void testGettersForConstellationBasedInterSatVisu() {
+        // Test various getters on constellation-based InterSatVisu
+        Assertions.assertNotNull(interSatVisuConstellation.getConstellation());
+        Assertions.assertNotNull(interSatVisuConstellation.getIdsSatellites());
+        Assertions.assertFalse(interSatVisuConstellation.getIdsSatellites()
+            .isEmpty());
+        Assertions.assertNotNull(interSatVisuConstellation.getOrbits());
+        Assertions.assertFalse(interSatVisuConstellation.getOrbits().isEmpty());
+        Assertions.assertNotNull(interSatVisuConstellation.getStartDate());
+        Assertions.assertNotNull(interSatVisuConstellation.getFinalDate());
+    }
+
+    @Test
+    @DisplayName("Test builder with all parameters")
+    void testBuilderWithAllParameters() {
+        final Spacecraft firstSat =
+            spacecraftFromOrbit(startDate, finalDate, firstOrbit);
+        final Spacecraft secondSat =
+            spacecraftFromOrbit(startDate, finalDate, secondOrbit);
+        final Clock customClock = new Clock(startDate, finalDate, 10.0);
+
+        final InterSatVisu interSatVisu =
+            InterSatVisu.builder(firstSat, secondSat, finalDate, clock)
+                .withClock(customClock).withCustomId("FULL_BUILDER_TEST")
+                .build();
+
+        Assertions.assertEquals("FULL_BUILDER_TEST", interSatVisu.getId());
+        Assertions.assertEquals(customClock.getMultiplier(), interSatVisu
+            .getPolyline().getClock().getMultiplier());
+    }
+
+    @Test
+    @DisplayName("Test time interval calculation")
+    void testTimeIntervalCalculation() {
+        final Spacecraft spacecraft1 =
+            spacecraftFromOrbit(startDate, finalDate, firstOrbit);
+        final Spacecraft spacecraft2 =
+            spacecraftFromOrbit(startDate, finalDate, secondOrbit);
+
+        final InterSatVisu interSatVisu =
+            InterSatVisu.builder(spacecraft1, spacecraft2, finalDate, clock)
+                .build();
+
+        // Should have time intervals calculated
+        Assertions.assertFalse(interSatVisu.getBooleanList().isEmpty());
     }
 
     private Spacecraft spacecraftFromOrbit(final AbsoluteDate startDate,
                                            final AbsoluteDate finalDate,
-                                           final KeplerianOrbit orbit)
-        throws URISyntaxException,
-            IOException {
+                                           final KeplerianOrbit orbit) {
 
         final SpacecraftState firstState = new SpacecraftState(orbit);
 

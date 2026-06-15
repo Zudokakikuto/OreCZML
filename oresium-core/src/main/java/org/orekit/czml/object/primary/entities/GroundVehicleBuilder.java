@@ -16,16 +16,14 @@
  */
 package org.orekit.czml.object.primary.entities;
 
-import java.awt.Color;
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-
 import org.orekit.bodies.OneAxisEllipsoid;
 import org.orekit.czml.object.nonvisual.CzmlModel;
 import org.orekit.time.AbsoluteDate;
 import org.orekit.utils.PVCoordinatesProvider;
 import org.orekit.utils.TimeStampedPVCoordinates;
+
+import java.awt.Color;
+import java.io.File;
 
 /**
  * GroundVehicle builder class
@@ -121,9 +119,9 @@ public class GroundVehicleBuilder {
      * @param coordsProvider : The propagator used to create the trajectory of
      *        the MovingGroundObject
      * @param startDate : The object start date.
-     * @param stopDate : The object stop date.
-     * @param clock : The clock multiplier value used to create the trajectory
-     *        timestep.
+     * @param finalDate : The object stop date.
+     * @param clockMultiplier : The clock multiplier value used to create the
+     *        trajectory timestep.
      * @param earth : The body the GroundVehicle is moving with respect to.
      */
     public GroundVehicleBuilder(final PVCoordinatesProvider coordsProvider,
@@ -138,7 +136,7 @@ public class GroundVehicleBuilder {
         this.earth = earth;
         this.clockMultiplier = clockMultiplier;
 
-        TimeStampedPVCoordinates pvCoords =
+        final TimeStampedPVCoordinates pvCoords =
             coordsProvider.getPVCoordinates(startDate, earth.getBodyFrame());
         this.customID =
             String.format(DEFAULT_FORMAT, pvCoords.getPosition().getX(),
@@ -154,13 +152,9 @@ public class GroundVehicleBuilder {
      * Function to set up a model.
      *
      * @param modelPathInput : The model to set up.
-     * @return : The GroundVehicle builder with the given model.
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException the io exception
+     * @return : The GroundVehicle builder with the given model. *
      */
-    public GroundVehicleBuilder withModelPath(final String modelPathInput)
-        throws URISyntaxException,
-            IOException {
+    public GroundVehicleBuilder withModelPath(final String modelPathInput) {
         this.modelPath = modelPathInput;
         return this;
     }
@@ -224,13 +218,9 @@ public class GroundVehicleBuilder {
      * The build function that generates a GroundVehicle object.
      *
      * @return : A GroundVehicle object with the given parameters of the
-     *         builder.
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException the io exception
+     *         builder. *
      */
-    public GroundVehicle build()
-        throws URISyntaxException,
-            IOException {
+    public GroundVehicle build() {
         final GroundVehicle tempPlane =
             new GroundVehicle(coordsProvider, startDate, finalDate, earth,
                               clockMultiplier, modelPath, color, customID,

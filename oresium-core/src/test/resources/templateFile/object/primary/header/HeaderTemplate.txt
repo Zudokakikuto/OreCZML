@@ -1,4 +1,3 @@
-
   {
     "id":"document",
     "name":"Dummy_Header",

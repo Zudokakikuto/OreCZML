@@ -31,14 +31,11 @@ import org.orekit.czml.object.utils.DateUtils;
 import org.orekit.frames.Frame;
 import org.orekit.time.AbsoluteDate;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-
 /**
  * The type Body test.
  */
 @DefaultDataContext
-public class BodyTest
+class BodyTest
     extends
     AbstractTest {
 
@@ -63,15 +60,10 @@ public class BodyTest
     private final Clock clock = new Clock(startDate, stopDate, 10.0);
 
     /**
-     * Body constructor test.
-     *
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException the io exception
+     * Body constructor test. *
      */
     @Test
-    void BodyConstructorTest()
-        throws URISyntaxException,
-            IOException {
+    void BodyConstructorTest() {
 
         // Build the sun frame
         final Body sun = BodyFactory.getSun(clock);
@@ -93,9 +85,7 @@ public class BodyTest
 
     @Test
     @DisplayName("Test Body Builder constructor")
-    public void BodyBuilderConstructorTest()
-        throws URISyntaxException,
-            IOException {
+    void BodyBuilderConstructorTest() {
 
         // Build the sun frame
         final Body sun = BodyFactory.getSun(clock);
@@ -122,9 +112,7 @@ public class BodyTest
 
     @Test
     @DisplayName("Test body with model constructor")
-    public void BodyWithModelConstructorTest()
-        throws URISyntaxException,
-            IOException {
+    void BodyWithModelConstructorTest() {
 
         // Build the sun frame
         final Body sun = BodyFactory.getSun(clock);
@@ -147,9 +135,7 @@ public class BodyTest
 
     @Test
     @DisplayName("Test several bodies czml file constructor")
-    public void SeveralBodiesCzmlFileConstructorTest()
-        throws URISyntaxException,
-            IOException {
+    void SeveralBodiesCzmlFileConstructorTest() {
 
         // Build all the bodies
         final Body sun = BodyFactory.getSun(clock);

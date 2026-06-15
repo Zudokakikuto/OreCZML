@@ -81,8 +81,8 @@ public class ConstellationVisuExample {
                                          "/Javascript/public");
 
         // Creation of the clock
-
-        final double durationOfSimulation = 8 * 3600; // in seconds;
+        // Duration of the simulation in seconds
+        final double durationOfSimulation = 8.0 * 3600;
         final AbsoluteDate startDate =
             new AbsoluteDate(2024, 3, 15, 0, 0, 0.0,
                              TimeScalesFactory.getUTC());
@@ -97,7 +97,7 @@ public class ConstellationVisuExample {
             new Header("Visualisation of a constellation by multiple ground station",
                        clock, pathToJSFolder);
 
-        //// Creation of the constellation
+        // Creation of the constellation
         // Build of propagators
 
         final NormalizedSphericalHarmonicsProvider provider =
@@ -110,7 +110,7 @@ public class ConstellationVisuExample {
 
         for (int i = 0; i < 4; i++) {
             final Orbit currentOrbit =
-                new KeplerianOrbit(10878000, 0, FastMath.toRadians(i * 10), 0,
+                new KeplerianOrbit(10878000, 0, FastMath.toRadians(i * 10.0), 0,
                                    FastMath.toRadians(90 * FastMath.pow(-1, i)),
                                    FastMath.toRadians(0),
                                    PositionAngleType.MEAN,
@@ -143,7 +143,7 @@ public class ConstellationVisuExample {
         final Constellation constellation =
             Constellation.builder(propagators, finalDate, clock).build();
 
-        //// Creation of the ground station
+        // Creation of the ground station
 
         // Creation of a topocentric frame around Toulouse.
         final GeodeticPoint toulouseFrame =

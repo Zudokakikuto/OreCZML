@@ -24,9 +24,6 @@ import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.Header;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-
 /**
  * The type Position test.
  */
@@ -42,15 +39,11 @@ public class PositionTest
 
     /**
      * Position constructor test.
-     *
-     * @throws IOException the io exception
      */
     @Test
     @DefaultDataContext
     @DisplayName("Position constructor test")
-    void PositionConstructorTest()
-        throws IOException,
-            URISyntaxException {
+    void PositionConstructorTest() {
 
         final Position positionCartesian =
             new Position(1, 45, 20, PositionType.CARTESIAN_POSITION,
@@ -81,9 +74,7 @@ public class PositionTest
 
     @Test
     @DisplayName("Position in degree constructor test")
-    public void PositionDegreesConstructorTest()
-        throws URISyntaxException,
-            IOException {
+    public void PositionDegreesConstructorTest() {
 
         final Position positionDegrees =
             new Position(1, 45, 20, PositionType.CARTOGRAPHIC_DEGREES,
@@ -103,9 +94,7 @@ public class PositionTest
 
     @Test
     @DisplayName("Position in radians cosntructor test")
-    public void PositionRadiansConstructorTest()
-        throws URISyntaxException,
-            IOException {
+    public void PositionRadiansConstructorTest() {
 
         final Position positionRadians =
             new Position(1, 45, 20, PositionType.CARTOGRAPHIC_RADIANS,

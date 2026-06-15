@@ -16,13 +16,15 @@
  */
 package org.orekit.czml.object.primary;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.orekit.annotation.DefaultDataContext;
+import org.orekit.czml.errors.OresiumException;
 import org.orekit.czml.file.AbstractTest;
-
-import java.io.IOException;
-import java.net.URISyntaxException;
+import org.orekit.czml.object.secondary.Clock;
+import org.orekit.time.AbsoluteDate;
+import org.orekit.time.TimeScalesFactory;
 
 /**
  * The type Header test.
@@ -45,15 +47,11 @@ public class HeaderTest
 
     /**
      * Header constructor test.
-     *
-     * @throws IOException the io exception
      */
     @Test
     @DefaultDataContext
     @DisplayName("Header dummy constructor test")
-    void HeaderConstructorTest()
-        throws IOException,
-            URISyntaxException {
+    void HeaderConstructorTest() {
 
         final String pathFile =
             loadResources("templateFile/object/primary/header/HeaderTemplate.txt");
@@ -63,9 +61,7 @@ public class HeaderTest
 
     @Test
     @DisplayName("Header constructor coverage test")
-    public void HeaderCoverageConstructorTest()
-        throws URISyntaxException,
-            IOException {
+    public void HeaderCoverageConstructorTest() {
 
         final Header headerCoverage =
             new Header(headerValue, headerVersionNumber, header.getClock());
@@ -79,9 +75,7 @@ public class HeaderTest
 
     @Test
     @DisplayName("Header with a version constructor test")
-    public void HeaderVersionConstructorTest()
-        throws URISyntaxException,
-            IOException {
+    public void HeaderVersionConstructorTest() {
 
         final Header headerVersion =
             new Header(headerValue, headerVersionNumber, header.getClock(), "");
@@ -91,5 +85,83 @@ public class HeaderTest
             loadResources("templateFile/object/primary/header/HeaderVersionTemplate.txt");
 
         verifyFileOutput(versionPathFile, headerVersion.toString(), 1e-8);
+    }
+
+    @Test
+    @DisplayName("Basic constructor test")
+    public void BasicConstructorHeaderTest() {
+        final AbsoluteDate startDate =
+            new AbsoluteDate(2020, 1, 1, 0, 0, 0.0, TimeScalesFactory.getUTC());
+        final AbsoluteDate finalDate = startDate.shiftedBy(60.0);
+        final Header basicHeader =
+            new Header("Basic header", new Clock(startDate, finalDate, 10.0),
+                       "");
+
+        final String versionPathFile =
+            loadResources("templateFile/object/primary/header/HeaderBasicConstructorTemplate.txt");
+
+        verifyFileOutput(versionPathFile, basicHeader.toString(), 1e-8);
+    }
+
+    @Test
+    @DisplayName("Cloning Test")
+    public void CloningTest() {
+
+        final Header headerWithExternalResources = dummyHeader();
+        headerWithExternalResources
+            .setPathToExternalResources(Header.getDefaultResources());
+        final Header headerFilled = dummyHeader();
+        final Header nullNameAndVersion =
+            new Header(null, null, dummyHeader().getClock());
+        final Header nullNameClockAndPathNotEqual =
+            new Header("Test", "1.0", dummyHeader().getClock());
+        nullNameClockAndPathNotEqual
+            .setPathToExternalResources(Header.getDefaultResources());
+
+        // Cloning
+        final Header clonedHeaderWithExternalResources =
+            headerWithExternalResources.cloneObject();
+        final Header clonedHeaderFilled = headerFilled.cloneObject();
+        final Header clonedNullNameClockAndPathNotEqual =
+            nullNameClockAndPathNotEqual.cloneObject();
+
+        // Assertions
+        Assertions.assertEquals(headerWithExternalResources.toString(),
+                                clonedHeaderWithExternalResources.toString());
+        Assertions.assertEquals(headerFilled.toString(),
+                                clonedHeaderFilled.toString());
+        Assertions.assertEquals(nullNameClockAndPathNotEqual.toString(),
+                                clonedNullNameClockAndPathNotEqual.toString());
+
+        Assertions.assertThrows(OresiumException.class,
+                                nullNameAndVersion::cloneObject);
+    }
+
+    @Test
+    @DisplayName("Clone Object Test - Name and Clock not null, path equals DEFAULT_RESOURCES")
+    public void
+        cloneObjectTest_NameAndClockNotNull_PathEqualsDefaultResources() {
+        // Create a header with non-null name and clock
+        final AbsoluteDate startDate =
+            new AbsoluteDate(2020, 1, 1, 0, 0, 0.0, TimeScalesFactory.getUTC());
+        final AbsoluteDate finalDate = startDate.shiftedBy(60.0);
+        final Clock clock = new Clock(startDate, finalDate, 10.0);
+        final Header originalHeader = new Header("Test Header", "1.0", clock);
+
+        // Set path to external resources to DEFAULT_RESOURCES
+        originalHeader.setPathToExternalResources(Header.getDefaultResources());
+
+        // Clone the header
+        final Header clonedHeader = originalHeader.cloneObject();
+
+        // Verify the cloned header is equivalent to the original
+        Assertions.assertEquals(originalHeader.toString(),
+                                clonedHeader.toString());
+        Assertions.assertEquals(originalHeader.getName(),
+                                clonedHeader.getName());
+        Assertions.assertEquals(originalHeader.getClock(),
+                                clonedHeader.getClock());
+        Assertions.assertEquals(originalHeader.getPathToExternalResources(),
+                                clonedHeader.getPathToExternalResources());
     }
 }

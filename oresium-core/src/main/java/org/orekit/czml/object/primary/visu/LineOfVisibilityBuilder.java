@@ -21,9 +21,6 @@ import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.frames.TopocentricFrame;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-
 /**
  * Line of visibility builder class
  * <p>
@@ -162,13 +159,9 @@ public class LineOfVisibilityBuilder {
      * The build function that generates a line of visibility object.
      *
      * @return : A line of visibility object with the given parameters of the
-     *         builder.
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException the io exception
+     *         builder. *
      */
-    public LineOfVisibility build()
-        throws URISyntaxException,
-            IOException {
+    public LineOfVisibility build() {
         LineOfVisibility toReturn = null;
         if (spacecraft != null) {
             toReturn =

@@ -21,9 +21,6 @@ import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.Header;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-
 /**
  * The type Czml show test.
  */
@@ -39,14 +36,10 @@ public class CzmlShowTest
 
     /**
      * Czml show constructor test.
-     *
-     * @throws IOException the io exception
      */
     @Test
     @DefaultDataContext
-    void CzmlShowConstructorTest()
-        throws IOException,
-            URISyntaxException {
+    void CzmlShowConstructorTest() {
 
         final CzmlShow show = new CzmlShow(true, header.getClock());
 

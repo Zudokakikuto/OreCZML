@@ -31,9 +31,6 @@ import org.orekit.orbits.KeplerianOrbit;
 import org.orekit.time.AbsoluteDate;
 import org.orekit.utils.PVCoordinates;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-
 public class InfluenceSphere
     extends
     AbstractPrimaryObject<InfluenceSphere> {
@@ -132,9 +129,7 @@ public class InfluenceSphere
 
     @Override
     public void writeCzmlBlock(final CesiumStreamWriter stream,
-                               final CesiumOutputStream output)
-        throws URISyntaxException,
-            IOException {
+                               final CesiumOutputStream output) {
         output.setPrettyFormatting(true);
         try (PacketCesiumWriter packet = stream.openPacket(output)) {
             packet.writeId(getId());

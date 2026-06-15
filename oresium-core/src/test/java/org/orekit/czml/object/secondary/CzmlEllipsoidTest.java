@@ -44,14 +44,12 @@ import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.Constants;
 
 import java.awt.Color;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.List;
 
 /**
  * The type Czml ellipsoid test.
  */
-public class CzmlEllipsoidTest
+class CzmlEllipsoidTest
     extends
     AbstractTest {
 
@@ -71,17 +69,12 @@ public class CzmlEllipsoidTest
     final AbsoluteDate finalDate = startDate.shiftedBy(5 * 3600);
 
     /**
-     * Czml ellipsoid constructor test.
-     *
-     * @throws IOException the io exception
-     * @throws URISyntaxException the uri syntax exception
+     * Czml ellipsoid constructor test. *
      */
     @Test
     @DefaultDataContext
     @DisplayName("Czml ellipsoid constructor test")
-    void CzmlEllipsoidConstructorTest()
-        throws IOException,
-            URISyntaxException {
+    void CzmlEllipsoidConstructorTest() {
 
         final KeplerianOrbit initialOrbit =
             new KeplerianOrbit(7878000, 0, FastMath.toRadians(10), 0,
@@ -109,9 +102,7 @@ public class CzmlEllipsoidTest
 
     @Test
     @DisplayName("Czml ellipsoid builder constructor test")
-    public void CzmlEllipsoidBuilderConstructorTest()
-        throws URISyntaxException,
-            IOException {
+    void CzmlEllipsoidBuilderConstructorTest() {
 
         final CzmlEllipsoid ellipsoidBuilder =
             CzmlEllipsoid.builder(new Cartesian(0, 0, 0), header.getClock())
@@ -127,9 +118,7 @@ public class CzmlEllipsoidTest
 
     private Spacecraft spacecraftFromOrbit(final AbsoluteDate startDate,
                                            final AbsoluteDate finalDate,
-                                           final KeplerianOrbit orbit)
-        throws URISyntaxException,
-            IOException {
+                                           final KeplerianOrbit orbit) {
         final SpacecraftState initialState = new SpacecraftState(orbit);
 
         // Build of the propagator

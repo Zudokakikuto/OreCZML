@@ -42,8 +42,6 @@ import org.orekit.propagation.events.FilterType;
 import org.orekit.time.AbsoluteDate;
 import org.orekit.utils.TimeSpanMap;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -215,9 +213,7 @@ public class Collision
 
     @Override
     public void writeCzmlBlock(final CesiumStreamWriter stream,
-                               final CesiumOutputStream output)
-        throws URISyntaxException,
-            IOException {
+                               final CesiumOutputStream output) {
         covarianceFirstSatellite.writeCzmlBlock(stream, output);
         covarianceSecondSatellite.writeCzmlBlock(stream, output);
     }

@@ -40,8 +40,6 @@ import org.orekit.utils.Constants;
 import org.orekit.utils.IERSConventions;
 
 import java.awt.Color;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -101,9 +99,7 @@ public class VisibilityTriangle
 
     @Override
     public void writeCzmlBlock(final CesiumStreamWriter stream,
-                               final CesiumOutputStream output)
-        throws URISyntaxException,
-            IOException {
+                               final CesiumOutputStream output) {
         output.setPrettyFormatting(true);
         for (int i = 0; i < trianglesCartesians.size(); i++) {
             try (PacketCesiumWriter packet = stream.openPacket(output)) {

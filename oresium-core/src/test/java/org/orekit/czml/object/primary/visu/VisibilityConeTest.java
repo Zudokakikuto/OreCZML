@@ -18,16 +18,20 @@ package org.orekit.czml.object.primary.visu;
 
 import cesiumlanguagewriter.CesiumHeightReference;
 import org.hipparchus.util.FastMath;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.orekit.annotation.DefaultDataContext;
 import org.orekit.bodies.GeodeticPoint;
+import org.orekit.czml.errors.OresiumException;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.Position;
 import org.orekit.czml.object.PositionType;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.primary.entities.CzmlGroundStation;
 import org.orekit.czml.object.primary.entities.Spacecraft;
+import org.orekit.czml.object.secondary.Clock;
 import org.orekit.czml.object.secondary.Cylinder;
 import org.orekit.czml.object.utils.DateUtils;
 import org.orekit.frames.TopocentricFrame;
@@ -35,8 +39,6 @@ import org.orekit.propagation.BoundedPropagator;
 import org.orekit.time.AbsoluteDate;
 
 import java.awt.Color;
-import java.io.IOException;
-import java.net.URISyntaxException;
 
 /**
  * The type Visibility cone test.
@@ -80,22 +82,15 @@ public class VisibilityConeTest
     final CzmlGroundStation groundStation =
         new CzmlGroundStation(topocentricToulouse, header.getClock());
 
-    public VisibilityConeTest()
-        throws URISyntaxException,
-            IOException {
+    public VisibilityConeTest() {
     }
 
     /**
-     * Visibility cone constructor test.
-     *
-     * @throws IOException the io exception
-     * @throws URISyntaxException the uri syntax exception
+     * Visibility cone constructor test. *
      */
     @Test
     @DisplayName("Visibility cone constructor test")
-    void VisibilityConeConstructorTest()
-        throws IOException,
-            URISyntaxException {
+    void VisibilityConeConstructorTest() {
 
         final GeodeticPoint toulouseFrame =
             new GeodeticPoint(FastMath.toRadians(43.6047),
@@ -120,9 +115,7 @@ public class VisibilityConeTest
 
     @Test
     @DisplayName("Visibility Cone coverage test")
-    public void VisibilityConeCoverageConstructorTest()
-        throws URISyntaxException,
-            IOException {
+    public void VisibilityConeCoverageConstructorTest() {
 
         // Build visibility cone for coverage
         final VisibilityCone coverageCone =
@@ -138,9 +131,7 @@ public class VisibilityConeTest
 
     @Test
     @DisplayName("Test constructor of Visibility cone from a cylinder and a spacecraft")
-    public void VisibilityConeSpacecraftCylinderConstructorTest()
-        throws URISyntaxException,
-            IOException {
+    public void VisibilityConeSpacecraftCylinderConstructorTest() {
 
         final BoundedPropagator propagator =
             dummyPropagator(startDate, finalDate, dummyOrbit(startDate));
@@ -161,9 +152,7 @@ public class VisibilityConeTest
 
     @Test
     @DisplayName("Test Visibility cone constructor from a ground station")
-    public void VisibilityConeGroundStationConstructorTest()
-        throws URISyntaxException,
-            IOException {
+    public void VisibilityConeGroundStationConstructorTest() {
 
         // Build of the visibility cone from the ground station
         final VisibilityCone groundStationCone =
@@ -179,9 +168,7 @@ public class VisibilityConeTest
 
     @Test
     @DisplayName("Test visibility cone constructor from ground station and a spacecraft")
-    public void VisibilityConeGroundStationSpacecraftConstructorTest()
-        throws URISyntaxException,
-            IOException {
+    public void VisibilityConeGroundStationSpacecraftConstructorTest() {
 
         final BoundedPropagator propagator =
             dummyPropagator(startDate, finalDate, dummyOrbit(startDate));
@@ -198,5 +185,89 @@ public class VisibilityConeTest
 
         verifyFileOutput(GroundStationSatPathFile,
                          groundStationSatCone.toString(), 1e-8);
+    }
+
+    @Test
+    @DisplayName("Test for clone object for the visibility cone object")
+    public void CloneObjectVisibilityConeTest() {
+
+        final BoundedPropagator propagator =
+            dummyPropagator(startDate, finalDate, dummyOrbit(startDate));
+
+        final Clock clock = header.getClock();
+
+        final Spacecraft spacecraft =
+            Spacecraft.builder(propagator, clock).build();
+
+        final VisibilityCone visibilityConeWithSpacecraft =
+            new VisibilityCone("An id", "a name", coverageCylinder, spacecraft,
+                               clock);
+        final VisibilityCone visibilityConeWithoutSpacecraft =
+            new VisibilityCone("An id", "a name", coverageCylinder, clock);
+        final VisibilityCone visibilityConeWithGroundStation =
+            new VisibilityCone(groundStation, clock);
+        final VisibilityCone visibilityConeWithGroundStationSpacecraft =
+            new VisibilityCone(groundStation, spacecraft, clock);
+
+        // Clones
+        final VisibilityCone visibilityConeClonedSpacecraft =
+            visibilityConeWithSpacecraft.cloneObject();
+        final VisibilityCone visibilityConeClonedWithoutSpacecraft =
+            visibilityConeWithoutSpacecraft.cloneObject();
+        final VisibilityCone visibilityConeGroundStation =
+            visibilityConeWithGroundStation.cloneObject();
+        final VisibilityCone visibilityConeClonedWithGroundStationSpacecraft =
+            visibilityConeWithGroundStationSpacecraft.cloneObject();
+
+        // Assertions
+        Assertions.assertEquals(visibilityConeWithSpacecraft.toString(),
+                                visibilityConeClonedSpacecraft.toString());
+        Assertions
+            .assertEquals(visibilityConeWithoutSpacecraft.toString(),
+                          visibilityConeClonedWithoutSpacecraft.toString());
+        Assertions.assertEquals(visibilityConeWithGroundStation.toString(),
+                                visibilityConeGroundStation.toString());
+        Assertions
+            .assertEquals(visibilityConeWithGroundStationSpacecraft.toString(),
+                          visibilityConeClonedWithGroundStationSpacecraft
+                              .toString());
+    }
+
+    @Nested
+    public class GetterSetterTests {
+
+        @Test
+        public void PositionTest() {
+            final VisibilityCone visibilityCone =
+                new VisibilityCone(groundStation, header.getClock());
+            final Position position =
+                new Position(4624415.12018318, 116587.90809901741,
+                             4376399.285187051, PositionType.CARTESIAN_POSITION,
+                             header.getClock());
+            Assertions.assertEquals(visibilityCone.getPosition().toString(),
+                                    position.toString());
+        }
+
+        @Test
+        public void SpacecraftTest() {
+            final BoundedPropagator propagator =
+                dummyPropagator(startDate, finalDate, dummyOrbit(startDate));
+            final Spacecraft spacecraft =
+                Spacecraft.builder(propagator, header.getClock()).build();
+
+            final VisibilityCone visibilityConeNominal =
+                new VisibilityCone(groundStation, spacecraft,
+                                   header.getClock());
+            final VisibilityCone visibilityConeDegraded =
+                new VisibilityCone("An id", "a name", coverageCylinder,
+                                   header.getClock());
+
+            // Assertions
+            Assertions
+                .assertEquals(visibilityConeNominal.getSpacecraft().toString(),
+                              spacecraft.toString());
+            Assertions.assertThrows(OresiumException.class,
+                                    visibilityConeDegraded::getSpacecraft);
+        }
     }
 }

@@ -1,0 +1,16 @@
+{
+  "id":"POINT_ON_BODY/[{lat: 43 deg, lon: 1.44 deg, alt: 10}, {lat: 44 deg, lon: 1.45 deg, alt: 10}, {lat: 45 deg, lon: 1.46 deg, alt: 10}, {lat: 46 deg, lon: 1.47 deg, alt: 10}, {lat: 47 deg, lon: 1.48 deg, alt: 10}, null, null, null, null, null]",
+  "name":"Point on the body at location(s) : [{lat: 43 deg, lon: 1.44 deg, alt: 10}, {lat: 44 deg, lon: 1.45 deg, alt: 10}, {lat: 45 deg, lon: 1.46 deg, alt: 10}, {lat: 46 deg, lon: 1.47 deg, alt: 10}, {lat: 47 deg, lon: 1.48 deg, alt: 10}, null, null, null, null, null]",
+  "availability":"2024-01-01T00:00:00Z/2024-01-01T00:01:30Z",
+  "position":{
+    "interval":"2024-01-01T00:00:00Z/2024-01-01T00:01:30Z",
+    "epoch":"2024-01-01T00:00:00Z",
+    "cartesian":[
+      0,4670485.168196356,117406.81637429117,4327508.579180574,
+      10,4594012.0201616045,116286.74831827244,4408098.559028037,
+      20,4516131.340298485,115104.10186337678,4487355.479933731,
+      30,4436866.372943926,113858.73573444746,4565254.734230921,
+      90,4356240.809131441,112550.53641935393,4641772.102357388
+    ]
+  }
+}

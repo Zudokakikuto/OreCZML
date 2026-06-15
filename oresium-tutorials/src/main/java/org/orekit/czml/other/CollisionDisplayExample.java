@@ -87,8 +87,8 @@ public class CollisionDisplayExample {
             TutorialUtils.loadResources("Default3DModels/ISSModel.glb");
 
         // Creation of the clock.
-
-        final double durationOfSimulation = 5 * 3600; // in seconds;
+        // Duration of the simulation in seconds
+        final double durationOfSimulation = 5 * 3600;
         final AbsoluteDate startDate =
             new AbsoluteDate(2024, 3, 15, 0, 0, 0.0,
                              TimeScalesFactory.getUTC());
@@ -235,7 +235,6 @@ public class CollisionDisplayExample {
                               final Clock clock) {
 
         final List<StateCovariance> covarianceListTemp = new ArrayList<>();
-        // satellite.setAttitudes(new ArrayList<>());
 
         final List<Orbit> orbits = satellite.getOrbits();
 

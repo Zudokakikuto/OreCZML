@@ -59,7 +59,8 @@ public class BodyDisplayExample {
                                 "/oresium-tutorials/src/main/resources/Default3DModels/");
 
         // Creation of the clock.
-        final double durationOfSimulation = 24 * 3600; // in seconds;
+        // Duration of the simulation in seconds
+        final double durationOfSimulation = 24.0 * 3600;
         final AbsoluteDate startDate =
             new AbsoluteDate(2024, 3, 15, 0, 0, 0.0,
                              TimeScalesFactory.getUTC());
