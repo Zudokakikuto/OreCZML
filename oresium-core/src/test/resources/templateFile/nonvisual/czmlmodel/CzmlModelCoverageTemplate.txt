@@ -1,0 +1,17 @@
+{
+  "billboard":{
+    "horizontalOrigin":"CENTER",
+    "color":{
+      "rgba":[
+        0,255,255,195
+      ]
+    },
+    "scaleByDistance":{
+      "nearFarScalar":[
+        1,0.15625,1000000000,0.15625
+      ]
+    },
+    "show":true,
+    "image":"./satellite.png"
+  }
+}

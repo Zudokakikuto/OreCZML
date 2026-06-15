@@ -152,7 +152,7 @@ public class AttitudePathAlongOrbit {
         final Vector3D maracaiboPositionOnEarth =
             topocentricMaracaibo.getCartesianPoint();
 
-        //// Build of a satellite with a propagator
+        // Build of a satellite with a propagator
         // Build of a LEO orbit
 
         final KeplerianOrbit initialOrbit =
@@ -247,7 +247,7 @@ public class AttitudePathAlongOrbit {
             new ElevationDetector(topocentricMaracaibo).withMaxCheck(60.)
                 .withHandler(new ContinueOnEvent());
 
-        //// Add switching condition to attitudes sequence
+        // Add switching condition to attitudes sequence
         // Add classic station to earth and earth to station
         attitudesSequence
             .addSwitchingCondition(attitudeProviderToEarth,

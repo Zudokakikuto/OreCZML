@@ -49,13 +49,10 @@ import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.Constants;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-
 /**
  * The type Covered surface on body test.
  */
-public class CoveredSurfaceOnBodyTest
+class CoveredSurfaceOnBodyTest
     extends
     AbstractTest {
 
@@ -82,17 +79,12 @@ public class CoveredSurfaceOnBodyTest
                            startDate, Constants.WGS84_EARTH_MU);
 
     /**
-     * Covered surface on body constructor test.
-     *
-     * @throws IOException the io exception
-     * @throws URISyntaxException the uri syntax exception
+     * Covered surface on body constructor test. *
      */
     @Test
     @DefaultDataContext
     @DisplayName("Covered surface on body constructor test")
-    void CoveredSurfaceOnBodyConstructorTest()
-        throws IOException,
-            URISyntaxException {
+    void CoveredSurfaceOnBodyConstructorTest() {
 
         // Build of the propagator
         final BoundedPropagator boundedPropagator =
@@ -135,9 +127,7 @@ public class CoveredSurfaceOnBodyTest
 
     @Test
     @DisplayName("Covered surface test with builder constructor")
-    public void CoveredSurfaceOnBodyBuilderConstructortest()
-        throws URISyntaxException,
-            IOException {
+    void CoveredSurfaceOnBodyBuilderConstructortest() {
 
         // Build of the propagator
         final BoundedPropagator boundedPropagator =

@@ -25,9 +25,6 @@ import org.orekit.czml.object.utils.DateUtils;
 import org.orekit.propagation.BoundedPropagator;
 import org.orekit.time.AbsoluteDate;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-
 /**
  * The type Satellite reference system test.
  */
@@ -43,15 +40,10 @@ public class SpacecraftReferenceSystemTest
     final Header header = dummyHeader();
 
     /**
-     * Satellite reference systemc constructor test.
-     *
-     * @throws IOException the io exception
-     * @throws URISyntaxException the uri syntax exception
+     * Satellite reference systemc constructor test. *
      */
     @Test
-    void SatelliteReferenceSystemcConstructorTest()
-        throws IOException,
-            URISyntaxException {
+    void SatelliteReferenceSystemcConstructorTest() {
 
         final AbsoluteDate startDate =
             DateUtils.toAbsoluteDate(header.getAvailability().getStart());

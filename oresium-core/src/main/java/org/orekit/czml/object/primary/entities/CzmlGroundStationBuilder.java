@@ -20,8 +20,6 @@ import org.orekit.czml.object.nonvisual.CzmlModel;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.frames.TopocentricFrame;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -129,13 +127,9 @@ public class CzmlGroundStationBuilder {
      * The build function that generates the czml ground station object.
      *
      * @return : A czml ground station object with the given parameters of the
-     *         builder.
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException the io exception
+     *         builder. *
      */
-    public CzmlGroundStation build()
-        throws URISyntaxException,
-            IOException {
+    public CzmlGroundStation build() {
         final CzmlGroundStation toReturn;
         if (model != null) {
             toReturn =

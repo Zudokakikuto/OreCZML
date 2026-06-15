@@ -24,8 +24,6 @@ import org.orekit.czml.object.secondary.Clock;
 import org.orekit.propagation.BoundedPropagator;
 import org.orekit.time.AbsoluteDate;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.List;
 
 /**
@@ -86,15 +84,11 @@ public class InterSatVisuBuilder {
      *
      * @param propagatorsInput the propagators input
      * @param finalDateInput the final date input
-     * @param clock the clock input
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException the io exception
+     * @param clock the clock input *
      */
     public InterSatVisuBuilder(final List<BoundedPropagator> propagatorsInput,
                                final AbsoluteDate finalDateInput,
-                               final Clock clock)
-        throws URISyntaxException,
-            IOException {
+                               final Clock clock) {
         this(Constellation.builder(propagatorsInput, finalDateInput, clock)
             .build(), finalDateInput, clock);
     }
@@ -143,9 +137,7 @@ public class InterSatVisuBuilder {
      * @return the inter sat visu
      */
     @DefaultDataContext
-    public InterSatVisu build()
-        throws URISyntaxException,
-            IOException {
+    public InterSatVisu build() {
         if (constellation != null) {
             return new InterSatVisu(constellation, finalDate, customId, clock);
         } else {

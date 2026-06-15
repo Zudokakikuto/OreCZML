@@ -89,8 +89,8 @@ public class CovarianceExample {
             TutorialUtils.loadResources("Default3DModels/ISSModel.glb");
 
         // Creation of the clock.
-
-        final double durationOfSimulation = 5 * 3600.0; // in seconds;
+        // Duration of the simulation in seconds
+        final double durationOfSimulation = 5 * 3600.0;
         final AbsoluteDate startDate =
             new AbsoluteDate(2024, 3, 15, 0, 0, 0.0,
                              TimeScalesFactory.getUTC());

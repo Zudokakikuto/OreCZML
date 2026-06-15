@@ -60,8 +60,6 @@ import org.orekit.time.AbsoluteDate;
 import org.orekit.utils.Constants;
 
 import java.awt.Color;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -211,9 +209,7 @@ public class CloningTest
     final List<TopocentricFrame> topocentricFrames = new ArrayList<>();
 
     /** Default constructor. */
-    public CloningTest()
-        throws URISyntaxException,
-            IOException {
+    public CloningTest() {
     }
 
     @Nested
@@ -237,9 +233,7 @@ public class CloningTest
 
         @Test
         @DisplayName("Cloning of covariance")
-        void CovarianceCloningTest()
-            throws URISyntaxException,
-                IOException {
+        void CovarianceCloningTest() {
 
             // Covariance
             final Covariance covariance =
@@ -263,9 +257,7 @@ public class CloningTest
 
         @Test
         @DisplayName("Cloning of constellation")
-        void ConstellationCloningTest()
-            throws URISyntaxException,
-                IOException {
+        void ConstellationCloningTest() {
 
             boundedPropagators.add(mockBoundedPropagator1);
             boundedPropagators.add(mockBoundedPropagator2);
@@ -282,9 +274,7 @@ public class CloningTest
 
         @Test
         @DisplayName("Cloning of ground station")
-        void GroundStationCloningTest()
-            throws URISyntaxException,
-                IOException {
+        void GroundStationCloningTest() {
 
             // Ground Station
             final CzmlGroundStation groundStation =
@@ -336,9 +326,7 @@ public class CloningTest
 
         @Test
         @DisplayName("Cloning of covered surface on body")
-        void CoveredSurfaceOnBodyCloningTest()
-            throws URISyntaxException,
-                IOException {
+        void CoveredSurfaceOnBodyCloningTest() {
 
             // Initialisation of the field of view
             final SpacecraftState initialStateCovering =
@@ -428,9 +416,7 @@ public class CloningTest
 
         @Test
         @DisplayName("Cloning of field of observation")
-        void FieldOfObservationCloningTest()
-            throws URISyntaxException,
-                IOException {
+        void FieldOfObservationCloningTest() {
 
             // Initialisation of the field of view
             final SpacecraftState initialStateCovering =
@@ -477,9 +463,7 @@ public class CloningTest
 
         @Test
         @DisplayName("Cloning of inter sat visu with Spacecraft")
-        void InterSatVisuCloningTest()
-            throws URISyntaxException,
-                IOException {
+        void InterSatVisuCloningTest() {
 
             // Inter Sat Visu
             // With Spacecraft
@@ -495,9 +479,7 @@ public class CloningTest
 
         @Test
         @DisplayName("Cloning of inter sat visu with propagator list")
-        void InterSatVisuPropagatorsCloningTest()
-            throws URISyntaxException,
-                IOException {
+        void InterSatVisuPropagatorsCloningTest() {
 
             boundedPropagators.add(mockBoundedPropagator1);
             boundedPropagators.add(mockBoundedPropagator2);
@@ -515,9 +497,7 @@ public class CloningTest
 
         @Test
         @DisplayName("Cloning of inter sat visu with constellation")
-        void InterSatVisuConstellationCloningTest()
-            throws URISyntaxException,
-                IOException {
+        void InterSatVisuConstellationCloningTest() {
 
             boundedPropagators.add(mockBoundedPropagator1);
             boundedPropagators.add(mockBoundedPropagator2);
@@ -538,9 +518,7 @@ public class CloningTest
 
         @Test
         @DisplayName("Cloning of line of visibility with spacecraft")
-        void LineOfVisibilitySpacecraftCloningTest()
-            throws URISyntaxException,
-                IOException {
+        void LineOfVisibilitySpacecraftCloningTest() {
 
             // Line of visibility
             // With spacecraft
@@ -558,9 +536,7 @@ public class CloningTest
 
         @Test
         @DisplayName("Cloning of line of visibility with constellation")
-        void LineOfVisibilityConstellationCloningTest()
-            throws URISyntaxException,
-                IOException {
+        void LineOfVisibilityConstellationCloningTest() {
 
             boundedPropagators.add(mockBoundedPropagator1);
             boundedPropagators.add(mockBoundedPropagator2);
@@ -583,9 +559,7 @@ public class CloningTest
 
         @Test
         @DisplayName("Cloning of multiple line of visibility with spacecraft")
-        void MultipleLineOfVisibilitySpacecraftCloningTest()
-            throws URISyntaxException,
-                IOException {
+        void MultipleLineOfVisibilitySpacecraftCloningTest() {
 
             topocentricFrames.add(topocentricToulouse);
             topocentricFrames.add(topocentricQuito);
@@ -606,9 +580,7 @@ public class CloningTest
 
         @Test
         @DisplayName("Cloning of multiple line of visibility with constellation")
-        void MultipleLineOfVisibilityConstellationCloningTest()
-            throws URISyntaxException,
-                IOException {
+        void MultipleLineOfVisibilityConstellationCloningTest() {
 
             topocentricFrames.add(topocentricToulouse);
             topocentricFrames.add(topocentricQuito);
@@ -690,9 +662,7 @@ public class CloningTest
 
         @Test
         @DisplayName("Cloning of maneuver sequence")
-        void ManeuverSequenceCloningTest()
-            throws URISyntaxException,
-                IOException {
+        void ManeuverSequenceCloningTest() {
 
             // Maneuver Sequence
             final ManeuverSequence sequence =

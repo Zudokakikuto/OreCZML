@@ -50,8 +50,6 @@ import org.orekit.utils.Constants;
 import org.orekit.utils.IERSConventions;
 import org.orekit.utils.TimeSpanMap;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -104,12 +102,12 @@ public class InterSatVisu
     /**
      * The first satellite for the visu.
      */
-    private Spacecraft satellite1;
+    private Spacecraft spacecraft1;
 
     /**
      * The second satellite for the visu.
      */
-    private Spacecraft satellite2;
+    private Spacecraft spacecraft2;
 
     /**
      * The body which the satellites are orbiting around (future implementation
@@ -126,19 +124,19 @@ public class InterSatVisu
      * A time map used to track whether the satellites are visible in the event
      * detector.
      */
-    private TimeSpanMap<Boolean> timeSpanMap = new TimeSpanMap<>(null);
+    private final TimeSpanMap<Boolean> timeSpanMap = new TimeSpanMap<>(null);
 
     /**
      * A list of time intervals that represents when the satellite is visible or
      * not.
      */
-    private List<TimeInterval> timeIntervals = new ArrayList<>();
+    private final List<TimeInterval> timeIntervals = new ArrayList<>();
 
     /**
      * The list of boolean to display or not the line if the satellite is
      * visible or not.
      */
-    private List<Boolean> visuList = new ArrayList<>();;
+    private final List<Boolean> visuList = new ArrayList<>();
 
     /**
      * The start date of the propagation.
@@ -258,8 +256,8 @@ public class InterSatVisu
                  final Spacecraft satellite2Input,
                  final AbsoluteDate finalDateInput, final String customID) {
 
-        this.satellite1 = satellite1Input;
-        this.satellite2 = satellite2Input;
+        this.spacecraft1 = satellite1Input;
+        this.spacecraft2 = satellite2Input;
         this.finalDate = finalDateInput;
         this.setId(customID);
         this.setName(DEFAULT_NAME +
@@ -276,8 +274,8 @@ public class InterSatVisu
                                  Constants.WGS84_EARTH_FLATTENING, ITRF);
 
         final List<Spacecraft> spacecrafts = new ArrayList<>();
-        spacecrafts.add(satellite1);
-        spacecrafts.add(satellite2);
+        spacecrafts.add(spacecraft1);
+        spacecrafts.add(spacecraft2);
         this.clock = findMinimumClock(spacecrafts, minimumInterval);
         this.initialState = satellite1Input.getSpaceCraftStates().get(0);
 
@@ -290,7 +288,7 @@ public class InterSatVisu
                 .toArray(new Reference[0]);
         this.references = convertToIterable(referenceList);
 
-        this.buildSingleTimeIntervalsAndVisu(satellite1, satellite2);
+        this.buildSingleTimeIntervalsAndVisu(spacecraft1, spacecraft2);
         this.polyline =
             Polyline.nonVectorBuilder(this.clock)
                 .withFirstReference(referenceFirstSatellite)
@@ -305,14 +303,10 @@ public class InterSatVisu
      * @param propagators : A list of all the bounded propagator that represents
      *        all the satellites.
      * @param finalDateInput : The final date for the end of the propagation.
-     * @param clockInput : The clock considered.
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException the io exception
+     * @param clockInput : The clock considered. *
      */
     InterSatVisu(final List<BoundedPropagator> propagators,
-                 final AbsoluteDate finalDateInput, final Clock clockInput)
-        throws URISyntaxException,
-            IOException {
+                 final AbsoluteDate finalDateInput, final Clock clockInput) {
         this(Constellation.builder(propagators, finalDateInput, clockInput)
             .build(), finalDateInput, clockInput);
     }
@@ -325,15 +319,11 @@ public class InterSatVisu
      *        all the satellites.
      * @param finalDateInput : The final date for the end of the propagation.
      * @param customID : The custom ID of the inter sat visu.
-     * @param clockInput : The clock.
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException the io exception
+     * @param clockInput : The clock. *
      */
     InterSatVisu(final List<BoundedPropagator> propagators,
                  final AbsoluteDate finalDateInput, final String customID,
-                 final Clock clockInput)
-        throws URISyntaxException,
-            IOException {
+                 final Clock clockInput) {
         this(Constellation.builder(propagators, finalDateInput, clockInput)
             .build(), finalDateInput, customID, clockInput);
     }
@@ -347,9 +337,7 @@ public class InterSatVisu
      * @param clock : The clock considered.
      */
     InterSatVisu(final Constellation constellationPropagators,
-                 final AbsoluteDate finalDate, final Clock clock)
-        throws URISyntaxException,
-            IOException {
+                 final AbsoluteDate finalDate, final Clock clock) {
         this(constellationPropagators, finalDate,
              DEFAULT_ID + constellationPropagators.getId(), clock);
     }
@@ -366,9 +354,7 @@ public class InterSatVisu
     @DefaultDataContext
     InterSatVisu(final Constellation constellationPropagators,
                  final AbsoluteDate finalDateInput, final String customID,
-                 final Clock clock)
-        throws URISyntaxException,
-            IOException {
+                 final Clock clock) {
 
         this.setAvailability(clock.getAvailability());
         this.orbits = constellationPropagators.getInitialOrbits();
@@ -468,15 +454,11 @@ public class InterSatVisu
      * @param allPropagatorsInput the all propagators input
      * @param finalDateInput the final date
      * @param clockInput the clock
-     * @return the inter sat visu builder
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException the io exception
+     * @return the inter sat visu builder *
      */
     public static InterSatVisuBuilder
         builder(final List<BoundedPropagator> allPropagatorsInput,
-                final AbsoluteDate finalDateInput, final Clock clockInput)
-            throws URISyntaxException,
-                IOException {
+                final AbsoluteDate finalDateInput, final Clock clockInput) {
         return new InterSatVisuBuilder(allPropagatorsInput, finalDateInput,
                                        clockInput);
     }
@@ -500,9 +482,7 @@ public class InterSatVisu
 
     @Override
     public void writeCzmlBlock(final CesiumStreamWriter stream,
-                               final CesiumOutputStream output)
-        throws URISyntaxException,
-            IOException {
+                               final CesiumOutputStream output) {
         if (constellationSatellites.isEmpty()) {
             if (!showList.isEmpty()) {
                 output.setPrettyFormatting(true);
@@ -526,55 +506,50 @@ public class InterSatVisu
 
     @Override
     public InterSatVisu cloneObject() {
-        try {
-            if (this.satellite1 != null && this.satellite2 != null) {
-                final InterSatVisu copy =
-                    InterSatVisu
-                        .builder(this.satellite1, this.satellite2,
-                                 this.finalDate, this.clock)
-                        .withCustomId(getId()).build();
-                copy.setName(getName());
-                return copy;
-            } else if (!propagators.isEmpty()) {
-                final InterSatVisu copy =
-                    InterSatVisu
-                        .builder(this.propagators, this.finalDate, this.clock)
-                        .withCustomId(getId()).build();
-                copy.setName(getName());
-                return copy;
-            } else if (this.constellation != null) {
-                final InterSatVisu copy =
-                    InterSatVisu
-                        .builder(this.constellation, this.finalDate, this.clock)
-                        .withCustomId(getId()).build();
-                copy.setName(getName());
-                return copy;
-            } else {
-                throw new OresiumException(OresiumMessages.NOT_VALID_PRIMARY_OBJECT_FOR_CLONE);
-            }
-        } catch (URISyntaxException | IOException e) {
+        if (this.spacecraft1 != null && this.spacecraft2 != null) {
+            final InterSatVisu copy =
+                InterSatVisu.builder(this.spacecraft1, this.spacecraft2,
+                                     this.finalDate, this.clock)
+                    .withCustomId(getId()).build();
+            copy.setName(getName());
+            return copy;
+        } else if (!propagators.isEmpty()) {
+            final InterSatVisu copy =
+                InterSatVisu
+                    .builder(this.propagators, this.finalDate, this.clock)
+                    .withCustomId(getId()).build();
+            copy.setName(getName());
+            return copy;
+        } else if (!(this.constellation.getPropagators().isEmpty())) {
+            final InterSatVisu copy =
+                InterSatVisu
+                    .builder(this.constellation, this.finalDate, this.clock)
+                    .withCustomId(getId()).build();
+            copy.setName(getName());
+            return copy;
+        } else {
             throw new OresiumException(OresiumMessages.NOT_VALID_PRIMARY_OBJECT_FOR_CLONE);
         }
     }
+
+    // Getters
 
     /**
      * Gets satellite 1.
      *
      * @return the satellite 1
      */
-    public Spacecraft getSatellite1() {
-        return satellite1;
+    public Spacecraft getSpacecraft1() {
+        return spacecraft1.cloneObject();
     }
-
-    // Getters
 
     /**
      * Gets satellite 2.
      *
      * @return the satellite 2
      */
-    public Spacecraft getSatellite2() {
-        return satellite2;
+    public Spacecraft getSpacecraft2() {
+        return spacecraft2.cloneObject();
     }
 
     /**
@@ -593,6 +568,15 @@ public class InterSatVisu
      */
     public Polyline getPolyline() {
         return polyline;
+    }
+
+    /**
+     * Gets the constellation if it exists.
+     *
+     * @return the constellation
+     */
+    public Constellation getConstellation() {
+        return constellation.cloneObject();
     }
 
     /**
@@ -660,6 +644,17 @@ public class InterSatVisu
      */
     public List<Orbit> getOrbits() {
         return Collections.unmodifiableList(orbits);
+    }
+
+    // Setters
+
+    /**
+     * Sets the propagators.
+     *
+     * @param propagators : The propagators to use
+     */
+    public void setPropagators(final List<BoundedPropagator> propagators) {
+        this.propagators = propagators;
     }
 
     /**

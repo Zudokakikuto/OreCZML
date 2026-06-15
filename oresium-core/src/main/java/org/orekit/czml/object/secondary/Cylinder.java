@@ -56,7 +56,7 @@ public class Cylinder
     /**
      * The radius of the top base of the cylinder.
      */
-    private final double topRadius;
+    private double topRadius;
 
     /**
      * The radius of the bottom base of the cylinder.
@@ -71,7 +71,7 @@ public class Cylinder
     /**
      * The height reference of the base.
      */
-    private final CesiumHeightReference heightReference;
+    private CesiumHeightReference heightReference;
 
     /**
      * The color of the cylinder.
@@ -143,7 +143,7 @@ public class Cylinder
     public Cylinder(final TopocentricFrame topocentricFrame,
                     final Spacecraft satellite, final double angleOfAperture,
                     final Clock clock) {
-        final Color color_temp = new Color(255, 255, 255, 50);
+        final Color colorTemp = new Color(255, 255, 255, 50);
 
         final Vector3D positionInCartesian =
             topocentricFrame.getCartesianPoint();
@@ -161,7 +161,7 @@ public class Cylinder
             length * FastMath.tan(FastMath.toRadians(angleOfAperture));
         this.bottomRadius = 10.0;
         this.position = new Position(x, y, z, positionType, clock);
-        this.color = color_temp;
+        this.color = colorTemp;
         this.show = true;
         this.heightReference = CesiumHeightReference.CLAMP_TO_GROUND;
         this.clock = clock;
@@ -179,7 +179,7 @@ public class Cylinder
     public Cylinder(final CzmlGroundStation inputGroundStation,
                     final double angleOfApertureInput, final Clock clock) {
 
-        final Color color_temp = new Color(255, 255, 255, 50);
+        final Color colorTemp = new Color(255, 255, 255, 50);
 
         final double x = inputGroundStation.getPositions().getX();
         final double y = inputGroundStation.getPositions().getY();
@@ -193,7 +193,7 @@ public class Cylinder
             length * FastMath.tan(FastMath.toRadians(angleOfAperture));
         this.bottomRadius = 0.0;
         this.position = new Position(x, y, z, positionType, clock);
-        this.color = color_temp;
+        this.color = colorTemp;
         this.heightReference = CesiumHeightReference.CLAMP_TO_GROUND;
         this.clock = clock;
     }
@@ -210,7 +210,7 @@ public class Cylinder
      */
     public Cylinder(final TopocentricFrame topocentricFrame,
                     final double angleOfApertureInput, final Clock clock) {
-        final Color color_temp = new Color(255, 255, 255, 50);
+        final Color colorTemp = new Color(255, 255, 255, 50);
 
         final double x = topocentricFrame.getCartesianPoint().getX();
         final double y = topocentricFrame.getCartesianPoint().getY();
@@ -225,7 +225,7 @@ public class Cylinder
             length * FastMath.tan(FastMath.toRadians(angleOfApertureInput));
         this.bottomRadius = 0.0;
         this.position = new Position(x, y, z, positionType, clock);
-        this.color = color_temp;
+        this.color = colorTemp;
         this.heightReference = CesiumHeightReference.CLAMP_TO_GROUND;
         this.clock = clock;
     }
@@ -245,7 +245,7 @@ public class Cylinder
     public Cylinder(final TopocentricFrame topocentricFrame,
                     final double angleOfApertureInput, final Clock clock,
                     final Spacecraft spacecraftInput) {
-        final Color color_temp = new Color(255, 255, 255, 50);
+        final Color colorTemp = new Color(255, 255, 255, 50);
 
         final Vector3D positionInCartesian =
             topocentricFrame.getCartesianPoint();
@@ -265,7 +265,7 @@ public class Cylinder
             length * FastMath.tan(FastMath.toRadians(angleOfApertureInput));
         this.bottomRadius = 10.0;
         this.position = new Position(x, y, z, positionType, clock);
-        this.color = color_temp;
+        this.color = colorTemp;
         this.show = true;
         this.heightReference = CesiumHeightReference.CLAMP_TO_GROUND;
         this.clock = clock;
@@ -324,6 +324,11 @@ public class Cylinder
                              this.color, this.position, this.heightReference,
                              this.clock);
         }
+        toReturn.setShow(this.show);
+        toReturn.setTopRadius(this.topRadius);
+        toReturn.setColor(this.color);
+        toReturn.setHeightReference(this.heightReference);
+        toReturn.setAngleOfAperture(this.angleOfAperture);
         return toReturn;
     }
 
@@ -345,6 +350,70 @@ public class Cylinder
      */
     public void setColor(final Color color) {
         this.color = color;
+    }
+
+    /**
+     * Sets heightReference.
+     *
+     * @param heightReference the heightReference
+     */
+    public void
+        setHeightReference(final CesiumHeightReference heightReference) {
+        this.heightReference = heightReference;
+    }
+
+    /**
+     * Sets radius.
+     *
+     * @param radius the radius
+     */
+    public void setTopRadius(final double radius) {
+        this.topRadius = radius;
+    }
+
+    /**
+     * Sets show.
+     *
+     * @param show the show
+     */
+    public void setShow(final boolean show) {
+        this.show = show;
+    }
+
+    /**
+     * Sets topocentricFrame.
+     *
+     * @param topocentricFrame the topocentricFrame
+     */
+    public void setTopocentricFrame(final TopocentricFrame topocentricFrame) {
+        this.topocentricFrame = topocentricFrame;
+    }
+
+    /**
+     * Sets groundStation.
+     *
+     * @param groundStation the groundStation
+     */
+    public void setGroundStation(final CzmlGroundStation groundStation) {
+        this.groundStation = groundStation.cloneObject();
+    }
+
+    /**
+     * Sets spacecraft.
+     *
+     * @param spacecraft the spacecraft
+     */
+    public void setSpacecraft(final Spacecraft spacecraft) {
+        this.spacecraft = spacecraft.cloneObject();
+    }
+
+    /**
+     * Sets angleOfAperture.
+     *
+     * @param angleOfAperture the angleOfAperture
+     */
+    public void setAngleOfAperture(final double angleOfAperture) {
+        this.angleOfAperture = angleOfAperture;
     }
 
     /**
@@ -401,4 +470,30 @@ public class Cylinder
         return clock;
     }
 
+    /**
+     * Gets the topocentric frame.
+     *
+     * @return the topocentric frame
+     */
+    public TopocentricFrame getTopocentricFrame() {
+        return topocentricFrame;
+    }
+
+    /**
+     * Gets the ground station.
+     *
+     * @return the ground station
+     */
+    public CzmlGroundStation getGroundStation() {
+        return groundStation.cloneObject();
+    }
+
+    /**
+     * Gets the spacecraft.
+     *
+     * @return the spacecraft
+     */
+    public Spacecraft getSpacecraft() {
+        return spacecraft.cloneObject();
+    }
 }

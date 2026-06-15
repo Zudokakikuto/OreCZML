@@ -22,9 +22,6 @@ import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.Header;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-
 /**
  * The type Lat long lines test.
  */
@@ -40,15 +37,11 @@ public class LatLongLinesTest
 
     /**
      * Lat long lines constructor test.
-     *
-     * @throws IOException the io exception
      */
     @Test
     @DefaultDataContext
     @DisplayName("Latitude longitude lines contructor test")
-    void LatLongLinesConstructorTest()
-        throws IOException,
-            URISyntaxException {
+    void LatLongLinesConstructorTest() {
 
         // Build the lat long lines
         final LatLongLines lines =
@@ -63,9 +56,7 @@ public class LatLongLinesTest
 
     @Test
     @DisplayName("Latitude longitude lines with builder constructor test")
-    public void LatLongLinesBuilderConstructorTest()
-        throws URISyntaxException,
-            IOException {
+    public void LatLongLinesBuilderConstructorTest() {
 
         // Build the lat long lines with the builder
         final LatLongLines linesBuilder =

@@ -28,14 +28,12 @@ import org.orekit.propagation.BoundedPropagator;
 import org.orekit.time.AbsoluteDate;
 
 import java.awt.Color;
-import java.io.IOException;
-import java.net.URISyntaxException;
 
 /**
  * The type Attitude pointing test.
  */
 @DefaultDataContext
-public class AttitudePointingTest
+class AttitudePointingTest
     extends
     AbstractTest {
 
@@ -58,15 +56,10 @@ public class AttitudePointingTest
     final double clockMultiplier = 10.0;
 
     /**
-     * Attitude pointing constructor test.
-     *
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException the io exception
+     * Attitude pointing constructor test. *
      */
     @Test
-    void AttitudePointingConstructorTest()
-        throws URISyntaxException,
-            IOException {
+    void AttitudePointingConstructorTest() {
 
         final BoundedPropagator propagator =
             dummyPropagator(startDate, stopDate, dummyOrbit(startDate));
@@ -90,9 +83,7 @@ public class AttitudePointingTest
 
     @Test
     @DisplayName("Attitude Pointing with builder constructor Test")
-    public void AttitudePointingBuilderConstructorTest()
-        throws URISyntaxException,
-            IOException {
+    void AttitudePointingBuilderConstructorTest() {
 
         // Build Spacecraft
         final BoundedPropagator propagator =

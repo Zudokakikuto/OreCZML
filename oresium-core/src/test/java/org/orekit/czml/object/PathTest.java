@@ -25,9 +25,6 @@ import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.secondary.Path;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-
 /**
  * The type Path test.
  */
@@ -46,15 +43,11 @@ public class PathTest
 
     /**
      * Path constructor test.
-     *
-     * @throws IOException the io exception
      */
     @Test
     @DefaultDataContext
     @DisplayName("Path constructor test")
-    void PathConstructorTest()
-        throws IOException,
-            URISyntaxException {
+    void PathConstructorTest() {
 
         final Path path = new Path(availability);
 
@@ -66,9 +59,7 @@ public class PathTest
 
     @Test
     @DisplayName("Path coverage constructor test")
-    public void PathCoverageConstructorTest()
-        throws URISyntaxException,
-            IOException {
+    public void PathCoverageConstructorTest() {
 
         final Path pathCoverage = new Path(availability, true);
 

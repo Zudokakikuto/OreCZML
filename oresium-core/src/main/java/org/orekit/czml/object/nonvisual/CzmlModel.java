@@ -166,7 +166,7 @@ public class CzmlModel {
 
         if (this.modelType == ModelType.MODEL_3D) {
             this.absolutePath = absolutePathToModel;
-            this.clock = clockInput;
+            this.clock = clockInput.cloneObject();
             this.show = true;
             this.minimumPixelSize = minimumPixelSizeInput;
             this.maximumScale = maximumScale;
@@ -209,14 +209,10 @@ public class CzmlModel {
      * The generation function for the CZML file for models.
      *
      * @param packet : The packet where the model will be written.
-     * @param output : The output that will write the strings.
-     * @throws IOException the io exception
-     * @throws URISyntaxException the uri syntax exception
+     * @param output : The output that will write the strings. *
      */
     public void generateCZML(final PacketCesiumWriter packet,
-                             final CesiumOutputStream output)
-        throws IOException,
-            URISyntaxException {
+                             final CesiumOutputStream output) {
 
         this.duplicateFile(absolutePath);
 
@@ -248,8 +244,6 @@ public class CzmlModel {
 
         try (PacketCesiumWriter packet = streamWriter.openPacket(output)) {
             this.generateCZML(packet, output);
-        } catch (URISyntaxException | IOException e) {
-            throw new OresiumException(OresiumMessages.STRING_NOT_GENERATED);
         }
         return writer.toString();
     }
@@ -337,6 +331,15 @@ public class CzmlModel {
         return show;
     }
 
+    /**
+     * Get the name of the object.
+     *
+     * @return the name of the object
+     */
+    public String getNameOfObject() {
+        return nameOfObject;
+    }
+
     // Setters
 
     /**
@@ -385,36 +388,51 @@ public class CzmlModel {
     }
 
     /**
+     * Sets the billboard.
+     *
+     * @param billboard : The billboard to consider
+     */
+    public void setBillboard(final Billboard billboard) {
+        this.billboard = billboard.cloneObject();
+    }
+
+    /**
      * CZML writer only understands a relative path, so we will need to
      * duplicate the file to use it to write and then delete it.
      *
      * @param absolutePathInputted : The absolute Path of the object
      */
-    private void duplicateFile(final String absolutePathInputted)
-        throws IOException {
+    protected void duplicateFile(final String absolutePathInputted) {
+        try {
+            if (!(absolutePathInputted == null)) {
+                final File inputtedFile = new File(absolutePathInputted);
+                this.nameOfObject = inputtedFile.getName();
 
-        if (!(absolutePathInputted == null)) {
-            final File inputtedFile = new File(absolutePathInputted);
-            this.nameOfObject = inputtedFile.getName();
+                // If you use cesiumJS, the file needs to be in the public
+                // folder of
+                // the JavaScript file to be read by the local cesiumJS.
+                // Else way, put the path to the resource folder that you are
+                // using.
+                final String Javascript =
+                    Header.getPathToExternalResourceFolder();
+                if (Javascript.isEmpty()) {
+                    this.duplicatedLocalFile = new File(absolutePathInputted);
+                    return;
+                }
+                final String relativePath = Javascript + "/" + nameOfObject;
 
-            // If you use cesiumJS, the file needs to be in the public folder of
-            // the JavaScript file to be read by the local cesiumJS.
-            // Else way, put the path to the resource folder that you are using.
-            final String Javascript = Header.getPathToExternalResourceFolder();
-            if (Javascript.isEmpty()) {
-                this.duplicatedLocalFile = new File(absolutePathInputted);
-                return;
+                final File absoluteFile = new File(absolutePath);
+                final File relativeFile = new File(relativePath);
+                this.duplicatedLocalFile = relativeFile;
+                final Path absolutePathOfFile =
+                    absoluteFile.getAbsoluteFile().toPath();
+                final Path relativePathOfFile =
+                    relativeFile.getAbsoluteFile().toPath();
+                Files.copy(absolutePathOfFile, relativePathOfFile,
+                           StandardCopyOption.REPLACE_EXISTING);
             }
-            final String relativePath = Javascript + "/" + nameOfObject;
-
-            final File absoluteFile = new File(absolutePath);
-            final File relativeFile = new File(relativePath);
-            this.duplicatedLocalFile = relativeFile;
-            final Path absolutePathOfFile =
-                absoluteFile.getAbsoluteFile().toPath();
-            final Path relativePathOfFile = relativeFile.toPath();
-            Files.copy(absolutePathOfFile, relativePathOfFile,
-                       StandardCopyOption.REPLACE_EXISTING);
+        } catch (final IOException e) {
+            throw new OresiumException(OresiumMessages.MODEL_FILE_NOT_COPIED);
         }
     }
 
@@ -443,7 +461,7 @@ public class CzmlModel {
      * @param extensionInput : The string representing the extension of the file
      * @return : The model type of the file.
      */
-    private ModelType checkFromExtension(final String extensionInput) {
+    protected static ModelType checkFromExtension(final String extensionInput) {
         // 3D Models supported
         if (extensionInput.equals("3ds") ||
             extensionInput.equals("3mf") || extensionInput.equals("dae") ||
@@ -474,7 +492,7 @@ public class CzmlModel {
      *
      * @return default satellite resource path
      */
-    private static String getSatelliteResourcePath() {
+    protected static String getSatelliteResourcePath() {
         if (!(CzmlModel.class.getClassLoader()
             .getResource(DEFAULT_MODEL_NAME) == null)) {
             return Objects.requireNonNull(CzmlModel.class.getClassLoader()
@@ -489,22 +507,26 @@ public class CzmlModel {
      * @param packet : The packet where the model will be written.
      * @param output : The output that will write the strings.
      */
-    private void generate3DModel(final PacketCesiumWriter packet,
-                                 final CesiumOutputStream output)
-        throws URISyntaxException {
-        this.uri = new URI(DEFAULT_SLASH_LOCAL + nameOfObject);
-        try (ModelCesiumWriter modelWriter = packet.getModelWriter()) {
-            modelWriter.open(output);
-            final CesiumResourceBehavior cesiumResourceBehavior =
-                CesiumResourceBehavior.LINK_TO;
-            final CesiumResource cesiumResource =
-                new CesiumResource(getUri(), cesiumResourceBehavior);
-            modelWriter.writeGltfProperty(cesiumResource);
-            modelWriter.writeScaleProperty(getScale());
-            modelWriter.writeMaximumScaleProperty(getMaximumScale());
-            modelWriter.writeMinimumPixelSizeProperty(getMinimumPixelSize());
-            modelWriter.writeIncrementallyLoadTexturesProperty(true);
-            modelWriter.writeShowProperty(true);
+    protected void generate3DModel(final PacketCesiumWriter packet,
+                                   final CesiumOutputStream output) {
+        try {
+            this.uri = new URI(DEFAULT_SLASH_LOCAL + nameOfObject);
+            try (ModelCesiumWriter modelWriter = packet.getModelWriter()) {
+                modelWriter.open(output);
+                final CesiumResourceBehavior cesiumResourceBehavior =
+                    CesiumResourceBehavior.LINK_TO;
+                final CesiumResource cesiumResource =
+                    new CesiumResource(getUri(), cesiumResourceBehavior);
+                modelWriter.writeGltfProperty(cesiumResource);
+                modelWriter.writeScaleProperty(getScale());
+                modelWriter.writeMaximumScaleProperty(getMaximumScale());
+                modelWriter
+                    .writeMinimumPixelSizeProperty(getMinimumPixelSize());
+                modelWriter.writeIncrementallyLoadTexturesProperty(true);
+                modelWriter.writeShowProperty(true);
+            }
+        } catch (URISyntaxException e) {
+            throw new OresiumException(OresiumMessages.STRING_MODEL_NOT_COMPLIANT);
         }
     }
 
@@ -514,19 +536,21 @@ public class CzmlModel {
      * @param packet : The packet where the model will be written.
      * @param output : The output that will write the strings.
      */
-    private void write2D(final PacketCesiumWriter packet,
-                         final CesiumOutputStream output)
-        throws IOException,
-            URISyntaxException {
-        if (show) {
-            final BufferedImage image = ImageIO.read(duplicatedLocalFile);
-            final int height = image.getHeight();
-            final NearFarScalar nearFarScalar =
-                new NearFarScalar(1, (double) 80 / height, 1e9,
-                                  (double) 80 / height);
-            this.uri = new URI(DEFAULT_SLASH_LOCAL + nameOfObject);
-            this.billboard = new Billboard(uri.toString(), nearFarScalar);
-            this.billboard.write(packet, output);
+    protected void write2D(final PacketCesiumWriter packet,
+                           final CesiumOutputStream output) {
+        try {
+            if (show) {
+                final BufferedImage image = ImageIO.read(duplicatedLocalFile);
+                final int height = image.getHeight();
+                final NearFarScalar nearFarScalar =
+                    new NearFarScalar(1, (double) 80 / height, 1e9,
+                                      (double) 80 / height);
+                this.uri = new URI(DEFAULT_SLASH_LOCAL + nameOfObject);
+                this.billboard = new Billboard(uri.toString(), nearFarScalar);
+                this.billboard.write(packet, output);
+            }
+        } catch (IOException | URISyntaxException ioE) {
+            throw new OresiumException(OresiumMessages.MODEL_2D_IMAGE_IS_NULL);
         }
     }
 

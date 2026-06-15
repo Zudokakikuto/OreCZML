@@ -305,7 +305,7 @@ public class BodyBuilder {
         if (orientation != null) {
             bodyInput.setOrientation(orientation);
         }
-        if (!(description == null)) {
+        if (description != null) {
             bodyInput.setDescription(description);
         }
         if (noOrbitDisplay) {

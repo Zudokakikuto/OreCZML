@@ -19,15 +19,11 @@ package org.orekit.czml.object.primary;
 import cesiumlanguagewriter.CesiumOutputStream;
 import cesiumlanguagewriter.CesiumStreamWriter;
 import cesiumlanguagewriter.TimeInterval;
-import org.orekit.czml.errors.OresiumException;
-import org.orekit.czml.errors.OresiumMessages;
 import org.orekit.czml.object.secondary.Clock;
 import org.orekit.czml.object.utils.DateUtils;
 
 import java.awt.Color;
-import java.io.IOException;
 import java.io.StringWriter;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,18 +63,14 @@ public abstract class AbstractPrimaryObject<T extends CzmlPrimaryObject<T>>
      */
     private final List<TimeInterval> availabilities = new ArrayList<>();
 
-    /// / Overrides
+    // Overrides
 
     @Override
     public String toString() {
         final StringWriter writer = new StringWriter();
         final CesiumOutputStream output = new CesiumOutputStream(writer);
         final CesiumStreamWriter streamWriter = new CesiumStreamWriter();
-        try {
-            this.writeCzmlBlock(streamWriter, output);
-        } catch (URISyntaxException | IOException e) {
-            throw new OresiumException(OresiumMessages.STRING_NOT_GENERATED);
-        }
+        this.writeCzmlBlock(streamWriter, output);
         return writer.toString();
     }
 
@@ -131,7 +123,7 @@ public abstract class AbstractPrimaryObject<T extends CzmlPrimaryObject<T>>
         this.availabilities.addAll(a);
     }
 
-    //// Public functions
+    // Public functions
 
     // Protected methods
 
@@ -145,11 +137,11 @@ public abstract class AbstractPrimaryObject<T extends CzmlPrimaryObject<T>>
         final Color red = new Color(255, 0, 0);
         final Color orange = new Color(255, 127, 0);
         final Color yellow = new Color(255, 255, 0);
-        final Color light_green = new Color(127, 255, 0);
+        final Color lightGreen = new Color(127, 255, 0);
         final Color green = new Color(0, 255, 0);
-        final Color light_cyan = new Color(0, 255, 127);
+        final Color lightCyan = new Color(0, 255, 127);
         final Color cyan = new Color(0, 255, 255);
-        final Color light_blue = new Color(0, 127, 255);
+        final Color lightBlue = new Color(0, 127, 255);
         final Color blue = new Color(0, 0, 255);
         final Color violet = new Color(127, 0, 255);
         final Color magenta = new Color(255, 0, 255);
@@ -157,11 +149,11 @@ public abstract class AbstractPrimaryObject<T extends CzmlPrimaryObject<T>>
         preMadeColorList.add(red);
         preMadeColorList.add(orange);
         preMadeColorList.add(yellow);
-        preMadeColorList.add(light_green);
+        preMadeColorList.add(lightGreen);
         preMadeColorList.add(green);
-        preMadeColorList.add(light_cyan);
+        preMadeColorList.add(lightCyan);
         preMadeColorList.add(cyan);
-        preMadeColorList.add(light_blue);
+        preMadeColorList.add(lightBlue);
         preMadeColorList.add(blue);
         preMadeColorList.add(violet);
         preMadeColorList.add(magenta);

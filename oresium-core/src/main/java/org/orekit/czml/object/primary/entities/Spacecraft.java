@@ -54,8 +54,6 @@ import org.orekit.time.AbsoluteDate;
 
 import java.awt.Color;
 import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -256,13 +254,9 @@ public class Spacecraft
      *
      * @param propagator : A bounded propagator resulting from an already done
      *        propagation.
-     * @param clock : The clock used for the spacecraft
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException the io exception
+     * @param clock : The clock used for the spacecraft *
      */
-    public Spacecraft(final BoundedPropagator propagator, final Clock clock)
-        throws URISyntaxException,
-            IOException {
+    public Spacecraft(final BoundedPropagator propagator, final Clock clock) {
         this(propagator, propagator.getMinDate(), propagator.getMaxDate(),
              clock.getMultiplier(), DEFAULT_MODEL_PATH, DEFAULT_COLOR,
              String.format(DEFAULT_FORMAT,
@@ -291,18 +285,14 @@ public class Spacecraft
      * @param modelPath : The path to the model to load.
      * @param color : The color of the orbit.
      * @param customID : The custom ID of the Spacecraft.
-     * @param name : The name of the spacecraft.
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException the io exception
+     * @param name : The name of the spacecraft. *
      */
     public Spacecraft(final BoundedPropagator propagator,
                       final AbsoluteDate startDateInput,
                       final AbsoluteDate finalDateInput,
                       final double clockMultiplier, final String modelPath,
                       final Color color, final String customID,
-                      final String name)
-        throws URISyntaxException,
-            IOException {
+                      final String name) {
 
         this.setId(customID);
         this.setName(name);
@@ -359,9 +349,7 @@ public class Spacecraft
 
     @Override
     public void writeCzmlBlock(final CesiumStreamWriter stream,
-                               final CesiumOutputStream output)
-        throws URISyntaxException,
-            IOException {
+                               final CesiumOutputStream output) {
 
         output.setPrettyFormatting(true);
         // If the influence sphere are to be displayed, the path must be written
@@ -384,8 +372,6 @@ public class Spacecraft
                 czmlPosition(packet, output, getCartesianArraylist(),
                              getJulianDates());
 
-            } catch (URISyntaxException | IOException e) {
-                throw new RuntimeException(e);
             }
             if (getDisplayReferenceSystem()) {
                 getSpacecraftReferenceSystem().writeCzmlBlock(stream, output);
@@ -422,41 +408,37 @@ public class Spacecraft
 
     @Override
     public Spacecraft cloneObject() {
-        try {
-            final Spacecraft copy =
-                new Spacecraft(this.getSpacecraftBoundedPropagator(),
-                               this.getClock());
-            if (!this.attitudes.isEmpty()) {
-                copy.setAttitudes(this.attitudes);
-            } else {
-                copy.resetAttitudes();
-            }
-            copy.setAvailability(this.getAvailability());
-            copy.setClock(this.clock);
-            copy.setColor(this.color);
-            copy.setDescription(this.description);
-            copy.setDisplayAttitude(this.displayAttitude);
-            if (displayAttitude) {
-                copy.setOriented(this.oriented);
-                copy.setOrientation(this.orientation);
-            }
-            copy.setDisplayInfluenceSphereChanges(this.displayInfluenceSphereChanges);
-            copy.setDisplayOnlyOnePeriod(this.displayOnlyOnePeriod);
-            copy.setDisplayReferenceSystem(this.displayReferenceSystem);
-            copy.setId(this.getId());
-            copy.setIntervalInfluenceSpheres(this.intervalInfluenceSpheres);
-            copy.setName(this.getName());
-            copy.setPeriod(this.period);
-            copy.setPositionInsideInfluenceSphere(this.positionInsideInfluenceSphere);
-            copy.setPropagator(this.getSpacecraftBoundedPropagator());
-            copy.setModel(model);
-            copy.setSpacecraftPropagator(this.spacecraftPropagator);
-            copy.setSpacecraftReferenceSystem(this.spacecraftReferenceSystem);
-            copy.setTimeInsideInfluenceSphere(this.timeInsideInfluenceSphere);
-            return copy;
-        } catch (URISyntaxException | IOException e) {
-            throw new OresiumException(OresiumMessages.NOT_VALID_PRIMARY_OBJECT_FOR_CLONE);
+        final Spacecraft copy =
+            new Spacecraft(this.getSpacecraftBoundedPropagator(),
+                           this.getClock());
+        if (!this.attitudes.isEmpty()) {
+            copy.setAttitudes(this.attitudes);
+        } else {
+            copy.resetAttitudes();
         }
+        copy.setAvailability(this.getAvailability());
+        copy.setClock(this.clock);
+        copy.setColor(this.color);
+        copy.setDescription(this.description);
+        copy.setDisplayAttitude(this.displayAttitude);
+        if (displayAttitude) {
+            copy.setOriented(this.oriented);
+            copy.setOrientation(this.orientation);
+        }
+        copy.setDisplayInfluenceSphereChanges(this.displayInfluenceSphereChanges);
+        copy.setDisplayOnlyOnePeriod(this.displayOnlyOnePeriod);
+        copy.setDisplayReferenceSystem(this.displayReferenceSystem);
+        copy.setId(this.getId());
+        copy.setIntervalInfluenceSpheres(this.intervalInfluenceSpheres);
+        copy.setName(this.getName());
+        copy.setPeriod(this.period);
+        copy.setPositionInsideInfluenceSphere(this.positionInsideInfluenceSphere);
+        copy.setPropagator(this.getSpacecraftBoundedPropagator());
+        copy.setModel(model);
+        copy.setSpacecraftPropagator(this.spacecraftPropagator);
+        copy.setSpacecraftReferenceSystem(this.spacecraftReferenceSystem);
+        copy.setTimeInsideInfluenceSphere(this.timeInsideInfluenceSphere);
+        return copy;
     }
 
     // Display functions
@@ -1100,9 +1082,7 @@ public class Spacecraft
      */
     private void czmlDisplay(final PacketCesiumWriter packet,
                              final CesiumStreamWriter stream,
-                             final CesiumOutputStream output)
-        throws URISyntaxException,
-            IOException {
+                             final CesiumOutputStream output) {
 
         if (getModelType() == ModelType.MODEL_2D ||
             getModelType() == ModelType.EMPTY_MODEL) {

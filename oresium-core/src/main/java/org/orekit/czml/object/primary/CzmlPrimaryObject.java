@@ -20,9 +20,6 @@ import cesiumlanguagewriter.CesiumOutputStream;
 import cesiumlanguagewriter.CesiumStreamWriter;
 import cesiumlanguagewriter.TimeInterval;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-
 /**
  * CZML Primary Object Interface
  * <p>
@@ -42,13 +39,9 @@ public interface CzmlPrimaryObject<T extends CzmlPrimaryObject<T>> {
      * @param stream : The stream that converts all the strings into
      *        understandable string for the CzmlFile
      * @param output : The output stream of cesium that will contain the strings
-     *        to write into the CzmLFile.
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException the io exception
+     *        to write into the CzmLFile. *
      */
-    void writeCzmlBlock(CesiumStreamWriter stream, CesiumOutputStream output)
-        throws URISyntaxException,
-            IOException;
+    void writeCzmlBlock(CesiumStreamWriter stream, CesiumOutputStream output);
 
     /**
      * Gets id.

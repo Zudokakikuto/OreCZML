@@ -140,21 +140,21 @@ public class CentralBodyReferenceSystem
         vectorToZ.add(centralCartesian);
         vectorToZ.add(plusZCartesian);
 
-        final Polyline XPolyline =
+        final Polyline xPolyline =
             Polyline.vectorBuilder(vectorToX, clock).withColor(color1)
                 .withNearDistance(1).withFarDistance(1e9).build();
 
-        final Polyline YPolyline =
+        final Polyline yPolyline =
             Polyline.vectorBuilder(vectorToY, clock).withColor(color2)
                 .withNearDistance(1).withFarDistance(1e9).build();
 
-        final Polyline ZPolyline =
+        final Polyline zPolyline =
             Polyline.vectorBuilder(vectorToZ, clock).withColor(color3)
                 .withNearDistance(1).withFarDistance(1e9).build();
 
-        this.polylines.add(XPolyline);
-        this.polylines.add(YPolyline);
-        this.polylines.add(ZPolyline);
+        this.polylines.add(xPolyline);
+        this.polylines.add(yPolyline);
+        this.polylines.add(zPolyline);
     }
 
     /**

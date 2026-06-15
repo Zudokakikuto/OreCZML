@@ -26,8 +26,6 @@ import org.orekit.propagation.BoundedPropagator;
 import org.orekit.time.AbsoluteDate;
 
 import java.awt.Color;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,15 +52,10 @@ public class GroundTrackTest
     final AbsoluteDate finalDate = startDate.shiftedBy(60.0);
 
     /**
-     * Ground track constructor test.
-     *
-     * @throws IOException the io exception
-     * @throws URISyntaxException the uri syntax exception
+     * Ground track constructor test. *
      */
     @Test
-    void GroundTrackConstructorTest()
-        throws IOException,
-            URISyntaxException {
+    void GroundTrackConstructorTest() {
 
         final BoundedPropagator propagator =
             dummyPropagator(startDate, finalDate, dummyOrbit(startDate));
@@ -82,9 +75,7 @@ public class GroundTrackTest
 
     @Test
     @DisplayName("Ground track builder constructor test")
-    public void GroundTrackBuilderConstructorTest()
-        throws URISyntaxException,
-            IOException {
+    public void GroundTrackBuilderConstructorTest() {
 
         final BoundedPropagator propagator =
             dummyPropagator(startDate, finalDate, dummyOrbit(startDate));
@@ -107,9 +98,7 @@ public class GroundTrackTest
 
     @Test
     @DisplayName("Ground Track constellation constructor test")
-    public void GroundTrackConstellationConstructorTest()
-        throws URISyntaxException,
-            IOException {
+    public void GroundTrackConstellationConstructorTest() {
 
         final BoundedPropagator propagator =
             dummyPropagator(startDate, finalDate, dummyOrbit(startDate));

@@ -22,8 +22,6 @@ import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.Header;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,14 +40,10 @@ public class PolygonTest
 
     /**
      * Polygon constructor test.
-     *
-     * @throws IOException the io exception
      */
     @Test
     @DefaultDataContext
-    void PolygonConstructorTest()
-        throws IOException,
-            URISyntaxException {
+    void PolygonConstructorTest() {
 
         final List<Cartesian> cartesians = randomCartesian();
 

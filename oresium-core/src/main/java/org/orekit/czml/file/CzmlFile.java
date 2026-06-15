@@ -28,7 +28,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -107,11 +106,7 @@ public class CzmlFile {
 
             // Write every object in output
             for (final CzmlPrimaryObject object : noDuplicates) {
-                try {
-                    object.writeCzmlBlock(streamWriter, output);
-                } catch (URISyntaxException | IOException e) {
-                    throw new OresiumException(OresiumMessages.STRING_NOT_GENERATED);
-                }
+                object.writeCzmlBlock(streamWriter, output);
             }
 
             return writer + System.lineSeparator() + "]";
@@ -122,13 +117,9 @@ public class CzmlFile {
      * This function writes all the primary objects into the czml file from a
      * path.
      *
-     * @param outputFilePath file to write in
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException the io exception
+     * @param outputFilePath file to write in *
      */
-    public void write(final String outputFilePath)
-        throws URISyntaxException,
-            IOException {
+    public void write(final String outputFilePath) {
         write(new File(outputFilePath));
     }
 
@@ -136,13 +127,9 @@ public class CzmlFile {
      * This function writes all the primary objects into the czml file from a
      * File object.
      *
-     * @param outputFile file to write in
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException the io exception
+     * @param outputFile file to write in *
      */
-    public void write(final File outputFile)
-        throws URISyntaxException,
-            IOException {
+    public void write(final File outputFile) {
         if (objects.isEmpty()) {
             throw new OresiumException(OresiumMessages.HEADER_ALONE);
         }
@@ -178,15 +165,21 @@ public class CzmlFile {
             }
 
             // Write in file
-            final boolean out = outputFile.getParentFile().mkdirs(); // Create
-                                                                     // output
-                                                                     // directory
-                                                                     // if
+            if (outputFile.getParentFile() != null) {
+                final boolean out = outputFile.getParentFile().mkdirs(); // Create
+            } else {
+                throw new OresiumException(OresiumMessages.PATH_PROBLEM_WITH_CZML_FILE);
+            }
+            // output
+            // directory
+            // if
             // needed
-            try (BufferedWriter FileWriter =
+            try (BufferedWriter fileWriter =
                 Files.newBufferedWriter(outputFile.toPath(),
                                         StandardCharsets.UTF_8)) {
-                FileWriter.write(content + System.lineSeparator() + "]");
+                fileWriter.write(content + System.lineSeparator() + "]");
+            } catch (IOException e) {
+                throw new OresiumException(OresiumMessages.CZML_FILE_NOT_CREATED);
             }
         }
         clear();

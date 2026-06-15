@@ -31,14 +31,11 @@ import org.orekit.files.ccsds.ndm.odm.oem.Oem;
 import org.orekit.files.ccsds.ndm.odm.oem.OemParser;
 import org.orekit.time.AbsoluteDate;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-
 /**
  * The type Clock test.
  */
 @DefaultDataContext
-public class ClockTest
+class ClockTest
     extends
     AbstractTest {
 
@@ -56,13 +53,9 @@ public class ClockTest
 
     /**
      * Clock constructor test.
-     *
-     * @throws IOException the io exception
      */
     @Test
-    void ClockConstructorTest()
-        throws IOException,
-            URISyntaxException {
+    void ClockConstructorTest() {
 
         final Clock clock = new Clock(startDate, finalDate, 10.0);
 
@@ -75,9 +68,7 @@ public class ClockTest
 
     @Test
     @DisplayName("Clock coverage constructor test")
-    public void ClockCoverageConstructorTest()
-        throws URISyntaxException,
-            IOException {
+    void ClockCoverageConstructorTest() {
 
         final TimeInterval interval =
             new TimeInterval(header.getAvailability().getStart(),
@@ -96,9 +87,7 @@ public class ClockTest
 
     @Test
     @DisplayName("Oem Clock constructor test")
-    public void ClockOemConstructorTest()
-        throws URISyntaxException,
-            IOException {
+    void ClockOemConstructorTest() {
         final String OemPath = loadResources("oemForOemTuto.xml");
         final DataSource dataSource = new DataSource(OemPath);
         final ParserBuilder parserBuilder = new ParserBuilder();

@@ -22,8 +22,6 @@ import cesiumlanguagewriter.CesiumOutputStream;
 import cesiumlanguagewriter.CesiumStreamWriter;
 import cesiumlanguagewriter.JulianDate;
 import cesiumlanguagewriter.PacketCesiumWriter;
-import cesiumlanguagewriter.TimeInterval;
-import org.orekit.bodies.GeodeticPoint;
 import org.orekit.czml.object.nonvisual.PointOnBody;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
 import org.orekit.czml.object.primary.entities.Spacecraft;
@@ -32,8 +30,6 @@ import org.orekit.czml.object.secondary.Polygon;
 import org.orekit.geometry.fov.FieldOfView;
 
 import java.awt.Color;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -78,12 +74,6 @@ public class CoveredSurfaceOnBody
      * covered.
      */
     private final FieldOfObservation fieldOfObservation;
-
-    /**
-     * The list of the footprints in time.
-     */
-    private final List<List<List<GeodeticPoint>>> footprintsInTime =
-        new ArrayList<>();
 
     /**
      * All the cartesians of all the points in time.
@@ -176,8 +166,6 @@ public class CoveredSurfaceOnBody
             final JulianDate t0 = fieldOfObservation.getJulianDates().get(i);
             final JulianDate t1 =
                 fieldOfObservation.getJulianDates().get(i + 1);
-            final TimeInterval tInterval = new TimeInterval(t0, t1);
-            ;
 
             // Get current polygon and close it off
             final List<Cartesian> currentCartesianList =
@@ -210,9 +198,7 @@ public class CoveredSurfaceOnBody
 
     @Override
     public void writeCzmlBlock(final CesiumStreamWriter stream,
-                               final CesiumOutputStream output)
-        throws URISyntaxException,
-            IOException {
+                               final CesiumOutputStream output) {
 
         output.setPrettyFormatting(true);
 

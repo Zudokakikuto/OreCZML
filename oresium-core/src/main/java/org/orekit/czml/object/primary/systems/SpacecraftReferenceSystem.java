@@ -24,8 +24,6 @@ import org.orekit.czml.object.nonvisual.CzmlModel;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
 import org.orekit.czml.object.primary.entities.Spacecraft;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Objects;
 
 /**
@@ -150,8 +148,6 @@ public class SpacecraftReferenceSystem
             packet.writePositionPropertyReference(referencePosition);
             packet.writeOrientationPropertyReference(referenceOrientation);
             this.getReferenceSystemModel().generateCZML(packet, output);
-        } catch (IOException | URISyntaxException e) {
-            throw new RuntimeException(e);
         }
     }
 

@@ -80,12 +80,12 @@ public class AttitudePointingBuilder {
     /**
      * To display or not the trace of the pointing on the ground.
      */
-    private Boolean displayPointingPath = false;
+    private boolean displayPointingPath = false;
 
     /**
      * To display a period of the pointing path or not.
      */
-    private Boolean displayPeriodPointingPath = false;
+    private boolean displayPeriodPointingPath = false;
 
     // Constructor
 

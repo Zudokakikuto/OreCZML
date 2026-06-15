@@ -22,9 +22,6 @@ import org.orekit.czml.object.secondary.Orientation;
 import org.orekit.files.ccsds.ndm.adm.aem.Aem;
 import org.orekit.propagation.BoundedPropagator;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-
 /**
  * Aem adaptor
  * <p>
@@ -50,14 +47,10 @@ public record AemAdaptor(Aem aem) {
      *
      * @param propagator the propagator
      * @param clock the clock
-     * @return the orientation
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException the io exception
+     * @return the orientation *
      */
     public Orientation buildOrientation(final BoundedPropagator propagator,
-                                        final Clock clock)
-        throws URISyntaxException,
-            IOException {
+                                        final Clock clock) {
         return new Orientation(aem.getSegments().get(0).getAttitudeProvider(),
                                propagator, clock, Rotation.IDENTITY, false);
     }

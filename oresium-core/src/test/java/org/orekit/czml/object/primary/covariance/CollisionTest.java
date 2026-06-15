@@ -22,7 +22,9 @@ import org.hipparchus.ode.nonstiff.AdaptiveStepsizeIntegrator;
 import org.hipparchus.ode.nonstiff.DormandPrince853Integrator;
 import org.hipparchus.util.FastMath;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.file.AbstractTest;
@@ -47,8 +49,6 @@ import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.Constants;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,7 +57,7 @@ import java.util.Optional;
 /**
  * The type Collision test.
  */
-public class CollisionTest
+class CollisionTest
     extends
     AbstractTest {
 
@@ -92,19 +92,43 @@ public class CollisionTest
                            PositionAngleType.MEAN, FramesFactory.getEME2000(),
                            startDate, Constants.WGS84_EARTH_MU);
 
-    /**
-     * Collision constructor test.
-     *
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException the io exception
-     */
-    @DisplayName("Collision constructor test")
-    @Test
-    @DefaultDataContext
-    void CollisionConstructorTest()
-        throws URISyntaxException,
-            IOException {
+    /* Propagators . */
 
+    /** Propagator 1. */
+    Propagator propagator1 = null;
+
+    /** Propagator 2. */
+    Propagator propagator2 = null;
+
+    /* Bounded propagators. */
+
+    /** Bounded Propagator 1. */
+    BoundedPropagator boundedPropagator1 = null;
+
+    /** Bounded Propagator 2. */
+    BoundedPropagator boundedPropagator2 = null;
+
+    /* Spacecrafts. */
+
+    /** Spacecraft 1. */
+    Spacecraft spacecraft1 = null;
+
+    /** Spacecraft 2. */
+    Spacecraft spacecraft2 = null;
+
+    /* State covariance. */
+
+    /** State covariance 1. */
+    List<StateCovariance> covariances1 = null;
+
+    /** State covariance 2. */
+    List<StateCovariance> covariances2 = null;
+
+    /** Collision coverage. */
+    Collision collisionCoverage = null;
+
+    @BeforeEach
+    void setup() {
         // Bounded Propagators for spacecrafts
         final Map<Propagator, BoundedPropagator> mapPropagators1 =
             propagatorFromOrbit(startDate, finalDate, initialOrbit1);
@@ -116,26 +140,18 @@ public class CollisionTest
         final Optional<Propagator> propagatorOptional2 =
             mapPropagators2.keySet().stream().findFirst();
 
-        Propagator propagator1 = null;
-        Propagator propagator2 = null;
-        if (propagatorOptional1.isPresent()) {
-            propagator1 = propagatorOptional1.get();
-        }
-        if (propagatorOptional2.isPresent()) {
-            propagator2 = propagatorOptional2.get();
-        }
+        propagatorOptional1.ifPresent(propagator -> propagator1 = propagator);
+        propagatorOptional2.ifPresent(propagator -> propagator2 = propagator);
 
-        final BoundedPropagator boundedPropagator1 =
-            mapPropagators1.get(propagator1);
-        final BoundedPropagator boundedPropagator2 =
-            mapPropagators2.get(propagator2);
+        boundedPropagator1 = mapPropagators1.get(propagator1);
+        boundedPropagator2 = mapPropagators2.get(propagator2);
 
         // Spacecrafts
-        final Spacecraft satellite1 =
+        spacecraft1 =
             Spacecraft
                 .builder(boundedPropagator1, header.getClock().getMultiplier())
                 .withOnlyOnePeriod().build();
-        final Spacecraft satellite2 =
+        spacecraft2 =
             Spacecraft
                 .builder(boundedPropagator2, header.getClock().getMultiplier())
                 .withOnlyOnePeriod().build();
@@ -151,18 +167,46 @@ public class CollisionTest
             new StateCovariance(realMatrix, startDate,
                                 FramesFactory.getEME2000(),
                                 OrbitType.EQUINOCTIAL, PositionAngleType.MEAN);
-        Assertions.assertNotNull(propagator1);
-        final List<StateCovariance> covariances1 =
-            covariancePropagation(satellite1, propagator1, stateCovariance,
+        covariances1 =
+            covariancePropagation(spacecraft1, propagator1, stateCovariance,
                                   header.getClock().getMultiplier());
-        Assertions.assertNotNull(propagator2);
-        final List<StateCovariance> covariances2 =
-            covariancePropagation(satellite2, propagator2, stateCovariance,
+        covariances2 =
+            covariancePropagation(spacecraft2, propagator2, stateCovariance,
                                   header.getClock().getMultiplier());
+
+        /** Collision coverage. */
+        collisionCoverage =
+            Collision.builder(spacecraft1, spacecraft2, covariances1,
+                              covariances2, LOFType.TNW, LOFType.TNW)
+                .build();
+    }
+
+    /** Basic constructor test. */
+    @DisplayName("Basic Collision constructor test")
+    @Test
+    void BasicConstructorTest() {
+
+        final Collision collision =
+            new Collision(spacecraft1, spacecraft2, covariances1, covariances2,
+                          LOFType.TNW, LOFType.TNW);
+
+        final String pathFile =
+            loadResources("templateFile/object/primary/covariances/collision/CollisionBasicConstructorTemplate.txt");
+
+        verifyFileOutput(pathFile, collision.toString(), 1e-4);
+    }
+
+    /**
+     * Collision constructor test. *
+     */
+    @DisplayName("Collision constructor test")
+    @Test
+    @DefaultDataContext
+    void CollisionConstructorTest() {
 
         // Collision object
         final Collision collision =
-            Collision.builder(satellite1, satellite2, covariances1,
+            Collision.builder(spacecraft1, spacecraft2, covariances1,
                               covariances2, LOFType.TNW, LOFType.TNW)
                 .build();
 
@@ -170,21 +214,19 @@ public class CollisionTest
         final String pathFile =
             loadResources("templateFile/object/primary/covariances/collision/CollisionTemplate.txt");
 
+        // Assertions
+        Assertions.assertNotNull(propagator1);
+        Assertions.assertNotNull(propagator2);
         verifyFileOutput(pathFile, collision.toString(), 1e-4);
     }
 
     /**
-     * Collision Builder constructor test.
-     *
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException the io exception
+     * Collision Builder constructor test. *
      */
     @DisplayName("Collision Builder constructor test")
     @Test
     @DefaultDataContext
-    void CollisionBuilderConstructorTest()
-        throws URISyntaxException,
-            IOException {
+    void CollisionBuilderConstructorTest() {
 
         // Bounded Propagators for spacecrafts
         final Map<Propagator, BoundedPropagator> mapPropagators1 =
@@ -253,6 +295,129 @@ public class CollisionTest
             loadResources("templateFile/object/primary/covariances/collision/CollisionWithBuilderTemplate.txt");
 
         verifyFileOutput(builderPathFile, collisionBuilder.toString(), 1e-4);
+    }
+
+    @Nested
+    public class GetterSetterTests {
+
+        @Test
+        public void CovarianceFirstSatelliteTest() {
+            final Covariance covariance =
+                new Covariance(spacecraft1, covariances1, LOFType.TNW);
+
+            Assertions.assertEquals(covariance.toString(), collisionCoverage
+                .getCovarianceFirstSatellite().toString());
+
+            final Covariance covarianceToSet =
+                new Covariance(spacecraft2, covariances2, LOFType.TNW);
+            collisionCoverage.setCovarianceFirstSatellite(covarianceToSet);
+
+            Assertions.assertEquals(covarianceToSet.toString(),
+                                    collisionCoverage
+                                        .getCovarianceFirstSatellite()
+                                        .toString());
+
+            collisionCoverage.setCovarianceFirstSatellite(covariance);
+        }
+
+        @Test
+        public void CovarianceSecondSatelliteTest() {
+            final Covariance covariance =
+                new Covariance(spacecraft2, covariances2, LOFType.TNW);
+
+            Assertions.assertEquals(covariance.toString(), collisionCoverage
+                .getCovarianceSecondSatellite().toString());
+
+            final Covariance covarianceToSet =
+                new Covariance(spacecraft1, covariances1, LOFType.TNW);
+            collisionCoverage.setCovarianceFirstSatellite(covarianceToSet);
+
+            Assertions.assertEquals(covarianceToSet.toString(),
+                                    collisionCoverage
+                                        .getCovarianceFirstSatellite()
+                                        .toString());
+
+            collisionCoverage.setCovarianceFirstSatellite(covariance);
+        }
+
+        @Test
+        public void FirstSpacecraftTest() {
+            Assertions.assertEquals(spacecraft1,
+                                    collisionCoverage.getFirstSpacecraft());
+
+            collisionCoverage.setFirstSpacecraft(spacecraft2);
+
+            Assertions.assertEquals(spacecraft2,
+                                    collisionCoverage.getFirstSpacecraft());
+
+            collisionCoverage.setFirstSpacecraft(spacecraft1);
+        }
+
+        @Test
+        public void SecondSpacecraftTest() {
+            Assertions.assertEquals(spacecraft2,
+                                    collisionCoverage.getSecondSpacecraft());
+
+            collisionCoverage.setSecondSpacecraft(spacecraft1);
+
+            Assertions.assertEquals(spacecraft1,
+                                    collisionCoverage.getFirstSpacecraft());
+
+            collisionCoverage.setSecondSpacecraft(spacecraft2);
+        }
+
+        @Test
+        public void FirstCovarianceListTest() {
+            Assertions.assertEquals(covariances1,
+                                    collisionCoverage.getFirstCovarianceList());
+
+            collisionCoverage.setFirstCovarianceList(covariances2);
+
+            Assertions.assertEquals(covariances2,
+                                    collisionCoverage.getFirstCovarianceList());
+
+            collisionCoverage.setFirstCovarianceList(covariances1);
+        }
+
+        @Test
+        public void SecondCovarianceListTest() {
+            Assertions
+                .assertEquals(covariances2,
+                              collisionCoverage.getSecondCovarianceList());
+
+            collisionCoverage.setSecondCovarianceList(covariances1);
+
+            Assertions.assertEquals(covariances1,
+                                    collisionCoverage.getFirstCovarianceList());
+
+            collisionCoverage.setSecondCovarianceList(covariances2);
+        }
+
+        @Test
+        public void firstLOF() {
+            Assertions.assertEquals(LOFType.TNW,
+                                    collisionCoverage.getFirstLof());
+
+            collisionCoverage.setFirstLof(LOFType.ENU);
+
+            Assertions.assertEquals(LOFType.ENU,
+                                    collisionCoverage.getFirstLof());
+
+            collisionCoverage.setFirstLof(LOFType.TNW);
+        }
+
+        @Test
+        public void secondLOF() {
+            Assertions.assertEquals(LOFType.TNW,
+                                    collisionCoverage.getSecondLof());
+
+            collisionCoverage.setSecondLof(LOFType.ENU);
+
+            Assertions.assertEquals(LOFType.ENU,
+                                    collisionCoverage.getSecondLof());
+
+            collisionCoverage.setSecondLof(LOFType.TNW);
+        }
     }
 
     private Map<Propagator, BoundedPropagator>

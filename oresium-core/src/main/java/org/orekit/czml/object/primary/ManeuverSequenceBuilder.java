@@ -23,8 +23,6 @@ import org.orekit.czml.object.secondary.Clock;
 import org.orekit.forces.maneuvers.Maneuver;
 import org.orekit.frames.LOF;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -181,9 +179,13 @@ public class ManeuverSequenceBuilder {
         this.spacecraft = spacecraftInput;
         this.directions = new ArrayList<>(directionsInput);
         this.lof = lofInput;
-        this.customID =
-            ManeuverSequence.DEFAULT_ID +
-                        maneuvers.subList(0, maneuvers.size() - 1);
+        if (!maneuversInput.isEmpty()) {
+            this.customID =
+                ManeuverSequence.DEFAULT_ID +
+                            maneuvers.subList(0, maneuvers.size() - 1);
+        } else {
+            this.customID = ManeuverSequence.DEFAULT_ID;
+        }
         this.clock = clock;
     }
 
@@ -237,12 +239,8 @@ public class ManeuverSequenceBuilder {
      *
      * @return : A maneuver sequence object with the given parameters of the
      *         builder.
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException the io exception
      */
-    public ManeuverSequence build()
-        throws URISyntaxException,
-            IOException {
+    public ManeuverSequence build() {
         if (!(maneuvers == null)) {
             if (direction == null) {
                 return new ManeuverSequence(sequence, maneuvers, spacecraft,

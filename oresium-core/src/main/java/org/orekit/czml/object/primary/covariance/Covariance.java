@@ -25,8 +25,6 @@ import cesiumlanguagewriter.Reference;
 import org.hipparchus.util.FastMath;
 import org.orekit.attitudes.Attitude;
 import org.orekit.attitudes.LofOffset;
-import org.orekit.czml.errors.OresiumException;
-import org.orekit.czml.errors.OresiumMessages;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
 import org.orekit.czml.object.primary.entities.Spacecraft;
 import org.orekit.czml.object.secondary.Clock;
@@ -39,8 +37,6 @@ import org.orekit.propagation.SpacecraftState;
 import org.orekit.propagation.StateCovariance;
 
 import java.awt.Color;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -215,18 +211,13 @@ public class Covariance
 
     @Override
     public Covariance cloneObject() {
-        try {
-            final Covariance copy =
-                Covariance
-                    .builder(this.spacecraft, this.covarianceList, this.lof)
-                    .withColor(this.color).build();
-            copy.setAvailability(this.getAvailability());
-            copy.setId(getId());
-            copy.setName(getName());
-            return copy;
-        } catch (URISyntaxException | IOException e) {
-            throw new OresiumException(OresiumMessages.NOT_VALID_PRIMARY_OBJECT_FOR_CLONE);
-        }
+        final Covariance copy =
+            Covariance.builder(this.spacecraft, this.covarianceList, this.lof)
+                .withColor(this.color).build();
+        copy.setAvailability(this.getAvailability());
+        copy.setId(getId());
+        copy.setName(getName());
+        return copy;
     }
 
     // Getters

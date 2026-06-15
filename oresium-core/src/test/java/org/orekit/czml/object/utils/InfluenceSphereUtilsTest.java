@@ -50,8 +50,6 @@ import org.orekit.utils.Constants;
 import org.orekit.utils.IERSConventions;
 
 import java.awt.Color;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,9 +61,7 @@ public class InfluenceSphereUtilsTest
     private final double data = initializeOrekitData();
 
     @Test
-    void findCrossingSphereDatesTest()
-        throws URISyntaxException,
-            IOException {
+    void findCrossingSphereDatesTest() {
 
         final String output = generateOutput();
 

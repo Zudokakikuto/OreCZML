@@ -27,10 +27,10 @@ import cesiumlanguagewriter.TimeInterval;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.orekit.bodies.BodyShape;
 import org.orekit.bodies.GeodeticPoint;
+import org.orekit.czml.errors.OresiumException;
+import org.orekit.czml.errors.OresiumMessages;
 import org.orekit.czml.object.primary.AbstractPrimaryObject;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -107,6 +107,9 @@ public class PointOnBody
      */
     private double periodForPath;
 
+    /** The body considered. */
+    private final BodyShape body;
+
     /** The availability of the point on body. */
 
     // Constructor
@@ -135,9 +138,12 @@ public class PointOnBody
 
         // Use the julianDates array to determine the time interval
         final int sz = julianDates.size();
-        this.setAvailability(new TimeInterval(julianDates.get(0),
-                                              julianDates.get(sz - 1)));
+        if (!julianDates.isEmpty()) {
+            this.setAvailability(new TimeInterval(julianDates.get(0),
+                                                  julianDates.get(sz - 1)));
+        }
 
+        this.body = body;
         this.julianDates = new ArrayList<>(julianDates);
         for (final GeodeticPoint currentGeodeticPoint : geodeticPoints) {
             if (currentGeodeticPoint == null) {
@@ -158,9 +164,7 @@ public class PointOnBody
 
     @Override
     public void writeCzmlBlock(final CesiumStreamWriter stream,
-                               final CesiumOutputStream output)
-        throws URISyntaxException,
-            IOException {
+                               final CesiumOutputStream output) {
         output.setPrettyFormatting(true);
         try (PacketCesiumWriter packet = stream.openPacket(output)) {
             packet.writeId(getId());
@@ -176,7 +180,11 @@ public class PointOnBody
 
     @Override
     public PointOnBody cloneObject() {
-        return null;
+        if (footprintsInTime.isEmpty() || julianDates.isEmpty()) {
+            throw new OresiumException(OresiumMessages.NOT_VALID_SECONDARY_OBJECT_FOR_CLONE);
+        } else {
+            return new PointOnBody(julianDates, footprintsInTime, body);
+        }
     }
 
     // Gets
@@ -197,6 +205,42 @@ public class PointOnBody
      */
     public List<Cartesian> getCartesians() {
         return Collections.unmodifiableList(cartesians);
+    }
+
+    /**
+     * Gets the body.
+     *
+     * @return the body considered.
+     */
+    public BodyShape getBody() {
+        return body;
+    }
+
+    /**
+     * Gets the period for the path.
+     *
+     * @return gets the period for the path.
+     */
+    public double getPeriodForPath() {
+        return periodForPath;
+    }
+
+    /**
+     * Gets the position list.
+     *
+     * @return the position list of vector 3D
+     */
+    public List<Vector3D> getPositionsList() {
+        return Collections.unmodifiableList(positionsList);
+    }
+
+    /**
+     * Gets the footprints in time.
+     *
+     * @return a list of geodetic point representing the footprint in time
+     */
+    public List<GeodeticPoint> getFootprintsInTime() {
+        return Collections.unmodifiableList(footprintsInTime);
     }
 
     /**

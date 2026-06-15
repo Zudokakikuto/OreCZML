@@ -23,13 +23,11 @@ import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.primary.Header;
 
 import java.awt.Color;
-import java.io.IOException;
-import java.net.URISyntaxException;
 
 /**
  * The type Central body reference system test.
  */
-public class CentralBodyReferenceSystemTest
+class CentralBodyReferenceSystemTest
     extends
     AbstractTest {
 
@@ -40,17 +38,12 @@ public class CentralBodyReferenceSystemTest
     final Header header = dummyHeader();
 
     /**
-     * Central body reference system constructor test.
-     *
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException the io exception
+     * Central body reference system constructor test. *
      */
     @Test
     @DefaultDataContext
     @DisplayName("Central body reference system constructor test")
-    void CentralBodyReferenceSystemConstructorTest()
-        throws URISyntaxException,
-            IOException {
+    void CentralBodyReferenceSystemConstructorTest() {
 
         final CentralBodyReferenceSystem system =
             CentralBodyReferenceSystem.builder(header.getClock()).build();
@@ -63,9 +56,7 @@ public class CentralBodyReferenceSystemTest
 
     @Test
     @DisplayName("Central body reference system with builder constructor test")
-    public void CentralBodyReferenceSystemBuilderConstructorTest()
-        throws URISyntaxException,
-            IOException {
+    void CentralBodyReferenceSystemBuilderConstructorTest() {
 
         final CentralBodyReferenceSystem systemBuilder =
             CentralBodyReferenceSystem.builder(header.getClock())

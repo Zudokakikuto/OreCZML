@@ -41,8 +41,6 @@ import org.orekit.propagation.SpacecraftState;
 import org.orekit.time.AbsoluteDate;
 
 import java.awt.Color;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -271,9 +269,7 @@ public class GroundTrack
 
     @Override
     public void writeCzmlBlock(final CesiumStreamWriter stream,
-                               final CesiumOutputStream output)
-        throws URISyntaxException,
-            IOException {
+                               final CesiumOutputStream output) {
         if (groundTracks.isEmpty()) {
             output.setPrettyFormatting(true);
             try (PacketCesiumWriter packet = stream.openPacket(output)) {

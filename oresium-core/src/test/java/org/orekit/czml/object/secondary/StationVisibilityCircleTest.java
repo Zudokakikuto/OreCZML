@@ -16,9 +16,6 @@ import org.orekit.frames.TopocentricFrame;
 import org.orekit.propagation.BoundedPropagator;
 import org.orekit.time.AbsoluteDate;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-
 /**
  * Test class for the station visibility circle object.
  *
@@ -62,17 +59,13 @@ public class StationVisibilityCircleTest
     final TopocentricFrame topocentricToulouse =
         new TopocentricFrame(getEarth(), toulouseFrame, frameName);
 
-    public StationVisibilityCircleTest()
-        throws URISyntaxException,
-            IOException {
+    public StationVisibilityCircleTest() {
     }
 
     /** Tests for the constructor of the station visibility circle object. */
     @Test
     @DisplayName("Station visibility circle cosntructor test")
-    void stationVisibilityCircleConstructorTest()
-        throws URISyntaxException,
-            IOException {
+    void stationVisibilityCircleConstructorTest() {
 
         final CzmlGroundStation groundStation =
             CzmlGroundStation.builder(topocentricToulouse, clock).build();
@@ -92,9 +85,7 @@ public class StationVisibilityCircleTest
 
     @Test
     @DisplayName("Station visibility circle czml file test")
-    public void StationVisibilityCircleCzmlFileTest()
-        throws URISyntaxException,
-            IOException {
+    public void StationVisibilityCircleCzmlFileTest() {
 
         // output of the writing
         final String output = generateOutput();

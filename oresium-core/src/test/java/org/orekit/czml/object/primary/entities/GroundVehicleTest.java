@@ -16,19 +16,33 @@
  */
 package org.orekit.czml.object.primary.entities;
 
+import org.hipparchus.geometry.euclidean.threed.Vector3D;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.orekit.annotation.DefaultDataContext;
+import org.orekit.attitudes.Attitude;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.object.nonvisual.CzmlModel;
 import org.orekit.czml.object.primary.Header;
+import org.orekit.czml.object.secondary.Clock;
+import org.orekit.czml.object.secondary.Orientation;
 import org.orekit.czml.object.utils.DateUtils;
+import org.orekit.frames.FramesFactory;
+import org.orekit.propagation.Propagator;
 import org.orekit.time.AbsoluteDate;
+import org.orekit.utils.AbsolutePVCoordinates;
+import org.orekit.utils.PVCoordinates;
 import org.orekit.utils.PVCoordinatesProvider;
+import org.orekit.utils.TimeStampedAngularCoordinates;
+import org.orekit.utils.TimeStampedPVCoordinates;
 import org.orekit.utils.WaypointPVBuilder;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
+import java.awt.Color;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The type Satellite test.
@@ -50,16 +64,18 @@ public class GroundVehicleTest
 
     final AbsoluteDate finalDate = startDate.shiftedBy(60.0);
 
+    final Propagator dummyPropagator =
+        dummyPropagator(startDate, finalDate, dummyOrbit(startDate));
+
+    final GroundVehicle dummyVehicle =
+        new GroundVehicle(dummyPropagator, startDate, finalDate, getEarth(),
+                          60.0);
+
     /**
-     * Satellite constructor test.
-     *
-     * @throws IOException the io exception
-     * @throws URISyntaxException the uri syntax exception
+     * Satellite constructor test. *
      */
     @Test
-    void GroundVehicleConstructorTest()
-        throws IOException,
-            URISyntaxException {
+    void GroundVehicleConstructorTest() {
 
         final String planeModel = loadResources("Default3DModels/airplane.glb");
         final CzmlModel model =
@@ -79,15 +95,10 @@ public class GroundVehicleTest
     }
 
     /**
-     * Satellite constructor test.
-     *
-     * @throws IOException the io exception
-     * @throws URISyntaxException the uri syntax exception
+     * Satellite constructor test. *
      */
     @Test
-    void GroundVehicleLabelTest()
-        throws IOException,
-            URISyntaxException {
+    void GroundVehicleLabelTest() {
 
         final PVCoordinatesProvider airplanePVCoordsProvider = getTrajectory();
 
@@ -104,7 +115,7 @@ public class GroundVehicleTest
         verifyFileOutput(pathFile, plane.toString(), 1e-8);
     }
 
-    private final PVCoordinatesProvider getTrajectory() {
+    private PVCoordinatesProvider getTrajectory() {
 
         final GeodeticPoint startPoint =
             new GeodeticPoint(Math.toRadians(23.13), Math.toRadians(22.34),
@@ -115,5 +126,175 @@ public class GroundVehicleTest
         return WaypointPVBuilder.greatCircleBuilder(AbstractTest.getEarth())
             .addWaypoint(startPoint, startDate)
             .addWaypoint(stopPoint, finalDate).build();
+    }
+
+    /** Test for constructor of ground vehicle. */
+    @Test
+    void groundVehicleConstructorTest() {
+
+        final GroundVehicle groundVehicle =
+            new GroundVehicle(dummyPropagator, startDate, finalDate, getEarth(),
+                              60.0);
+
+        final String templateFile =
+            loadResources("templateFile/object/primary/entities/groundvehicle/GroundVehicleConstructorTemplate.txt");
+
+        verifyFileOutput(templateFile, groundVehicle.toString(), 1e-8);
+    }
+
+    /** Test for the builder of ground vehicle. */
+    @Test
+    void groundVehicleBuilderTest() {
+
+        final GroundVehicle groundVehicle =
+            GroundVehicle.builder(dummyPropagator, startDate, finalDate,
+                                  getEarth(), 60.0)
+                .build();
+
+        final String templateFile =
+            loadResources("templateFile/object/primary/entities/groundvehicle/GroundVehicleBuilderTemplate.txt");
+
+        verifyFileOutput(templateFile, groundVehicle.toString(), 1e-8);
+    }
+
+    /** test for cloning object. */
+    @Test
+    void cloningVehicleTest() {
+        dummyVehicle.setDisplayAttitude(false);
+        final GroundVehicle vehicleCloned = dummyVehicle.cloneObject();
+        final String templateFile =
+            loadResources("templateFile/object/primary/entities/groundvehicle/GroundVehicleClonedTemplate.txt");
+
+        verifyFileOutput(templateFile, vehicleCloned.toString(), 1e-8);
+    }
+
+    /** Test for cloning object with a display attitude. */
+    @Test
+    void cloningVehicleAttitudeShowTest() {
+        dummyVehicle.setDisplayAttitude(true);
+        final List<Attitude> attitudes = new ArrayList<>();
+        final TimeStampedAngularCoordinates coordinates =
+            new TimeStampedAngularCoordinates(startDate,
+                                              new PVCoordinates(new Vector3D(1.0,
+                                                                             0.0,
+                                                                             0.0),
+                                                                new Vector3D(0.01,
+                                                                             0.02,
+                                                                             0.0)),
+                                              new PVCoordinates(new Vector3D(3.0,
+                                                                             1.0,
+                                                                             0.0),
+                                                                new Vector3D(0.03,
+                                                                             0.00,
+                                                                             0.01)));
+        attitudes.add(new Attitude(FramesFactory.getEME2000(), coordinates));
+        dummyVehicle.setAttitudes(attitudes);
+
+        final GroundVehicle vehicleCloned = dummyVehicle.cloneObject();
+
+        final String templateFile =
+            loadResources("templateFile/object/primary/entities/groundvehicle/GroundVehicleCloneAttitudeTemplate.txt");
+
+        verifyFileOutput(templateFile, vehicleCloned.toString(), 1e-8);
+    }
+
+    @Nested
+    public class GetterSetterTests {
+
+        @Test
+        void PVCoordinatesProviderTest() {
+            Assertions.assertEquals(dummyPropagator,
+                                    dummyVehicle.getPVCoordinatesProvider());
+        }
+
+        @Test
+        void clockTest() {
+            final Clock clock = new Clock(startDate, finalDate, 60.0);
+            Assertions.assertEquals(clock.toString(),
+                                    dummyVehicle.getClock().toString());
+        }
+
+        @Test
+        void clockSetTest() {
+            final Clock clock = new Clock(startDate, finalDate, 180.0);
+            dummyVehicle.setClock(clock);
+            Assertions.assertEquals(clock.toString(),
+                                    dummyVehicle.getClock().toString());
+            dummyVehicle.setClock(new Clock(startDate, finalDate, 60.0));
+        }
+
+        @Test
+        void startDateTest() {
+            Assertions.assertEquals(startDate, dummyVehicle.getStartDate());
+        }
+
+        @Test
+        void finalDateTest() {
+            Assertions.assertEquals(finalDate, dummyVehicle.getFinalDate());
+        }
+
+        @Test
+        void descriptionTest() {
+            final String description =
+                "<!--HTML-->\r\n" +
+                                       "<p>Id : GROUNDVEHICLE/</p>\r\n" +
+                                       "<p>Simulated from : 2024-01-01T00:00:00.000Z to 2024-01-01T00:01:00.000Z</p>";
+            Assertions.assertEquals(description, dummyVehicle.getDescription());
+        }
+
+        @Test
+        void displayAttitudeTest() {
+            Assertions.assertTrue(dummyVehicle.getDisplayAttitude());
+        }
+
+        @Test
+        void orientationTest() {
+            final Orientation orientation =
+                new Orientation(dummyVehicle.getAttitudes(),
+                                dummyVehicle.getFrame());
+            Assertions.assertEquals(orientation.toString(),
+                                    dummyVehicle.getOrientation().toString());
+        }
+
+        @Test
+        void colorSetTest() {
+            final Color color = new Color(255, 255, 0);
+            dummyVehicle.setColor(color);
+            Assertions.assertEquals(dummyVehicle.getColor(), color);
+        }
+
+        @Test
+        void pvCoordinatesProviderSetTest() {
+            final TimeStampedPVCoordinates coordinates =
+                new TimeStampedPVCoordinates(startDate,
+                                             new PVCoordinates(new Vector3D(1.0,
+                                                                            0.0,
+                                                                            0.0),
+                                                               new Vector3D(0.01,
+                                                                            0.02,
+                                                                            0.0)),
+                                             new PVCoordinates(new Vector3D(3.0,
+                                                                            1.0,
+                                                                            0.0),
+                                                               new Vector3D(0.03,
+                                                                            0.01,
+                                                                            0.01)));
+            final PVCoordinatesProvider provider =
+                new AbsolutePVCoordinates(FramesFactory.getEME2000(),
+                                          coordinates);
+            dummyVehicle.setPVCoordinatesProvider(provider);
+            Assertions.assertEquals(provider,
+                                    dummyVehicle.getPVCoordinatesProvider());
+            dummyVehicle.setPVCoordinatesProvider(dummyPropagator);
+        }
+
+        @Test
+        void orientationSetTest() {
+            final Orientation orientation =
+                new Orientation(dummyVehicle.getAttitudes(),
+                                dummyVehicle.getFrame());
+            dummyVehicle.setOrientation(orientation);
+            Assertions.assertEquals(orientation, dummyVehicle.getOrientation());
+        }
     }
 }

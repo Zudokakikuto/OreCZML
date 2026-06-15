@@ -40,8 +40,6 @@ import org.orekit.propagation.BoundedPropagator;
 import org.orekit.time.AbsoluteDate;
 import org.orekit.utils.IERSConventions;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -105,17 +103,13 @@ public class Orientation
      * @param propagator : The propagator considered.
      * @param clock : provides time interval information
      * @param optionalRotation : An optional rotation to add to the orientation
-     * @param invertToItrf : To put the referential into the ITR frame
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException the io exception
+     * @param invertToItrf : To put the referential into the ITR frame *
      */
     @DefaultDataContext
     public Orientation(final BoundedAttitudeProvider provider,
                        final BoundedPropagator propagator, final Clock clock,
                        final Rotation optionalRotation,
-                       final boolean invertToItrf)
-        throws URISyntaxException,
-            IOException {
+                       final boolean invertToItrf) {
 
         final List<Attitude> attitudesTemp = new ArrayList<>();
 

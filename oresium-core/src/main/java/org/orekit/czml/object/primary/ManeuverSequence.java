@@ -43,8 +43,6 @@ import org.orekit.propagation.SpacecraftState;
 import org.orekit.time.AbsoluteDate;
 import org.orekit.utils.TimeSpanMap;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -315,9 +313,19 @@ public class ManeuverSequence
         this.maneuvers = maneuversInput;
         this.spacecraft = spacecraftInput;
         this.sequence = sequenceInput;
-        this.propagator = spacecraftInput.getSpacecraftBoundedPropagator();
-        this.states = spacecraftInput.getSpaceCraftStates();
-        setAvailability(clock.getAvailability());
+        if (spacecraftInput != null) {
+            this.propagator = spacecraftInput.getSpacecraftBoundedPropagator();
+            this.states = spacecraftInput.getSpaceCraftStates();
+        } else {
+            this.propagator = null;
+            this.states = null;
+        }
+
+        if (clock != null) {
+            setAvailability(clock.getAvailability());
+        } else {
+            setAvailability(null);
+        }
 
         if (accelerationDirection.size() == 1) {
             for (int i = 0; i < maneuversInput.size(); i++) {
@@ -333,28 +341,42 @@ public class ManeuverSequence
         if (length > 10) {
             length = 10;
         }
+
         this.setId(customID);
-        this.setName(DEFAULT_NAME +
-                     length + DEFAULT_APPLIED + propagator.toString());
-        final JulianDate startDate =
-            DateUtils.toJulianDate(propagator.getMinDate());
-        final JulianDate stopDate =
-            DateUtils.toJulianDate(propagator.getMaxDate());
-        this.setAvailability(new TimeInterval(startDate, stopDate));
-        this.satellitePositionReference =
-            new Reference(spacecraftInput.getId() + DEFAULT_H_POSITION);
 
-        this.attitudesWithManeuver =
-            generateAttitudesManeuvers(states, maneuversInput, arrowsDirection,
-                                       sequenceInput);
+        if (propagator != null && clock != null && states != null) {
+            this.setName(DEFAULT_NAME + length + DEFAULT_APPLIED + propagator);
+            final JulianDate startDate =
+                DateUtils.toJulianDate(propagator.getMinDate());
+            final JulianDate stopDate =
+                DateUtils.toJulianDate(propagator.getMaxDate());
+            this.setAvailability(new TimeInterval(startDate, stopDate));
+            this.satellitePositionReference =
+                new Reference(spacecraftInput.getId() + DEFAULT_H_POSITION);
 
-        this.model = new CzmlModel(pathModel, 500000, 40, 5E-05, false, clock);
+            this.attitudesWithManeuver =
+                generateAttitudesManeuvers(states, maneuversInput,
+                                           arrowsDirection, sequenceInput);
 
-        this.availabilitiesManeuvers =
+            this.model =
+                new CzmlModel(pathModel, 500000, 40, 5E-05, false, clock);
+
+            this.availabilitiesManeuvers =
+                generateAvailabilitiesManeuvers(maneuvers,
+                                                clock.getAvailability());
             generateAvailabilitiesManeuvers(maneuvers, clock.getAvailability());
-        generateAvailabilitiesManeuvers(maneuvers, clock.getAvailability());
 
-        this.orientations = generateOrientationManeuvers(attitudesWithManeuver);
+            this.orientations =
+                generateOrientationManeuvers(attitudesWithManeuver);
+        } else {
+            this.setName(DEFAULT_NAME + length + DEFAULT_APPLIED);
+            this.setAvailability(null);
+            this.satellitePositionReference = null;
+            this.attitudesWithManeuver = null;
+            this.model = null;
+            this.availabilitiesManeuvers = null;
+            this.orientations = null;
+        }
     }
 
     // Builders
@@ -431,9 +453,7 @@ public class ManeuverSequence
 
     @Override
     public void writeCzmlBlock(final CesiumStreamWriter stream,
-                               final CesiumOutputStream output)
-        throws URISyntaxException,
-            IOException {
+                               final CesiumOutputStream output) {
         output.setPrettyFormatting(true);
         for (int i = 0; i < maneuvers.size(); i++) {
             final Orientation currentOrientation = orientations.get(i);
@@ -457,44 +477,38 @@ public class ManeuverSequence
     @Override
     public ManeuverSequence cloneObject() {
         final ManeuverSequence toReturn;
-        try {
-            if (maneuvers.size() == 1) {
+        if (maneuvers.size() == 1) {
+            toReturn =
+                ManeuverSequence
+                    .builder(this.sequence, this.maneuvers.get(0),
+                             this.spacecraft, this.arrowsDirection.get(0),
+                             this.lof, this.clock)
+                    .withCustomID(getId())
+                    .withPathModel(this.model.getAbsolutePath())
+                    .withShowTrust(this.showTrust).build();
+        } else if (!maneuvers.isEmpty()) {
+            if (arrowsDirection.size() == 1) {
                 toReturn =
                     ManeuverSequence
-                        .builder(this.sequence, this.maneuvers.get(0),
-                                 this.spacecraft, this.arrowsDirection.get(0),
-                                 this.lof, this.clock)
+                        .builder(this.sequence, this.maneuvers, this.spacecraft,
+                                 this.arrowsDirection.get(0), this.lof,
+                                 this.clock)
                         .withCustomID(getId())
                         .withPathModel(this.model.getAbsolutePath())
                         .withShowTrust(this.showTrust).build();
-            } else if (!maneuvers.isEmpty()) {
-                if (arrowsDirection.size() == 1) {
-                    toReturn =
-                        ManeuverSequence
-                            .builder(this.sequence, this.maneuvers,
-                                     this.spacecraft,
-                                     this.arrowsDirection.get(0), this.lof,
-                                     this.clock)
-                            .withCustomID(getId())
-                            .withPathModel(this.model.getAbsolutePath())
-                            .withShowTrust(this.showTrust).build();
-                } else {
-                    toReturn =
-                        ManeuverSequence
-                            .builder(this.sequence, this.maneuvers,
-                                     this.spacecraft, this.arrowsDirection,
-                                     this.lof, this.clock)
-                            .withCustomID(getId())
-                            .withPathModel(this.model.getAbsolutePath())
-                            .withShowTrust(this.showTrust).build();
-                }
             } else {
-                throw new OresiumException(OresiumMessages.NOT_VALID_PRIMARY_OBJECT_FOR_CLONE);
+                toReturn =
+                    ManeuverSequence
+                        .builder(this.sequence, this.maneuvers, this.spacecraft,
+                                 this.arrowsDirection, this.lof, this.clock)
+                        .withCustomID(getId())
+                        .withPathModel(this.model.getAbsolutePath())
+                        .withShowTrust(this.showTrust).build();
             }
-            return toReturn;
-        } catch (URISyntaxException | IOException e) {
+        } else {
             throw new OresiumException(OresiumMessages.NOT_VALID_PRIMARY_OBJECT_FOR_CLONE);
         }
+        return toReturn;
     }
 
     // Getters

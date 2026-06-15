@@ -37,8 +37,6 @@ import org.orekit.frames.TopocentricFrame;
 import org.orekit.utils.Constants;
 import org.orekit.utils.IERSConventions;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -132,9 +130,7 @@ public class StationVisibilityCircle
 
     @Override
     public void writeCzmlBlock(final CesiumStreamWriter stream,
-                               final CesiumOutputStream output)
-        throws URISyntaxException,
-            IOException {
+                               final CesiumOutputStream output) {
         output.setPrettyFormatting(true);
         try (PacketCesiumWriter packet = stream.openPacket(output)) {
             packet.writeId(getId());

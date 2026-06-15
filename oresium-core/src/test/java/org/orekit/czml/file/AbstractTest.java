@@ -80,7 +80,7 @@ import org.orekit.utils.PVCoordinatesProvider;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -110,9 +110,8 @@ public class AbstractTest {
     /** The maximum step for the dormant prince integrator. */
     public static final double MAX_STEP = 1000.0;
 
-    /** The classic duration of the simulation */
-    public static final double CLASSIC_DURATION_OF_SIMULATION = 10 * 3600; // in
-    // seconds;
+    /** The classic duration of the simulation in seconds */
+    public static final double CLASSIC_DURATION_OF_SIMULATION = 10 * 3600;
 
     /** The root of the project. */
     private static String ROOT =
@@ -396,9 +395,7 @@ public class AbstractTest {
     public static ManeuverSequence
         dummyManeuverSequence(final AbsoluteDate startDate,
                               final AbsoluteDate finalDate,
-                              final Spacecraft spacecraft)
-            throws URISyntaxException,
-                IOException {
+                              final Spacecraft spacecraft) {
 
         final List<Maneuver> maneuvers = new ArrayList<>();
 
@@ -517,36 +514,42 @@ public class AbstractTest {
      */
     public static void verifyFileOutput(final String templateFileName,
                                         final String testString,
-                                        final double accuracy)
-        throws URISyntaxException,
-            IOException {
+                                        final double accuracy) {
 
-        // Get template file string data
-        final String templateFile = Files.readString(Path.of(templateFileName));
+        try {
+            // Get template file string data
+            final String templateFile =
+                Files.readString(Path.of(templateFileName));
 
-        // Stores files as list of string and double values in sequential order
-        final List<Pair<Integer, Object>> templateValues =
-            readValues(templateFile);
-        final List<Pair<Integer, Object>> testValues = readValues(testString);
+            // Stores files as list of string and double values in sequential
+            // order
+            final List<Pair<Integer, Object>> templateValues =
+                readValues(templateFile);
+            final List<Pair<Integer, Object>> testValues =
+                readValues(testString);
 
-        // Determines locations of newline characters to aid in finding output
-        // error location
-        final NavigableSet<Integer> lineStartValues =
-            new TreeSet<>(findNewlineChars(templateFile));
+            // Determines locations of newline characters to aid in finding
+            // output
+            // error location
+            final NavigableSet<Integer> lineStartValues =
+                new TreeSet<>(findNewlineChars(templateFile));
 
-        // Compares unit test output to template value
-        final Pair<Integer, String> testOutput =
-            compareValues(templateValues, testValues, lineStartValues,
-                          accuracy);
+            // Compares unit test output to template value
+            final Pair<Integer, String> testOutput =
+                compareValues(templateValues, testValues, lineStartValues,
+                              accuracy);
 
-        if (testOutput.first() == -1) {
-            Assertions.assertEquals(-1, testOutput.first());
-        } else {
-            final String message =
-                testOutput.second() +
-                                   " found at line " + testOutput.first() +
-                                   " of " + templateFileName;
-            throw new AssertionError(message);
+            if (testOutput.first() == -1) {
+                Assertions.assertEquals(-1, testOutput.first());
+            } else {
+                final String message =
+                    testOutput.second() +
+                                       " found at line " + testOutput.first() +
+                                       " of " + templateFileName;
+                throw new AssertionError(message);
+            }
+        } catch (IOException e) {
+            throw new OresiumException(OresiumMessages.TEMPLATE_FILE_MALFORMED);
         }
     }
 
@@ -628,13 +631,13 @@ public class AbstractTest {
                       final NavigableSet<Integer> lineStartValues,
                       final double accuracy) {
 
-        int max_val = templateValues.size();
+        int maxVal = templateValues.size();
         if (templateValues.size() > testValues.size()) {
-            max_val = testValues.size();
+            maxVal = testValues.size();
         }
 
         // Compare individual values in the arrays.
-        for (int i = 0; i < max_val; i++) {
+        for (int i = 0; i < maxVal; i++) {
 
             final Object templateValue = templateValues.get(i).second();
             final Object testValue = testValues.get(i).second();

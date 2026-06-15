@@ -34,6 +34,11 @@ public enum OresiumMessages
     implements
     Localizable {
 
+                 // Abstract test
+
+                 /** Triggers when trying to read a template file for tests. */
+                 TEMPLATE_FILE_MALFORMED("An error occured while reading the template file for tests"),
+
                  // Abstract primary object
                  /**
                   * Trigger when a primary object is not valid and lacks some of
@@ -114,6 +119,21 @@ public enum OresiumMessages
                   */
                  MODEL_TYPE_UNKNOWN("Model Type not known."),
 
+                 /**
+                  * Triggers when the copy of the model file encounters an
+                  * error.
+                  */
+                 MODEL_FILE_NOT_COPIED("An error occured while copying the model file"),
+
+                 /**
+                  * Triggers when the string for the path of the 3D model
+                  * violates RFC 2396.
+                  */
+                 STRING_MODEL_NOT_COMPLIANT("The string given for the model is not correctly formed"),
+
+                 /** Triggers when the 2D image read is null. */
+                 MODEL_2D_IMAGE_IS_NULL("The 2D model given is null"),
+
                  // Attitude Pointing
                  /**
                   * Trigger when the pointing path is not displayed, but the
@@ -145,6 +165,15 @@ public enum OresiumMessages
                   * asked.
                   */
                  STRING_NOT_GENERATED("String generation error."),
+
+                 /** Triggers when the Czml File cannot be created. */
+                 CZML_FILE_NOT_CREATED("A problem occured while generating the czml file"),
+
+                 /**
+                  * Triggers when the Czml file can"t be created because of
+                  * corrupted path.
+                  */
+                 PATH_PROBLEM_WITH_CZML_FILE("A problem occured with the path of the Czml File, it is either malformed or incorrect"),
 
                  // Ground track
                  /**

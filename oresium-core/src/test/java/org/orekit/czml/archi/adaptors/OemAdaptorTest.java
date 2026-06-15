@@ -17,6 +17,7 @@
 package org.orekit.czml.archi.adaptors;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.orekit.annotation.DefaultDataContext;
 import org.orekit.czml.archi.adaptor.OemAdaptor;
@@ -25,11 +26,10 @@ import org.orekit.data.DataSource;
 import org.orekit.files.ccsds.ndm.ParserBuilder;
 import org.orekit.files.ccsds.ndm.odm.oem.Oem;
 import org.orekit.files.ccsds.ndm.odm.oem.OemParser;
+import org.orekit.frames.FramesFactory;
+import org.orekit.propagation.Propagator;
 import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScalesFactory;
-
-import java.io.IOException;
-import java.net.URISyntaxException;
 
 /**
  * The type Oem adaptor test.
@@ -41,31 +41,45 @@ public class OemAdaptorTest
     /** Initialise orekit data. */
     private final double data = initializeOrekitData();
 
+    final String OemPath = loadResources("oemForOemTuto.xml");
+
+    final DataSource dataSource = new DataSource(OemPath);
+
+    final ParserBuilder parserBuilder = new ParserBuilder();
+
+    final OemParser oemParser = parserBuilder.buildOemParser();
+
+    final Oem oem = oemParser.parse(dataSource);
+
+    final AbsoluteDate startDate =
+        new AbsoluteDate(2025, 9, 1, 0, 0, 0.0, TimeScalesFactory.getUTC());
+
+    final AbsoluteDate finalDate =
+        new AbsoluteDate(2025, 9, 2, 0, 0, 0.0, TimeScalesFactory.getUTC());
+
     /**
      * Oem constructor test.
-     *
-     * @throws URISyntaxException the uri syntax exception
-     * @throws IOException the io exception
      */
     @Test
     @DefaultDataContext
     void oemConstructorTest() {
-
-        final String OemPath = loadResources("oemForOemTuto.xml");
-        final DataSource dataSource = new DataSource(OemPath);
-        final ParserBuilder parserBuilder = new ParserBuilder();
-        final OemParser oemParser = parserBuilder.buildOemParser();
-        final Oem oem = oemParser.parse(dataSource);
-
-        final AbsoluteDate startDate =
-            new AbsoluteDate(2025, 9, 1, 0, 0, 0.0, TimeScalesFactory.getUTC());
-        final AbsoluteDate finalDate =
-            new AbsoluteDate(2025, 9, 2, 0, 0, 0.0, TimeScalesFactory.getUTC());
 
         final OemAdaptor oemAdaptor = new OemAdaptor(oem);
 
         Assertions.assertEquals(oem, oemAdaptor.oem());
         Assertions.assertEquals(startDate, oemAdaptor.buildStartDate());
         Assertions.assertEquals(finalDate, oemAdaptor.buildFinalDate());
+    }
+
+    @Test
+    @DisplayName("build propagator")
+    void buildPropagatorTest() {
+        final OemAdaptor adaptor = new OemAdaptor(oem);
+        final Propagator propagator = adaptor.buildPropagator();
+        Assertions.assertNotNull(propagator);
+        Assertions.assertEquals(propagator.getInitialState().getDate(),
+                                startDate);
+        Assertions.assertEquals(propagator.getFrame(),
+                                FramesFactory.getEME2000());
     }
 }

@@ -30,9 +30,6 @@ import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.Constants;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-
 /**
  * Test class for the visibility triangle object.
  *
@@ -82,9 +79,7 @@ public class VisibilityTriangleTest
     @Test
     @DefaultDataContext
     @DisplayName("Visibility triangle constructor test")
-    void VisibilityTriangleConstructorTest()
-        throws URISyntaxException,
-            IOException {
+    void VisibilityTriangleConstructorTest() {
 
         final BoundedPropagator boundedPropagator =
             propagatorFromOrbit(startDate, finalDate, initialOrbit);
@@ -107,9 +102,7 @@ public class VisibilityTriangleTest
 
     @Test
     @DisplayName("Visibility triangle coverage Czml File test")
-    public void VisibilityTriangleCzmlFileTest()
-        throws URISyntaxException,
-            IOException {
+    public void VisibilityTriangleCzmlFileTest() {
 
         final String output = generateOutput();
 

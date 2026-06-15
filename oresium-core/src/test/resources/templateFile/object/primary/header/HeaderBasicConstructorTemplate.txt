@@ -1,0 +1,12 @@
+  {
+    "id":"document",
+    "name":"Basic header",
+    "version":"1.0",
+    "clock":{
+      "interval":"2020-01-01T00:00:00Z/2020-01-01T00:01:00Z",
+      "currentTime":"2020-01-01T00:00:00Z",
+      "multiplier":10,
+      "range":"LOOP_STOP",
+      "step":"TICK_DEPENDENT"
+    }
+  }
