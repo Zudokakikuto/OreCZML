@@ -27,7 +27,7 @@ import java.util.Locale;
  * This class contains all the error messages that can happens when the
  * execution of the code is not nominal.=
  *
- * @author : Julien LEBLOND
+ * @author : LEBLOND Julien
  * @since V1.0
  */
 public enum OresiumMessages
@@ -38,6 +38,9 @@ public enum OresiumMessages
 
                  /** Triggers when trying to read a template file for tests. */
                  TEMPLATE_FILE_MALFORMED("An error occured while reading the template file for tests"),
+
+                 /** Triggers when a template file does not exist. */
+                 TEMPLATE_FILE_NOT_FOUND("The template file used does not exist, check the path or the name of the file."),
 
                  // Abstract primary object
                  /**

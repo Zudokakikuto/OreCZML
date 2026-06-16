@@ -29,7 +29,7 @@ import org.orekit.frames.Frame;
  * <p>
  * Builder for the {@link Body} class.
  *
- * @author Julien LEBLOND
+ * @author LEBLOND Julien
  * @since 1.0
  */
 public class BodyBuilder {

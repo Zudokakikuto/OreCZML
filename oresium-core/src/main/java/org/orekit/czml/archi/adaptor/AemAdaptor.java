@@ -29,7 +29,7 @@ import org.orekit.propagation.BoundedPropagator;
  * those files.
  *
  * @param aem The aem to be used to create an orientation.
- * @author Julien LEBLOND
+ * @author LEBLOND Julien
  * @since 1.0.0
  */
 public record AemAdaptor(Aem aem) {

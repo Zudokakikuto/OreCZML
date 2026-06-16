@@ -32,7 +32,7 @@ import java.util.Objects;
  * <p>
  * Factory for the {@link Body} class.
  *
- * @author Julien LEBLOND
+ * @author LEBLOND Julien
  * @since 1.0
  */
 @DefaultDataContext

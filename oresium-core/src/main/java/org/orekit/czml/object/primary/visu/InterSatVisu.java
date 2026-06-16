@@ -65,7 +65,7 @@ import java.util.TreeMap;
  * each other. On a constellation, it can be applied as each satellite sees each
  * other.
  *
- * @author Julien LEBLOND
+ * @author LEBLOND Julien
  * @since 1.0.0
  */
 public class InterSatVisu

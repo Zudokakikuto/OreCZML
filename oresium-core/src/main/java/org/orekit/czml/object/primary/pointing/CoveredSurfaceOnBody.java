@@ -36,7 +36,7 @@ import java.util.List;
 /**
  * The type Covered surface on body.
  *
- * @author Julien Leblond
+ * @author LEBLOND Julien
  * @since 1.0
  */
 public class CoveredSurfaceOnBody
@@ -155,29 +155,35 @@ public class CoveredSurfaceOnBody
             tempCartesians.add(currentCartesian);
         }
 
-        pointsCartesiansInTime = sortingListList(tempCartesians);
+        if (!tempCartesians.isEmpty()) {
+            pointsCartesiansInTime = sortingListList(tempCartesians);
 
-        this.polygon = new ArrayList<>();
-        for (int i = 0; i < pointsCartesiansInTime.size() - 1; i++) {
+            this.polygon = new ArrayList<>();
+            for (int i = 0; i < pointsCartesiansInTime.size() - 1; i++) {
 
-            // Technically we'll be leaving off the very last polygon, but is
-            // that
-            // really such a big deal?
-            final JulianDate t0 = fieldOfObservation.getJulianDates().get(i);
-            final JulianDate t1 =
-                fieldOfObservation.getJulianDates().get(i + 1);
+                // Technically we'll be leaving off the very last polygon, but
+                // is
+                // that
+                // really such a big deal?
+                final JulianDate t0 =
+                    fieldOfObservation.getJulianDates().get(i);
+                final JulianDate t1 =
+                    fieldOfObservation.getJulianDates().get(i + 1);
 
-            // Get current polygon and close it off
-            final List<Cartesian> currentCartesianList =
-                pointsCartesiansInTime.get(i);
+                // Get current polygon and close it off
+                final List<Cartesian> currentCartesianList =
+                    pointsCartesiansInTime.get(i);
 
-            // Add polygon to list
-            this.polygon
-                .add(Polygon.builder(currentCartesianList, satellite.getClock())
+                // Add polygon to list
+                this.polygon.add(Polygon
+                    .builder(currentCartesianList, satellite.getClock())
                     .withColor(colorInput).withOutline(outlineInput)
                     .withFill(fillInput).build());
+            }
+        } else {
+            this.polygon = new ArrayList<>();
+            this.pointsCartesiansInTime = new ArrayList<>();
         }
-
     }
 
     /**

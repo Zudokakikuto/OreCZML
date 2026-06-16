@@ -26,7 +26,7 @@ import cesiumlanguagewriter.TimeInterval;
  * This interface represents the objects that are directly displayed on
  * screen,they depend on no other objects.
  *
- * @author Julien LEBLOND
+ * @author LEBLOND Julien
  * @since 1.0.0
  */
 public interface CzmlPrimaryObject<T extends CzmlPrimaryObject<T>> {

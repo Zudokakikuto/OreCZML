@@ -41,7 +41,7 @@ import java.util.List;
  * This class aims at managing the time constants of the simulation.
  * </p>
  *
- * @author Julien LEBLOND
+ * @author LEBLOND Julien
  * @since 1.0.0
  */
 public class Clock

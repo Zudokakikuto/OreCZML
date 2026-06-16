@@ -25,17 +25,30 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.orekit.annotation.DefaultDataContext;
+import org.orekit.attitudes.AttitudeProvider;
 import org.orekit.czml.archi.factory.BodyFactory;
+import org.orekit.czml.errors.OresiumException;
+import org.orekit.czml.errors.OresiumMessages;
 import org.orekit.czml.file.AbstractTest;
 import org.orekit.czml.file.CzmlFile;
 import org.orekit.czml.object.nonvisual.CzmlModel;
 import org.orekit.czml.object.primary.Header;
 import org.orekit.czml.object.secondary.Clock;
+import org.orekit.czml.object.secondary.Orientation;
 import org.orekit.czml.object.utils.DateUtils;
+import org.orekit.frames.Frame;
+import org.orekit.orbits.Orbit;
+import org.orekit.propagation.AdditionalDataProvider;
 import org.orekit.propagation.BoundedPropagator;
+import org.orekit.propagation.EphemerisGenerator;
+import org.orekit.propagation.SpacecraftState;
+import org.orekit.propagation.events.EventDetector;
+import org.orekit.propagation.sampling.StepHandlerMultiplexer;
 import org.orekit.time.AbsoluteDate;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -376,6 +389,41 @@ public class SpacecraftTest
         void clockMultiplierTest() {
             Assertions.assertEquals(10.0, dummySpacecraft.getClockMultiplier());
         }
-    }
 
+        @Test
+        void getOrientationWhenNullShouldThrowException() {
+            // Given: orientation is null (default state)
+            dummySpacecraft.resetAttitudes();
+
+            // When & Then: should throw OresiumException
+            final OresiumException exception =
+                Assertions.assertThrows(OresiumException.class,
+                                        () -> dummySpacecraft.getOrientation());
+            Assertions.assertEquals(OresiumMessages.NO_ORIENTATION_DISPLAYED,
+                                    exception.getSpecifier());
+        }
+
+        @Test
+        void getOrientationWhenNotNullShouldReturnOrientation() {
+            // Given: orientation is set
+            dummySpacecraft.setDisplayAttitude(true);
+            dummySpacecraft.displaySpacecraftAttitude();
+
+            // When: getOrientation is called
+            final Orientation orientation = dummySpacecraft.getOrientation();
+
+            // Then: should return a non-null orientation
+            Assertions.assertNotNull(orientation);
+        }
+
+        @Test
+        void getPeriodShouldReturnValidPeriod() {
+            // Given: a valid propagator with orbit
+            // When: getPeriod is called
+            final double period = dummySpacecraft.getPeriod();
+
+            // Then: should return a positive period
+            Assertions.assertTrue(period > 0);
+        }
+    }
 }

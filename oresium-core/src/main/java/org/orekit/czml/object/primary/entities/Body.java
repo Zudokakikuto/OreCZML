@@ -50,7 +50,7 @@ import java.util.List;
  * seen if too far away.
  * </p>
  *
- * @author Julien LEBLOND
+ * @author LEBLOND Julien
  * @since 1.0.0
  */
 public class Body

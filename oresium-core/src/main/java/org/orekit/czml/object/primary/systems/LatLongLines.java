@@ -44,7 +44,7 @@ import java.util.Objects;
  * considered. Labels representing the degree of the line can be displayed for
  * clarification.
  *
- * @author Julien LEBLOND
+ * @author LEBLOND Julien
  * @since 1.0.0
  */
 public class LatLongLines

@@ -54,7 +54,7 @@ import java.util.List;
  * .displayTriangle() method from the line of visibility.
  * </p>
  *
- * @author Julien LEBLOND
+ * @author LEBLOND Julien
  * @since 1.1
  */
 public class VisibilityTriangle

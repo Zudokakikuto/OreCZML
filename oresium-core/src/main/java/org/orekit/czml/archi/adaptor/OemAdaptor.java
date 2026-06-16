@@ -28,7 +28,7 @@ import org.orekit.time.AbsoluteDate;
  * built.
  *
  * @param oem The oem Orekit object.
- * @author Julien LEBLOND
+ * @author LEBLOND Julien
  * @since 1.0.0
  */
 public record OemAdaptor(Oem oem) {

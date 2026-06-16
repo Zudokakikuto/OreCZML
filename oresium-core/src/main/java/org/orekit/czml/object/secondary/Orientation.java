@@ -51,7 +51,7 @@ import java.util.List;
  * of an object knowing its Orekit Attitude.
  * </p>
  *
- * @author Julien LEBLOND
+ * @author LEBLOND Julien
  * @since 1.0.0
  */
 public class Orientation

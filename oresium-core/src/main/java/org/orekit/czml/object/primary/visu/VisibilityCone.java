@@ -40,7 +40,7 @@ import java.awt.Color;
  * will define how wide is the visibility of the station, this object is
  * mandatory to build a line of visibility.
  *
- * @author Julien LEBLOND.
+ * @author LEBLOND Julien.
  * @since 1.0.0
  */
 public class VisibilityCone

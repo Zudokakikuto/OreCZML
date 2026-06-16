@@ -27,7 +27,7 @@ import java.awt.Color;
  * <p>
  * Builder for the {@link Polyline} class to be built as a non-vector.
  *
- * @author Julien LEBLOND
+ * @author LEBLOND Julien
  * @since 1.0.0
  */
 public class NonVectorPolylineBuilder {

@@ -33,7 +33,7 @@ import java.io.StringWriter;
  * This class aims at displaying the path of a given object.
  * </p>
  *
- * @author Julien LEBLOND.
+ * @author LEBLOND Julien.
  * @since 1.0.0
  */
 public class Path

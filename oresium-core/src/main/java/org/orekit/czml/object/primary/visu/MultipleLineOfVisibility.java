@@ -40,7 +40,7 @@ import java.util.ListIterator;
  * lists.
  * </p>
  *
- * @author Julien Leblond
+ * @author LEBLOND Julien
  * @since 1.1
  */
 public class MultipleLineOfVisibility

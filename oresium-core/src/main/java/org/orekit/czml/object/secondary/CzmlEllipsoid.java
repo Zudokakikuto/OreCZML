@@ -35,7 +35,7 @@ import java.util.List;
  * This class allows the user to display an ellipsoid with various geometries.
  * </p>
  *
- * @author Julien LEBLOND
+ * @author LEBLOND Julien
  * @since 1.0.0
  */
 public class CzmlEllipsoid

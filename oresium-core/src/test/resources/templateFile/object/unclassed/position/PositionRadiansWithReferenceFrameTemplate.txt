@@ -1,0 +1,11 @@
+{
+  "position":{
+    "interval":"2024-01-01T00:00:00Z/2024-01-01T00:01:00Z",
+    "referenceFrame":"INERTIAL",
+    "interpolationAlgorithm":"LAGRANGE",
+    "interpolationDegree":5,
+    "cartographicRadians":[
+      1,45,20
+    ]
+  }
+}

@@ -40,7 +40,7 @@ import java.util.List;
 /**
  * Unit tests for {@link MultipleLineOfVisibilityBuilder}.
  *
- * @author Julien Leblond
+ * @author LEBLOND Julien
  * @since 1.1
  */
 public class MultipleLineOfVisibilityBuilderTest

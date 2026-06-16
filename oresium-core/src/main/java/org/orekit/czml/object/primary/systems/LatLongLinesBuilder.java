@@ -24,7 +24,7 @@ import org.orekit.czml.object.secondary.Clock;
  * <p>
  * Builder for the {@link LatLongLines} class.
  *
- * @author Julien LEBLOND
+ * @author LEBLOND Julien
  * @since 1.0
  */
 public class LatLongLinesBuilder {

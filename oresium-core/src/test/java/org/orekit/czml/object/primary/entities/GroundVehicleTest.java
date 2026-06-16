@@ -294,7 +294,8 @@ public class GroundVehicleTest
                 new Orientation(dummyVehicle.getAttitudes(),
                                 dummyVehicle.getFrame());
             dummyVehicle.setOrientation(orientation);
-            Assertions.assertEquals(orientation, dummyVehicle.getOrientation());
+            Assertions.assertEquals(orientation.toString(),
+                                    dummyVehicle.getOrientation().toString());
         }
     }
 }

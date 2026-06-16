@@ -114,11 +114,11 @@ public class GroundVehicleExample {
                                  header.getClock())
                 .withMinimumPixelSize(100).build();
 
-        GroundVehicleBuilder planeBuilder =
+        final GroundVehicleBuilder planeBuilder =
             new GroundVehicleBuilder(airplanePVCoordProvider, startDate,
                                      finalDate, TutorialUtils.getEarth(),
                                      clock.getMultiplier());
-        GroundVehicle plane =
+        final GroundVehicle plane =
             planeBuilder.withModel(planeModel).withName("RedWings").build();
         plane.displayName();
 

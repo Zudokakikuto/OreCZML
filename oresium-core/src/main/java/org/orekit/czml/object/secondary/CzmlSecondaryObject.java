@@ -26,7 +26,7 @@ import cesiumlanguagewriter.PacketCesiumWriter;
  * screen,they depends to primary objects.
  * </p>
  *
- * @author Julien LEBLOND
+ * @author LEBLOND Julien
  * @since 1.0
  */
 public interface CzmlSecondaryObject<T extends CzmlSecondaryObject<T>> {

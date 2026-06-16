@@ -148,9 +148,15 @@ public class AbstractTest {
      * @return the string
      */
     public static String loadResources(final String resourcePath) {
-        return new File(Objects.requireNonNull(AbstractTest.class
-            .getClassLoader().getResource(resourcePath)).getFile()).toPath()
-            .toString();
+        File fileToReturn = null;
+        try {
+            fileToReturn =
+                new File(Objects.requireNonNull(AbstractTest.class
+                    .getClassLoader().getResource(resourcePath)).getFile());
+        } catch (NullPointerException npe) {
+            throw new OresiumException(OresiumMessages.TEMPLATE_FILE_NOT_FOUND);
+        }
+        return fileToReturn.toPath().toString();
     }
 
     public static String loadOutputLocation() {

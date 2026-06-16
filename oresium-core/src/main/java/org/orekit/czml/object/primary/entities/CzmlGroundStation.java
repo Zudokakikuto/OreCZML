@@ -47,7 +47,7 @@ import java.util.List;
  * topocentric frame {@link org.orekit.frames.TopocentricFrame}.
  * </p>
  *
- * @author Julien LEBLOND
+ * @author LEBLOND Julien
  * @since 1.0.0
  */
 public class CzmlGroundStation

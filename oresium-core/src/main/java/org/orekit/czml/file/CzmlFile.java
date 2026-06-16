@@ -41,7 +41,7 @@ import java.util.List;
  * contains only packets and objects and interface with the Czml File Writer
  * that write everything inside the file.
  *
- * @author Julien LEBLOND.
+ * @author LEBLOND Julien.
  * @since 1.0.0
  */
 public class CzmlFile {

@@ -37,7 +37,7 @@ import java.util.List;
  * This class builds several Satellites objects {@link Spacecraft} at once, with
  * several propagators.
  *
- * @author Julien LEBLOND.
+ * @author LEBLOND Julien.
  * @since 1.0.0
  */
 public class Constellation

@@ -1,0 +1,12 @@
+{
+  "position":{
+    "referenceFrame":"EARTH_FRAME",
+    "interpolationAlgorithm":"LAGRANGE",
+    "interpolationDegree":5,
+    "epoch":"2024-01-01T00:00:00Z",
+    "cartographicRadians":[
+      0,0.7610455843443714,0.025206045057302107,10,
+      60,0.1807,11.5382,2850
+    ]
+  }
+}
