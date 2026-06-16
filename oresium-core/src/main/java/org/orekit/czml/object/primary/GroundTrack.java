@@ -52,7 +52,7 @@ import java.util.List;
  * orbiting.
  * </p>
  *
- * @author Julien LEBLOND
+ * @author LEBLOND Julien
  * @since 1.0.0
  */
 public class GroundTrack

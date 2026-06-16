@@ -37,7 +37,7 @@ import java.io.StringWriter;
  * FIRST object to be created and written before any other object, else way the
  * CZML will be corrupted.
  *
- * @author Julien LEBLOND
+ * @author LEBLOND Julien
  * @since 1.0.0
  */
 public class Header

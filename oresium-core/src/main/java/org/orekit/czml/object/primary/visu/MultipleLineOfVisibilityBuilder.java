@@ -29,7 +29,7 @@ import java.util.List;
 /**
  * Builder for the multiple line of visibility object.
  *
- * @author Julien Leblond
+ * @author LEBLOND Julien
  * @since 1.1
  */
 public class MultipleLineOfVisibilityBuilder {

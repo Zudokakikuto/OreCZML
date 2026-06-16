@@ -31,7 +31,7 @@ import java.util.List;
  * <p>
  * Builder for the {@link InterSatVisu} class.
  *
- * @author Julien LEBLOND
+ * @author LEBLOND Julien
  * @since 1.0
  */
 public class InterSatVisuBuilder {

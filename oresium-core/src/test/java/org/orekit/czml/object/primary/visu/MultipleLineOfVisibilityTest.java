@@ -54,7 +54,7 @@ import java.util.ListIterator;
 /**
  * Unit tests for {@link MultipleLineOfVisibility}.
  *
- * @author Julien Leblond
+ * @author LEBLOND Julien
  * @since 1.1
  */
 public class MultipleLineOfVisibilityTest

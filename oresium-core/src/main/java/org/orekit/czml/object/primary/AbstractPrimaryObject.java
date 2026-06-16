@@ -33,7 +33,7 @@ import java.util.List;
  * This class aims at giving a common abstract base where all primary objects
  * will refer to.
  *
- * @author Julien LEBLOND.
+ * @author LEBLOND Julien.
  * @since 1.0.0
  */
 public abstract class AbstractPrimaryObject<T extends CzmlPrimaryObject<T>>

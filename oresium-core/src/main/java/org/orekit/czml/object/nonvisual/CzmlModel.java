@@ -55,7 +55,7 @@ import java.util.Objects;
  * a local path.
  * </p>
  *
- * @author Julien LEBLOND
+ * @author LEBLOND Julien
  * @since 1.0.0
  */
 public class CzmlModel {
@@ -246,6 +246,14 @@ public class CzmlModel {
             this.generateCZML(packet, output);
         }
         return writer.toString();
+    }
+
+    public CzmlModel cloneObject() {
+        return CzmlModel
+            .builder(this.absolutePath, this.isSatellite, this.clock)
+            .withMaximumScale(maximumScale)
+            .withMinimumPixelSize(minimumPixelSize).withScale(this.scale)
+            .build();
     }
 
     // Getters

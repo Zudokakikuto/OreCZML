@@ -52,7 +52,7 @@ import java.util.List;
  * satellite and a ground station. The line will be only visibly when the
  * satellite is visible by the station in its own local sky.
  *
- * @author Julien LEBLOND.
+ * @author LEBLOND Julien.
  * @since 1.0.0
  */
 public class LineOfVisibility

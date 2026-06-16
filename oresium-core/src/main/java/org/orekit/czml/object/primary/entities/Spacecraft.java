@@ -76,7 +76,7 @@ import java.util.List;
  * with a path to the 3D model to charge your own 2D or 3D model.
  * </p>
  *
- * @author Julien LEBLOND
+ * @author LEBLOND Julien
  * @since 1.0.0
  */
 public class Spacecraft

@@ -22,7 +22,7 @@ import org.orekit.czml.object.secondary.Clock;
 /**
  * This class aims at building the {@link CzmlModel} object.
  *
- * @author jleblond
+ * @author Leblond Julien
  * @since 1.1
  */
 public class CzmlModelBuilder {

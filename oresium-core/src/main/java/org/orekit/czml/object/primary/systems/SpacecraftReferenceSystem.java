@@ -33,7 +33,7 @@ import java.util.Objects;
  * 3 axis is used to define it.
  * </p>
  *
- * @author Julien LEBLOND.
+ * @author LEBLOND Julien.
  * @since 1.0.0
  */
 public class SpacecraftReferenceSystem

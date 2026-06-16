@@ -33,7 +33,7 @@ import java.io.StringWriter;
  * two objects.
  * </p>
  *
- * @author Julien LEBLOND.
+ * @author LEBLOND Julien.
  * @since 1.0.0
  */
 public class CzmlShow {

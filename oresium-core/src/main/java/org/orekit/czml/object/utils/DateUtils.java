@@ -35,7 +35,7 @@ import java.util.List;
  * code.
  * </p>
  *
- * @author Julien LEBLOND
+ * @author LEBLOND Julien
  * @since 1.0.0
  */
 @DefaultDataContext

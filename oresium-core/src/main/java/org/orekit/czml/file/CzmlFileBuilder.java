@@ -49,7 +49,7 @@ import java.util.List;
  * Builder and architect for the {@link CzmlFile} class. This builder organise
  * and manage all the objects that needs to be added to a Czml file.
  *
- * @author Julien LEBLOND.
+ * @author LEBLOND Julien.
  * @since 1.0.0
  */
 public class CzmlFileBuilder {
@@ -682,7 +682,7 @@ public class CzmlFileBuilder {
      */
     public CzmlFileBuilder
         withCentralBodyReferenceSystem(final CentralBodyReferenceSystem systemInput) {
-        this.system = systemInput;
+        this.system = systemInput.cloneObject();
         return this;
     }
 

@@ -51,7 +51,7 @@ import java.util.List;
  * to project the attitude of the satellite at the surface. A given direction
  * will be needed to know which axis the object will project.
  *
- * @author Julien LEBLOND.
+ * @author LEBLOND Julien.
  * @since 1.0.0
  */
 public class AttitudePointing

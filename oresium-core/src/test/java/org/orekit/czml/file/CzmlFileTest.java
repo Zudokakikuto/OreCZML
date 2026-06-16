@@ -50,7 +50,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Test class for the {@link CzmlFile} class.
  *
- * @author jleblond
+ * @author Leblond Julien
  * @since 2.0
  */
 @DefaultDataContext

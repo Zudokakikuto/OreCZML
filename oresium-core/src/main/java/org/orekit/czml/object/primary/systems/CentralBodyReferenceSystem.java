@@ -40,7 +40,7 @@ import java.util.List;
  * The terrestrial reference systems aims at representing the cartesian system
  * of a body to be displayed as an help for the user during the simulation.
  *
- * @author Julien LEBLOND.
+ * @author LEBLOND Julien.
  * @since 1.0.0
  */
 public class CentralBodyReferenceSystem

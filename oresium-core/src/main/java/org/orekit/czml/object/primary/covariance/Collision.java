@@ -52,7 +52,7 @@ import java.util.List;
  * satellites. In order to do so, the class uses the covariances of each
  * satellites and checks if there is an intersection of the covariance in time.
  *
- * @author Julien LEBLOND.
+ * @author LEBLOND Julien.
  * @since 1.0.0
  */
 public class Collision

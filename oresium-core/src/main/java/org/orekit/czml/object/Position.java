@@ -41,7 +41,7 @@ import java.io.StringWriter;
  * : {@link PositionType}.
  * </p>
  *
- * @author Julien LEBLOND.
+ * @author LEBLOND Julien.
  * @since 1.0.0
  */
 public class Position {

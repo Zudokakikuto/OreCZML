@@ -30,7 +30,7 @@ import java.awt.Color;
  * <p>
  * Builder for the {@link CentralBodyReferenceSystem} class.
  *
- * @author Julien LEBLOND
+ * @author LEBLOND Julien
  * @since 1.0
  */
 @DefaultDataContext

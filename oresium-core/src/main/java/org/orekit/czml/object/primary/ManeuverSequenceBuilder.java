@@ -32,7 +32,7 @@ import java.util.Objects;
  * <p>
  * Builder for the {@link ManeuverSequence} class.
  *
- * @author Julien LEBLOND
+ * @author LEBLOND Julien
  * @since 1.0.0
  */
 public class ManeuverSequenceBuilder {

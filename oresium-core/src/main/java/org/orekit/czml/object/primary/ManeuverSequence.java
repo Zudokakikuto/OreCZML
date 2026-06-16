@@ -54,7 +54,7 @@ import java.util.List;
  * It can only manage one direction at a time for the maneuvers for the moment.
  * </p>
  *
- * @author Julien LEBLOND
+ * @author LEBLOND Julien
  * @since 1.0.0
  */
 public class ManeuverSequence

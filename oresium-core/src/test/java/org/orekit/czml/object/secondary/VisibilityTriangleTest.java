@@ -33,7 +33,7 @@ import org.orekit.utils.Constants;
 /**
  * Test class for the visibility triangle object.
  *
- * @author Julien Leblond
+ * @author LEBLOND Julien
  * @since 1.1
  */
 public class VisibilityTriangleTest

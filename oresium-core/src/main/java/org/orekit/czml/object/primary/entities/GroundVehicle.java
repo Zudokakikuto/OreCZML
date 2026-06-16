@@ -383,7 +383,7 @@ public class GroundVehicle
      * @return The clock
      */
     public Clock getClock() {
-        return clock;
+        return clock.cloneObject();
     }
 
     /**
@@ -556,7 +556,7 @@ public class GroundVehicle
      * @return the model
      */
     public CzmlModel getModel() {
-        return model;
+        return model.cloneObject();
     }
 
     /**
@@ -574,7 +574,7 @@ public class GroundVehicle
      * @return the orientation
      */
     public Orientation getOrientation() {
-        return orientation;
+        return orientation.cloneObject();
     }
 
     // SETTERS
@@ -595,7 +595,7 @@ public class GroundVehicle
      * @param clock The clock
      */
     public void setClock(final Clock clock) {
-        this.clock = clock;
+        this.clock = clock.cloneObject();
     }
 
     /**
@@ -632,7 +632,7 @@ public class GroundVehicle
      * @param orientation The orientation
      */
     public void setOrientation(final Orientation orientation) {
-        this.orientation = orientation;
+        this.orientation = orientation.cloneObject();
     }
 
     /**
@@ -650,7 +650,7 @@ public class GroundVehicle
      * @param modelInput : The model to set
      */
     public void setModel(final CzmlModel modelInput) {
-        this.model = modelInput;
+        this.model = modelInput.cloneObject();
     }
 
     // Private functions

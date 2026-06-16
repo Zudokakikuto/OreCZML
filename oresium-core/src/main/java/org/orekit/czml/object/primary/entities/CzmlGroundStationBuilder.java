@@ -28,7 +28,7 @@ import java.util.List;
  * <p>
  * Builder for the {@link CzmlGroundStation} class.
  *
- * @author Julien LEBLOND
+ * @author LEBLOND Julien
  * @since 1.0.0
  */
 public class CzmlGroundStationBuilder {

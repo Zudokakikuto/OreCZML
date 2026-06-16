@@ -51,7 +51,7 @@ import java.util.List;
  * As a vector. As a non-vector fixed line.
  * </p>
  *
- * @author Julien LEBLOND.
+ * @author LEBLOND Julien.
  * @since 1.0.0
  */
 public class Polyline {
@@ -344,6 +344,42 @@ public class Polyline {
      */
     public boolean getShow() {
         return show;
+    }
+
+    /**
+     * Gets the first reference.
+     *
+     * @return the first reference
+     */
+    public Reference getFirstReference() {
+        return firstReference;
+    }
+
+    /**
+     * Gets the second reference.
+     *
+     * @return the second reference
+     */
+    public Reference getSecondReference() {
+        return secondReference;
+    }
+
+    /**
+     * Gets the near distance.
+     *
+     * @return The near distance
+     */
+    public double getNearDistance() {
+        return nearDistance;
+    }
+
+    /**
+     * Gets the far distance.
+     *
+     * @return The fast distance
+     */
+    public double getFarDistance() {
+        return farDistance;
     }
 
     /**

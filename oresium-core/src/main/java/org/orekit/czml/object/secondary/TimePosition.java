@@ -36,7 +36,7 @@ import java.util.List;
  * value in the earth inertial fram.
  * </p>
  *
- * @author Julien LEBLOND
+ * @author LEBLOND Julien
  * @since 1.0.0
  */
 public class TimePosition

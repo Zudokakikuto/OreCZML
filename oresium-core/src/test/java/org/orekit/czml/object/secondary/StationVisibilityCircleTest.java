@@ -19,7 +19,7 @@ import org.orekit.time.AbsoluteDate;
 /**
  * Test class for the station visibility circle object.
  *
- * @author Julien Leblond
+ * @author LEBLOND Julien
  * @since 1.1
  */
 @DefaultDataContext

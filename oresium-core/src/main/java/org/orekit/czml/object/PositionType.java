@@ -22,7 +22,7 @@ package org.orekit.czml.object;
  * Enum for the {@link org.orekit.czml.object.Position} class. It describes all
  * the different types of existing tuples to describe a position.
  *
- * @author Julien LEBLOND
+ * @author LEBLOND Julien
  * @since 1.0.0
  */
 public enum PositionType {

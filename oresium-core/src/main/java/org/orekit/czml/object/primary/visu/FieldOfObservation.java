@@ -53,7 +53,7 @@ import java.util.List;
  * The field of observation defines the field of view of a satellite projected
  * on a body. The field of observation follows the attitude of the satellite.
  *
- * @author Julien LEBLOND
+ * @author LEBLOND Julien
  * @since 1.0.0
  */
 public class FieldOfObservation

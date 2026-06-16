@@ -36,7 +36,7 @@ import java.util.List;
  * Class that groups all the functions that allows to compute the influence
  * sphere and all computation related.
  *
- * @author Julien Leblond
+ * @author LEBLOND Julien
  * @since 1.1
  */
 public class InfluenceSphereUtils {

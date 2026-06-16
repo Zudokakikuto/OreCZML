@@ -188,7 +188,7 @@ public class GroundVehicleBuilder {
      * @return A GroundVehicle builder with a custom model
      */
     public GroundVehicleBuilder withModel(final CzmlModel modelInput) {
-        this.model = modelInput;
+        this.model = modelInput.cloneObject();
         return this;
     }
 

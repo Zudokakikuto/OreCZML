@@ -29,7 +29,7 @@ import java.util.Locale;
  * This class aims at creating exceptions and display messages from Oresium
  * Messages.
  *
- * @author Julien LEBLOND
+ * @author LEBLOND Julien
  * @since 1.0
  */
 public class OresiumException

@@ -54,7 +54,7 @@ import java.util.List;
 /**
  * Unit tests for {@link LineOfVisibility}.
  *
- * @author Julien LEBLOND
+ * @author LEBLOND Julien
  * @since 1.0.0
  */
 public class LineOfVisibilityTest
